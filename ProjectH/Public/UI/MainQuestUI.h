@@ -25,6 +25,7 @@ public:
 	void QuestInfoAnimation(bool IsOpened);
 
 
+	void SettingKey();
 	void SetMouseOff();
 
 	bool OtherUIOpen(); // 다른 UI가 켜져있는지 판단.

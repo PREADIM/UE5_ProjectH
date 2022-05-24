@@ -64,7 +64,7 @@ public:
 	UFUNCTION()
 		void PrevClick();
 
-	void SettingKeyClick(); // 단축키로 옵션키 실행할때.
+	bool SettingKeyClick(); // 단축키로 옵션키 실행할때.
 
 
 	UFUNCTION()

@@ -64,7 +64,7 @@ void AProjectH_PC::OpenESC()
 
 void AProjectH_PC::OpenOption()
 {
-	MainQuestUI->ESCMenu->SettingKeyClick();
+	MainQuestUI->SettingKey();
 }
 
 void AProjectH_PC::CreateQTE()

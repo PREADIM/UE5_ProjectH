@@ -42,6 +42,17 @@ public:
 		class UQuestComponent* QuestComponent;
 
 
+
+	/*---------------------------------------
+		메인 퀘스트인지 아닌지 판단하여 색깔 수정
+	----------------------------------------*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FLinearColor MainColor;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FLinearColor NormalColor;
+
+
+
 	FNPCQuest NPCQuest;
 	int32 QuestIndex;
 
@@ -56,5 +67,7 @@ public:
 		void AcceptClick();
 	UFUNCTION()
 		void DeclineClick();
+	UFUNCTION(BlueprintImplementableEvent)
+		void SetOutline(bool bMain);
 	
 };

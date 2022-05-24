@@ -31,6 +31,18 @@ void UQuestInfo::SetText()
 /* 퀘스트 이름 사이즈에 비례해서 형광펜 이미지 조절하기. (퀘스트 슬롯에도 있음.)*/
 void UQuestInfo::SetColorPenSize()
 {
+	// 메인퀘스트를 나타내는 색과 일반퀘스트 색을 다르게 하기.
+	if (NPCQuest.QuestType == EQuestType::Main)
+	{
+		ColorPen->SetBrushTintColor(FSlateColor(MainColor));
+		SetOutline(true);
+	}
+	else
+	{
+		ColorPen->SetBrushTintColor(FSlateColor(NormalColor));
+		SetOutline(false);
+	}
+
 	UCanvasPanelSlot* CanvasSlot = Canvas->AddChildToCanvas(ColorPen);
 	if (CanvasSlot)
 	{
@@ -38,9 +50,9 @@ void UQuestInfo::SetColorPenSize()
 		CanvasSlot->SetAlignment(FVector2D(0.5f, 0.f));
 		CanvasSlot->SetPosition(FVector2D(0.0f, -215.f));
 		int32 len = QuestName.Len();
-		if (len < 22)
+		if (len < 17)
 		{
-			CanvasSlot->SetSize(FVector2D(len * 40, 50.f));
+			CanvasSlot->SetSize(FVector2D(len * 50, 50.f));
 		}
 		else
 		{

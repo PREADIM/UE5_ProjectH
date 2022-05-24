@@ -9,6 +9,7 @@
 #include "UI/QuestInfo.h"
 #include "UI/ESCMenu.h"
 #include "UI/OptionMenu.h"
+#include "UI/HelpMenu.h"
 #include "Components/CanvasPanel.h"
 
 
@@ -92,6 +93,23 @@ void UMainQuestUI::QuestInfoAnimation(bool IsOpened)
 	}
 }
 
+
+// 키보드 단축키로 옵션키를 눌렀다.
+void UMainQuestUI::SettingKey()
+{
+	if (ESCMenu->SettingKeyClick())
+	{
+		OwnerController->SetShowMouseCursor(true);
+		OwnerController->SetInputMode(FInputModeGameAndUI());
+	}
+	else
+	{
+		FTimerHandle Handle;
+		GetWorld()->GetTimerManager().SetTimer(Handle, this, &UMainQuestUI::SetMouseOff, ESCMenu->OptionMenu->OptionFade->GetEndTime() + 0.1f, false);
+	}
+	
+}
+
 void UMainQuestUI::SetMouseOff()
 {
 	if (!OtherUIOpen())
@@ -99,7 +117,6 @@ void UMainQuestUI::SetMouseOff()
 		OwnerController->SetShowMouseCursor(false);
 		OwnerController->SetInputMode(FInputModeGameOnly());
 	}
-
 }
 
 
@@ -108,6 +125,10 @@ bool UMainQuestUI::OtherUIOpen()
 	if (QuestList->GetRenderOpacity() == 1.0f)
 	{
 		_DEBUG("QuestList Open true");
+		return true;
+	}
+	if (ESCMenu->HelpMenu->IsInViewport())
+	{
 		return true;
 	}
 	if (ESCMenu->SettingCanvas->GetRenderOpacity() == 1.0f)
@@ -120,6 +141,7 @@ bool UMainQuestUI::OtherUIOpen()
 		_DEBUG("OptionMenu Open true");
 		return true;
 	}
+
 
 	_DEBUG("Other UI Open false");
 	return false;
@@ -143,6 +165,12 @@ void UMainQuestUI::OpenESCMenu()
 		return;
 	}
 
+	if (ESCMenu->HelpMenu->IsInViewport())
+	{
+		ESCMenu->HelpMenu->HelpUIAnim(true);
+		SetMouseOff();
+		return;
+	}
 
 	// ESC 메뉴를 켜야할때 이미 켜져있는지 아닌지 판단.
 	if (ESCMenu->SettingCanvas->GetRenderOpacity() == 1.0f)

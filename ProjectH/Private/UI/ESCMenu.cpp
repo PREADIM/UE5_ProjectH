@@ -28,7 +28,7 @@ void UESCMenu::Init()
 	if (BP_HelpMenu != nullptr)
 	{
 		HelpMenu = CreateWidget<UHelpMenu>(OwnerController, BP_HelpMenu);
-		HelpMenu->PrevButton->OnClicked.AddDynamic(this, &UESCMenu::RemoveButtonDown);
+		HelpMenu->PrevButton->OnClicked.AddDynamic(this, &UESCMenu::HelpUIOff);
 	}
 
 }
@@ -91,28 +91,28 @@ void UESCMenu::PrevClick()
 
 
 /* 키보드 단축키로 UI를 실행할때. */
-void UESCMenu::SettingKeyClick()
+bool UESCMenu::SettingKeyClick()
 {
-	// false가 켜기.
 	if (OptionMenu)
 	{
 		if (OptionMenu->IsInViewport())
 		{
 			OptionMenu->OptionAnimation(true);
-			OwnerController->SetShowMouseCursor(false);
-			OwnerController->SetInputMode(FInputModeGameOnly());
 			bOptionKeyOpen = false;
+			return false;
 		}
 		else
 		{
 			OptionMenu->AddToViewport();
 			OptionMenu->SetComboBox();
 			OptionMenu->OptionAnimation(false);
-			OwnerController->SetShowMouseCursor(true);
-			OwnerController->SetInputMode(FInputModeGameAndUI());
 			bOptionKeyOpen = true;
+			return true;
 		}
 	}
+
+	return false; // 일단 반환은 하지만 추후에 문제가 생길 가능성 있음.
+	// true면 이제 킨 것, false면 이제 끈 것.
 }
 
 
@@ -128,7 +128,7 @@ void UESCMenu::SetMouseOff()
 
 void UESCMenu::HelpUIOff()
 {
-	HelpMenu->HelpUIMenu(true);
+	HelpMenu->HelpUIAnim(true);
 	SetMouseOff();
 }
 
