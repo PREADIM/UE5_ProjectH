@@ -14,15 +14,19 @@ FbQuestFlag::FbQuestFlag()
 	bSucceed = false;
 	bQuesting = false;
 	bCanAccept = false;
+	bCanMainAccept = false;
 	CanCnt = 0;
+	MainCanCnt = 0;
 }
 
-FbQuestFlag::FbQuestFlag(bool bFlag1, bool bFlag2, bool bFlag3, int32 Cnt)
+FbQuestFlag::FbQuestFlag(bool bFlag1, bool bFlag2, bool bFlag3, bool bFalg4, int32 Cnt1, int32 Cnt2)
 {
 	bSucceed = bFlag1;
 	bQuesting = bFlag2;
 	bCanAccept = bFlag3;
-	CanCnt = Cnt;
+	bCanMainAccept = bFalg4;
+	CanCnt = Cnt1;
+	MainCanCnt = Cnt2;
 }
 
 
@@ -58,17 +62,17 @@ void UQuestSave::LoadQuest(class UQuestComponent* QuestComponent)
 
 }
 
-void UQuestSave::SaveNPC(FString Name, FNPCAllQuest NPCQuest, bool bSucceed, bool bQuesting, bool bCanAccept, int32 QuestCnt)
+void UQuestSave::SaveNPC(FString Name, FNPCAllQuest NPCQuest, bool bSucceed, bool bQuesting, bool bCanAccept, bool bMainQuest, int32 QuestCnt, int32 MainQuestCnt)
 {
 	if (NPCQuests.Find(Name) && bNPCSucceed.Find(Name))
 	{
 		NPCQuests[Name] = NPCQuest;
-		bNPCSucceed[Name] = FbQuestFlag(bSucceed, bQuesting, bCanAccept, QuestCnt);
+		bNPCSucceed[Name] = FbQuestFlag(bSucceed, bQuesting, bCanAccept, bMainQuest, QuestCnt, MainQuestCnt);
 	}
 	else
 	{
 		NPCQuests.Add(Name, NPCQuest);
-		bNPCSucceed.Add(Name, FbQuestFlag(bSucceed, bQuesting, bCanAccept, QuestCnt));
+		bNPCSucceed.Add(Name, FbQuestFlag(bSucceed, bQuesting, bCanAccept, bMainQuest, QuestCnt, MainQuestCnt));
 	}
 
 	//SaveSlot();
@@ -88,10 +92,15 @@ bool UQuestSave::LoadNPC(AQuestNPCBase* NPC)
 		return false;
 
 	NPC->SetNPCQuests(*AllQuests); // 참조값으로 받는 함수 이므로 값을 그대로 전달.
+
+	// 퀘스트 상태를 위한 변수들 가져오기.
 	NPC->bQuestSucceed = Flag->bSucceed;
 	NPC->bQuestSucceed = Flag->bQuesting;
 	NPC->bCanAccept = Flag->bCanAccept;
+	NPC->bHaveMainQuest = Flag->bCanMainAccept;
 	NPC->CanQuestCnt = Flag->CanCnt;
+	NPC->CanMainQuestCnt = Flag->MainCanCnt;
+
 	return true;
 }
 

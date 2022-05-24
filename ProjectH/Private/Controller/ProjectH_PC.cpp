@@ -5,6 +5,7 @@
 #include "UI/MainQuestUI.h"
 #include "UI/QTEMainUI.h"
 #include "UI/QTESlotUI.h"
+#include "UI/ESCMenu.h"
 #include "Character/ProjectHCharacter.h"
 #include "Kismet/KismetMathLibrary.h"
 
@@ -51,11 +52,20 @@ void AProjectH_PC::OpenQuestList()
 	//여기서 창 키는 사운드 넣어도 될듯.
 }
 
+
+/* ---------------
+	UI Open KEY
+------------------*/
+
 void AProjectH_PC::OpenESC()
 {
 	MainQuestUI->OpenESCMenu();
 }
 
+void AProjectH_PC::OpenOption()
+{
+	MainQuestUI->ESCMenu->SettingKeyClick();
+}
 
 void AProjectH_PC::CreateQTE()
 {
@@ -166,6 +176,8 @@ void AProjectH_PC::SetupInputComponent()
 	InputComponent->BindAction(TEXT("OpenList"), IE_Released, this, &AProjectH_PC::OpenQuestList);
 	InputComponent->BindAction(TEXT("ESC"), IE_Released, this, &AProjectH_PC::OpenESC);
 	// 임시로 P키에 지정함.
+	InputComponent->BindAction(TEXT("Option"), IE_Released, this, &AProjectH_PC::OpenOption);
+	
 
 }
 

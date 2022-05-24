@@ -49,8 +49,6 @@ bool UMainQuestUI::OpenUI(bool IsOpen)
 			FTimerHandle Handle;
 			GetWorld()->GetTimerManager().SetTimer(Handle, this, &UMainQuestUI::SetMouseOff, Fade->GetEndTime(), false);
 		}
-	
-
 	}
 
 	return !IsOpen; // Åä±Û
@@ -59,7 +57,7 @@ bool UMainQuestUI::OpenUI(bool IsOpen)
 
 void UMainQuestUI::OpenInfoUI(FNPCQuest NPCQuest, int32 QuestIndex)
 {
-	if (QuestInfo->GetRenderOpacity() == 1.0f)
+	if (QuestInfo->GetRenderOpacity() > 0.2f)
 	{
 		return;
 	}

@@ -48,10 +48,16 @@ public:
 		class UCapsuleComponent* CapsuleCollision;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component)
 		class USkeletalMeshComponent* Mesh;
+
+	/*-----------------------
+		Quest Widget Value
+	------------------------*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component)
-		class UWidgetComponent* IconWidget;
+		class UWidgetComponent* IconWidget; // 그냥 퀘스트 아이콘
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component)
-		class UWidgetComponent* SucceedWidget;
+		class UWidgetComponent* MainIconWidget; // 메인 퀘스트 아이콘
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component)
+		class UWidgetComponent* SucceedWidget; // 완료 아이콘
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Name)
@@ -72,6 +78,11 @@ public:
 		bool bCanAccept; // 캐릭터가 퀘스트를 수락가능한 NPC인가? (위젯 띄우기용)
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		int32 CanQuestCnt; // 얼마나 수락가능한 퀘스트가 많은가?
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		int32 CanMainQuestCnt; // 얼마나 수락가능한 퀘스트가 많은가?
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		bool bHaveMainQuest; // 메인 퀘스트를 가지고있는가? 
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		class AProjectHCharacter* PlayerCharacter;

@@ -23,10 +23,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UOptionMenu* OptionMenu;
 
-	/*UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class TSubclassOf<class UHelpMenu> BP_HelpMenu;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UHelpMenu* HelpMenu;*/
+		class UHelpMenu* HelpMenu;
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
@@ -46,6 +46,9 @@ public:
 		class UWidgetAnimation* ESCMenuFade;
 
 
+	bool bOptionKeyOpen = false; // 옵션창을 키로 열었다면 뒤로가기눌렀을때 esc창이 뜨면안되기때문.
+
+
 public:
 	//virtual void NativeConstruct() override;
 	void Init();
@@ -55,12 +58,20 @@ public:
 	UFUNCTION()
 		void SettingClick();
 	UFUNCTION()
+		void HelpClick();
+	UFUNCTION()
 		void QuitClick();
 	UFUNCTION()
 		void PrevClick();
 
+	void SettingKeyClick(); // 단축키로 옵션키 실행할때.
+
+
 	UFUNCTION()
 		void SetMouseOff();
+	UFUNCTION()
+		void HelpUIOff();
+
 	void ESCMenuAnimation(bool IsOpened);
 
 };

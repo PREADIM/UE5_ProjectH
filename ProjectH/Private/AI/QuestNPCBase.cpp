@@ -3,6 +3,7 @@
 
 #include "AI/QuestNPCBase.h"
 #include "NPCAllQuest.h"
+#include "QuestStruct.h"
 #include "ActorComponent/QuestComponent/TriggerEventBase.h"
 #include "Controller/ProjectH_PC.h"
 #include "Character/ProjectHCharacter.h"
@@ -25,11 +26,13 @@ AQuestNPCBase::AQuestNPCBase()
 	CapsuleCollision = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Capsule"));
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
 	IconWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("IconWidget"));
+	MainIconWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("MainIconWidget"));
 	SucceedWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("SucceedWidget"));
 
 	RootComponent = CapsuleCollision;
 	Mesh->SetupAttachment(CapsuleCollision);
 	IconWidget->SetupAttachment(Mesh);
+	MainIconWidget->SetupAttachment(Mesh);
 	SucceedWidget->SetupAttachment(Mesh);
 
 	static ConstructorHelpers::FClassFinder<UNormalIconUI> BP_Icon(TEXT("WidgetBlueprint'/Game/PROJECT/BP_CLASS/Blueprints/04_Special/BP_QuestSystem/BP_QuestIcon'"));
@@ -39,6 +42,13 @@ AQuestNPCBase::AQuestNPCBase()
 		IconWidget->SetDrawSize(FVector2D(100.f, 100.f));
 	}
 
+	static ConstructorHelpers::FClassFinder<UNormalIconUI> BP_MainIcon(TEXT("WidgetBlueprint'/Game/PROJECT/BP_CLASS/Blueprints/04_Special/BP_QuestSystem/BP_MainQuestIcon'"));
+	if (BP_MainIcon.Succeeded())
+	{
+		MainIconWidget->SetWidgetClass(BP_MainIcon.Class);
+		MainIconWidget->SetDrawSize(FVector2D(100.f, 100.f));
+	}
+
 	static ConstructorHelpers::FClassFinder<UNormalIconUI> BP_SucceedIcon(TEXT("WidgetBlueprint'/Game/PROJECT/BP_CLASS/Blueprints/04_Special/BP_QuestSystem/BP_QuestIcon_Succeed'"));
 	if (BP_SucceedIcon.Succeeded())
 	{
@@ -46,15 +56,17 @@ AQuestNPCBase::AQuestNPCBase()
 		SucceedWidget->SetDrawSize(FVector2D(100.f, 100.f));
 	}
 
-
-
 	IconWidget->SetVisibility(false);
+	MainIconWidget->SetVisibility(false);
 	SucceedWidget->SetVisibility(false);
+
 
 	bQuestSucceed = false;
 	bIsQuesting = false;
 	bCanAccept = false;
+	bHaveMainQuest = false;
 	CanQuestCnt = 0;
+	CanMainQuestCnt = 0;
 }
 
 // Called when the game starts or when spawned
@@ -63,6 +75,7 @@ void AQuestNPCBase::BeginPlay()
 	Super::BeginPlay();
 
 	IconWidget->InitWidget();
+	MainIconWidget->InitWidget();
 	SucceedWidget->InitWidget();
 
 	GI = Cast<UProjectHGameInstance>(UGameplayStatics::GetGameInstance(this));
@@ -113,6 +126,10 @@ void AQuestNPCBase::Tick(float DeltaTime)
 		{
 			SucceedWidget->GetUserWidgetObject()->SetRenderScale(FVector2D(Range, Range));
 		}
+		else if (bHaveMainQuest)
+		{
+			MainIconWidget->GetUserWidgetObject()->SetRenderScale(FVector2D(Range, Range));
+		}
 		else
 		{
 			IconWidget->GetUserWidgetObject()->SetRenderScale(FVector2D(Range, Range));
@@ -153,7 +170,6 @@ void AQuestNPCBase::QuestInfoOpen(int32 QuestIndex, AProjectH_PC* OwnerControlle
 
 	if (!OwnerController && !NPCQuests.Quests.IsValidIndex(QuestIndex))
 	{
-		_DEBUG("Don't Show Info");
 		return;
 	}
 
@@ -164,7 +180,8 @@ void AQuestNPCBase::QuestInfoOpen(int32 QuestIndex, AProjectH_PC* OwnerControlle
 
 void AQuestNPCBase::SaveNPCQuest()
 {
-	GI->QuestSave->SaveNPC(NPCName, NPCQuests, bQuestSucceed, bIsQuesting, bCanAccept, CanQuestCnt);
+	//GI->QuestSave->SaveNPC(NPCName, NPCQuests, bQuestSucceed, bIsQuesting, bCanAccept, bHaveMainQuest, CanQuestCnt, CanMainQuestCnt);
+	GI->SetNPCSaveSlot(this);
 	/* NPC 이름, NPC 퀘스트 목록, 퀘스트 완료상태, 퀘스트 중인지 상태, 퀘스트를 수락할수 있는지 상태 */
 }
 
@@ -175,8 +192,19 @@ void AQuestNPCBase::SetIconWidget()
 	{
 	case true:
 		SucceedWidget->SetVisibility(true);
+		break;
 	case false:
-		IconWidget->SetVisibility(true);
+		if (bHaveMainQuest)
+		{
+			MainIconWidget->SetVisibility(true);
+			break;
+		}
+		else
+		{
+			IconWidget->SetVisibility(true);
+			break;
+		}
+	
 	}
 }
 
@@ -184,6 +212,7 @@ void AQuestNPCBase::HiddenIcon()
 {
 	SucceedWidget->SetVisibility(false);
 	IconWidget->SetVisibility(false);
+	MainIconWidget->SetVisibility(false);
 }
 
 
@@ -195,7 +224,7 @@ bool AQuestNPCBase::FindCanQuest()
 		여기서 그 목록을 조회해 해당 NPC가 수행가능한 퀘스트를 가지고 있으면 해당 퀘스트의 
 		bCanAccepted를 true하고 NPC 클래스의 bCanAccept를 true로 바꾼다.
 		해당 NPC 클래스의 bCanAccept는 캐릭터가 근처에 왔을 시에 위젯을 띄우기 용도로 쓰고,
-		★ NPCQuest의 bCamAccepted는 다이얼 로그 후에 나열할 퀘스트 목록을 할떄 사용.
+		★ NPCQuest의 bCanAccepted는 다이얼 로그 후에 나열할 퀘스트 목록을 할떄 사용.
 		
 		여기서 가능한 Quest를 찾을때마다 CanQuestCnt도 늘려준다. 해당 값으로 퀘스트 위젯을 더 띄울지 말지
 		결정 한다.*/
@@ -213,14 +242,25 @@ bool AQuestNPCBase::FindCanQuest()
 					{
 						Quests.bCanAccepted = true;
 						CanQuestCnt++;
+
+						if (Quests.QuestType == EQuestType::Main)
+						{
+							CanMainQuestCnt++;
+							// 메인퀘스트가 있으므로 메인퀘스트 아이콘을 출력.
+						}
 					}
 				}
 			}
 			if (CanQuestCnt > 0)
 			{
 				bCanAccept = true;
+				if (CanMainQuestCnt > 0)
+				{
+					bHaveMainQuest = true;
+				}
 				return true;
 			}
+			
 		}
 	}
 	return false;

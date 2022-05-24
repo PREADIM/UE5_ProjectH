@@ -4,6 +4,7 @@
 #include "UI/ESCMenu.h"
 #include "Components/Button.h"
 #include "UI/OptionMenu.h"
+#include "UI/HelpMenu.h"
 #include "Components/CanvasPanel.h"
 
 /*void UESCMenu::NativeConstruct()
@@ -15,6 +16,7 @@ void UESCMenu::Init()
 {
 	Resome->OnClicked.AddDynamic(this, &UESCMenu::ResomeClick);
 	Setting->OnClicked.AddDynamic(this, &UESCMenu::SettingClick);
+	Help->OnClicked.AddDynamic(this, &UESCMenu::HelpClick);
 	Quit->OnClicked.AddDynamic(this, &UESCMenu::QuitClick);
 
 	if (BP_OptionMenu != nullptr)
@@ -22,6 +24,11 @@ void UESCMenu::Init()
 		OptionMenu = CreateWidget<UOptionMenu>(OwnerController, BP_OptionMenu);
 		OptionMenu->Init();
 		OptionMenu->PrevButton->OnClicked.AddDynamic(this, &UESCMenu::PrevClick);
+	}
+	if (BP_HelpMenu != nullptr)
+	{
+		HelpMenu = CreateWidget<UHelpMenu>(OwnerController, BP_HelpMenu);
+		HelpMenu->PrevButton->OnClicked.AddDynamic(this, &UESCMenu::RemoveButtonDown);
 	}
 
 }
@@ -47,6 +54,16 @@ void UESCMenu::SettingClick()
 	}
 }
 
+void UESCMenu::HelpClick()
+{
+	if (HelpMenu)
+	{
+		HelpMenu->AddToViewport();
+		HelpMenu->HelpUIAnim(false);
+		ESCMenuAnimation(true);
+	}
+}
+
 void UESCMenu::QuitClick()
 {
 	// 게임 종료. 타이틀로 돌아가기. 타이틀 만들면 넥스트 레벨 하면될듯.
@@ -58,9 +75,46 @@ void UESCMenu::QuitClick()
 void UESCMenu::PrevClick()
 {
 	OptionMenu->OptionAnimation(true);
-	ESCMenuAnimation(false);
-	// Setting Click 반대로 키기
+	if (bOptionKeyOpen) // ESC 메뉴를 거치지 않고, 키 단축키로 옵션창을 열었다.
+	{
+		OptionMenu->OptionAnimation(true);
+		OwnerController->SetShowMouseCursor(false);
+		OwnerController->SetInputMode(FInputModeGameOnly());
+		bOptionKeyOpen = false;
+	}
+	else
+	{
+		ESCMenuAnimation(false);
+		// Setting Click 반대로 키기
+	}
 }
+
+
+/* 키보드 단축키로 UI를 실행할때. */
+void UESCMenu::SettingKeyClick()
+{
+	// false가 켜기.
+	if (OptionMenu)
+	{
+		if (OptionMenu->IsInViewport())
+		{
+			OptionMenu->OptionAnimation(true);
+			OwnerController->SetShowMouseCursor(false);
+			OwnerController->SetInputMode(FInputModeGameOnly());
+			bOptionKeyOpen = false;
+		}
+		else
+		{
+			OptionMenu->AddToViewport();
+			OptionMenu->SetComboBox();
+			OptionMenu->OptionAnimation(false);
+			OwnerController->SetShowMouseCursor(true);
+			OwnerController->SetInputMode(FInputModeGameAndUI());
+			bOptionKeyOpen = true;
+		}
+	}
+}
+
 
 void UESCMenu::SetMouseOff()
 {
@@ -69,8 +123,15 @@ void UESCMenu::SetMouseOff()
 		OwnerController->SetShowMouseCursor(false);
 		OwnerController->SetInputMode(FInputModeGameOnly());
 	}
-	
 }
+
+
+void UESCMenu::HelpUIOff()
+{
+	HelpMenu->HelpUIMenu(true);
+	SetMouseOff();
+}
+
 
 //true면 끄는 거고, false면 키는 것이다.
 void UESCMenu::ESCMenuAnimation(bool IsOpened)

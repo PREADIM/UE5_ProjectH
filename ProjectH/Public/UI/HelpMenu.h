@@ -14,4 +14,17 @@ class PROJECTH_API UHelpMenu : public UUserWidget
 {
 	GENERATED_BODY()
 	
+public:
+	UPROPERTY(BlueprintReadWrite, Transient, meta = (BindWidgetAnim))
+		class UWidgetAnimation* HelpAnimation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+		class UButton* PrevButton;
+
+public:
+	void Init();
+
+	void HelpUIAnim(bool IsOpened);
+	void HelpMenuRemove();
+
 };

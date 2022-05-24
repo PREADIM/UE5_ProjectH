@@ -92,7 +92,7 @@ void UProjectHGameInstance::SetNPCSaveSlot(AQuestNPCBase* NPC)
 {
 	if (NPC && QuestSave)
 	{
-		QuestSave->SaveNPC(NPC->NPCName, NPC->NPCQuests, NPC->bQuestSucceed, NPC->bIsQuesting, NPC->bCanAccept, NPC->CanQuestCnt);
+		QuestSave->SaveNPC(NPC->NPCName, NPC->NPCQuests, NPC->bQuestSucceed, NPC->bIsQuesting, NPC->bCanAccept, NPC->bHaveMainQuest, NPC->CanQuestCnt, NPC->CanMainQuestCnt);
 	}
 }
 

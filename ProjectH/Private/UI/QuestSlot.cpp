@@ -70,9 +70,9 @@ void UQuestSlot::SetColorPenSize()
 	{
 		CanvasSlot->SetPosition(FVector2D(0.f, 15.f));
 		int32 len = QuestName.Len();
-		if (len < 17)
+		if (len < 14)
 		{
-			CanvasSlot->SetSize(FVector2D(len * 30, 50.f));
+			CanvasSlot->SetSize(FVector2D(len * 40, 50.f));
 		}
 		else
 		{

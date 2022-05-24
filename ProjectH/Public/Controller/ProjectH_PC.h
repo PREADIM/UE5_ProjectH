@@ -29,8 +29,13 @@ public:
 	virtual void OnUnPossess();
 	virtual void SetupInputComponent();
 	
+
+	/* ---------------
+		UI Open KEY 
+	------------------*/
 	void OpenQuestList();
 	void OpenESC();
+	void OpenOption();
 
 	void CreateQTE();
 	void StartQTEFunc(FKey Key, FQTEWidgetPosition ScreenPosition, float Time, float Dilation, FCameraTransition CameraTransition, FVector Location);

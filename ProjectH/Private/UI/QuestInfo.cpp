@@ -38,9 +38,9 @@ void UQuestInfo::SetColorPenSize()
 		CanvasSlot->SetAlignment(FVector2D(0.5f, 0.f));
 		CanvasSlot->SetPosition(FVector2D(0.0f, -215.f));
 		int32 len = QuestName.Len();
-		if (len < 25)
+		if (len < 22)
 		{
-			CanvasSlot->SetSize(FVector2D(len * 30, 50.f));
+			CanvasSlot->SetSize(FVector2D(len * 40, 50.f));
 		}
 		else
 		{
@@ -64,9 +64,19 @@ void UQuestInfo::AcceptClick()
 	{
 		QuestComponent->AddQuest(NPCQuest);
 
+		
 		AQuestNPCBase* OwnerNPC = NPCQuest.OwnerNPC;
 		if (OwnerNPC) // 안전 검사.
 		{
+			if (NPCQuest.QuestType == EQuestType::Main)
+			{
+				OwnerNPC->CanMainQuestCnt--;
+				if (OwnerNPC->CanMainQuestCnt < 1)
+				{
+					OwnerNPC->bHaveMainQuest = false;
+				}
+			} // 메인 퀘스트를 수락했는지 판단하기.
+
 			OwnerNPC->NPCQuests.Quests.RemoveAt(QuestIndex); // NPC 퀘스트 삭제.
 			OwnerNPC->CanQuestCnt--;
 			if (OwnerNPC->CanQuestCnt < 1) // 수락가능한 퀘스트가 더이상 없다.
@@ -75,6 +85,7 @@ void UQuestInfo::AcceptClick()
 				OwnerNPC->SetActorTickEnabled(false);
 				OwnerNPC->HiddenIcon();
 			}
+			
 
 			//NPCQuest.OwnerNPC->bIsQuesting = true; 퀘스트 중인지 판단.
 			NPCQuest.OwnerNPC->SaveNPCQuest();

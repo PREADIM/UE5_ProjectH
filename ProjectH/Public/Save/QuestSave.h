@@ -21,10 +21,14 @@ public:
 	UPROPERTY()
 		bool bCanAccept;
 	UPROPERTY()
+		bool bCanMainAccept;
+	UPROPERTY()
 		int32 CanCnt;
+	UPROPERTY()
+		int32 MainCanCnt;
 
 	FbQuestFlag();
-	FbQuestFlag(bool bFlag1, bool bFlag2, bool bFlag3, int32 Cnt);
+	FbQuestFlag(bool bFlag1, bool bFlag2, bool bFlag3, bool bFalg4, int32 Cnt1, int32 Cnt2);
 
 };
 /**
@@ -45,7 +49,7 @@ public:
 	void SaveQuest(TArray<FQuestStruct> GetQuests, const int32 GetCurrentQuestId);
 	void LoadQuest(class UQuestComponent* QuestComponent);
 
-	void SaveNPC(FString Name, FNPCAllQuest NPCQuest, bool bSucceed, bool bQuesting, bool bCanAccept, int32 QuestCnt);
+	void SaveNPC(FString Name, FNPCAllQuest NPCQuest, bool bSucceed, bool bQuesting, bool bCanAccept, bool bMainQuest, int32 QuestCnt, int32 MainQuestCnt);
 	bool LoadNPC(class AQuestNPCBase* NPC);
 
 
