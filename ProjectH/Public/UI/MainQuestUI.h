@@ -27,12 +27,20 @@ public:
 
 	void SettingKey();
 	void SetMouseOff();
+	void MouseOff();
 
 	bool OtherUIOpen(); // 다른 UI가 켜져있는지 판단.
 
 	/*---Setting UI---*/
 	void OpenESCMenu(); // 만약 다른 UI가 켜져있으면 그 UI부터 지운다. ESC 이므로.
 
+	void OpenDialogue();
+	UFUNCTION()
+		void CloseDialogue();
+	bool bDialogueOpen();
+
+
+	void SetMouseCursorCenter();
 
 public:
 	/*-----------------
@@ -44,6 +52,8 @@ public:
 		class UQuestInfo* QuestInfo;
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 		class UESCMenu* ESCMenu;
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+		class UDialogueWidget* Dialogue;
 
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
@@ -58,5 +68,7 @@ public:
 		class UWidgetAnimation* Fade;
 	UPROPERTY(BlueprintReadWrite, Transient, meta = (BindWidgetAnim))
 		class UWidgetAnimation* QuestInfoFade;
+	UPROPERTY(BlueprintReadWrite, Transient, meta = (BindWidgetAnim))
+		class UWidgetAnimation* DialFade;
 
 };

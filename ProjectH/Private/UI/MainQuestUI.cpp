@@ -10,7 +10,10 @@
 #include "UI/ESCMenu.h"
 #include "UI/OptionMenu.h"
 #include "UI/HelpMenu.h"
+#include "UI/DialogueWidget.h"
 #include "Components/CanvasPanel.h"
+#include "Components/Button.h"
+#include "Kismet/KismetmathLibrary.h"
 
 
 void UMainQuestUI::Init()
@@ -28,6 +31,11 @@ void UMainQuestUI::Init()
 
 		ESCMenu->OwnerController = OwnerController;
 		ESCMenu->Init();
+
+		//DialWidget->OwnerController = OwnerController;
+		Dialogue->OwnerMainWidget = this;
+		Dialogue->Exit->OnClicked.AddDynamic(this, &UMainQuestUI::CloseDialogue);
+		Dialogue->OwnerController = OwnerController;
 	}
 
 }
@@ -42,6 +50,7 @@ bool UMainQuestUI::OpenUI(bool IsOpen)
 		QuestList->SetVisibility(IsOpen ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Visible);
 		if (!IsOpen)
 		{
+			SetMouseCursorCenter();
 			OwnerController->SetShowMouseCursor(true);
 			OwnerController->SetInputMode(FInputModeGameAndUI());
 		}
@@ -88,8 +97,9 @@ void UMainQuestUI::QuestInfoAnimation(bool IsOpened)
 	}
 	else
 	{
-		FTimerHandle Handle;
-		GetWorld()->GetTimerManager().SetTimer(Handle, this, &UMainQuestUI::SetMouseOff, Fade->GetEndTime(), false);
+		/*FTimerHandle Handle;
+		GetWorld()->GetTimerManager().SetTimer(Handle, this, &UMainQuestUI::SetMouseOff, Fade->GetEndTime(), false);*/
+		SetMouseOff();
 	}
 }
 
@@ -107,12 +117,20 @@ void UMainQuestUI::SettingKey()
 		FTimerHandle Handle;
 		GetWorld()->GetTimerManager().SetTimer(Handle, this, &UMainQuestUI::SetMouseOff, ESCMenu->OptionMenu->OptionFade->GetEndTime() + 0.1f, false);
 	}
-	
+
 }
 
 void UMainQuestUI::SetMouseOff()
 {
 	if (!OtherUIOpen())
+	{
+		MouseOff();
+	}
+}
+
+void UMainQuestUI::MouseOff()
+{
+	if (OwnerController)
 	{
 		OwnerController->SetShowMouseCursor(false);
 		OwnerController->SetInputMode(FInputModeGameOnly());
@@ -120,9 +138,16 @@ void UMainQuestUI::SetMouseOff()
 }
 
 
+
 bool UMainQuestUI::OtherUIOpen()
 {
-	if (QuestList->GetRenderOpacity() == 1.0f)
+	if (Dialogue->GetRenderOpacity() > 0.2f)
+	{
+		_DEBUG("Dialogue Open true");
+		return true;
+	}
+
+	if (QuestList->GetRenderOpacity() > 0.2f)
 	{
 		_DEBUG("QuestList Open true");
 		return true;
@@ -131,7 +156,7 @@ bool UMainQuestUI::OtherUIOpen()
 	{
 		return true;
 	}
-	if (ESCMenu->SettingCanvas->GetRenderOpacity() == 1.0f)
+	if (ESCMenu->SettingCanvas->GetRenderOpacity() > 0.2f)
 	{
 		_DEBUG("ESCMenu Open true");
 		return true;
@@ -168,7 +193,13 @@ void UMainQuestUI::OpenESCMenu()
 	if (ESCMenu->HelpMenu->IsInViewport())
 	{
 		ESCMenu->HelpMenu->HelpUIAnim(true);
-		SetMouseOff();
+		MouseOff();
+		return;
+	}
+
+	if (Dialogue->GetRenderOpacity() == 1.0f)
+	{
+		CloseDialogue();
 		return;
 	}
 
@@ -192,9 +223,51 @@ void UMainQuestUI::OpenESCMenu()
 		else
 		{
 			ESCMenu->ESCMenuAnimation(false);
+			SetMouseCursorCenter();
 			OwnerController->SetShowMouseCursor(true);
 			OwnerController->SetInputMode(FInputModeGameAndUI());
 		}
 	}
 
+}
+
+
+void UMainQuestUI::OpenDialogue()
+{
+	PlayAnimation(DialFade, 0.f, 1, EUMGSequencePlayMode::Forward);
+	Dialogue->SetVisibility(ESlateVisibility::Visible);
+
+	SetMouseCursorCenter();
+	OwnerController->SetShowMouseCursor(true);
+	OwnerController->SetInputMode(FInputModeGameAndUI());
+}
+
+void UMainQuestUI::CloseDialogue()
+{
+	Dialogue->SetRenderOpacity(0.0f);
+	Dialogue->SetVisibility(ESlateVisibility::HitTestInvisible);
+	Dialogue->Clear();
+
+	OwnerController->SetShowMouseCursor(false);
+	OwnerController->SetInputMode(FInputModeGameOnly());
+}
+
+
+bool UMainQuestUI::bDialogueOpen()
+{
+	if (Dialogue->GetRenderOpacity() > 0.0f)
+		return true;
+	else if (QuestInfo->GetRenderOpacity() > 0.0f)
+		return true;
+	else
+		return false;
+}
+
+
+/* 마우스 커서 센터로 나오게 하기. */
+void UMainQuestUI::SetMouseCursorCenter()
+{
+	int32 x, y;
+	OwnerController->GetViewportSize(x, y);
+	OwnerController->SetMouseLocation(UKismetMathLibrary::FTrunc(x / 2), UKismetMathLibrary::FTrunc(y / 2));
 }

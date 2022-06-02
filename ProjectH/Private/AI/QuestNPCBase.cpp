@@ -9,6 +9,7 @@
 #include "Character/ProjectHCharacter.h"
 #include "UI/MainQuestUI.h"
 #include "UI/QuestInfo.h"
+#include "UI/DialogueWidget.h"
 #include "GameMode/ProjectHGameInstance.h"
 #include "Kismet/GameplayStatics.h"
 #include "Save/QuestSave.h"
@@ -154,11 +155,20 @@ void AQuestNPCBase::AddNPCQuest(FNPCQuest Quest)
 
 void AQuestNPCBase::Interact_Implementation(class AProjectHCharacter* OwnerCharacter)
 {
-	_DEBUG("HI");
-	// 여기서 다이얼 로그를 띄워도 될듯하다.
-	// 다이얼 로그 마지막에 버튼으로 가지고 있는 퀘스트를 띄우고 해당퀘스트 버튼을 누르면 QuestInfoOpen함수에 번호를 보내주자.
-	// 지금은 없으니 0 보내기.
-	QuestInfoOpen(0, Cast<AProjectH_PC>(OwnerCharacter->GetController()));
+	//다이얼로그
+	AProjectH_PC* OwnerController = Cast<AProjectH_PC>(OwnerCharacter->GetController());
+	if (OwnerController)
+	{
+		if (!OwnerController->MainQuestUI->bDialogueOpen())
+		{
+			OwnerController->MainQuestUI->Dialogue->OwnerNPC = this;
+			OwnerController->MainQuestUI->Dialogue->NPCDialogue();
+			OwnerController->MainQuestUI->OpenDialogue();
+		}
+	}
+
+	
+	//QuestInfoOpen(0, Cast<AProjectH_PC>(OwnerCharacter->GetController()));
 	// 클릭할수있는 퀘스트가 여러개 일수도있으니 인덱스 번호와 , 컨트롤러 반환.
 }
 

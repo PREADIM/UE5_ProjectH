@@ -36,6 +36,7 @@ public:
 	void OpenQuestList();
 	void OpenESC();
 	void OpenOption();
+	void MouseOnOff();
 
 	void CreateQTE();
 	void StartQTEFunc(FKey Key, FQTEWidgetPosition ScreenPosition, float Time, float Dilation, FCameraTransition CameraTransition, FVector Location);
@@ -66,6 +67,7 @@ public:
 		TSubclassOf<class UQTEMainUI> BP_QTEMainUI;
 	UPROPERTY()
 		class UQTEMainUI* QTEMain;
+
 
 	UPROPERTY()
 		class UQTESlotUI* CurrentQTEWidget;

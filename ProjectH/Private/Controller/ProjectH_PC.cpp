@@ -67,6 +67,26 @@ void AProjectH_PC::OpenOption()
 	MainQuestUI->SettingKey();
 }
 
+
+void AProjectH_PC::MouseOnOff()
+{
+	if (bShowMouseCursor)
+	{
+		SetShowMouseCursor(false);
+		SetInputMode(FInputModeGameOnly());
+	}
+	else
+	{
+		int32 x, y;
+		GetViewportSize(x, y);
+		SetMouseLocation(UKismetMathLibrary::FTrunc(x / 2), UKismetMathLibrary::FTrunc(y / 2));
+		SetShowMouseCursor(true);
+		SetInputMode(FInputModeGameAndUI());
+	}
+}
+
+
+
 void AProjectH_PC::CreateQTE()
 {
 	if (BP_QTEMainUI && OwnerCharacter)
@@ -177,7 +197,8 @@ void AProjectH_PC::SetupInputComponent()
 	InputComponent->BindAction(TEXT("ESC"), IE_Released, this, &AProjectH_PC::OpenESC);
 	// 임시로 P키에 지정함.
 	InputComponent->BindAction(TEXT("Option"), IE_Released, this, &AProjectH_PC::OpenOption);
-	
+	InputComponent->BindAction(TEXT("MouseOnOff"), IE_Released, this, &AProjectH_PC::MouseOnOff);
+
 
 }
 

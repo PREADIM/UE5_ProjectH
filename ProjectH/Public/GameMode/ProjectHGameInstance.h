@@ -5,6 +5,8 @@
 #include "ProjectH.h"
 #include "Engine/GameInstance.h"
 #include "QuestDataBase.h"
+#include "Dialogue/TextNAnim.h"
+#include "Dialogue/DialogueStruct.h"
 #include "Engine/DataTable.h"
 #include "ProjectHGameInstance.generated.h"
 
@@ -40,7 +42,10 @@ public:
 	void SetSaveSlot(class UQuestComponent* QuestComponent);
 	void SetNPCSaveSlot(class AQuestNPCBase* NPC);
 	void SetPlayerCanQuest();
+
 	FQuestDataBase* GetPQData(int32 QuestNumber);
+	TArray<FTextNAnim> GetDialData(int32 QuestNumber);
+
 
 	void AcceptQuestNumber(int32 QuestNumber); // 진행 가능한 퀘스트를 수락했을 때
 
@@ -76,6 +81,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere)
 		class UDataTable* PQTable;
+
+	UPROPERTY(VisibleAnywhere)
+		class UDataTable* DialTable;
 
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)

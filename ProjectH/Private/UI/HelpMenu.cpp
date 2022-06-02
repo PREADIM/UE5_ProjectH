@@ -26,3 +26,12 @@ void UHelpMenu::HelpMenuRemove()
 {
 	RemoveFromParent();
 }
+
+
+void UHelpMenu::InputMode()
+{
+	if (OwnerController)
+	{
+		OwnerController->SetInputMode(FInputModeUIOnly());
+	}
+}

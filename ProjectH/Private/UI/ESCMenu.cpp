@@ -28,6 +28,7 @@ void UESCMenu::Init()
 	if (BP_HelpMenu != nullptr)
 	{
 		HelpMenu = CreateWidget<UHelpMenu>(OwnerController, BP_HelpMenu);
+		HelpMenu->OwnerController = OwnerController;
 		HelpMenu->PrevButton->OnClicked.AddDynamic(this, &UESCMenu::HelpUIOff);
 	}
 

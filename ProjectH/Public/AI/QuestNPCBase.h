@@ -9,6 +9,16 @@
 #include "QuestNPCBase.generated.h"
 
 
+USTRUCT(BlueprintType)
+struct FNormalDialogue
+{
+	GENERATED_USTRUCT_BODY()
+public:
+	UPROPERTY(EditAnywhere)
+		TArray<FText> Dialogue;
+
+};
+
 
 UCLASS()
 class PROJECTH_API AQuestNPCBase : public APawn, public INPCInterface
@@ -86,6 +96,15 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		class AProjectHCharacter* PlayerCharacter;
+
+
+	/*--------------------
+		Dialogue Property
+	--------------------*/
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TArray<FNormalDialogue> NormalDialogue;
+
 
 public:
 	/*-------------------

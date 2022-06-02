@@ -26,6 +26,14 @@ UProjectHGameInstance::UProjectHGameInstance()
 	{
 		PQTable = DT_QuestData.Object;
 	}
+
+	FString DialogueDataPath = TEXT("DataTable'/Game/PROJECT/BP_CLASS/Blueprints/05_DataBase/DT_Dialogue.DT_Dialogue'");
+	static ConstructorHelpers::FObjectFinder<UDataTable> DT_DialData(*DialogueDataPath);
+	if (DT_DialData.Succeeded())
+	{
+		DialTable = DT_DialData.Object;
+	}
+
 }
 
 void UProjectHGameInstance::Init()
@@ -124,6 +132,12 @@ void UProjectHGameInstance::SetPlayerCanQuest()
 FQuestDataBase* UProjectHGameInstance::GetPQData(int32 QuestNumber)
 {
 	return PQTable->FindRow<FQuestDataBase>(*FString::FromInt(QuestNumber), TEXT(""));
+}
+
+TArray<FTextNAnim> UProjectHGameInstance::GetDialData(int32 QuestNumber)
+{
+	FDialogueStruct* Dial = DialTable->FindRow<FDialogueStruct>(*FString::FromInt(QuestNumber), TEXT(""));
+	return Dial->Dialogue;
 }
 
 
