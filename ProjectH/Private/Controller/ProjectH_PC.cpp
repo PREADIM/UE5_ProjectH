@@ -8,11 +8,12 @@
 #include "UI/ESCMenu.h"
 #include "Character/ProjectHCharacter.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "GameMode/ProjectHGameInstance.h"
+#include "Kismet/GameplayStatics.h"
 
 
 AProjectH_PC::AProjectH_PC()
 {
-	
 
 }
 
@@ -20,6 +21,29 @@ AProjectH_PC::AProjectH_PC()
 void AProjectH_PC::BeginPlay()
 {
 	Super::BeginPlay();
+
+
+	/*if (BP_MainQuestUI && OwnerCharacter)
+	{
+		MainQuestUI = CreateWidget<UMainQuestUI>(GetWorld(), BP_MainQuestUI);
+		MainQuestUI->OwnerCharacter = OwnerCharacter;
+		MainQuestUI->OwnerController = this;
+		MainQuestUI->Init();
+		MainQuestUI->AddToViewport();
+	}
+
+
+	CreateQTE();*/
+}
+
+void AProjectH_PC::BegineInit()
+{
+	UProjectHGameInstance* GI = Cast<UProjectHGameInstance>(UGameplayStatics::GetGameInstance(this));
+	if (GI)
+	{
+		MouseSensitivity = GI->MS;
+		_DEBUG("GI : %f", GI->MS);
+	}
 
 	if (BP_MainQuestUI && OwnerCharacter)
 	{
@@ -30,8 +54,8 @@ void AProjectH_PC::BeginPlay()
 		MainQuestUI->AddToViewport();
 	}
 
-
 	CreateQTE();
+	SetNewMouseSensitivity();
 }
 
 
@@ -39,6 +63,7 @@ void AProjectH_PC::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 	OwnerCharacter = Cast<AProjectHCharacter>(InPawn);
+	BegineInit();
 }
 
 void AProjectH_PC::OnUnPossess()
@@ -185,6 +210,16 @@ void AProjectH_PC::ClearQTEWidget()
 	CurrentQTEWidget->RemoveFromParent();
 	CurrentQTEWidget = nullptr;
 	QTEMain->QTEWidget = nullptr;
+}
+
+
+
+void AProjectH_PC::SetNewMouseSensitivity()
+{
+	if (OwnerCharacter)
+	{
+		OwnerCharacter->MouseSensitivity = MouseSensitivity;
+	}
 }
 
 

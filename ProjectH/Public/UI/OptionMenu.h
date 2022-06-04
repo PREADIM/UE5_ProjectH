@@ -46,6 +46,10 @@ public:
 		int32 ShadowSetting;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		int32 TextureSetting;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float MouseSensitivity; // 0~ 1사이 여야한다.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float MaxMouseSensitivity; // 최대값
 
 	/* 선택한 문자열을 콘솔 명령어로 표현할 문자열 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -56,9 +60,14 @@ public:
 		int32 SelectShadowSetting;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		int32 SelectTextureSetting;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float SelectMouseSensitivity;
 
 	UPROPERTY(EditAnywhere, Transient, meta = (BindWidgetAnim))
 		class UWidgetAnimation* OptionFade;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		APlayerController* OwnerController;
 
 
 	/* 셋팅이 변경되었는지 플래그 변수 */
@@ -66,11 +75,13 @@ public:
 	bool bAA;
 	bool bShadow;
 	bool bTex;
+	bool bMS;
 
 public:
 	void Init();
 	void AddComboBoxList();
 	void SetComboBox();
+	void SetOtherOption();
 	void SetINI();
 
 
@@ -82,6 +93,8 @@ public:
 		void SetShadowCommand(int32 str);
 	UFUNCTION(BlueprintCallable)
 		void SetTextureCommand(int32 str);
+	UFUNCTION(BlueprintCallable)
+		void SetMouseSensitivity(float str);
 
 	UFUNCTION()
 		void Apply();

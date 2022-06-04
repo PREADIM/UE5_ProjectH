@@ -112,6 +112,10 @@ void AProjectHCharacter::BeginPlay()
 		QuestComponent->StartQuestLoad();
 
 	OwnerController = Cast<class AProjectH_PC>(GetController());
+	if (OwnerController)
+	{
+		MouseSensitivity = OwnerController->MouseSensitivity;
+	}
 	QuestCollision->OnComponentBeginOverlap.AddDynamic(this, &AProjectHCharacter::QuestCollisionOverlap);
 	QuestCollision->OnComponentEndOverlap.AddDynamic(this, &AProjectHCharacter::QuestCollisionEndOverlap);
 
@@ -178,14 +182,14 @@ void AProjectHCharacter::MoveRight(float Value)
 void AProjectHCharacter::LookUp(float AxisValue)
 {
 	if(!bQTE)
-		AddControllerPitchInput(AxisValue);
+		AddControllerPitchInput(AxisValue * MouseSensitivity * GetWorld()->GetDeltaSeconds());
 }
 
 
 void AProjectHCharacter::LookRight(float AxisValue)
 {
 	if (!bQTE)
-		AddControllerYawInput(AxisValue);
+		AddControllerYawInput(AxisValue * MouseSensitivity * GetWorld()->GetDeltaSeconds());
 }
 
 void AProjectHCharacter::InteractKey()

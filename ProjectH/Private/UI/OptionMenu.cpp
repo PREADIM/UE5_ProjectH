@@ -8,6 +8,7 @@
 #include "Components/Button.h"
 #include "GameMode/ProjectHGameInstance.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 
 
 /* 게임 인스턴스 안에있는 사용가능한 해상도를 컨트롤러에서 받아온다.*/
@@ -25,8 +26,9 @@ void UOptionMenu::Init()
 		AddComboBoxList();
 
 	// 게임 인스턴스에서 마지막 셋팅들을 전부 받아온다. 그리고 콤보박스에 셋 셀렉트 옵션 한다.
-		GI->GetDefaultGameSetting(Resolution, AASetting, ShadowSetting, TextureSetting);
+		GI->GetDefaultGameSetting(Resolution, AASetting, ShadowSetting, TextureSetting, MouseSensitivity);
 		SetComboBox();
+		SetOtherOption();
 	}
 	
 	ApplyButton->OnClicked.AddDynamic(this, &UOptionMenu::Apply);
@@ -116,6 +118,11 @@ void UOptionMenu::SetComboBox()
 }
 
 
+void UOptionMenu::SetOtherOption()
+{
+	MouseSensitivity = MouseSensitivity / MaxMouseSensitivity;
+}
+
 
 void UOptionMenu::SetINI()
 {
@@ -151,10 +158,27 @@ void UOptionMenu::SetINI()
 		SET_OPTION("TextureQ", path, TextureSetting);
 		bTex = false;
 	}
+	if (bMS)
+	{
+		MouseSensitivity = SelectMouseSensitivity;
+		float ControllerMS = UKismetMathLibrary::FClamp(MouseSensitivity * MaxMouseSensitivity, 1, MaxMouseSensitivity);
+		// 슬라이더에선 0~ 1값이 필요하지만 컨트롤러에선 1~ 의 값이 필요하다.
+		//GConfig->SetInt(TEXT("/Script/GameSetting.MainGameSetting"), TEXT("MouseSensitivity"), SelectTextureSetting, path);
+		SET_OPTION("MouseSensitivity", path, ControllerMS);
+		bMS = false;
+
+		AProjectH_PC* Controller = Cast<AProjectH_PC>(OwnerController);
+		if (Controller)
+		{
+			Controller->MouseSensitivity = ControllerMS;
+			Controller->SetNewMouseSensitivity();
+			_DEBUG("Sensi true");
+		}
+	}
 
 
 	if (GI)
-		GI->GISetGameSetting(Resolution, AASetting, ShadowSetting, TextureSetting);
+		GI->GISetGameSetting(Resolution, AASetting, ShadowSetting, TextureSetting, MouseSensitivity);
 
 }
 
@@ -184,6 +208,11 @@ void UOptionMenu::SetTextureCommand(int32 str)
 	bTex = true;
 }
 
+void UOptionMenu::SetMouseSensitivity(float NewMS)
+{
+	SelectMouseSensitivity = NewMS;
+	bMS = true;
+}
 
 void UOptionMenu::Apply()
 {
@@ -201,6 +230,7 @@ void UOptionMenu::OptionAnimation(bool IsOpened)
 		bAA = false;
 		bShadow = false;
 		bTex = false;
+		bMS = false;
 
 		FTimerHandle Handle;
 		GetWorld()->GetTimerManager().SetTimer(Handle, this, &UOptionMenu::OptionMenuRemove, OptionFade->GetEndTime(), false);

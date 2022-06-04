@@ -23,6 +23,7 @@ void UESCMenu::Init()
 	{
 		OptionMenu = CreateWidget<UOptionMenu>(OwnerController, BP_OptionMenu);
 		OptionMenu->Init();
+		OptionMenu->OwnerController = OwnerController;
 		OptionMenu->PrevButton->OnClicked.AddDynamic(this, &UESCMenu::PrevClick);
 	}
 	if (BP_HelpMenu != nullptr)

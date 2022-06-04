@@ -55,8 +55,8 @@ public:
 	/*-- Setting --*/
 	bool SetDefault();
 	void SetDefaultGameSetting();
-	void GetDefaultGameSetting(FString& Resolution, int32& Anti, int32& ShadowQuality, int32& TextureQuality);
-	void GISetGameSetting(FString Resolution, int32 Anti, int32 ShadowQuality, int32 TextureQuality);
+	void GetDefaultGameSetting(FString& Resolution, int32& Anti, int32& ShadowQuality, int32& TextureQuality, float MouseSensitivity);
+	void GISetGameSetting(FString Resolution, int32 Anti, int32 ShadowQuality, int32 TextureQuality, float MouseSensitivity);
 	/* 게임 인스턴스에 새로 설정된 셋팅 저장하면서 동시에 커맨드 실행.*/
 
 
@@ -98,6 +98,8 @@ public:
 		int32 S;
 	UPROPERTY()
 		int32 T;
+	UPROPERTY()
+		float MS;
 
 
 

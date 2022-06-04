@@ -82,6 +82,7 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 		class UProjectHAnimInstance* AnimInstance;
 
+
 protected:
 	/*----------------
 		Move & Utils
@@ -136,6 +137,8 @@ public:
 		FVector MinArmLocation;
 	/* 여기까지 스프링 암. */
 
+	UPROPERTY(VisibleAnywhere)
+		float MouseSensitivity;
 
 	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MaxSpingArm)
 	//	float MaxSpringArmLength; // 자연스러운 시점 변환할때 최대 길이 및 최대 카메라 거리.

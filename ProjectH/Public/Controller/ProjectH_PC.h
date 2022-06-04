@@ -28,6 +28,9 @@ public:
 	virtual void OnPossess(APawn* InPawn);
 	virtual void OnUnPossess();
 	virtual void SetupInputComponent();
+
+
+	void BegineInit();
 	
 
 	/* ---------------
@@ -47,6 +50,10 @@ public:
 	void EventCompleted(EQTEState State, FCameraTransition CameraTransition); 
 	// 시간 초과, 성공, 키 실패를 처리할 함수.
 	void ClearQTEWidget();
+
+
+	// 마우스 감도 새로운 값 적용하는 함수.
+	void SetNewMouseSensitivity();
 
 
 public:
@@ -80,10 +87,15 @@ public:
 
 	FTimerHandle QTETimerHandle;
 
+	UPROPERTY(VisibleAnywhere)
+		float MouseSensitivity;
+
 	bool IsOpen = false;
 private:
 	UPROPERTY(VisibleAnywhere)
 		class AProjectHCharacter* OwnerCharacter;
+
+	
 
 	
 };

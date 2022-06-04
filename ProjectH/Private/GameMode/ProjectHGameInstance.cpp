@@ -79,9 +79,9 @@ void UProjectHGameInstance::Init()
 		ResolutionArr.Push(Temp);
 	}
 
+
 	SetDefaultGameSetting();
 	/* 지원되는 스크린 저장.*/
-
 }
 
 
@@ -176,6 +176,7 @@ bool UProjectHGameInstance::SetDefault()
 		AA = Setting->GetAA();
 		S = Setting->GetShadowQ();
 		T = Setting->GetTextureQ();
+		MS = Setting->GetMouseSensitivity();
 
 		return true;
 	}
@@ -195,22 +196,24 @@ void UProjectHGameInstance::SetDefaultGameSetting()
 }
 
 /* 게임 인스턴스안의 맨처음에 옵션값을 참조 인자에 저장해주는 함수.*/
-void UProjectHGameInstance::GetDefaultGameSetting(FString& Resolution, int32& Anti, int32& ShadowQuality, int32& TextureQuality)
+void UProjectHGameInstance::GetDefaultGameSetting(FString& Resolution, int32& Anti, int32& ShadowQuality, int32& TextureQuality, float MouseSensitivity)
 {
 	Resolution = R;
 	Anti = AA;
 	ShadowQuality = S;
 	TextureQuality = T;
+	MouseSensitivity = MS;
 }
 
 
 /* 옵션 변경시에 게임 인스턴스에 저장하는 함수. */
-void UProjectHGameInstance::GISetGameSetting(FString Resolution, int32 Anti, int32 ShadowQuality, int32 TextureQuality)
+void UProjectHGameInstance::GISetGameSetting(FString Resolution, int32 Anti, int32 ShadowQuality, int32 TextureQuality, float MouseSensitivity)
 {
 	R = Resolution;
 	AA = Anti;
 	S = ShadowQuality;
 	T = TextureQuality;
+	MS = MouseSensitivity;
 
 	UKismetSystemLibrary::ExecuteConsoleCommand(GetWorld(), *(RES_COMMAND + Resolution));
 	UKismetSystemLibrary::ExecuteConsoleCommand(GetWorld(), *(AA_COMMAND + FString::FromInt(Anti)));

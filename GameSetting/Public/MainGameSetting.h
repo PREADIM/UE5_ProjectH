@@ -21,16 +21,19 @@ public:
 	int32 GetAA() const { return AASetting; }
 	int32 GetShadowQ() const { return TextureQ; }
 	int32 GetTextureQ() const { return ShadowQ; }
+	float GetMouseSensitivity() const { return MouseSensitivity; }
 
 public:
 	UPROPERTY(Config)
 		FString Resolution;
 	UPROPERTY(Config)
-		int AASetting;
+		int32 AASetting;
 	UPROPERTY(Config)
-		int ShadowQ;
+		int32 ShadowQ;
 	UPROPERTY(Config)
-		int TextureQ;
+		int32 TextureQ;
+	UPROPERTY(Config)
+		float MouseSensitivity;
 	
 	/*UPROPERTY(Config)
 		int temp;
