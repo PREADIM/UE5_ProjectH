@@ -39,6 +39,10 @@ public:
 		void CloseDialogue();
 	bool bDialogueOpen();
 
+	void OpenInteract();
+	void CloseInteract();
+
+	void SetName(FString Name);
 
 	void SetMouseCursorCenter();
 
@@ -54,6 +58,8 @@ public:
 		class UESCMenu* ESCMenu;
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 		class UDialogueWidget* Dialogue;
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+		class UInteractWidget* InteractWidget;
 
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)

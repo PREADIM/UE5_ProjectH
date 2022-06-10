@@ -21,6 +21,10 @@
 #include "Controller/ProjectH_PC.h"
 #include "Components/SphereComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "UI/InteractWidget.h"
+#include "UI/MainQuestUI.h"
+#include "Components/Button.h"
+
 
 
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
@@ -78,6 +82,9 @@ AProjectHCharacter::AProjectHCharacter()
 
 	QuestCollision = CreateDefaultSubobject<USphereComponent>(TEXT("QuestCollision"));
 	QuestCollision->SetupAttachment(GetMesh());
+	InteractCollision = CreateDefaultSubobject<USphereComponent>(TEXT("InteractCollision"));
+	InteractCollision->SetupAttachment(GetMesh());
+	InteractCollision->SetSphereRadius(150.f);
 
 
 	//3인칭 메시
@@ -88,11 +95,9 @@ AProjectHCharacter::AProjectHCharacter()
 	UtilityComponent = CreateDefaultSubobject<class UUtilityComponent>(TEXT("Util"));
 	QuestComponent = CreateDefaultSubobject<class UQuestComponent>(TEXT("Quest"));
 
-	//InvisibleComponent->SetActive(false);
-	//InvisibleComponent->Activate(false);
-
+	
 	RunningSpeed = 500.f;
-	WalkSpeed = 300.f;
+	WalkSpeed = 300.f;	
 }
 
 
@@ -104,8 +109,8 @@ void AProjectHCharacter::BeginPlay()
 	UtilityComponent->SetSK_Mesh(GetMesh()); // 의상이 변경되면 다시 PoseableMesh를 변경해야하니 함수로 뺴놓음.
 	//InvisibleComponent->SetOwnerCamera3P(Camera3P);
 
-	Object.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel4));
-	IgnoreActor.Add(this);
+	/*Object.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel4));
+	IgnoreActor.Add(this);*/
 
 	// 게임 인스턴스에서 정보 가져오기
 	if (QuestComponent)
@@ -115,9 +120,14 @@ void AProjectHCharacter::BeginPlay()
 	if (OwnerController)
 	{
 		MouseSensitivity = OwnerController->MouseSensitivity;
+		OwnerController->MainQuestUI->InteractWidget->InteractButton->OnClicked.AddDynamic(this, &AProjectHCharacter::InteractKey);
 	}
 	QuestCollision->OnComponentBeginOverlap.AddDynamic(this, &AProjectHCharacter::QuestCollisionOverlap);
 	QuestCollision->OnComponentEndOverlap.AddDynamic(this, &AProjectHCharacter::QuestCollisionEndOverlap);
+	InteractCollision->OnComponentBeginOverlap.AddDynamic(this, &AProjectHCharacter::InteractCollisionOverlap);
+	InteractCollision->OnComponentEndOverlap.AddDynamic(this, &AProjectHCharacter::InteractCollisionEndOverlap);
+
+	
 
 }
 
@@ -196,15 +206,17 @@ void AProjectHCharacter::InteractKey()
 {
 	if (bCanInteract)
 	{
-		if (NPCActors.Num())
-		{
-			class AQuestNPCBase* NPC = Cast<class AQuestNPCBase>(NPCActors[0]);
-			if (::IsValid(NPC))
+		if (InteractNPCActor)
+		{		
+			if (InteractNPCActor->bCanAccept)
 			{
-				if(NPC->bCanAccept)
-					NPC->Interact_Implementation(this);
-			}
+				if (OwnerController)
+				{
+					InteractNPCActor->Interact_Implementation(this);
+					OwnerController->MainQuestUI->CloseInteract();
+				}
 				
+			}	
 		}
 	}
 
@@ -372,6 +384,47 @@ void AProjectHCharacter::QuestCollisionEndOverlap(UPrimitiveComponent* Overlappe
 	}
 }
 
+void AProjectHCharacter::InteractCollisionOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	AQuestNPCBase* NPC = Cast<AQuestNPCBase>(OtherActor);
+	if (NPC)
+	{
+		if (InteractNPCActor == NPC)
+		{
+			return;
+		}
+
+		if (bCanInteract)
+		{
+			InteractNPCActor = NPC;
+			OwnerController->MainQuestUI->SetName(NPC->NPCName);
+		}
+		else
+		{
+			bCanInteract = true;
+			InteractNPCActor = NPC;	
+			OwnerController->MainQuestUI->SetName(NPC->NPCName);
+		}	
+
+		OwnerController->MainQuestUI->OpenInteract();
+	}
+}
+
+void AProjectHCharacter::InteractCollisionEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	AQuestNPCBase* NPC = Cast<AQuestNPCBase>(OtherActor);
+	if (NPC)
+	{
+		bCanInteract = false;
+		if (InteractNPCActor == NPC)
+		{
+			InteractNPCActor = nullptr;
+			OwnerController->MainQuestUI->CloseInteract();
+		}
+	}
+}
+
+
 /* 퀘스트 콜리전의 크기를 줄였다가 다시 늘려서 새로 오버랩 되게하는 트릭
 	퀘스트를 실시간으로 추가할때 이 함수를 실행해야 느낌표를 띄울 수 있다. ★★*/
 void AProjectHCharacter::QuestCollisionSetUp()
@@ -380,6 +433,12 @@ void AProjectHCharacter::QuestCollisionSetUp()
 	QuestCollision->SetSphereRadius(6000.0f);
 }
 
+
+void AProjectHCharacter::InteractCollisionSetUp()
+{
+	InteractCollision->SetSphereRadius(0.5f);
+	InteractCollision->SetSphereRadius(150.0f);
+}
 
 /*---------------------
 	virtual Function
@@ -407,8 +466,9 @@ void AProjectHCharacter::Tick(float DeltaTime)
 	}*/
 
 	
-	bCanInteract = UKismetSystemLibrary::SphereOverlapActors(
-		GetWorld(), GetActorLocation(), 150.f, Object, nullptr, IgnoreActor, NPCActors);
+	/*bCanInteract = UKismetSystemLibrary::SphereOverlapActors(
+		GetWorld(), GetActorLocation(), 150.f, Object, nullptr, IgnoreActor, NPCActors);*/
+	
 
 }
 

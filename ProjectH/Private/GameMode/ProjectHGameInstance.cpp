@@ -196,7 +196,7 @@ void UProjectHGameInstance::SetDefaultGameSetting()
 }
 
 /* 게임 인스턴스안의 맨처음에 옵션값을 참조 인자에 저장해주는 함수.*/
-void UProjectHGameInstance::GetDefaultGameSetting(FString& Resolution, int32& Anti, int32& ShadowQuality, int32& TextureQuality, float MouseSensitivity)
+void UProjectHGameInstance::GetDefaultGameSetting(FString& Resolution, int32& Anti, int32& ShadowQuality, int32& TextureQuality, float& MouseSensitivity)
 {
 	Resolution = R;
 	Anti = AA;
@@ -207,7 +207,7 @@ void UProjectHGameInstance::GetDefaultGameSetting(FString& Resolution, int32& An
 
 
 /* 옵션 변경시에 게임 인스턴스에 저장하는 함수. */
-void UProjectHGameInstance::GISetGameSetting(FString Resolution, int32 Anti, int32 ShadowQuality, int32 TextureQuality, float MouseSensitivity)
+void UProjectHGameInstance::GISetGameSetting(FString Resolution, int32 Anti, int32 ShadowQuality, int32 TextureQuality, float& MouseSensitivity)
 {
 	R = Resolution;
 	AA = Anti;

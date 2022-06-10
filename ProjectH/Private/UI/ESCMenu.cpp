@@ -88,6 +88,7 @@ void UESCMenu::PrevClick()
 	{
 		ESCMenuAnimation(false);
 		// Setting Click 반대로 키기
+
 	}
 }
 

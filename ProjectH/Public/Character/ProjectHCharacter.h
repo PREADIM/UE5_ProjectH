@@ -55,6 +55,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component)
 		class USphereComponent* QuestCollision;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component)
+		class USphereComponent* InteractCollision;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 		class UCameraComponent* Camera;
 
@@ -152,13 +155,14 @@ public:
 
 	bool bCanInteract = false;
 	bool bWheel = false;
-	UPROPERTY()
+	/*UPROPERTY()
 		TArray<TEnumAsByte<EObjectTypeQuery>> Object;
 	UPROPERTY()
-		TArray<AActor*> IgnoreActor;
+		TArray<AActor*> IgnoreActor;*/
 
 	UPROPERTY()
-		TArray<AActor*> NPCActors;
+		class AQuestNPCBase* InteractNPCActor;
+
 
 	bool bQTE = false;
 	bool bPlay = true;
@@ -174,9 +178,15 @@ public:
 		void QuestCollisionOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()
 		void QuestCollisionEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+	UFUNCTION()
+		void InteractCollisionOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	UFUNCTION()
+		void InteractCollisionEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
 
 	//UFUNCTION(BlueprintCallable) 일단 보류
 		void QuestCollisionSetUp(); /* 퀘스트 콜리전의 크기를 줄였다가 다시 늘려서 새로 오버랩 되게하는 트릭*/
+		void InteractCollisionSetUp();
 	/*---------------------
 		virtual Function
 	---------------------*/

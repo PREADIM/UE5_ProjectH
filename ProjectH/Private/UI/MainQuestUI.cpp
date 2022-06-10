@@ -11,6 +11,7 @@
 #include "UI/OptionMenu.h"
 #include "UI/HelpMenu.h"
 #include "UI/DialogueWidget.h"
+#include "UI/InteractWidget.h"
 #include "Components/CanvasPanel.h"
 #include "Components/Button.h"
 #include "Kismet/KismetmathLibrary.h"
@@ -109,6 +110,7 @@ void UMainQuestUI::SettingKey()
 {
 	if (ESCMenu->SettingKeyClick())
 	{
+		SetMouseCursorCenter();
 		OwnerController->SetShowMouseCursor(true);
 		OwnerController->SetInputMode(FInputModeGameAndUI());
 	}
@@ -204,14 +206,14 @@ void UMainQuestUI::OpenESCMenu()
 	}
 
 	// ESC 메뉴를 켜야할때 이미 켜져있는지 아닌지 판단.
-	if (ESCMenu->SettingCanvas->GetRenderOpacity() == 1.0f)
+	if (ESCMenu->SettingCanvas->GetRenderOpacity() == 1.0f) //ESC메뉴 끄기
 	{
 		ESCMenu->ESCMenuAnimation(true); // 셋팅창 애니메이션.
 		FTimerHandle Handle;
 		GetWorld()->GetTimerManager().SetTimer(Handle, this, &UMainQuestUI::SetMouseOff, ESCMenu->ESCMenuFade->GetEndTime(), false);
 		return;
 	}
-	else if(ESCMenu->SettingCanvas->GetRenderOpacity() == 0.0f)
+	else if(ESCMenu->SettingCanvas->GetRenderOpacity() == 0.0f) // ESC메뉴 키기
 	{
 		// 옵션창이 켜져있다면 자연스럽게 ESC 메뉴로 넘어가야 하므로.
 		if (ESCMenu->OptionMenu->IsInViewport())
@@ -250,6 +252,8 @@ void UMainQuestUI::CloseDialogue()
 
 	OwnerController->SetShowMouseCursor(false);
 	OwnerController->SetInputMode(FInputModeGameOnly());
+	OwnerCharacter->QuestCollisionSetUp();
+	OwnerCharacter->InteractCollisionSetUp();
 }
 
 
@@ -263,6 +267,22 @@ bool UMainQuestUI::bDialogueOpen()
 		return false;
 }
 
+void UMainQuestUI::OpenInteract()
+{
+	InteractWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	InteractWidget->PlayAnim();
+}
+
+
+void UMainQuestUI::CloseInteract()
+{
+	InteractWidget->SetVisibility(ESlateVisibility::Hidden);
+}
+
+void UMainQuestUI::SetName(FString Name)
+{
+	InteractWidget->SetName(Name);
+}
 
 /* 마우스 커서 센터로 나오게 하기. */
 void UMainQuestUI::SetMouseCursorCenter()

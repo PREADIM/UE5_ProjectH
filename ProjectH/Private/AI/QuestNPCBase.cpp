@@ -30,6 +30,7 @@ AQuestNPCBase::AQuestNPCBase()
 	MainIconWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("MainIconWidget"));
 	SucceedWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("SucceedWidget"));
 
+
 	RootComponent = CapsuleCollision;
 	Mesh->SetupAttachment(CapsuleCollision);
 	IconWidget->SetupAttachment(Mesh);
@@ -57,10 +58,10 @@ AQuestNPCBase::AQuestNPCBase()
 		SucceedWidget->SetDrawSize(FVector2D(100.f, 100.f));
 	}
 
+	
 	IconWidget->SetVisibility(false);
 	MainIconWidget->SetVisibility(false);
 	SucceedWidget->SetVisibility(false);
-
 
 	bQuestSucceed = false;
 	bIsQuesting = false;

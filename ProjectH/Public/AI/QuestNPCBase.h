@@ -69,7 +69,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component)
 		class UWidgetComponent* SucceedWidget; // 완료 아이콘
 
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Name)
 		FString NPCName; // NPC 이름. 데이터 베이스 검색이나 저장할때 용이하다.
 	UPROPERTY(VisibleAnywhere)
@@ -124,4 +123,5 @@ public:
 
 	bool CanVisibleWidget(); 
 	// 위젯을 띄워도 되는지 판단한다. 캐릭터클래스에서 NPC의 위젯을 띄워야할때 판단하는 함수.
+
 };

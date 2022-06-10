@@ -42,7 +42,6 @@ void AProjectH_PC::BegineInit()
 	if (GI)
 	{
 		MouseSensitivity = GI->MS;
-		_DEBUG("GI : %f", GI->MS);
 	}
 
 	if (BP_MainQuestUI && OwnerCharacter)
