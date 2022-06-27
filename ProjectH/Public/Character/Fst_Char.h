@@ -30,13 +30,6 @@ private:
 		Private Value
 	------------------*/
 
-	TArray<int*> test1;
-	TArray<int*> test2;
-
-
-	int32 test;
-	int32 num;
-
 
 public:
 	/* ----------------

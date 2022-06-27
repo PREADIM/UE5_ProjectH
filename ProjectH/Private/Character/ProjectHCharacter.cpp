@@ -150,18 +150,6 @@ void AProjectHCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 -----------------*/
 void AProjectHCharacter::Forward(float Value)
 {
-	//AddMovementInput(GetActorForwardVector() * Value);
-	/*if (!bStopAnim)
-	{
-		FVector Forward = FRotationMatrix(GetControlRotation()).GetScaledAxis(EAxis::X);
-		AddMovementInput(Forward, Value);
-		if (AnimInstance)
-		{
-			AnimInstance->ForwardV = Forward * Value;
-		}
-		
-	}*/
-
 	if (bPlay)
 	{
 		AddMovementInput(FRotationMatrix(GetControlRotation()).GetScaledAxis(EAxis::X), Value);
@@ -172,15 +160,7 @@ void AProjectHCharacter::Forward(float Value)
 void AProjectHCharacter::MoveRight(float Value)
 {
 	//AddMovementInput(GetActorRightVector() * Value);
-	/*if (!bStopAnim)
-	{
-		FVector Right = FRotationMatrix(GetControlRotation()).GetScaledAxis(EAxis::Y);
-		AddMovementInput(Right, Value);
-		if (AnimInstance)
-		{
-			AnimInstance->RightV = Right * Value;
-		}
-	}*/
+
 	if (bPlay)
 	{
 		AddMovementInput(FRotationMatrix(GetControlRotation()).GetScaledAxis(EAxis::Y), Value);
