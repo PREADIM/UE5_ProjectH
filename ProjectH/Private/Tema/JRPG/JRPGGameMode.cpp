@@ -68,8 +68,11 @@ void AJRPGGameMode::PostLogin(APlayerController* Login)
 			else // 없는경우 (첫 시작)
 			{
 				JRPGSave = Cast<UJRPGSave>(UGameplayStatics::CreateSaveGameObject(UJRPGSave::StaticClass()));
+				JRPGSave->SaveSlot();
+			
 			}
 			JRPGSave->SetLoadCharacter(OwnerController);
+	
 			//여기서 해당 캐릭터의 세이브 파일을 가져와서 컨트롤러에 대입해준다.
 			AJRPGUnit* DefaultCharacter = GetCharacterSpawn(OwnerController->RepreCharacterNum, OwnerController->FieldLocation);
 			if (DefaultCharacter)

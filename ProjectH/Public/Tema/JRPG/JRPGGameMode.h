@@ -118,7 +118,7 @@ public:
 	
 	------------------*/
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		class UJRPGSave* JRPGSave; // ºº¿Ã∫Í
 
 	void SetSaveJRPG();

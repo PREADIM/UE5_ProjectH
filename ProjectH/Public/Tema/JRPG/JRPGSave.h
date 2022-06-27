@@ -10,6 +10,38 @@
 /**
  * 
  */
+USTRUCT(BlueprintType)
+struct FJRPGSerial
+{
+	GENERATED_USTRUCT_BODY()
+
+public:
+	UPROPERTY(VisibleAnywhere)
+		FTransform FieldLocation;
+	UPROPERTY(VisibleAnywhere)
+		int32 RepreCharacter;
+
+	UPROPERTY(VisibleAnywhere)
+		TArray<int32> CurrentParty; // 현재 선택되어있는 파티리스트
+	UPROPERTY(VisibleAnywhere)
+		int32 CurrentFieldNum; // 필드 정보
+
+
+	UPROPERTY(VisibleAnywhere)
+		TArray<int32> HaveCharList; // 가지고 있는 전체 캐릭터 넘버 (추후 세이브 로드 해야함).
+	// 나중에 퀘스트 넘버처럼 번호와 BP 패스를 가지고 해당 넘버만 저장하고 불러오는 형식으로 만들어도될듯.
+	UPROPERTY(VisibleAnywhere)
+		TMap<int32, FJRPGCharStat> HaveCharStat; // 가지고 있는 캐릭터의 스텟들.
+
+
+public:
+	FJRPGSerial();
+
+};
+
+
+
+
 UCLASS()
 class PROJECTH_API UJRPGSave : public USaveGame
 {
@@ -22,25 +54,10 @@ public:
 public:
 	static const FString SlotName;
 
-	UPROPERTY()
-		FTransform FieldLocation;
-	UPROPERTY()
-		int32 RepreCharacter;
-
-	UPROPERTY()
-		TArray<int32> CurrentParty; // 현재 선택되어있는 파티리스트
-	UPROPERTY()
-		int32 CurrnetFieldNum; // 필드 정보
-	
-
-	UPROPERTY()
-		TArray<int32> HaveCharList; // 가지고 있는 전체 캐릭터 넘버 (추후 세이브 로드 해야함).
-	// 나중에 퀘스트 넘버처럼 번호와 BP 패스를 가지고 해당 넘버만 저장하고 불러오는 형식으로 만들어도될듯.
-	UPROPERTY()
-		TMap<int32, FJRPGCharStat> HaveCharStat; // 가지고 있는 캐릭터의 스텟들.
-
+	FJRPGSerial JRPGSerial;
 
 public:
 	void SetLoadCharacter(class AJRPGPlayerController* OwnerController);
 	void SetSave(class AJRPGPlayerController* OwnerController);
+	void SaveSlot();
 };

@@ -107,6 +107,28 @@ void AJRPGUnit::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 }
 
 
+float AJRPGUnit::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	float DamageApplied = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+	if (PlayerType == EPlayerType::Enermy) // 플레이어가 때림.
+	{
+		AJRPGPlayerController* PC = Cast<AJRPGPlayerController>(EventInstigator);
+		if (PC)
+		{
+			PC->PlayBattleMode(EnermyUnits);
+		}
+	}
+	else if (PlayerType == EPlayerType::Player) // 플레이어가 맞음.
+	{
+		AJRPGUnit* Enermy = Cast<AJRPGUnit>(DamageCauser);
+		OwnerController->PlayBattleMode(Enermy->EnermyUnits);
+	}
+
+	return DamageApplied;
+}
+
+
 void AJRPGUnit::LMB()
 {
 	if (LMBAnim)

@@ -19,6 +19,7 @@ void AJRPGPlayerController::OnPossess(APawn* NewPawn)
 {
 	Super::OnPossess(NewPawn);
 	RepreCharacter = Cast<AJRPGUnit>(NewPawn);
+	GM->SetSaveJRPG();
 }
 
 
