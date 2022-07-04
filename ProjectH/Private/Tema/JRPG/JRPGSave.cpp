@@ -15,40 +15,43 @@ FJRPGSerial::FJRPGSerial()
 
 UJRPGSave::UJRPGSave()
 {
+
+}
+
+void UJRPGSave::FirstSave()
+{
 	// 여기서 첫 시작시에 필요한 모든 정보를 초기화.
-	FJRPGSerial Temp;
+	JRPGSerial.FieldLocation = FTransform(FRotator(0.0f, 90.0f, 0.0f), FVector(2518.f, -1835.f, 670.f)); // 첫 시작
+	JRPGSerial.RepreCharacterNum = 101;
+	JRPGSerial.CurrentParty.Add(101);
+	JRPGSerial.CurrentFieldNum = 1;
+	JRPGSerial.HaveCharList.Add(101);
+	JRPGSerial.HaveCharStat.Add(101, FJRPGCharStat(1000.f, 100.f, 100.f, 30.f));
 
-	Temp.FieldLocation = FTransform(FRotator(0.0f, 90.0f, 0.0f), FVector(2518.f, -1835.f, 670.f)); // 첫 시작
-	Temp.RepreCharacter = 101;
-	Temp.CurrentParty.Add(101);
-	Temp.CurrentFieldNum = 1;
-	Temp.HaveCharList.Add(101);
-	Temp.HaveCharStat.Add(101, FJRPGCharStat(1000, 100, 100, 30));
-
-	JRPGSerial = Temp;
+	SaveSlot();
 }
 
 void UJRPGSave::SetLoadCharacter(AJRPGPlayerController* OwnerController)
 {
 	OwnerController->FieldLocation = JRPGSerial.FieldLocation;
-	OwnerController->RepreCharacterNum = JRPGSerial.RepreCharacter;
+	OwnerController->RepreCharacterNum = JRPGSerial.RepreCharacterNum;
 	OwnerController->CurrentParty = JRPGSerial.CurrentParty;
 	OwnerController->CurrentFieldNum = JRPGSerial.CurrentFieldNum;
 	OwnerController->HaveCharList = JRPGSerial.HaveCharList;
 	OwnerController->HaveCharStat = JRPGSerial.HaveCharStat;
-
 }
 
 
 void UJRPGSave::SetSave(class AJRPGPlayerController* OwnerController)
 {
 	JRPGSerial.FieldLocation = OwnerController->FieldLocation;
-	JRPGSerial.RepreCharacter = OwnerController->RepreCharacterNum;
+	JRPGSerial.RepreCharacterNum = OwnerController->RepreCharacterNum;
 	JRPGSerial.CurrentParty = OwnerController->CurrentParty;
 	JRPGSerial.CurrentFieldNum = OwnerController->CurrentFieldNum;
 	JRPGSerial.HaveCharList = OwnerController->HaveCharList;
 	JRPGSerial.HaveCharStat = OwnerController->HaveCharStat;
 
+	_DEBUG("%d !!", JRPGSerial.RepreCharacterNum);
 	SaveSlot();
 }
 

@@ -1,23 +1,22 @@
 #pragma once
 #include "ProjectH.h"
-#include "Engine/DataTable.h"
-#include "BattleFieldList.generated.h"
-
+#include "Tema/JRPG/JRPGSkillState.h"
+#include "JRPGUnitSkill.generated.h"
 
 
 USTRUCT(BlueprintType)
-struct FBattleFieldList : public FTableRowBase
+struct FJRPGUnitSkill
 {
 	GENERATED_USTRUCT_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int32 FieldNum;
+		FJRPGSkillState NormalAttack;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FString FieldName;
+		FJRPGSkillState Skill_1;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FVector SpawnLocation;
+		FJRPGSkillState Skill_2;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TSubclassOf<class ABattleField> BP_BattleField;
-
+		FJRPGSkillState Skill_3;
 };
+

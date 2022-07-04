@@ -27,6 +27,14 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Arm)
+		class USceneComponent* Root;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Arm)
+		class USpringArmComponent* SpringArm;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)
+		class UCameraComponent* Camera;
+
+public:
 	UPROPERTY(VisibleAnywhere)
 		FVector TargetLocation;
 	UPROPERTY(VisibleAnywhere)

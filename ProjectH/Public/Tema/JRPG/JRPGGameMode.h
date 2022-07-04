@@ -28,7 +28,7 @@ struct PriorityUnitFunc
 {
 	bool operator() (const FPriorityUnit& A, const FPriorityUnit& Other) const
 	{
-		return A.Priority < Other.Priority;
+		return A.Priority > Other.Priority; // 최대힙
 	}
 };
 
@@ -80,7 +80,7 @@ public:
 	void FirstStartSaveStat(); // 마땅히 저장되어있는 세이브파일이 없다는 것은 가장 기초 캐릭터가 없다는 뜻이므로.
 	// 기초 캐릭터를 저장함.
 
-
+	void SetControllerInit();
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		class AJRPGPlayerController* OwnerController;
@@ -108,6 +108,7 @@ public:
 
 	UPROPERTY()
 		class ABattleField* CurrentField;
+	FVector FieldLocation;
 	// 배틀필드 클래스를 가져오기. 배틀필드 또한 지역 넘버를 가지고있고 해당 위치를 데이터베이스에서 가져옴.
 
 

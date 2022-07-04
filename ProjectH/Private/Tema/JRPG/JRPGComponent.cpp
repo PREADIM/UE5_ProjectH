@@ -21,10 +21,7 @@ UJRPGComponent::UJRPGComponent()
 void UJRPGComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	// GM = Cast<AJRPGGameMode>(UGameplayStatics::GetGameMode(GetWorld())); 보류
-
-
-
+	
 }
 
 
@@ -38,12 +35,14 @@ void UJRPGComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 
 void UJRPGComponent::Init()
 {
+	// OnwerController에서 해당캐릭터의 스킬및 정보를 초기화한다.
 	//해당 함수가 호출될때는 컨트롤러정보가 있으니 컨트롤러 안에있는 JRPG 위젯을 생성하고 정보를 셋팅함.
+	// OwnerUnit을 이용해서 위젯 정보 초기화. OwnerUnit의 Current HP와 MP 설정.
 }
 
 void UJRPGComponent::BattleStart()
 {
-	if (OwnerController)
+	if (OwnerController && OwnerUnit)
 	{
 
 	}

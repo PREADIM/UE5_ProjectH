@@ -10,6 +10,15 @@ AJRPGCamera::AJRPGCamera()
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+
+	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
+	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
+
+	RootComponent = Root;
+	SpringArm->SetupAttachment(Root);
+	Camera->SetupAttachment(SpringArm);
+
 }
 
 // Called when the game starts or when spawned

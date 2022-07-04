@@ -1,5 +1,4 @@
 #include "NPCQuest.h"
-#include "QuestStruct.h"
 
 FNPCQuest::FNPCQuest() : bCanAccepted(false)
 {
@@ -15,8 +14,5 @@ FNPCQuest::FNPCQuest(const FQuestStruct& Quest)
 	QuestSteps = Quest.QuestSteps;
 	OwnerNPC = Quest.OwnerNPC;
 	bCanAccepted = false;
-
-	//bPrimary = Quest.bPrimary;
-	//bCanAccepted = false;
 
 }

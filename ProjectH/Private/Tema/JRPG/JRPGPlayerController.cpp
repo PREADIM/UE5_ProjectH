@@ -18,16 +18,22 @@ void AJRPGPlayerController::BeginPlay()
 void AJRPGPlayerController::OnPossess(APawn* NewPawn)
 {
 	Super::OnPossess(NewPawn);
+
 	RepreCharacter = Cast<AJRPGUnit>(NewPawn);
-	GM->SetSaveJRPG();
+
+	// ★★ 원래는 이미 있는 RepreCharacter로 HaveCharStat에서 받아오는 것이지만, 나중에 구현.
+
+	GM->SetControllerInit(); // OnPossess를 하면 왜인지는 모르겠으나, 값이 초기화된다. 그래서 다시 설정.
 }
 
 
-void AJRPGPlayerController::CameraPossess(FVector Location)
+void AJRPGPlayerController::CameraPossess(FVector Location, FRotator Rotation)
 {
 	if (BP_Camera)
 	{
 		DynamicCamera = GetWorld()->SpawnActor<AJRPGCamera>(BP_Camera, FTransform(Location));
+		DynamicCamera->TargetLocation = Location;
+		DynamicCamera->TargetRotation = Rotation;
 		UnPossess();
 		OnPossess(DynamicCamera);
 		// 다이나믹 카메라가 빙의된거면 배틀 시작이 되었다는 뜻.
@@ -37,7 +43,8 @@ void AJRPGPlayerController::CameraPossess(FVector Location)
 
 void AJRPGPlayerController::CameraSetUp(FVector Location)
 {
-	DynamicCamera->SetActorLocation(Location);
+	if(DynamicCamera)
+		DynamicCamera->SetActorLocation(Location);
 }
 
 void AJRPGPlayerController::ExitCamera()

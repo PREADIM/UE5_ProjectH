@@ -4,6 +4,7 @@
 
 #include "ProjectH.h"
 #include "Components/ActorComponent.h"
+#include "Tema/JRPG/JRPGUnitSkill.h"
 #include "JRPGComponent.generated.h"
 
 
@@ -44,5 +45,20 @@ public:
 
 	UPROPERTY(VisibleAnywhere)
 		class AJRPGGameMode* GM;
+
+	UPROPERTY()
+		class AJRPGUnit* OwnerUnit;
+
+	UPROPERTY()
+		class AJRPGUnit* TargetUnit;
+
+
+	/*--------------------
+		스킬 이름 및, 스킬
+	----------------------*/
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FJRPGUnitSkill UnitSkills;
+
 		
 };

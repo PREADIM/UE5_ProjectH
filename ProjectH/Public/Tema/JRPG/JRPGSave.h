@@ -19,7 +19,7 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		FTransform FieldLocation;
 	UPROPERTY(VisibleAnywhere)
-		int32 RepreCharacter;
+		int32 RepreCharacterNum;
 
 	UPROPERTY(VisibleAnywhere)
 		TArray<int32> CurrentParty; // 현재 선택되어있는 파티리스트
@@ -50,14 +50,19 @@ class PROJECTH_API UJRPGSave : public USaveGame
 
 public:
 	UJRPGSave();
+	void FirstSave();
 
 public:
 	static const FString SlotName;
 
-	FJRPGSerial JRPGSerial;
+	UPROPERTY(VisibleAnywhere)
+		FJRPGSerial JRPGSerial;
 
 public:
 	void SetLoadCharacter(class AJRPGPlayerController* OwnerController);
 	void SetSave(class AJRPGPlayerController* OwnerController);
 	void SaveSlot();
+
+	
+	
 };

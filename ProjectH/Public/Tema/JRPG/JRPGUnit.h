@@ -23,12 +23,12 @@ public:
 	// Sets default values for this character's properties
 	AJRPGUnit();
 
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = SpringArm, meta = (AllowPrivateAccess = "true"))
 		USpringArmComponent* SpringArm;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Camera3P, meta = (AllowPrivateAccess = "true"))
 		UCameraComponent* Camera;
+
 
 
 protected:
@@ -53,7 +53,9 @@ public:
 		void LookUp(float AxisValue);
 	UFUNCTION()
 		void LookRight(float AxisValue);
-
+	
+	UFUNCTION(BlueprintImplementableEvent)
+		void TestKey();
 
 	void LMB();
 
@@ -68,7 +70,8 @@ public:
 
 
 	/* 블루프린트에서 실행. */
-
+	UFUNCTION(BlueprintImplementableEvent)
+		void CallLMB();
 	UFUNCTION(BlueprintImplementableEvent)
 		void CallNormalAttack();
 	UFUNCTION(BlueprintImplementableEvent)
@@ -76,10 +79,13 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 		void CallSkill_2();
 	UFUNCTION(BlueprintImplementableEvent)
-		void CallSkill_3();
+		void CallULT();
+
+
 
 public:
 	void BattleStart();
+	void EnermyBattleStart();
 
 
 public:
@@ -97,28 +103,34 @@ public:
 		class UAnimMontage* LMBAnim;
 
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TArray<int32> EnermyUnits; // 적 유닛만 사용하는 기능, 무슨 유닛을가지고 있는지 판단.
-
-
 	UPROPERTY(VisibleAnywhere)
 		float MouseSensitivity;
 
 	/*-----------------
 		전투 스테이스
 	-------------------*/
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BattlePriority)
 		int32 Priority; // 우선순위
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		int32 CharacterNum; // 캐릭터의 모든정보를 가진 넘버. 이걸로 거의 모든것을 해결할 수있음.
 
-	FJRPGCharStat CharacterStat; // 해당 캐릭터의 스텟
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FJRPGCharStat CharacterStat; // 해당 캐릭터의 스텟
+	// 플레이어는 Save & Load를 하지만, 적은 블루프린트에서 정해줌.
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float CurrentHP; // 적은 미리 정해주자.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float CurrentMP; // 적은 미리 정해줌.
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-		float CurrentHP;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-		float CurrentMP;
+		float ULTGage; // 궁극기 게이지.
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool bIsLMBAttack;
+
 
 
 };

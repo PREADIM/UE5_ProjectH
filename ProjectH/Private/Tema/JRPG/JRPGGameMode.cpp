@@ -8,6 +8,7 @@
 #include "Tema/JRPG/BattleField.h"
 #include "Tema/JRPG/JRPGComponent.h"
 #include "Tema/JRPG/JRPGSave.h"
+#include "Tema/JRPG/JRPGUnit.h"
 
 
 FPriorityUnit::FPriorityUnit()
@@ -64,24 +65,32 @@ void AJRPGGameMode::PostLogin(APlayerController* Login)
 			if (UGameplayStatics::DoesSaveGameExist(UJRPGSave::SlotName, 0))
 			{
 				JRPGSave = Cast<UJRPGSave>(UGameplayStatics::LoadGameFromSlot(UJRPGSave::SlotName, 0));
+				_DEBUG("Load");
 			}
 			else // 없는경우 (첫 시작)
 			{
 				JRPGSave = Cast<UJRPGSave>(UGameplayStatics::CreateSaveGameObject(UJRPGSave::StaticClass()));
-				JRPGSave->SaveSlot();
-			
+				JRPGSave->FirstSave();		
 			}
-			JRPGSave->SetLoadCharacter(OwnerController);
-	
-			//여기서 해당 캐릭터의 세이브 파일을 가져와서 컨트롤러에 대입해준다.
-			AJRPGUnit* DefaultCharacter = GetCharacterSpawn(OwnerController->RepreCharacterNum, OwnerController->FieldLocation);
+
+			// ★★ JRPGSave->SetLoadCharacter(OwnerController);
+			//AJRPGUnit* DefaultCharacter = GetCharacterSpawn(OwnerController->RepreCharacterNum, OwnerController->FieldLocation);
+
+			AJRPGUnit* DefaultCharacter = GetCharacterSpawn(JRPGSave->JRPGSerial.RepreCharacterNum, JRPGSave->JRPGSerial.FieldLocation);
 			if (DefaultCharacter)
 			{
 				OwnerController->OnPossess(Cast<APawn>(DefaultCharacter));
 			}
+			SetSaveJRPG();
 		}
 
 	}
+}
+
+void AJRPGGameMode::SetControllerInit()
+{
+	JRPGSave->SetLoadCharacter(OwnerController);
+	
 }
 
 /*캐릭터 검색해서 해당 캐릭터 스폰하기.*/
@@ -111,6 +120,7 @@ bool AJRPGGameMode::GetBattleField(int32 FieldNum)
 {
 	FBattleFieldList* List = FieldTable->FindRow<FBattleFieldList>(*FString::FromInt(FieldNum), TEXT(""));
 	CurrentField = GetWorld()->SpawnActor<class ABattleField>(List->BP_BattleField, FTransform(List->SpawnLocation));
+
 	if (CurrentField)
 		return true;
 	else
@@ -136,14 +146,13 @@ void AJRPGGameMode::BattleStart(int32 FieldNum, TArray<int32> Enermys)
 	// 배틀에 진입하는 시네마틱 구현해야한다. 여기서 실행하든 캐릭터와 오버랩될때 시작하든 한다.
 
 
-	OwnerController->CameraPossess(FVector::ZeroVector);	// 카메라에 컨트롤러 빙의
-	// 맨처음 위치는 나중에 배틀 필드를 만들면 그냥 그 한 가운데로 하자.
+	OwnerController->CameraPossess(OwnerUnits[0]->GetActorLocation(), OwnerUnits[0]->GetActorRotation());	// 카메라에 컨트롤러 빙의
+	//OwnerController->CameraPossess(UnitList[0].Unit->GetActorLocation(), UnitList[0].Unit->GetActorRotation());	// 카메라에 컨트롤러 빙의
+	OwnerController->SetShowMouseCursor(true);
+	OwnerController->SetInputMode(FInputModeUIOnly());
+
+
 	// 여기서 시네마틱도 전달해서 해당 시네마틱을 실행해도 될듯하다. (미구현)
-
-
-	//★★(미구현) OwnerController->SetViewTargetWithBlend(OwnerController, 1.0f);
-	// 맨처음엔 배틀필드의 메인카메라를 보다가 턴 시작에 다이나믹 카메라로 블렌드 하기.
-
 	TurnStart();
 
 }
@@ -168,7 +177,7 @@ void AJRPGGameMode::TurnStart()
 		else // 적의 차례
 		{
 			// 적이 타겟팅한 캐릭터에 카메라가 위치해 있는다.
-			Unit->BattleStart();
+			Unit->EnermyBattleStart();
 		}
 	}
 }
@@ -255,62 +264,68 @@ void AJRPGGameMode::SetOwnerUnits()
 	TArray<int32> CharList = OwnerController->CurrentParty;
 	OwnerUnits.Empty();
 
-	for (int32 i = 0; i < 3; i++)
+	for (int32 i = 0; i < CharList.Num(); i++)
 	{
-		if (CharList.IsValidIndex(i))
+		FTransform UnitLocation;
+		switch (i)
 		{
-			FTransform UnitLocation;
-			switch (i)
+		case 0:
+			UnitLocation = CurrentField->Unit1->GetComponentTransform();
+			break;
+		case 1:
+			UnitLocation = CurrentField->Unit1->GetComponentTransform();
+			break;
+		case 2:
+			UnitLocation = CurrentField->Unit1->GetComponentTransform();
+			break;
+		default:
+			break;
+		}
+
+		AJRPGUnit* Unit = GetCharacterSpawn(CharList[i], UnitLocation);
+		if (Unit != nullptr)
+		{
+			Unit->OwnerController = OwnerController;
+			Unit->BattleComponent->SetOwnerPCAndGM(OwnerController, this);
+			if (OwnerController->HaveCharStat.Find(CharList[i]) != nullptr)
 			{
-			case 0:
-				UnitLocation = CurrentField->Unit1->GetComponentTransform();
-				break;
-			case 1:
-				UnitLocation = CurrentField->Unit1->GetComponentTransform();
-				break;
-			case 2:
-				UnitLocation = CurrentField->Unit1->GetComponentTransform();
-				break;
-			default:
-				break;
+				Unit->CharacterStat = OwnerController->HaveCharStat[CharList[i]];
 			}
 			
-			OwnerUnits[i] = GetCharacterSpawn(CharList[i], UnitLocation); // 없는 넘버는 nullptr 빈공간
-			OwnerUnits[i]->OwnerController = OwnerController;
-			OwnerUnits[i]->BattleComponent->SetOwnerPCAndGM(OwnerController, this);
+			OwnerUnits.Add(Unit);
 		}
-			
 	}
-
 }
 
 
 void AJRPGGameMode::SetEnermyUnits(TArray<int32> Enermys)
 {
 
-	for (int32 i = 0; i < 3; i++)
+	for (int32 i = 0; i < Enermys.Num(); i++)
 	{
-		if (Enermys.IsValidIndex(i))
+		FTransform UnitLocation;
+		switch (i)
 		{
-			FTransform UnitLocation;
-			switch (i)
-			{
-			case 0:
-				UnitLocation = CurrentField->Enermy1->GetComponentTransform();
-				break;
-			case 1:
-				UnitLocation = CurrentField->Enermy2->GetComponentTransform();
-				break;
-			case 2:
-				UnitLocation = CurrentField->Enermy3->GetComponentTransform();
-				break;
-			default:
-				break;
-			}
+		case 0:
+			UnitLocation = CurrentField->Enermy1->GetComponentTransform();
+			break;
+		case 1:
+			UnitLocation = CurrentField->Enermy2->GetComponentTransform();
+			break;
+		case 2:
+			UnitLocation = CurrentField->Enermy3->GetComponentTransform();
+			break;
+		default:
+			break;
+		}
 
-			EnermyUnits[i] = GetEnermySpawn(Enermys[i], UnitLocation); // 없는 넘버는 nullptr 빈공간
-			EnermyUnits[i]->OwnerController = OwnerController;
-			EnermyUnits[i]->BattleComponent->SetOwnerPCAndGM(OwnerController, this);
+		AJRPGUnit* Unit = GetEnermySpawn(Enermys[i], UnitLocation); // 없는 넘버는 nullptr 빈공간
+
+		if (Unit != nullptr)
+		{
+			Unit->OwnerController = OwnerController;
+			Unit->BattleComponent->SetOwnerPCAndGM(OwnerController, this);
+			EnermyUnits.Add(Unit);
 		}
 
 	}

@@ -28,7 +28,7 @@ public:
 public:
 	// 메인 위젯이 두개이다. 평상시 위젯과, JRPG때의 위젯. 서로 다른 위젯이고 배틀일때 달라진다.
 
-	void CameraPossess(FVector Location);
+	void CameraPossess(FVector Location, FRotator Rotation);
 	void CameraSetUp(FVector Location);
 	void ExitCamera();
 	void PlayBattleMode(TArray<int32> EnermyUnits);
@@ -46,14 +46,15 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TSubclassOf<class AJRPGCamera> BP_Camera;
-	class AJRPGCamera* DynamicCamera;
+	UPROPERTY(VisibleAnywhere)
+		class AJRPGCamera* DynamicCamera;
 
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere)
 		FTransform FieldLocation;
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere)
 		int32 RepreCharacterNum; // 대표캐릭터
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere)
 		class AJRPGUnit* RepreCharacter;
 
 

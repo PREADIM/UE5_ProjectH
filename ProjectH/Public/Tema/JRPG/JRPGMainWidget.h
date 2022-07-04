@@ -3,18 +3,15 @@
 #pragma once
 
 #include "ProjectH.h"
-#include "Tema/JRPG/JRPGUnit.h"
-#include "JFE.generated.h"
+#include "Blueprint/UserWidget.h"
+#include "JRPGMainWidget.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECTH_API AJFE : public AJRPGUnit
+class PROJECTH_API UJRPGMainWidget : public UUserWidget
 {
 	GENERATED_BODY()
-
-public:
-
 	
 };

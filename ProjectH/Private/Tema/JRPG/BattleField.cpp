@@ -12,6 +12,7 @@ ABattleField::ABattleField()
 	Root = CreateDefaultSubobject<class USceneComponent>(TEXT("RootComponent"));
 	MainStaticMesh = CreateDefaultSubobject<class UStaticMeshComponent>(TEXT("MainBody"));
 
+
 	Unit1 = CreateDefaultSubobject<class USceneComponent>(TEXT("Unit1"));
 	Unit2 = CreateDefaultSubobject<class USceneComponent>(TEXT("Unit2"));
 	Unit3 = CreateDefaultSubobject<class USceneComponent>(TEXT("Unit3"));

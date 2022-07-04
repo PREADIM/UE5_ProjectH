@@ -2,10 +2,9 @@
 #include "ProjectH.h"
 #include "Engine/DataTable.h"
 #include "QuestStep.h"
+#include "QuestStruct.h"
 #include "NPCQuest.generated.h"
 
-
-struct FQuestStruct;
 
 
 USTRUCT(BlueprintType)
@@ -28,10 +27,6 @@ public:
 		class AQuestNPCBase* OwnerNPC; // °¡´É?
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool bCanAccepted; 
-
-	/*UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		bool bPrimary = true;*/
-
 
 	FNPCQuest();
 	FNPCQuest(const FQuestStruct& Quest);

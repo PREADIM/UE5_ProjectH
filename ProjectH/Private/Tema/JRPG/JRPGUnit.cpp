@@ -10,9 +10,17 @@
 AJRPGUnit::AJRPGUnit()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
+
+	bUseControllerRotationPitch = false;
+	bUseControllerRotationYaw = false;
+	bUseControllerRotationRoll = false;
+
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+	GetCharacterMovement()->RotationRate = FRotator(0.0f, 520.f, 0.f);
 
 	BattleComponent = CreateDefaultSubobject<UJRPGComponent>(TEXT("BattleComponent"));
+
 
 	//3인칭을 표현 할 스프링암
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
@@ -33,8 +41,10 @@ AJRPGUnit::AJRPGUnit()
 void AJRPGUnit::BeginPlay()
 {
 	Super::BeginPlay();
+	BattleComponent->OwnerUnit = this;
 
-	// 스폰했을때 이것이 실행될것이니, 캐릭터 넘버로 검색해서 스탯을 가져온다.
+
+	// ★★ 스폰했을때 이것이 실행될것이니, 캐릭터 넘버로 검색해서 스탯을 가져온다.
 
 }
 
@@ -66,16 +76,16 @@ void AJRPGUnit::PossessedBy(AController* NewController)
 -----------------*/
 void AJRPGUnit::Forward(float Value)
 {
-	
-	AddMovementInput(FRotationMatrix(GetControlRotation()).GetScaledAxis(EAxis::X), Value);
+	if(!bIsLMBAttack)
+		AddMovementInput(FRotationMatrix(GetControlRotation()).GetScaledAxis(EAxis::X), Value);
 
 }
 
 
 void AJRPGUnit::MoveRight(float Value)
 {
-	
-	AddMovementInput(FRotationMatrix(GetControlRotation()).GetScaledAxis(EAxis::Y), Value);
+	if (!bIsLMBAttack)
+		AddMovementInput(FRotationMatrix(GetControlRotation()).GetScaledAxis(EAxis::Y), Value);
 
 }
 
@@ -104,7 +114,10 @@ void AJRPGUnit::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAxis("LookRight", this, &AJRPGUnit::LookRight);
 
 	PlayerInputComponent->BindAction("LMB", IE_Pressed, this, &AJRPGUnit::LMB);
+	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
+	PlayerInputComponent->BindAction("TestKey", IE_Pressed, this, &AJRPGUnit::TestKey);
 }
+
 
 
 float AJRPGUnit::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -113,16 +126,11 @@ float AJRPGUnit::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent,
 
 	if (PlayerType == EPlayerType::Enermy) // 플레이어가 때림.
 	{
-		AJRPGPlayerController* PC = Cast<AJRPGPlayerController>(EventInstigator);
-		if (PC)
-		{
-			PC->PlayBattleMode(EnermyUnits);
-		}
+		
 	}
 	else if (PlayerType == EPlayerType::Player) // 플레이어가 맞음.
 	{
-		AJRPGUnit* Enermy = Cast<AJRPGUnit>(DamageCauser);
-		OwnerController->PlayBattleMode(Enermy->EnermyUnits);
+		
 	}
 
 	return DamageApplied;
@@ -133,9 +141,12 @@ void AJRPGUnit::LMB()
 {
 	if (LMBAnim)
 	{
-		PlayAnimMontage(LMBAnim); // 배틀 시작 공격 애니메이션 실행.
+		if (bIsLMBAttack)
+			return;
 
-		// 컨트롤러에 현재 필드 위치정보 전달. 돌아와야하기때문.
+		CallLMB();
+		PlayAnimMontage(LMBAnim); // 배틀 시작 공격 애니메이션 실행.
+		bIsLMBAttack = true;
 	}
 }
 
@@ -156,7 +167,7 @@ void AJRPGUnit::Skill_2()
 
 void AJRPGUnit::Skill_3()
 {
-	CallSkill_3();
+	CallULT();
 }
 
 
@@ -167,4 +178,18 @@ void AJRPGUnit::BattleStart()
 {
 	BattleComponent->Init(); // 해당 캐릭터의 정보를 나타내기 위해 위젯 초기화.
 	BattleComponent->BattleStart(); // 
+
+	// UI에 모든 정보를 초기화 해두고, UI에서 실행.
 }
+
+void AJRPGUnit::EnermyBattleStart()
+{
+	// 화면에있는 UI를 간소화.
+	// 적이 취할 행동 설정.
+	// 적이 때릴 내 캐릭터 타겟 설정.
+	// 타겟을 정했으면 해당 타겟으로 카메라 이동. 
+	// (해당 캐릭터가 그 적을 보고있어야하므로, 그 적을 향해서 카메라가 회전해야한다.)
+	// (FindLookAtRotation) 을 활용하면 될듯.
+	// 적 행동을 실행.
+}
+
