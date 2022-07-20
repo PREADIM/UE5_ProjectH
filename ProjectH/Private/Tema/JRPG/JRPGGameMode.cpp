@@ -96,9 +96,11 @@ void AJRPGGameMode::SetControllerInit()
 /*캐릭터 검색해서 해당 캐릭터 스폰하기.*/
 AJRPGUnit* AJRPGGameMode::GetCharacterSpawn(int32 CharacterNum, FTransform UnitLocation)
 {
+	FActorSpawnParameters SpawnParameters;
+	SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 	FJRPGCharList* List = CharListTable->FindRow<FJRPGCharList>(*FString::FromInt(CharacterNum), TEXT(""));
 	if (List)
-		return GetWorld()->SpawnActor<class AJRPGUnit>(List->BP_JRPGCharacter, UnitLocation);
+		return GetWorld()->SpawnActor<class AJRPGUnit>(List->BP_JRPGCharacter, UnitLocation, SpawnParameters);
 	else
 		return nullptr;
 }
@@ -107,9 +109,11 @@ AJRPGUnit* AJRPGGameMode::GetCharacterSpawn(int32 CharacterNum, FTransform UnitL
 /*적 캐릭터를 검색해서 해당 캐릭터 스폰하기.*/
 AJRPGUnit* AJRPGGameMode::GetEnermySpawn(int32 CharacterNum, FTransform UnitLocation)
 {
+	FActorSpawnParameters SpawnParameters;
+	SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 	FJRPGCharList* List = EnermyListTable->FindRow<FJRPGCharList>(*FString::FromInt(CharacterNum), TEXT(""));
 	if (List)
-		return GetWorld()->SpawnActor<class AJRPGUnit>(List->BP_JRPGCharacter, UnitLocation);
+		return GetWorld()->SpawnActor<class AJRPGUnit>(List->BP_JRPGCharacter, UnitLocation, SpawnParameters);
 	else
 		return nullptr;
 }
@@ -118,8 +122,13 @@ AJRPGUnit* AJRPGGameMode::GetEnermySpawn(int32 CharacterNum, FTransform UnitLoca
 /* 배틀 필드 가져오기. */
 bool AJRPGGameMode::GetBattleField(int32 FieldNum)
 {
+	FActorSpawnParameters SpawnParameters;
+	SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 	FBattleFieldList* List = FieldTable->FindRow<FBattleFieldList>(*FString::FromInt(FieldNum), TEXT(""));
-	CurrentField = GetWorld()->SpawnActor<class ABattleField>(List->BP_BattleField, FTransform(List->SpawnLocation));
+	if (CurrentField != nullptr)
+		CurrentField->Destroy();
+
+	CurrentField = GetWorld()->SpawnActor<class ABattleField>(List->BP_BattleField, FTransform(List->SpawnLocation), SpawnParameters);
 
 	if (CurrentField)
 		return true;
@@ -273,10 +282,10 @@ void AJRPGGameMode::SetOwnerUnits()
 			UnitLocation = CurrentField->Unit1->GetComponentTransform();
 			break;
 		case 1:
-			UnitLocation = CurrentField->Unit1->GetComponentTransform();
+			UnitLocation = CurrentField->Unit2->GetComponentTransform();
 			break;
 		case 2:
-			UnitLocation = CurrentField->Unit1->GetComponentTransform();
+			UnitLocation = CurrentField->Unit3->GetComponentTransform();
 			break;
 		default:
 			break;

@@ -127,6 +127,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		float ULTGage; // ±√±ÿ±‚ ∞‘¿Ã¡ˆ.
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+		float MaxULTGage; // √÷¥Î ±√±ÿ±‚ ∞‘¿Ã¡ˆ.
+
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool bIsLMBAttack;

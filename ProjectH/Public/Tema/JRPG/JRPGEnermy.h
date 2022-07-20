@@ -34,5 +34,11 @@ public:
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		int32 CharacterNum;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TArray<int32> EnermyUnits; // 적 유닛만 사용하는 기능, 무슨 유닛을가지고 있는지 판단.
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		bool bDead;
 };

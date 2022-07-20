@@ -35,6 +35,7 @@ AJRPGUnit::AJRPGUnit()
 	Camera->bUsePawnControlRotation = false;
 
 	Priority = 0;
+
 }
 
 // Called when the game starts or when spawned
@@ -76,7 +77,7 @@ void AJRPGUnit::PossessedBy(AController* NewController)
 -----------------*/
 void AJRPGUnit::Forward(float Value)
 {
-	if(!bIsLMBAttack)
+	if(!bIsLMBAttack || OwnerController->GameType == EGameModeType::UI)
 		AddMovementInput(FRotationMatrix(GetControlRotation()).GetScaledAxis(EAxis::X), Value);
 
 }
@@ -84,7 +85,7 @@ void AJRPGUnit::Forward(float Value)
 
 void AJRPGUnit::MoveRight(float Value)
 {
-	if (!bIsLMBAttack)
+	if (!bIsLMBAttack || OwnerController->GameType == EGameModeType::UI)
 		AddMovementInput(FRotationMatrix(GetControlRotation()).GetScaledAxis(EAxis::Y), Value);
 
 }
@@ -141,7 +142,7 @@ void AJRPGUnit::LMB()
 {
 	if (LMBAnim)
 	{
-		if (bIsLMBAttack)
+		if (bIsLMBAttack || OwnerController->GameType == EGameModeType::UI)
 			return;
 
 		CallLMB();

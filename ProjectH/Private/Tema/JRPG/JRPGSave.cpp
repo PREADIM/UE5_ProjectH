@@ -24,6 +24,8 @@ void UJRPGSave::FirstSave()
 	JRPGSerial.FieldLocation = FTransform(FRotator(0.0f, 90.0f, 0.0f), FVector(2518.f, -1835.f, 670.f)); // √π Ω√¿€
 	JRPGSerial.RepreCharacterNum = 101;
 	JRPGSerial.CurrentParty.Add(101);
+	JRPGSerial.CurrentParty.Add(102);
+	JRPGSerial.CurrentParty.Add(103);
 	JRPGSerial.CurrentFieldNum = 1;
 	JRPGSerial.HaveCharList.Add(101);
 	JRPGSerial.HaveCharStat.Add(101, FJRPGCharStat(1000.f, 100.f, 100.f, 30.f));

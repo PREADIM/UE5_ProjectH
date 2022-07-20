@@ -14,6 +14,8 @@ AJRPGEnermy::AJRPGEnermy()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 480.f, 0.f);
 
+	bDead = false;
+
 }
 
 // Called when the game starts or when spawned

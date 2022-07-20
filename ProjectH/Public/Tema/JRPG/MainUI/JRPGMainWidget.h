@@ -1,0 +1,46 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "ProjectH.h"
+#include "Blueprint/UserWidget.h"
+#include "JRPGMainWidget.generated.h"
+
+/**
+ * 
+ */
+// ★★ 배틀 상태가 아닌 평상시의 위젯의 총책임자.
+UCLASS()
+class PROJECTH_API UJRPGMainWidget : public UCustomWidget
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(meta = (BindWidget))
+		class UJRPGESCMenu* ESCMenu;
+
+	UPROPERTY(BlueprintReadWrite, Transient, meta = (BindWidgetAnim))
+		class UWidgetAnimation* ESCAnim;
+
+	UPROPERTY(meta = (BindWidget))
+		class UJRPGMainPartyUI* MainPartyUI;
+
+
+
+public:
+	virtual void SetCloseFunction() {}
+
+	void Init();
+
+	void PlayESCAnim(bool bPlay);
+
+	UFUNCTION()
+		void PlayESC(); // ESC 실행
+	UFUNCTION()
+		void ReverseESC(); // ESC끄기
+
+	float GetESCRenderOpacity();
+	void SetMouseOff();
+	void MouseOff();
+	
+};

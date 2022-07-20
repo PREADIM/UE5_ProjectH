@@ -5,11 +5,22 @@
 #include "ProjectH.h"
 #include "GameFramework/PlayerController.h"
 #include "Tema/JRPG/JRPGCharStat.h"
+#include "Tema/JRPG/JRPGUnitUIStruct.h"
 #include "JRPGPlayerController.generated.h"
 
 /**
  * 
  */
+UENUM(BlueprintType)
+enum class EGameModeType : uint8
+{
+	Normal UMETA(DisplayName = "Normal"),
+	Battle UMETA(DisplayName = "Battle"),
+	UI UMETA(DisplayName = "UI")
+};
+
+
+
 UCLASS()
 class PROJECTH_API AJRPGPlayerController : public APlayerController
 {
@@ -21,10 +32,14 @@ class PROJECTH_API AJRPGPlayerController : public APlayerController
 
 
 public:
+	AJRPGPlayerController();
+
 	virtual void BeginPlay();
 	virtual void OnPossess(APawn* NewPawn) override;
 
-
+	void SetupInputComponent();
+	
+	FJRPGUnitUIStruct* GetUnitUI(int32 CharacterNum);
 public:
 	// 메인 위젯이 두개이다. 평상시 위젯과, JRPG때의 위젯. 서로 다른 위젯이고 배틀일때 달라진다.
 
@@ -35,14 +50,20 @@ public:
 
 	void GameEndSpawnCharacter();
 
+	void OpenESC();
+	void MouseOnOff();
+	void MouseOn();
+	void MouseOff(); // 이렇게 따로 두는 이유는 필요에따라 계속해서 따로 On Off를 하기 위해서.
 
 
-
+	void SetSave(); // 게임모드에 접근하여 세이브하기.
 
 public:
 	UPROPERTY(VisibleAnywhere)
 		class AJRPGGameMode* GM;
 
+	UPROPERTY(VisibleAnywhere)
+		EGameModeType GameType;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TSubclassOf<class AJRPGCamera> BP_Camera;
@@ -69,4 +90,19 @@ public:
 	// 나중에 퀘스트 넘버처럼 번호와 BP 패스를 가지고 해당 넘버만 저장하고 불러오는 형식으로 만들어도될듯.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		TMap<int32, FJRPGCharStat> HaveCharStat; // 가지고 있는 캐릭터의 스텟들.
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MainUI)
+		TSubclassOf<class UJRPGTemaUI> BP_TemaMainUI;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MainUI)
+		class UJRPGTemaUI* TemaMainUI;
+
+	UPROPERTY(VisibleAnywhere)
+		class UDataTable* UnitUITable;
+
+
+	UPROPERTY()
+		TArray<UCustomWidget*> LastWidget; // 마지막 Widget을 스택처럼 저장하는 배열.
+	// AddToViewport 를 사용하는 UI만 저장한다. Animation을 가지고있는 이미 할당되어있는 UI는 제외.
+
 };

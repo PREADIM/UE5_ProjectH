@@ -4,14 +4,19 @@
 
 #include "ProjectH.h"
 #include "Blueprint/UserWidget.h"
-#include "JRPGMainWidget.generated.h"
+#include "JRPGSettingPartySlot.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECTH_API UJRPGMainWidget : public UUserWidget
+class PROJECTH_API UJRPGSettingPartySlot : public UUserWidget
 {
 	GENERATED_BODY()
+public:
+
+
+public:
+
 	
 };
