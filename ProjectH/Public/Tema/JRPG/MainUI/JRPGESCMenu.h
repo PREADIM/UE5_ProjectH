@@ -23,10 +23,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 		class UButton* Quit;
 
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TSubclassOf<class UJRPGPartySettingUI> BP_PartySettingUI;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		class UJRPGPartySettingUI* PartySettingUI; // 파티 셋팅하는 UI
+		TSubclassOf<class APartySettingField> BP_PartyField;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class APartySettingField* PartyField;
 
 
 	UPROPERTY(VisibleAnywhere)
@@ -44,4 +45,7 @@ public:
 	UFUNCTION()
 		void QuitTema();
 
+	void SpawnPartyField();
+
+	
 };

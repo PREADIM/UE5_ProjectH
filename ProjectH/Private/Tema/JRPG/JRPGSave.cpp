@@ -27,8 +27,14 @@ void UJRPGSave::FirstSave()
 	JRPGSerial.CurrentParty.Add(102);
 	JRPGSerial.CurrentParty.Add(103);
 	JRPGSerial.CurrentFieldNum = 1;
+
 	JRPGSerial.HaveCharList.Add(101);
+	JRPGSerial.HaveCharList.Add(102);
+	JRPGSerial.HaveCharList.Add(103);
+
 	JRPGSerial.HaveCharStat.Add(101, FJRPGCharStat(1000.f, 100.f, 100.f, 30.f));
+	JRPGSerial.HaveCharStat.Add(102, FJRPGCharStat(800.f, 100.f, 110.f, 20.f));
+	JRPGSerial.HaveCharStat.Add(103, FJRPGCharStat(700.f, 100.f, 125.f, 25.f));
 
 	SaveSlot();
 }

@@ -18,6 +18,8 @@ public:
 		class UTexture2D* CharTex;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FString CharName;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UTexture2D* PartySettingIcon;
 
 
 

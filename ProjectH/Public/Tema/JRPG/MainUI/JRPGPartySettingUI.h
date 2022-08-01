@@ -19,28 +19,18 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		class UJRPGMainWidget* OwnerMainUI;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TSubclassOf<class APartySettingField> BP_PartyField;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class APartySettingField* PartyField;
 
-	UPROPERTY()
-		TArray<int32> CurrentParty;
 	UPROPERTY(meta = (BindWidget))
 		class UButton* Exit;
 
-
-	/* 캐릭터 파티셋팅창에서 보여주기용으로 위한 캐릭터 리스트 */
 	UPROPERTY()
-		TArray<class AJRPGUnit*> SpawnChars;
+		class APartySettingField* PartyField;
 
 public:
 	virtual void SetCloseFunction() override;
 
 	void Init();
-	void SetCurrentParty(); // 현재 파티 목록을 세팅
 
 	UFUNCTION()
 		void ExitWidget();	
-
 };

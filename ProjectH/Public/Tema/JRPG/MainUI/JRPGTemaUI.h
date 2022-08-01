@@ -31,6 +31,7 @@ public:
 
 	void Init();
 	void OpenESCMenu();
+	void CloseESCMenu();
 	void OpenBattleESCMenu();
 
 

@@ -49,13 +49,7 @@ void AJRPGPlayerController::OnPossess(APawn* NewPawn)
 		// ★★ 원래는 이미 있는 RepreCharacter로 HaveCharStat에서 받아오는 것이지만, 나중에 구현.
 
 		GM->SetControllerInit(); // OnPossess를 하면 왜인지는 모르겠으나, 값이 초기화된다. 그래서 다시 설정.
-	}
-	else if (Cast<APartySettingField>(NewPawn))
-	{
-		GameType = EGameModeType::UI;
-	}
-
-	
+	}	
 }
 
 
@@ -65,6 +59,17 @@ FJRPGUnitUIStruct* AJRPGPlayerController::GetUnitUI(int32 CharacterNum)
 	FJRPGUnitUIStruct* UnitUI = UnitUITable->FindRow<FJRPGUnitUIStruct>(*FString::FromInt(CharacterNum), TEXT(""));
 	if (UnitUI)
 		return UnitUI;
+	else
+		return nullptr;
+}
+
+
+/* 파티세팅할 때 뜰 아이콘 */
+UTexture2D* AJRPGPlayerController::GetPartySettingIcon(int32 CharacterNum)
+{
+	FJRPGUnitUIStruct* UnitUI = UnitUITable->FindRow<FJRPGUnitUIStruct>(*FString::FromInt(CharacterNum), TEXT(""));
+	if (UnitUI)
+		return UnitUI->PartySettingIcon;
 	else
 		return nullptr;
 }
@@ -128,7 +133,12 @@ void AJRPGPlayerController::SetupInputComponent()
 	InputComponent->BindAction(TEXT("ESC"), IE_Released, this, &AJRPGPlayerController::OpenESC);
 	// 임시로 P키에 지정함.
 	InputComponent->BindAction(TEXT("MouseOnOff"), IE_Released, this, &AJRPGPlayerController::MouseOnOff);
+	//InputComponent->BindAction(TEXT("LMB"), IE_Released, this, &AJRPGPlayerController::LMB);
+
+
 }
+
+
 
 void AJRPGPlayerController::OpenESC()
 {
@@ -142,13 +152,15 @@ void AJRPGPlayerController::OpenESC()
 		{
 			if (!LastWidget.IsEmpty())
 			{
-				LastWidget.Top()->RemoveFromParent();
 				LastWidget.Top()->SetCloseFunction();
-				LastWidget.Pop();
 				if (LastWidget.IsEmpty()) // 이제서야 다 비워졌다면
 				{
 					GameType = EGameModeType::Normal;
 				}
+			}
+			else
+			{
+				TemaMainUI->CloseESCMenu();
 			}
 
 		}

@@ -5,6 +5,7 @@
 #include "Tema/JRPG/JRPGPlayerController.h"
 #include "Components/VerticalBox.h"
 #include "Tema/JRPG/MainUI/JRPGPartySlot.h"
+#include "Tema/JRPG/CustomWidget.h"
 
 
 void UJRPGMainPartyUI::Init()

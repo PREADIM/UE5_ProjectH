@@ -7,19 +7,12 @@
 #include "Tema/JRPG/MainUI/JRPGMainWidget.h"
 #include "Components/Button.h"
 #include "Tema/JRPG/CustomWidget.h"
+#include "Tema/JRPG/MainUI/PartySettingField.h"
 
 void UJRPGESCMenu::Init()
 {
 	PartySetting->OnClicked.AddDynamic(this, &UJRPGESCMenu::PartySet);
 	Quit->OnClicked.AddDynamic(this, &UJRPGESCMenu::QuitTema);
-
-	if (BP_PartySettingUI)
-	{
-		PartySettingUI = CreateWidget<UJRPGPartySettingUI>(GetWorld(), BP_PartySettingUI);
-		PartySettingUI->OwnerController = OwnerController;
-		PartySettingUI->OwnerMainUI = OwnerMainUI;
-		PartySettingUI->Init();
-	}
 }
 
 
@@ -28,19 +21,37 @@ void UJRPGESCMenu::PartySet()
 {
 	if (OwnerController)
 	{
-		if (PartySettingUI)
+		if (BP_PartyField)
 		{
 			if (OwnerMainUI)
 			{
-				PartySettingUI->SetCurrentParty();
-				OwnerMainUI->ReverseESC();
-				OwnerController->OnPossess(Cast<APawn>(PartySettingUI->PartyField));
-				OwnerController->MouseOn();
-				OwnerController->LastWidget.Add(PartySettingUI);
+				SpawnPartyField();
+				if (PartyField)
+				{
+					PartyField->SetCurrentParty();
+					OwnerMainUI->ReverseESC();
+					OwnerController->OnPossess(Cast<APawn>(PartyField));
+					OwnerController->MouseOn();
+					OwnerController->GameType = EGameModeType::UI;
+				}
+
 				OwnerMainUI->SetVisibility(ESlateVisibility::Hidden);
-				PartySettingUI->AddToViewport();
+				UE_LOG(LogTemp, Warning, TEXT("PartySet"));
 			}
 		}
+	}
+}
+
+void UJRPGESCMenu::SpawnPartyField()
+{
+	if (BP_PartyField)
+	{
+		FActorSpawnParameters SpawnParameters;
+		SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+		PartyField = GetWorld()->SpawnActor<APartySettingField>(BP_PartyField, FTransform(FVector(7441.f, -14870.f, 9812.f)), SpawnParameters);
+		PartyField->OwnerController = OwnerController;
+		PartyField->Init(OwnerMainUI);
+		UE_LOG(LogTemp, Warning, TEXT("SpawnPartyField"));
 	}
 }
 
@@ -54,3 +65,4 @@ void UJRPGESCMenu::QuitTema()
 		// 창은 TSubclassOf 형태로 가지고있고 AddToViewPort로 띄우자.
 	}
 }
+

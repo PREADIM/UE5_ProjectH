@@ -29,6 +29,7 @@ void UJRPGMainWidget::PlayESCAnim(bool bPlay)
 	{
 		OwnerController->MouseOnOff();
 		MainPartyUI->SetVisibility(ESlateVisibility::Hidden);
+		OwnerController->GameType = EGameModeType::UI;
 	}
 	else
 	{
@@ -68,3 +69,5 @@ void UJRPGMainWidget::MouseOff()
 		OwnerController->SetInputMode(FInputModeGameOnly());
 	}
 }
+
+

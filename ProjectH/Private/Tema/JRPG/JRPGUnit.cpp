@@ -77,7 +77,7 @@ void AJRPGUnit::PossessedBy(AController* NewController)
 -----------------*/
 void AJRPGUnit::Forward(float Value)
 {
-	if(!bIsLMBAttack || OwnerController->GameType == EGameModeType::UI)
+	if(!bIsLMBAttack && OwnerController->GameType != EGameModeType::UI)
 		AddMovementInput(FRotationMatrix(GetControlRotation()).GetScaledAxis(EAxis::X), Value);
 
 }
@@ -85,7 +85,7 @@ void AJRPGUnit::Forward(float Value)
 
 void AJRPGUnit::MoveRight(float Value)
 {
-	if (!bIsLMBAttack || OwnerController->GameType == EGameModeType::UI)
+	if (!bIsLMBAttack && OwnerController->GameType != EGameModeType::UI)
 		AddMovementInput(FRotationMatrix(GetControlRotation()).GetScaledAxis(EAxis::Y), Value);
 
 }

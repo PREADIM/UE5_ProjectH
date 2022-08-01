@@ -14,6 +14,7 @@
 UENUM(BlueprintType)
 enum class EGameModeType : uint8
 {
+
 	Normal UMETA(DisplayName = "Normal"),
 	Battle UMETA(DisplayName = "Battle"),
 	UI UMETA(DisplayName = "UI")
@@ -26,7 +27,6 @@ class PROJECTH_API AJRPGPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 
-
 // 전투가 시작되면 특정 맵으로 이동해서 해당 구역에서 전투를 하게한다. 즉, 돌아다니던 원본 데이터를 지우지않고, 
 // 그냥 전투 맵에서 캐릭터를 생성해서 쓰는 것이다.
 
@@ -38,8 +38,11 @@ public:
 	virtual void OnPossess(APawn* NewPawn) override;
 
 	void SetupInputComponent();
-	
+
 	FJRPGUnitUIStruct* GetUnitUI(int32 CharacterNum);
+	class UTexture2D* GetPartySettingIcon(int32 CharacterNum);
+
+
 public:
 	// 메인 위젯이 두개이다. 평상시 위젯과, JRPG때의 위젯. 서로 다른 위젯이고 배틀일때 달라진다.
 
@@ -57,6 +60,9 @@ public:
 
 
 	void SetSave(); // 게임모드에 접근하여 세이브하기.
+
+
+
 
 public:
 	UPROPERTY(VisibleAnywhere)

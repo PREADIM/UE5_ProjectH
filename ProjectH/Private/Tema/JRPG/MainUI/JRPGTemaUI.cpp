@@ -18,16 +18,17 @@ void UJRPGTemaUI::OpenESCMenu()
 {
 	if (MainWidget->IsInViewport())
 	{
-		if (MainWidget->GetESCRenderOpacity() >= 0.1f)
-		{
-			MainWidget->ReverseESC();
-			_DEBUG("Reverse");
-		}
-		else
-		{
-			MainWidget->PlayESC();
-			_DEBUG("Play");
-		}
+		MainWidget->PlayESC();
+		_DEBUG("Play");
+	}
+}
+
+void UJRPGTemaUI::CloseESCMenu()
+{
+	if (MainWidget->GetESCRenderOpacity() >= 0.1f)
+	{
+		MainWidget->ReverseESC();
+		_DEBUG("Reverse");
 	}
 }
 
