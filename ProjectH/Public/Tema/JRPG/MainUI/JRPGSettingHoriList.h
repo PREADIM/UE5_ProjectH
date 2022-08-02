@@ -28,6 +28,9 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		TArray<int32> CharNums; // 최대 4칸의 CharNum들
 
+	UPROPERTY()
+		class APartySettingField* OwnerField;
+
 public:
 	void Init();
 

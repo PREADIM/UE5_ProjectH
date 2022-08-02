@@ -15,8 +15,13 @@ void UJRPGSettingHoriList::Init()
 		UJRPGSettingPartyIcon* Icon = CreateWidget<UJRPGSettingPartyIcon>(GetWorld(), BP_UnitIcon);
 		if (Icon && OwnerController)
 		{	
-			if(CharNums.IsValidIndex(i))
-				Icon->Init(OwnerController->GetPartySettingIcon(CharNums[i]));
+			Icon->OwnerField = OwnerField;
+
+			if (CharNums.IsValidIndex(i))
+			{
+				Icon->CharNum = CharNums[i];
+				Icon->Init(OwnerController->GetPartySettingIcon(CharNums[i]));			
+			}
 			else
 			{
 				Icon->Init(Icon->NormalTex);

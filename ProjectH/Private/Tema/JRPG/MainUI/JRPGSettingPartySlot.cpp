@@ -38,6 +38,7 @@ void UJRPGSettingPartySlot::SetList()
 		if (HoriList)
 		{
 			HoriList->OwnerController = OwnerController;
+			HoriList->OwnerField = OwnerField;
 
 			int32 cnt = 0;
 			for (int32 i = Row * 4; OwnerController->HaveCharList.IsValidIndex(i) && cnt < 4; i++)
@@ -57,7 +58,6 @@ void UJRPGSettingPartySlot::SetList()
 
 void UJRPGSettingPartySlot::SetCloseFunction()
 {
-
 	ExitWidget();
 }
 

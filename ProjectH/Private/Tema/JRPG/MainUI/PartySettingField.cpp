@@ -91,8 +91,7 @@ void APartySettingField::Init(class UJRPGMainWidget* OwnerMainUI)
 			SettingUI->OwnerController = OwnerController;
 			SettingUI->OwnerField = this;
 			SettingUI->Init();
-			
-			CurrentParty = OwnerController->CurrentParty;
+	
 			UE_LOG(LogTemp, Warning, TEXT("Init"));
 		}
 	}
@@ -100,43 +99,52 @@ void APartySettingField::Init(class UJRPGMainWidget* OwnerMainUI)
 
 void APartySettingField::SetCurrentParty()
 {
-	if (PartySettingUI)
+	if (PartySettingUI && OwnerController)
 	{
-		for (int32 i = 0; i < 4; i++)
-		{
-			if (CurrentParty.IsValidIndex(i))
-			{
-				FTransform UnitLocation;
-				switch (i)
-				{
-				case 0:
-					UnitLocation = Unit1->GetComponentTransform();
-					break;
-				case 1:
-					UnitLocation = Unit2->GetComponentTransform();
-					break;
-				case 2:
-					UnitLocation = Unit3->GetComponentTransform();
-					break;
-				case 3:
-					UnitLocation = Unit4->GetComponentTransform();
-					break;
-				}
 
-				SpawnChars[i] = GM->GetCharacterSpawn(CurrentParty[i], UnitLocation);
-			}
-			else
-			{
-				SpawnChars[i] = nullptr;
-			}
-			
-		}
+		SpawnCharacter();
 
 		OwnerController->LastWidget.AddUnique(PartySettingUI);
 		PartySettingUI->AddToViewport();
 		UE_LOG(LogTemp, Warning, TEXT("SetCurrentParty"));
 	}
 
+}
+
+
+void APartySettingField::SpawnCharacter()
+{
+	CurrentParty = OwnerController->CurrentParty;
+
+	for (int32 i = 0; i < 4; i++)
+	{
+		FTransform UnitLocation;
+		switch (i)
+		{
+		case 0:
+			UnitLocation = Unit1->GetComponentTransform();
+			break;
+		case 1:
+			UnitLocation = Unit2->GetComponentTransform();
+			break;
+		case 2:
+			UnitLocation = Unit3->GetComponentTransform();
+			break;
+		case 3:
+			UnitLocation = Unit4->GetComponentTransform();
+			break;
+		}
+
+		if (CurrentParty.IsValidIndex(i))
+		{
+			SpawnChars[i] = GM->GetCharacterSpawn(CurrentParty[i], UnitLocation);
+		}
+		else
+		{
+			SpawnChars[i] = GM->GetCharacterSpawn(0, UnitLocation);
+		}
+
+	}
 }
 
 
@@ -170,6 +178,37 @@ void APartySettingField::SetSpawnUnit(int32 Number)
 		SpawnChars[Number] = GM->GetCharacterSpawn(CurrentParty[Number], UnitLocation);
 	}
 	
+
+}
+
+
+// 파티 캐릭터의 목록이 변경되었으므로, 다시 설정
+void APartySettingField::SetPartyList(int32 CharNum)
+{
+	// 선택한 캐릭터를 해제할때
+	if (SpawnChars[SelectNumber]->CharNum == CharNum)
+	{
+		// JRPGSettingPartySlot 위젯의 해제하기 버튼을 Visible 하기.
+
+	}
+	else if (SpawnChars[SelectNumber]->CharNum != CharNum)
+	{
+		SetSpawnUnit(SelectNumber); // 보여주기.
+		// JRPGSettingPartySlot 위젯의 선택하기 버튼을 Visible 하기.
+		// 선택하기 버튼을 누르면 리스트 교체.
+		
+	}
+
+	
+}
+
+
+// 파티 캐릭터의 목록이 변경되었으므로, 캐릭터 위치 재설정
+// ★★ 선택하기나 해제하기 눌렀을때 실행되게한다.
+void APartySettingField::SetPartyChar()
+{
+	SpawnCharacter(); // 컨트롤러의 CurrentParty를 다시 새롭게 받아오면서 새로 스폰하기.
+	ResomeUI();
 }
 
 
@@ -207,7 +246,8 @@ void APartySettingField::LMB()
 						break;
 					}
 
-					break;
+					SelectNumber = i; // 이걸 기억하고있어야 캐릭터 아이콘을 선택했을때 해당 칸을 변경가능
+ 					break;
 				}
 			}
 

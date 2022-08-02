@@ -74,6 +74,8 @@ public:
 	FVector TargetLocation;
 	FVector CurrentLocation;
 
+	int32 SelectNumber; // 몇번째 칸을 선택 했는가?
+
 
 protected:
 	// Called when the game starts or when spawned
@@ -93,7 +95,11 @@ public:
 		void LMB();
 
 	void SetCurrentParty();
+	void SpawnCharacter();
 	void SetSpawnUnit(int32 Number);
+	void SetPartyList(int32 CharNum); // 파티 캐릭터의 목록이 변경되었으므로, 다시 설정
+	UFUNCTION()
+		void SetPartyChar(); // 파티 캐릭터의 목록이 변경되었으므로, 캐릭터 위치 재설정.
 
 	void SettingPartySlot(); // 파티 변경하는 UI 띄우기.
 	void ResomeUI(); // 다시 맨처음 파티 UI 설정으로 돌아가기.

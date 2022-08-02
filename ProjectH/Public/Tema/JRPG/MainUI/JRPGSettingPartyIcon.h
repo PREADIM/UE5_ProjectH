@@ -21,9 +21,16 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UTexture2D* NormalTex; // ºóÄ­ ÅØ½ºÃÄ
 
+	UPROPERTY()
+		int32 CharNum;
 
+	UPROPERTY()
+		class APartySettingField* OwnerField;
 
 
 public:
 	void Init(UTexture2D* Texture);
+
+	UFUNCTION()
+		void SetPartyList();
 };

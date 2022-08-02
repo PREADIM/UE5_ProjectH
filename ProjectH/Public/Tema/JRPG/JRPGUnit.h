@@ -106,6 +106,10 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		float MouseSensitivity;
 
+	UPROPERTY(VisibleAnywhere)
+		int32 CharNum; // 해당 캐릭터의 넘버
+
+
 	/*-----------------
 		전투 스테이스
 	-------------------*/
