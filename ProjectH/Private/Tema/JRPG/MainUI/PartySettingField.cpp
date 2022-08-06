@@ -89,6 +89,7 @@ void APartySettingField::Init(class UJRPGMainWidget* OwnerMainUI)
 			PartySettingUI->PartyField = this;
 			
 			SettingUI->OwnerController = OwnerController;
+			SettingUI->GM = GM;
 			SettingUI->OwnerField = this;
 			SettingUI->Init();
 	
@@ -101,7 +102,6 @@ void APartySettingField::SetCurrentParty()
 {
 	if (PartySettingUI && OwnerController)
 	{
-
 		SpawnCharacter();
 
 		OwnerController->LastWidget.AddUnique(PartySettingUI);
@@ -114,6 +114,15 @@ void APartySettingField::SetCurrentParty()
 
 void APartySettingField::SpawnCharacter()
 {
+	for(int32 i = 0; i < 4; i++)
+	{
+		if (SpawnChars[i] != nullptr)
+		{
+			SpawnChars[i]->Destroy();
+		}
+	}
+
+
 	CurrentParty = OwnerController->CurrentParty;
 
 	for (int32 i = 0; i < 4; i++)
@@ -149,7 +158,7 @@ void APartySettingField::SpawnCharacter()
 
 
 /* 파티셋팅에서 파티를 변경했을때 해당 칸만 실시간으로 새로 스폰하는 함수.*/
-void APartySettingField::SetSpawnUnit(int32 Number)
+void APartySettingField::SetSpawnUnit(int32 Number, int32 CharNum)
 {
 	FTransform UnitLocation;
 	switch (Number)
@@ -171,11 +180,12 @@ void APartySettingField::SetSpawnUnit(int32 Number)
 	if (SpawnChars[Number] != nullptr)
 	{
 		SpawnChars[Number]->Destroy();
-		SpawnChars[Number] = GM->GetCharacterSpawn(CurrentParty[Number], UnitLocation);
+		SpawnChars[Number] = GM->GetCharacterSpawn(CharNum, UnitLocation); // 선택한 캐릭터 미리 보기
+		// 컨트롤러의 CurrentParty는 건들지않음.
 	}
 	else
 	{
-		SpawnChars[Number] = GM->GetCharacterSpawn(CurrentParty[Number], UnitLocation);
+		SpawnChars[Number] = GM->GetCharacterSpawn(CharNum, UnitLocation);
 	}
 	
 
@@ -185,20 +195,92 @@ void APartySettingField::SetSpawnUnit(int32 Number)
 // 파티 캐릭터의 목록이 변경되었으므로, 다시 설정
 void APartySettingField::SetPartyList(int32 CharNum)
 {
-	// 선택한 캐릭터를 해제할때
-	if (SpawnChars[SelectNumber]->CharNum == CharNum)
+	if (SettingUI)
 	{
-		// JRPGSettingPartySlot 위젯의 해제하기 버튼을 Visible 하기.
+		// 아예 새로 추가하는 로직
+		if (!OwnerController->CurrentParty.IsValidIndex(SelectNumber))
+		{
 
-	}
-	else if (SpawnChars[SelectNumber]->CharNum != CharNum)
-	{
-		SetSpawnUnit(SelectNumber); // 보여주기.
-		// JRPGSettingPartySlot 위젯의 선택하기 버튼을 Visible 하기.
-		// 선택하기 버튼을 누르면 리스트 교체.
-		
-	}
+			bool bCan = true; // 이미 파티에 있으면 할필요 x
+			for (int32 i = 0; i < OwnerController->CurrentParty.Num(); i++)
+			{
+				if (CharNum == SpawnChars[i]->CharNum)
+				{
+					bCan = false; // 이미 있으므로 하지 말것
+					//여기서 이미 존재한다고 경고창 띄우기.
+					// OwnerController->LastWidget에 넣기.
+					break;
+				}
+			}
 
+			if (bCan)
+			{
+				SetSpawnUnit(SelectNumber, CharNum);
+				SettingUI->SetVisibilityOutButton(false); // 해제하기 끄기.
+				SettingUI->SetVisibilitySelectButton(true); // 선택하기 켜기.
+				SettingUI->SetCharNum = CharNum;
+				SettingUI->SetPartyChange(); // 새롭게 추가하고 바로 나가기.
+			}
+			return;
+		}
+
+		// 위의 조건문은 아예 새로 추가하므로 아래 로직을 실행할 필요가 x
+
+		if (SpawnChars[SelectNumber]->CharNum == CharNum && CharNum != 0) // 같은걸 선택하면 애초에 해제하기만 떠야함. 스폰 할 필요x
+		{
+			SettingUI->SetVisibilitySelectButton(false); // 선택하기 끄기
+			SettingUI->SetVisibilityOutButton(true); // 해제하기 켜기.
+
+			// 스폰할 필요x 아래에 따로 또 있는 이유는, 
+			// 다른걸 눌렀다가, 다시 원래 편성된 캐릭터를 눌렀을때 해제하기가 뜨게하기 위함이다.
+		}		
+		else if (SpawnChars[SelectNumber]->CharNum != CharNum && CharNum != 0)
+		{
+			// CurrentParty와 다르고, 스폰 캐릭터와도 다르다는 얘기는, 기존에 선택된 캐릭터도 아니고 아예 다른걸 선택했다는 의미
+
+			int32 SwapCharNumber = -1;
+			int32 SwapCharFieldNum = -1;
+			for (int32 i = 0; i < OwnerController->CurrentParty.Num(); i++)
+			{
+				if (CharNum == SpawnChars[i]->CharNum)
+				{
+					SwapCharFieldNum = i;
+					SwapCharNumber = SpawnChars[SelectNumber]->CharNum; // 이미 가지고있는 곳 찾아서 교체.
+					break;
+				}
+			}
+
+
+			if (SwapCharNumber != -1)
+				SetSpawnUnit(SwapCharFieldNum, SwapCharNumber); // 기존 캐릭터 위치 변경
+
+			SetSpawnUnit(SelectNumber, CharNum); // 보여주기.		
+
+			// ★ 여기가 중요하다. 컨트롤러의 원래 파티에 있던 자리인지 파악해서, 해제하기인지 아닌지 판단한다.
+			if (OwnerController->CurrentParty[SelectNumber] == CharNum && CharNum != 0)
+			{
+				// 선택한 캐릭터를 해제할때
+				// JRPGSettingPartySlot 위젯의 해제하기 버튼을 Visible 하기
+				SettingUI->SetVisibilitySelectButton(false); // 선택하기 끄기
+				SettingUI->SetVisibilityOutButton(true); // 해제하기 켜기.
+
+			}
+			else
+			{
+				SettingUI->SetVisibilityOutButton(false); // 해제하기 끄기.
+				SettingUI->SetVisibilitySelectButton(true); // 선택하기 켜기.
+				SettingUI->SetCharNum = CharNum;
+
+				// JRPGSettingPartySlot 위젯의 선택하기 버튼을 Visible 하기.
+				// 선택하기 버튼을 누르면 리스트 교체.
+			}
+		}
+		else
+		{
+			SettingUI->SetVisibilityOutButton(false);
+			SettingUI->SetVisibilitySelectButton(false);
+		}
+	}
 	
 }
 
@@ -257,7 +339,13 @@ void APartySettingField::LMB()
 				OwnerController->LastWidget.AddUnique(SettingUI);
 
 				if (!SettingUI->IsInViewport())
+				{
 					SettingPartySlot();			
+				}
+
+				SettingUI->SelectFieldNumber = SelectNumber;
+				if(OwnerController->CurrentParty.IsValidIndex(SelectNumber))
+					SettingUI->SetVisibilityOutButton(true); // 해제하기 켜기.
 			}	
 		}
 	}
@@ -279,4 +367,7 @@ void APartySettingField::ResomeUI()
 {
 	PartySettingUI->SetVisibility(ESlateVisibility::Visible);
 	TargetLocation = ZeroLocation;
+	SpawnCharacter();
+	SettingUI->SetVisibilityOutButton(false);
+	SettingUI->SetVisibilitySelectButton(false);
 }

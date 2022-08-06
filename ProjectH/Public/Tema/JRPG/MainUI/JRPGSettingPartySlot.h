@@ -4,6 +4,7 @@
 
 #include "ProjectH.h"
 #include "Blueprint/UserWidget.h"
+#include "Tema/JRPG/CustomWidget.h"
 #include "JRPGSettingPartySlot.generated.h"
 
 /**
@@ -19,13 +20,22 @@ public:
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 		class UButton* Exit;
 
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+		class UButton* Out; // 해제하기 버튼
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+		class UButton* Select; // 선택하기 버튼
+
 	UPROPERTY(EditAnywhere)
 		TSubclassOf<class UJRPGSettingHoriList> BP_HoriList; // 리스트목록에 뜰 캐릭터 아이콘들을 모은것
+	
 	UPROPERTY()
-		int32 HaveCharNum;
+		int32 SetCharNum; // 선택된 캐릭터 넘버
+	UPROPERTY()
+		int32 SelectFieldNumber; // 선택된 캐릭터 넘버
 
 	UPROPERTY()
 		class APartySettingField* OwnerField;
+
 
 public:
 	void Init();
@@ -35,6 +45,17 @@ public:
 		void ExitWidget();
 
 	virtual void SetCloseFunction();
+
+	void SetVisibilityOutButton(bool bFlag); // 해제하기 버튼 비지빌리티 설정.
+	void SetVisibilitySelectButton(bool bFlag); // 선택하기 버튼 비지빌리티 설정.
+
+	UFUNCTION()
+		void SetPartyOut();
+	UFUNCTION()
+		void SetPartyChange();
+
+
+	void SetCurrentPartySave(); // 새롭게 파티 설정.
 
 	// ★영웅을 클릭했을때 선택하기 , 해제하기 버튼을 따로 만들자. Hidden으로 버튼을 숨겼다가 누르면 Visible하기.
 	// 선택하기 해제하기 버튼은 SetPartyChar()함수를 OnClicked에 가지고있는다.

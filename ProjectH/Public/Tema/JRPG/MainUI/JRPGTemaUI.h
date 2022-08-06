@@ -4,6 +4,7 @@
 
 #include "ProjectH.h"
 #include "Blueprint/UserWidget.h"
+#include "Tema/JRPG/CustomWidget.h"
 #include "JRPGTemaUI.generated.h"
 
 /**
@@ -41,4 +42,6 @@ public:
 
 	void StartBattleWidget();
 	void StartMainWidget();
+
+	void SetPartyChange(); // 파티 리스트 새롭게 변경.
 };

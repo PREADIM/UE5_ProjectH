@@ -205,3 +205,12 @@ void AJRPGPlayerController::SetSave()
 		GM->SetSaveJRPG();
 	}
 }
+
+
+void AJRPGPlayerController::SetPartyChange()
+{
+	if (TemaMainUI)
+	{
+		TemaMainUI->SetPartyChange();
+	}
+}

@@ -26,5 +26,8 @@ public:
 	virtual void SetCloseFunction() {}
 	void Init();
 	//float GetESCRenderOpacity();
+
+
+	void SetPartyChange();
 	
 };

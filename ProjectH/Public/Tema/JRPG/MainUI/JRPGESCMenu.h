@@ -4,6 +4,7 @@
 
 #include "ProjectH.h"
 #include "Blueprint/UserWidget.h"
+#include "Tema/JRPG/CustomWidget.h"
 #include "JRPGESCMenu.generated.h"
 
 /**

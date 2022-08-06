@@ -61,7 +61,7 @@ public:
 
 	void SetSave(); // 게임모드에 접근하여 세이브하기.
 
-
+	void SetPartyChange(); // 파티 변경했으니 위젯에서 파티 변경.
 
 
 public:

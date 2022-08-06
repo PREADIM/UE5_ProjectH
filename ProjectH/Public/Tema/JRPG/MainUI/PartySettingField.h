@@ -58,8 +58,10 @@ public:
 
 
 	/* 캐릭터 파티셋팅창을 다이나믹하게 활용하기 위한 변수들. ★★ */
-	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
-	class APartySettingField* PartySettingField;
+	UPROPERTY()
+		TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
+	UPROPERTY()
+		class APartySettingField* PartySettingField;
 	UPROPERTY()
 		TArray<class AJRPGUnit*> SpawnChars;
 	UPROPERTY(VisibleAnywhere)
@@ -71,9 +73,9 @@ public:
 	UPROPERTY(EditAnywhere)
 		FVector ZeroLocation;
 
+
 	FVector TargetLocation;
 	FVector CurrentLocation;
-
 	int32 SelectNumber; // 몇번째 칸을 선택 했는가?
 
 
@@ -96,7 +98,7 @@ public:
 
 	void SetCurrentParty();
 	void SpawnCharacter();
-	void SetSpawnUnit(int32 Number);
+	void SetSpawnUnit(int32 Number, int32 CharNum);
 	void SetPartyList(int32 CharNum); // 파티 캐릭터의 목록이 변경되었으므로, 다시 설정
 	UFUNCTION()
 		void SetPartyChar(); // 파티 캐릭터의 목록이 변경되었으므로, 캐릭터 위치 재설정.

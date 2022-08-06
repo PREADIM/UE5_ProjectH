@@ -10,7 +10,7 @@
 
 void UJRPGSettingHoriList::Init()
 {
-	for (int32 i = 0; i < 4; i++)
+	for (int32 i = 0; i < CharNums.Num(); i++)
 	{
 		UJRPGSettingPartyIcon* Icon = CreateWidget<UJRPGSettingPartyIcon>(GetWorld(), BP_UnitIcon);
 		if (Icon && OwnerController)

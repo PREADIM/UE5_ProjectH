@@ -14,3 +14,10 @@ void UJRPGBattleWidget::Init()
 {
 	return ESCMenu->GetRenderOpacity();
 }*/
+
+
+
+void UJRPGBattleWidget::SetPartyChange()
+{
+
+}

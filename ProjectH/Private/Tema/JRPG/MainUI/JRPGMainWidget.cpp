@@ -71,3 +71,8 @@ void UJRPGMainWidget::MouseOff()
 }
 
 
+void UJRPGMainWidget::SetPartyChange()
+{
+	if(MainPartyUI)
+		MainPartyUI->Init();
+}

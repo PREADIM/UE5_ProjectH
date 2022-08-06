@@ -94,3 +94,14 @@ void UJRPGTemaUI::StartMainWidget()
 
 	MainWidget->AddToViewport();
 }
+
+
+
+void UJRPGTemaUI::SetPartyChange()
+{
+	if (MainWidget && BattleWidget)
+	{
+		MainWidget->SetPartyChange();
+		BattleWidget->SetPartyChange();
+	}
+}
