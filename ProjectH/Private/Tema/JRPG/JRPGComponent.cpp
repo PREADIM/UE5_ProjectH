@@ -4,6 +4,8 @@
 #include "Tema/JRPG/JRPGComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Tema/JRPG/JRPGGameMode.h"
+#include "Tema/JRPG/JRPGPlayerController.h"
+#include "Tema/JRPG/MainUI/JRPGTemaUI.h"
 
 
 // Sets default values for this component's properties
@@ -55,9 +57,7 @@ void UJRPGComponent::BattleEnd()
 	if (GM)
 	{
 		GM->TurnEnd();
-
 	}
-
 }
 
 
@@ -65,4 +65,9 @@ void UJRPGComponent::SetOwnerPCAndGM(class AJRPGPlayerController* PC , class AJR
 {
 	OwnerController = PC;
 	GM = GameMode;
+	if (OwnerController)
+	{
+		BattleWidget = OwnerController->TemaMainUI->BattleWidget;
+
+	}
 }

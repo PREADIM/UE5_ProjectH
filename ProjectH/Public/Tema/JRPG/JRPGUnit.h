@@ -4,6 +4,7 @@
 #include "ProjectH.h"
 #include "GameFramework/Character.h"
 #include "Tema/JRPG/JRPGCharStat.h"
+#include "Tema/JRPG/JRPGUnitSkill.h"
 #include "JRPGUnit.generated.h"
 
 
@@ -64,9 +65,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void Skill_1();
 	UFUNCTION(BlueprintCallable)
-		void Skill_2();
-	UFUNCTION(BlueprintCallable)
-		void Skill_3();
+		void Skill_ULT();
 
 
 	/* 블루프린트에서 실행. */
@@ -77,16 +76,19 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 		void CallSkill_1();
 	UFUNCTION(BlueprintImplementableEvent)
-		void CallSkill_2();
-	UFUNCTION(BlueprintImplementableEvent)
 		void CallULT();
 
+
+	bool GetUsingSkill() { return bUsingSkill; }
+	UFUNCTION(BlueprintImplementableEvent)
+		void UnitSkillESC();
 
 
 public:
 	void BattleStart();
 	void EnermyBattleStart();
 
+	void InitCurrentStat(); // 현재 체력과 MP를 가져온다.
 
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
@@ -109,6 +111,8 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		int32 CharNum; // 해당 캐릭터의 넘버
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FJRPGUnitSkill UnitSkills;
 
 	/*-----------------
 		전투 스테이스
@@ -128,7 +132,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float CurrentMP; // 적은 미리 정해줌.
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		float ULTGage; // 궁극기 게이지.
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
@@ -138,6 +142,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool bIsLMBAttack;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool bUsingSkill; // 스킬 실행중. 스킬실행중이면 ESC로 끄기 위해서.
 
 
 };

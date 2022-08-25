@@ -22,12 +22,56 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		class AJRPGGameMode* GM;
 
+	UPROPERTY(meta = (BindWidget))
+		class UJRPGPriority* JRPGPriorityList;
+
+	UPROPERTY(meta = (BindWidget))
+		class UJRPGSkillButton* NormalAttack;
+	UPROPERTY(meta = (BindWidget))
+		class UJRPGSkillButton* SkillButton;
+	UPROPERTY(meta = (BindWidget))
+		class UJRPGULTButton* ULTButton;
+
+	UPROPERTY(meta = (BindWidget))
+		class UHorizontalBox* EnermyList;
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<class UEnermyIconButton> BP_EnermyIcon;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<class UUserWidget> BP_LockOnIcon;
+	UPROPERTY()
+		class UUserWidget* LockOnIcon;
+
+	FVector TargetLockOn;
+	FVector2D Pos;
+
+
+	UPROPERTY()
+		class AJRPGUnit* TargetUnit; // 현재 바라보는 타겟 유닛. ★★
+
+	UPROPERTY()
+		bool bButtonVisible; // 버튼이 활성화 되어있는지
+
 public:
-	virtual void SetCloseFunction() {}
+	virtual void NativeConstruct() override;
+	virtual void NativeTick(const FGeometry& MyGeometry, const float InDeltaTime) override;
+
+
 	void Init();
-	//float GetESCRenderOpacity();
+	void PlayPriority(); // 배틀이 시작되고 위젯 실행.
+	void SetUnitList(); // 게임할때 Hidden 하고 다시 Visible 하면 애초에 바뀐상태로 UnitList가 되어있음.
+	void EnermyListBeginInit(); // 맨 처음에 현재 존재하는 적 리스트 초기화.
+	void EnermyListInit(); // 적 리스트 초기화.
+	void SetVisible(bool bFlag);
+	void SetButtonVisible(bool bFlag);
 
+	void SetLockOn(int32 Num = 0); // 락온 UI 띄우기 함수.
+	void HiddenLockOn();
 
-	void SetPartyChange();
+	// 배틀 턴 시작
+	void BattleTurnInit();
+	void EnermyTurnFirst();
 	
 };

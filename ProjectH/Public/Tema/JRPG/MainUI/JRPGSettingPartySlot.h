@@ -3,7 +3,6 @@
 #pragma once
 
 #include "ProjectH.h"
-#include "Blueprint/UserWidget.h"
 #include "Tema/JRPG/CustomWidget.h"
 #include "JRPGSettingPartySlot.generated.h"
 
@@ -25,6 +24,18 @@ public:
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 		class UButton* Select; // 선택하기 버튼
 
+	/*UPROPERTY(EditAnywhere, meta = (BindWidget))
+		class UButton* Arrow_L;
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+		class UButton* Arrow_R;*/
+
+
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+		class UTextBlock* WarningText;
+
+	UPROPERTY(BlueprintReadWrite, Transient, meta = (BindWidgetAnim))
+		class UWidgetAnimation* PlayWarning;
+
 	UPROPERTY(EditAnywhere)
 		TSubclassOf<class UJRPGSettingHoriList> BP_HoriList; // 리스트목록에 뜰 캐릭터 아이콘들을 모은것
 	
@@ -35,6 +46,7 @@ public:
 
 	UPROPERTY()
 		class APartySettingField* OwnerField;
+
 
 
 public:
@@ -54,6 +66,12 @@ public:
 	UFUNCTION()
 		void SetPartyChange();
 
+	UFUNCTION()
+		void ArrowLeftClick();
+	UFUNCTION()
+		void ArrowRightClick();
+
+
 
 	void SetCurrentPartySave(); // 새롭게 파티 설정.
 
@@ -64,4 +82,8 @@ public:
 	// 해제하기는 무조건 파티리스트가 줄어들기때문에 그 뒤에있는 캐릭터를 앞으로 가지고 와야한다.
 	// 선택하기는 파티리스트는 줄어들지않고, 캐릭터 위치가 변하거나, 새롭게 스폰하는 것이므로,
 	// 이미 있는 캐릭터인지 판단하고 있으면 서로 자리만 교체하고, 없으면 Destroy후에 CurrentParty에 번호 할당.
+
+
+	void PlayWarningText(); // 다 찻다고 경고창 띄우기.
+
 };

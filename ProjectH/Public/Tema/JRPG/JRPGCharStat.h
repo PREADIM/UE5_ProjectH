@@ -26,8 +26,12 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		float Shelid; // ¹æ¾î·Â
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+		float MaxULT;
+
+
 public:
 	FJRPGCharStat();
-	FJRPGCharStat(float HP, float MP, float AT, float DFS);
+	FJRPGCharStat(float HP, float MP, float AT, float DFS, float ULT);
 };
 

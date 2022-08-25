@@ -48,7 +48,9 @@ public:
 
 	void CameraPossess(FVector Location, FRotator Rotation);
 	void CameraSetUp(FVector Location);
+	void CameraRotSetUp(FRotator Rotation);
 	void ExitCamera();
+	FVector GetCameraLocation();
 	void PlayBattleMode(TArray<int32> EnermyUnits);
 
 	void GameEndSpawnCharacter();
@@ -62,6 +64,26 @@ public:
 	void SetSave(); // 게임모드에 접근하여 세이브하기.
 
 	void SetPartyChange(); // 파티 변경했으니 위젯에서 파티 변경.
+
+	void SetParty_First();
+	void SetParty_Second();
+	void SetParty_Third();
+
+
+	void SetRepreCharacterSpawn(int32 index); // 다시 대표 캐릭터로 OnPossess하는 함수
+	void SetRepreCharacterSpawnUI(int32 index); // UI에서 다시Character로 돌아오는 함수.
+
+
+	
+
+	// 배틀 
+	void StartBattleWidget();
+	void BattleTurnStart();
+	void SetVisibleBattleWidget(bool bFlag); // 배틀위젯 숨기거나 켜기.
+
+	void BattleESC();
+
+	void SetDyCameraRot(FRotator Rotation);
 
 
 public:
@@ -89,7 +111,8 @@ public:
 		TArray<int32> CurrentParty; // 현재 선택되어있는 파티리스트
 	UPROPERTY(VisibleAnywhere)
 		int32 CurrentFieldNum; // 필드 정보
-
+	UPROPERTY(VisibleAnywhere)
+		int32 CurrentPartyIndex = 0; // 현재 몇번째 인덱스인지.
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		TArray<int32> HaveCharList; // 가지고 있는 전체 캐릭터 넘버 (추후 세이브 로드 해야함).
@@ -110,5 +133,12 @@ public:
 	UPROPERTY()
 		TArray<UCustomWidget*> LastWidget; // 마지막 Widget을 스택처럼 저장하는 배열.
 	// AddToViewport 를 사용하는 UI만 저장한다. Animation을 가지고있는 이미 할당되어있는 UI는 제외.
+
+
+	UPROPERTY(VisibleAnywhere)
+		class AJRPGUnit* CurrentUnit; // ESC를 할 Unit 스킬을 실행 중이면 취소하고 , 아무것도 실행중이지 않으면 나가기 창을 띄운다.
+
+	UPROPERTY(VisibleAnywhere)
+		class AJRPGUnit* TargetUnit; // BattleWidget에서 정한 현재 공격할 TargetUnit;
 
 };

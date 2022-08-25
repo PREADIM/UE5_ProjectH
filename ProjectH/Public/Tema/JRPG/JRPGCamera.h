@@ -26,6 +26,8 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+
+
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Arm)
 		class USceneComponent* Root;
@@ -44,6 +46,12 @@ public:
 		FRotator TargetRotation;
 	UPROPERTY(VisibleAnywhere)
 		FRotator CurrentRotation;
+
+	UPROPERTY(VisibleAnywhere)
+		class AJRPGPlayerController* OwnerController;
+	UPROPERTY(VisibleAnywhere)
+		class ABattleField* CurrentField;
+	
 
 
 };

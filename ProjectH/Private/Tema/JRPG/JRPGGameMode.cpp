@@ -2,6 +2,7 @@
 
 
 #include "Tema/JRPG/JRPGGameMode.h"
+#include "Tema/JRPG/JRPGCamera.h"
 #include "Tema/JRPG/JRPGPlayerController.h"
 #include "Tema/JRPG/BattleFieldList.h"
 #include "Tema/JRPG/JRPGCharList.h"
@@ -77,6 +78,7 @@ void AJRPGGameMode::PostLogin(APlayerController* Login)
 			//AJRPGUnit* DefaultCharacter = GetCharacterSpawn(OwnerController->RepreCharacterNum, OwnerController->FieldLocation);
 
 			AJRPGUnit* DefaultCharacter = GetCharacterSpawn(JRPGSave->JRPGSerial.RepreCharacterNum, JRPGSave->JRPGSerial.FieldLocation);
+
 			if (DefaultCharacter)
 			{
 				OwnerController->OnPossess(Cast<APawn>(DefaultCharacter));
@@ -118,7 +120,12 @@ AJRPGUnit* AJRPGGameMode::GetEnermySpawn(int32 CharacterNum, FTransform UnitLoca
 	SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 	FJRPGCharList* List = EnermyListTable->FindRow<FJRPGCharList>(*FString::FromInt(CharacterNum), TEXT(""));
 	if (List)
-		return GetWorld()->SpawnActor<class AJRPGUnit>(List->BP_JRPGCharacter, UnitLocation, SpawnParameters);
+	{
+		AJRPGUnit* Unit = GetWorld()->SpawnActor<class AJRPGUnit>(List->BP_JRPGCharacter, UnitLocation, SpawnParameters);
+		if (Unit)
+			Unit->CharNum = CharacterNum;
+		return Unit;
+	}	
 	else
 		return nullptr;
 }
@@ -148,6 +155,8 @@ void AJRPGGameMode::BattleStart(int32 FieldNum, TArray<int32> Enermys)
 	if (!GetBattleField(FieldNum)) // 필드 생성.
 		return;
 
+	_DEBUG("BattleStart");
+
 	SetOwnerUnits(); // 오너 컨트롤러에 있는 파티 리스트 캐릭터 생성.
 	SetEnermyUnits(Enermys); // 적 생성.
 
@@ -160,15 +169,18 @@ void AJRPGGameMode::BattleStart(int32 FieldNum, TArray<int32> Enermys)
 	// 배틀에 진입하는 시네마틱 구현해야한다. 여기서 실행하든 캐릭터와 오버랩될때 시작하든 한다.
 
 
-	OwnerController->CameraPossess(OwnerUnits[0]->GetActorLocation(), OwnerUnits[0]->GetActorRotation());	// 카메라에 컨트롤러 빙의
-	//OwnerController->CameraPossess(UnitList[0].Unit->GetActorLocation(), UnitList[0].Unit->GetActorRotation());	// 카메라에 컨트롤러 빙의
-	OwnerController->SetShowMouseCursor(true);
-	OwnerController->SetInputMode(FInputModeUIOnly());
-
+	//OwnerController->CameraPossess(OwnerUnits[0].Unit->GetActorLocation(), OwnerUnits[0].Unit->GetActorRotation());	// 카메라에 컨트롤러 빙의
+	OwnerController->CameraPossess(UnitList[0].Unit->GetActorLocation(), UnitList[0].Unit->GetActorRotation());	// 카메라에 컨트롤러 빙의
+	OwnerController->DynamicCamera->CurrentField = CurrentField;
 
 	// 여기서 시네마틱도 전달해서 해당 시네마틱을 실행해도 될듯하다. (미구현)
-	TurnStart();
 
+
+	// 여기까지오면 아이콘 설정을 해야하니 아이콘 InitAnimation을 실행하여
+	// 타이머로 0.2초 간격으로 애니를 실행하여 연출을 주고, 다 끝내고 턴 스타트를 진행한다.
+	// 다 끝나면 CurrentAnimation을 실행하고 TurnStart를 실행한다.
+
+	OwnerController->StartBattleWidget();
 }
 
 
@@ -179,6 +191,8 @@ void AJRPGGameMode::TurnStart()
 		return;
 
 	AJRPGUnit* Unit = UnitList[0].Unit;
+
+	OwnerController->CurrentUnit = Unit;
 	if (Unit)
 	{
 		//if 유닛이 상태이상인가 판단하기.★(미구현)
@@ -186,7 +200,6 @@ void AJRPGGameMode::TurnStart()
 		if (Unit->PlayerType == EPlayerType::Player)
 		{
 			OwnerController->CameraSetUp(Unit->GetActorLocation());
-			Unit->BattleStart();
 		}
 		else // 적의 차례
 		{
@@ -207,17 +220,17 @@ void AJRPGGameMode::TurnEnd()
 void AJRPGGameMode::TurnListInit()
 {
 	// 내 캐릭터들과, 적 캐릭터들의 목록 추가하기.
-	for (AJRPGUnit* Units : EnermyUnits)
+	for (FPriorityUnit Units : EnermyUnits)
 	{
-		UnitList.HeapPush(FPriorityUnit(Units), PriorityUnitFunc());
+		UnitList.HeapPush(FPriorityUnit(Units.Unit), PriorityUnitFunc());
 		// 특정 위치에 위치해 있도록 설정.
 		// 배틀 필드를 가져와서 해당 위치에 하나씩 놓자.
 	}
 
 
-	for (AJRPGUnit* Units : OwnerUnits)
+	for (FPriorityUnit Units : OwnerUnits)
 	{
-		UnitList.HeapPush(FPriorityUnit(Units), PriorityUnitFunc());
+		UnitList.HeapPush(FPriorityUnit(Units.Unit), PriorityUnitFunc());
 		// 특정 위치에 위치해 있도록 설정.
 		// 배틀 필드를 가져와서 해당 위치에 하나씩 놓자.
 	}
@@ -232,9 +245,20 @@ void AJRPGGameMode::TurnListInit()
 
 void AJRPGGameMode::TurnListSet()
 {
-	UnitList.Add(FPriorityUnit(UnitList[0]));
-	UnitList.RemoveAt(0);
-
+	// ★★ 캐릭터나 적이 죽었을경우에는 죽은 캐릭터를 Find하여 지운뒤, 이 함수를 실행.
+	if (UnitList.Num() > 1 && OwnerUnits.Num() > 0 && EnermyUnits.Num() > 0)
+	{
+		UnitList.Add(FPriorityUnit(UnitList[0]));
+		UnitList.RemoveAt(0);
+		if (UnitList[0].Unit->PlayerType == EPlayerType::Player)
+		{
+			UnitList[0].Unit->BattleStart(); // 아이콘을 보이게하고, 갱신하는 함수.
+		}
+	}
+	else
+	{
+		GameEnd();
+	}
 }
 
 
@@ -244,14 +268,14 @@ void AJRPGGameMode::GameEnd()
 
 	OwnerController->UnPossess();
 
-	for (AJRPGUnit* Unit : EnermyUnits)
+	for (FPriorityUnit Unit : EnermyUnits)
 	{
-		Unit->Destroy();
+		Unit.Unit->Destroy();
 	}
 
-	for (AJRPGUnit* Unit : OwnerUnits)
+	for (FPriorityUnit Unit : OwnerUnits)
 	{
-		Unit->Destroy();
+		Unit.Unit->Destroy();
 	}
 
 
@@ -300,13 +324,14 @@ void AJRPGGameMode::SetOwnerUnits()
 		if (Unit != nullptr)
 		{
 			Unit->OwnerController = OwnerController;
-			Unit->BattleComponent->SetOwnerPCAndGM(OwnerController, this);
+			//Unit->BattleComponent->SetOwnerPCAndGM(OwnerController, this);
 			if (OwnerController->HaveCharStat.Find(CharList[i]) != nullptr)
 			{
 				Unit->CharacterStat = OwnerController->HaveCharStat[CharList[i]];
+				Unit->InitCurrentStat();
 			}
 			
-			OwnerUnits.Add(Unit);
+			OwnerUnits.HeapPush(FPriorityUnit(Unit), PriorityUnitFunc());
 		}
 	}
 }
@@ -338,8 +363,10 @@ void AJRPGGameMode::SetEnermyUnits(TArray<int32> Enermys)
 		if (Unit != nullptr)
 		{
 			Unit->OwnerController = OwnerController;
-			Unit->BattleComponent->SetOwnerPCAndGM(OwnerController, this);
-			EnermyUnits.Add(Unit);
+			//Unit->BattleComponent->SetOwnerPCAndGM(OwnerController, this);
+			Unit->InitCurrentStat();
+			EnermyUnits.HeapPush(FPriorityUnit(Unit), PriorityUnitFunc());
+			EnermyList.Add(Unit); // 이건 그냥 필드 칸 어디에 있는지 판단하는 배열.
 		}
 
 	}

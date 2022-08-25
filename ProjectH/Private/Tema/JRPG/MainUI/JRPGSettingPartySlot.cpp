@@ -8,7 +8,6 @@
 #include "Tema/JRPG/JRPGPlayerController.h"
 #include "Components/ScrollBox.h"
 #include "Tema/JRPG/MainUI/JRPGSettingHoriList.h"
-#include "Tema/JRPG/CustomWidget.h"
 #include "Tema/JRPG/MainUI/PartySettingField.h"
 #include "Tema/JRPG/JRPGGameMode.h"
 
@@ -23,9 +22,8 @@ void UJRPGSettingPartySlot::Init()
 		Exit->OnClicked.AddDynamic(this, &UJRPGSettingPartySlot::ExitWidget);
 		Out->OnClicked.AddDynamic(this, &UJRPGSettingPartySlot::SetPartyOut);
 		Select->OnClicked.AddDynamic(this, &UJRPGSettingPartySlot::SetPartyChange);
-
-
-		SetList();
+		//Arrow_L->OnClicked.AddDynamic(this, &UJRPGSettingPartySlot::ArrowLeftClick);
+		//Arrow_R->OnClicked.AddDynamic(this, &UJRPGSettingPartySlot::ArrowRightClick);
 	}
 }
 
@@ -149,6 +147,23 @@ void UJRPGSettingPartySlot::SetPartyChange()
 	SetCurrentPartySave();
 }
 
+void UJRPGSettingPartySlot::ArrowLeftClick()
+{
+	if (OwnerField)
+	{
+		OwnerField->NextChar(-1);
+	}
+
+}
+
+void UJRPGSettingPartySlot::ArrowRightClick()
+{
+	if (OwnerField)
+	{
+		OwnerField->NextChar(1);
+	}
+}
+
 
 void UJRPGSettingPartySlot::SetCurrentPartySave()
 {
@@ -157,4 +172,11 @@ void UJRPGSettingPartySlot::SetCurrentPartySave()
 		GM->SetSaveJRPG();
 		OwnerController->SetPartyChange();
 	}
+}
+
+
+void UJRPGSettingPartySlot::PlayWarningText()
+{
+	PlayAnimation(PlayWarning, 0.f, 1, EUMGSequencePlayMode::Forward);
+
 }

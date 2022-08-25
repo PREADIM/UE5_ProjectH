@@ -3,6 +3,7 @@
 
 #include "Tema/JRPG/MainUI/PartySettingField.h"
 #include "Tema/JRPG/JRPGPlayerController.h"
+#include "Tema/JRPG/MainUI/JRPGSettingPartyIcon.h"
 #include "Tema/JRPG/JRPGUnit.h"
 #include "Tema/JRPG/MainUI/JRPGSettingPartySlot.h"
 #include "Tema/JRPG/MainUI/JRPGPartySettingUI.h"
@@ -23,7 +24,6 @@ APartySettingField::APartySettingField()
 	Unit1 = CreateDefaultSubobject<USceneComponent>(TEXT("Unit1"));
 	Unit2 = CreateDefaultSubobject<USceneComponent>(TEXT("Unit2"));
 	Unit3 = CreateDefaultSubobject<USceneComponent>(TEXT("Unit3"));
-	Unit4 = CreateDefaultSubobject<USceneComponent>(TEXT("Unit4"));
 
 
 	RootComponent = Root;
@@ -32,16 +32,18 @@ APartySettingField::APartySettingField()
 	Unit1->SetupAttachment(Root);
 	Unit2->SetupAttachment(Root);
 	Unit3->SetupAttachment(Root);
-	Unit4->SetupAttachment(Root);
 
 
 	TEnumAsByte<EObjectTypeQuery> OT = UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel8);
 	ObjectTypes.Add(OT);
 
-	CurrentLocation = FVector(239.f, 67.f,143.f);
-	TargetLocation = FVector(239.f, 67.f, 143.f);
+	CurrentLocation = FVector(239.f, -20.f,143.f);
+	TargetLocation = FVector(239.f, -20.f, 143.f);
 
-	SpawnChars.Init(nullptr, 4);
+	SpawnChars.Init(nullptr, 3);
+	bOpenUI = false;
+
+	CurrentPartyIcons.Init(nullptr, 3);
 }
 
 // Called when the game starts or when spawned
@@ -114,7 +116,7 @@ void APartySettingField::SetCurrentParty()
 
 void APartySettingField::SpawnCharacter()
 {
-	for(int32 i = 0; i < 4; i++)
+	for(int32 i = 0; i < 3; i++)
 	{
 		if (SpawnChars[i] != nullptr)
 		{
@@ -125,7 +127,7 @@ void APartySettingField::SpawnCharacter()
 
 	CurrentParty = OwnerController->CurrentParty;
 
-	for (int32 i = 0; i < 4; i++)
+	for (int32 i = 0; i < 3; i++)
 	{
 		FTransform UnitLocation;
 		switch (i)
@@ -138,9 +140,6 @@ void APartySettingField::SpawnCharacter()
 			break;
 		case 2:
 			UnitLocation = Unit3->GetComponentTransform();
-			break;
-		case 3:
-			UnitLocation = Unit4->GetComponentTransform();
 			break;
 		}
 
@@ -172,9 +171,6 @@ void APartySettingField::SetSpawnUnit(int32 Number, int32 CharNum)
 	case 2:
 		UnitLocation = Unit3->GetComponentTransform();
 		break;
-	case 3:
-		UnitLocation = Unit4->GetComponentTransform();
-		break;
 	}
 
 	if (SpawnChars[Number] != nullptr)
@@ -193,7 +189,8 @@ void APartySettingField::SetSpawnUnit(int32 Number, int32 CharNum)
 
 
 // 파티 캐릭터의 목록이 변경되었으므로, 다시 설정
-void APartySettingField::SetPartyList(int32 CharNum)
+// false는 그 아이콘이 다시 기본 색으로 변하게하는것. true는 그 아이콘 색이 변하는 것.
+void APartySettingField::SetPartyList(int32 CharNum, UJRPGSettingPartyIcon* OwnerIcon)
 {
 	if (SettingUI)
 	{
@@ -207,6 +204,7 @@ void APartySettingField::SetPartyList(int32 CharNum)
 				if (CharNum == SpawnChars[i]->CharNum)
 				{
 					bCan = false; // 이미 있으므로 하지 말것
+					SettingUI->PlayWarningText();
 					//여기서 이미 존재한다고 경고창 띄우기.
 					// OwnerController->LastWidget에 넣기.
 					break;
@@ -216,11 +214,10 @@ void APartySettingField::SetPartyList(int32 CharNum)
 			if (bCan)
 			{
 				SetSpawnUnit(SelectNumber, CharNum);
-				SettingUI->SetVisibilityOutButton(false); // 해제하기 끄기.
-				SettingUI->SetVisibilitySelectButton(true); // 선택하기 켜기.
 				SettingUI->SetCharNum = CharNum;
 				SettingUI->SetPartyChange(); // 새롭게 추가하고 바로 나가기.
-			}
+			}	
+
 			return;
 		}
 
@@ -228,9 +225,24 @@ void APartySettingField::SetPartyList(int32 CharNum)
 
 		if (SpawnChars[SelectNumber]->CharNum == CharNum && CharNum != 0) // 같은걸 선택하면 애초에 해제하기만 떠야함. 스폰 할 필요x
 		{
-			SettingUI->SetVisibilitySelectButton(false); // 선택하기 끄기
-			SettingUI->SetVisibilityOutButton(true); // 해제하기 켜기.
+			// ★ 여기가 중요하다. 컨트롤러의 원래 파티에 있던 자리인지 파악해서, 해제하기인지 아닌지 판단한다.
+			if (OwnerController->CurrentParty[SelectNumber] == CharNum && CharNum != 0)
+			{
+				// 선택한 캐릭터를 해제할때
+				// JRPGSettingPartySlot 위젯의 해제하기 버튼을 Visible 하기
+				SettingUI->SetVisibilitySelectButton(false); // 선택하기 끄기
+				SettingUI->SetVisibilityOutButton(true); // 해제하기 켜기.
 
+			}
+			else
+			{
+				SettingUI->SetVisibilityOutButton(false); // 해제하기 끄기.
+				SettingUI->SetVisibilitySelectButton(true); // 선택하기 켜기.
+				SettingUI->SetCharNum = CharNum;
+
+				// JRPGSettingPartySlot 위젯의 선택하기 버튼을 Visible 하기.
+				// 선택하기 버튼을 누르면 리스트 교체.
+			}
 			// 스폰할 필요x 아래에 따로 또 있는 이유는, 
 			// 다른걸 눌렀다가, 다시 원래 편성된 캐릭터를 눌렀을때 해제하기가 뜨게하기 위함이다.
 		}		
@@ -239,7 +251,7 @@ void APartySettingField::SetPartyList(int32 CharNum)
 			// CurrentParty와 다르고, 스폰 캐릭터와도 다르다는 얘기는, 기존에 선택된 캐릭터도 아니고 아예 다른걸 선택했다는 의미
 
 			int32 SwapCharNumber = -1;
-			int32 SwapCharFieldNum = -1;
+			SwapCharFieldNum = -1;
 			for (int32 i = 0; i < OwnerController->CurrentParty.Num(); i++)
 			{
 				if (CharNum == SpawnChars[i]->CharNum)
@@ -251,8 +263,15 @@ void APartySettingField::SetPartyList(int32 CharNum)
 			}
 
 
-			if (SwapCharNumber != -1)
-				SetSpawnUnit(SwapCharFieldNum, SwapCharNumber); // 기존 캐릭터 위치 변경
+			if (SwapCharNumber != -1 && SelectNumber != SwapCharNumber)
+			{		
+				SetSpawnUnit(SwapCharFieldNum, SwapCharNumber); // 기존 캐릭터 위치 변경		
+			}
+			else if(SwapCharNumber == -1 || SelectNumber == SwapCharNumber)// -1인데도 불구하고 이 로직이 실행된다는 것은, 파티에는없는데 캐릭터를 교체 한다는 뜻.
+			{
+				SwapIconColor();
+				CurrentPartyIcons[SelectNumber] = OwnerIcon; // 새로운 아이콘이 자리 잡기.
+			}
 
 			SetSpawnUnit(SelectNumber, CharNum); // 보여주기.		
 
@@ -293,12 +312,21 @@ void APartySettingField::SetPartyChar()
 	ResomeUI();
 }
 
+void APartySettingField::SwapIconColor()
+{
+	if (SwapCharFieldNum == -1)
+	{
+		CurrentPartyIcons[SelectNumber]->SetSelectColor(false);
+	}
+}
 
 
 void APartySettingField::LMB()
 {
-	FHitResult HitResult;
+	if (bOpenUI)
+		return; // UI 켜져있으면 실행x
 
+	FHitResult HitResult;
 
 	bool bHit = OwnerController->GetHitResultUnderCursorForObjects(ObjectTypes, false, HitResult);
 	if (bHit)
@@ -308,7 +336,7 @@ void APartySettingField::LMB()
 		{
 			_DEBUG("%s", *LastUnit->GetName());
 
-			for (int32 i = 0; i < SpawnChars.Num(); i++)
+			for (int32 i = 0; i < 4; i++)
 			{
 				if (LastUnit == SpawnChars[i])
 				{
@@ -323,9 +351,6 @@ void APartySettingField::LMB()
 					case 2:
 						TargetLocation = Unit3_CameraTransform;
 						break;
-					case 3:
-						TargetLocation = Unit4_CameraTransform;
-						break;
 					}
 
 					SelectNumber = i; // 이걸 기억하고있어야 캐릭터 아이콘을 선택했을때 해당 칸을 변경가능
@@ -339,16 +364,49 @@ void APartySettingField::LMB()
 				OwnerController->LastWidget.AddUnique(SettingUI);
 
 				if (!SettingUI->IsInViewport())
-				{
+				{					
 					SettingPartySlot();			
 				}
 
 				SettingUI->SelectFieldNumber = SelectNumber;
+
 				if(OwnerController->CurrentParty.IsValidIndex(SelectNumber))
 					SettingUI->SetVisibilityOutButton(true); // 해제하기 켜기.
 			}	
 		}
 	}
+}
+
+void APartySettingField::NextChar(int32 Number)
+{
+	// 문제점, 옆으로 넘겼을때 SettingUI에도 당연히 SelectFieldNumber 전해줘야함.
+	// 해제하기 편성하기가 해당 칸에 이동하면 떠야함.
+	// 때문에 그냥 원신처럼 옆으로 이동못하게 하는것이 나을수도 있다.
+	int32 MaxCnt = 3;
+
+	int32 i = SelectNumber + Number; // +1 or -1
+
+	if (i < 0 || i > MaxCnt)
+		return;
+	// CurrentParty와 >=으로 한 이유는 한칸 옆이 빈칸이라면 그 해당 칸까지는 가야하기 때문.
+
+	switch (i)
+	{
+	case 0:
+		TargetLocation = Unit1_CameraTransform;
+		break;
+	case 1:
+		TargetLocation = Unit2_CameraTransform;
+		break;
+	case 2:
+		TargetLocation = Unit3_CameraTransform;
+		break;
+	}
+
+	SelectNumber = i; // 이걸 기억하고있어야 캐릭터 아이콘을 선택했을때 해당 칸을 변경가능	
+	SettingUI->SelectFieldNumber = SelectNumber;
+	// 아예 SettingUI에서 SelectFieldNumber를 뺴고 OnwerField->SelctNumber 에서 직접 가져와서 사용하면 해결가능.
+	
 }
 
 
@@ -357,7 +415,9 @@ void APartySettingField::SettingPartySlot()
 {
 	if (SettingUI)
 	{
+		SettingUI->SetList();
 		SettingUI->AddToViewport();
+		bOpenUI = true;
 	}
 }
 
@@ -370,4 +430,5 @@ void APartySettingField::ResomeUI()
 	SpawnCharacter();
 	SettingUI->SetVisibilityOutButton(false);
 	SettingUI->SetVisibilitySelectButton(false);
+	bOpenUI = false;
 }

@@ -15,8 +15,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FJRPGSkillState Skill_1;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FJRPGSkillState Skill_2;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FJRPGSkillState Skill_3;
+		FJRPGULTSkillState ULT;
 };
 

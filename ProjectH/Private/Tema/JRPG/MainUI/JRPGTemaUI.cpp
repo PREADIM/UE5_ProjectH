@@ -3,8 +3,9 @@
 
 #include "Tema/JRPG/MainUI/JRPGTemaUI.h"
 #include "Tema/JRPG/MainUI/JRPGMainWidget.h"
+#include "Tema/JRPG/JRPGGameMode.h"
 #include "Tema/JRPG/BattleUI/JRPGBattleWidget.h"
-#include "Tema/JRPG/CustomWidget.h"
+#include "Tema/JRPG/JRPGUnit.h"
 
 void UJRPGTemaUI::Init()
 {
@@ -102,6 +103,45 @@ void UJRPGTemaUI::SetPartyChange()
 	if (MainWidget && BattleWidget)
 	{
 		MainWidget->SetPartyChange();
-		BattleWidget->SetPartyChange();
 	}
+}
+
+
+bool UJRPGTemaUI::MainIsInViewport()
+{
+	return MainWidget->IsInViewport();
+}
+
+bool UJRPGTemaUI::BattleIsInViewport()
+{
+	return BattleWidget->IsInViewport();
+}
+
+
+void UJRPGTemaUI::PlayBattleWidget()
+{
+	if (BattleWidget)
+	{
+		if (GM->UnitList[0].Unit->PlayerType == EPlayerType::Player)
+			BattleWidget->BattleTurnInit();
+		else
+		{
+			BattleWidget->EnermyTurnFirst();
+		}
+		BattleWidget->PlayPriority(); // 우선순위로 짜여진 캐릭터 리스트 위젯 애님 실행.	
+	}
+}
+
+
+
+void UJRPGTemaUI::BattleTurnStart()
+{
+	BattleWidget->BattleTurnInit();
+	BattleWidget->SetUnitList();
+
+}
+
+void UJRPGTemaUI::SetVisibleBattleWidget(bool bFlag)
+{
+	BattleWidget->SetVisible(bFlag);
 }

@@ -36,6 +36,7 @@ AJRPGUnit::AJRPGUnit()
 
 	Priority = 0;
 
+	bIsLMBAttack = false;
 }
 
 // Called when the game starts or when spawned
@@ -45,8 +46,8 @@ void AJRPGUnit::BeginPlay()
 	BattleComponent->OwnerUnit = this;
 
 
-	// ★★ 스폰했을때 이것이 실행될것이니, 캐릭터 넘버로 검색해서 스탯을 가져온다.
 
+	// ★★ 스폰했을때 이것이 실행될것이니, 캐릭터 넘버로 검색해서 스탯을 가져온다.
 }
 
 // Called every frame
@@ -63,7 +64,7 @@ void AJRPGUnit::PossessedBy(AController* NewController)
 	OwnerController = Cast<AJRPGPlayerController>(NewController);
 	if (OwnerController)
 	{		
-		OwnerController->RepreCharacterNum = CharacterNum; // 다시 빙의해야하는 캐릭터 저장.
+		OwnerController->RepreCharacterNum = CharNum; // 다시 빙의해야하는 캐릭터 저장.
 		OwnerController->RepreCharacter = this;
 		
 		//★ 대표 캐릭터 변경로직 실행시 여기서 해당 캐릭터의 정보를 위젯에 초기화하는 작업 수행.
@@ -161,12 +162,8 @@ void AJRPGUnit::Skill_1()
 	CallSkill_1();
 }
 
-void AJRPGUnit::Skill_2()
-{
-	CallSkill_2();
-}
 
-void AJRPGUnit::Skill_3()
+void AJRPGUnit::Skill_ULT()
 {
 	CallULT();
 }
@@ -177,14 +174,25 @@ void AJRPGUnit::Skill_3()
 // 해당 캐릭터의 턴 이라는 것.
 void AJRPGUnit::BattleStart()
 {
-	BattleComponent->Init(); // 해당 캐릭터의 정보를 나타내기 위해 위젯 초기화.
-	BattleComponent->BattleStart(); // 
+	//BattleComponent->Init(); // 해당 캐릭터의 정보를 나타내기 위해 위젯 초기화.
+	//BattleComponent->BattleStart();
+
+	// BattleComponent를 안쓰는 방법.
+	if (OwnerController)
+	{
+		OwnerController->SetVisibleBattleWidget(true);
+		OwnerController->BattleTurnStart();
+	}
 
 	// UI에 모든 정보를 초기화 해두고, UI에서 실행.
 }
 
 void AJRPGUnit::EnermyBattleStart()
 {
+	if (!OwnerController)
+		return;
+
+	OwnerController->SetVisibleBattleWidget(false); // 위젯 간소화.
 	// 화면에있는 UI를 간소화.
 	// 적이 취할 행동 설정.
 	// 적이 때릴 내 캐릭터 타겟 설정.
@@ -194,3 +202,10 @@ void AJRPGUnit::EnermyBattleStart()
 	// 적 행동을 실행.
 }
 
+
+void AJRPGUnit::InitCurrentStat()
+{
+	CurrentHP = CharacterStat.MaxHP;
+	CurrentMP = CharacterStat.MaxMP;
+	MaxULTGage = CharacterStat.MaxULT;
+}

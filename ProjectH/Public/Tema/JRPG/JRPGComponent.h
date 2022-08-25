@@ -46,6 +46,9 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		class AJRPGGameMode* GM;
 
+	UPROPERTY(VisibleAnywhere)
+		class UJRPGBattleWidget* BattleWidget;
+
 	UPROPERTY()
 		class AJRPGUnit* OwnerUnit;
 

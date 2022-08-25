@@ -3,6 +3,7 @@
 
 #include "Tema/JRPG/JRPGCamera.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Tema/JRPG/JRPGPlayerController.h"
 
 // Sets default values
 AJRPGCamera::AJRPGCamera()
@@ -51,6 +52,8 @@ void AJRPGCamera::Tick(float DeltaTime)
 void AJRPGCamera::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
 }
+
+
+
 

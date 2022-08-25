@@ -3,7 +3,6 @@
 #pragma once
 
 #include "ProjectH.h"
-#include "Blueprint/UserWidget.h"
 #include "Tema/JRPG/CustomWidget.h"
 #include "JRPGTemaUI.generated.h"
 
@@ -35,13 +34,20 @@ public:
 	void CloseESCMenu();
 	void OpenBattleESCMenu();
 
-
-
 	void CreateMainWidget();
 	void CreateBattleWidget();
 
 	void StartBattleWidget();
 	void StartMainWidget();
+	bool MainIsInViewport();
+	bool BattleIsInViewport();
 
 	void SetPartyChange(); // 파티 리스트 새롭게 변경.
+
+
+
+	//배틀 상황일때
+	void PlayBattleWidget();
+	void BattleTurnStart();
+	void SetVisibleBattleWidget(bool bFlag);
 };

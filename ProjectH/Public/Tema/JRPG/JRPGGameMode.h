@@ -88,9 +88,11 @@ public:
 		TArray<FPriorityUnit> UnitList; 
 
 	UPROPERTY()
-		TArray<class AJRPGUnit*> EnermyUnits;
+		TArray<FPriorityUnit> EnermyUnits;
 	UPROPERTY()
-		TArray<class AJRPGUnit*> OwnerUnits;
+		TArray<class AJRPGUnit*> EnermyList;
+	UPROPERTY()
+		TArray<FPriorityUnit> OwnerUnits;
 	// 적이나 캐릭터가 공격받아 배틀 start를 하기전에 먼저 이 게임모드에 적절하게 먼저 넣게 한다.
 	// 결국엔 이것은 캐릭터안에 있는 것을 넣는것. 
 	// 만약 원신처럼 대표캐릭터를 바꿀수 있는 게임이라면, 캐릭터를 스폰하면서 보유 캐릭터도 보낸다.
@@ -113,6 +115,8 @@ public:
 
 
 
+
+
 	/*------------------
 	
 		Save & Load
@@ -121,6 +125,11 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		class UJRPGSave* JRPGSave; // 세이브
+
+
+	UPROPERTY(EditAnywhere)
+		int32 MaxCharCnt; // 이 게임이 가지는 최대 캐릭터 수
+	// 아직은 활용 x 몇개중에 몇개 보유 확인할 때 필요할 듯.
 
 	void SetSaveJRPG();
 	

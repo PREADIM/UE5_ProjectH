@@ -45,7 +45,7 @@ void AJRPGPlayerController::OnPossess(APawn* NewPawn)
 	if (Cast<AJRPGUnit>(NewPawn))
 	{
 		RepreCharacter = Cast<AJRPGUnit>(NewPawn);
-
+		RepreCharacterNum = RepreCharacter->CharNum;
 		// ★★ 원래는 이미 있는 RepreCharacter로 HaveCharStat에서 받아오는 것이지만, 나중에 구현.
 
 		GM->SetControllerInit(); // OnPossess를 하면 왜인지는 모르겠으나, 값이 초기화된다. 그래서 다시 설정.
@@ -81,9 +81,12 @@ void AJRPGPlayerController::CameraPossess(FVector Location, FRotator Rotation)
 	{
 		DynamicCamera = GetWorld()->SpawnActor<AJRPGCamera>(BP_Camera, FTransform(Location));
 		DynamicCamera->TargetLocation = Location;
-		DynamicCamera->TargetRotation = Rotation;
+		DynamicCamera->TargetRotation = Rotation;	
 		UnPossess();
 		OnPossess(DynamicCamera);
+		DynamicCamera->OwnerController = this;
+		SetShowMouseCursor(true);
+		SetInputMode(FInputModeGameAndUI());
 		// 다이나믹 카메라가 빙의된거면 배틀 시작이 되었다는 뜻.
 	}
 }
@@ -92,7 +95,13 @@ void AJRPGPlayerController::CameraPossess(FVector Location, FRotator Rotation)
 void AJRPGPlayerController::CameraSetUp(FVector Location)
 {
 	if(DynamicCamera)
-		DynamicCamera->SetActorLocation(Location);
+		DynamicCamera->TargetLocation = Location;
+}
+
+void AJRPGPlayerController::CameraRotSetUp(FRotator Rotation)
+{
+	if (DynamicCamera)
+		DynamicCamera->TargetRotation = Rotation;
 }
 
 void AJRPGPlayerController::ExitCamera()
@@ -101,6 +110,11 @@ void AJRPGPlayerController::ExitCamera()
 	OnPossess(Cast<APawn>(RepreCharacter));
 }
 
+
+FVector AJRPGPlayerController::GetCameraLocation()
+{
+	return DynamicCamera->TargetLocation;
+}
 
 /* 유닛에서 공격을 받던 공격을 하던 배틀 시작할때 이것을 실행. */
 void AJRPGPlayerController::PlayBattleMode(TArray<int32> EnermyUnits)
@@ -133,8 +147,10 @@ void AJRPGPlayerController::SetupInputComponent()
 	InputComponent->BindAction(TEXT("ESC"), IE_Released, this, &AJRPGPlayerController::OpenESC);
 	// 임시로 P키에 지정함.
 	InputComponent->BindAction(TEXT("MouseOnOff"), IE_Released, this, &AJRPGPlayerController::MouseOnOff);
-	//InputComponent->BindAction(TEXT("LMB"), IE_Released, this, &AJRPGPlayerController::LMB);
 
+	InputComponent->BindAction(TEXT("Party_F"), IE_Released, this, &AJRPGPlayerController::SetParty_First);
+	InputComponent->BindAction(TEXT("Party_S"), IE_Released, this, &AJRPGPlayerController::SetParty_Second);
+	InputComponent->BindAction(TEXT("Party_T"), IE_Released, this, &AJRPGPlayerController::SetParty_Third);
 
 }
 
@@ -144,26 +160,35 @@ void AJRPGPlayerController::OpenESC()
 {
 	if (TemaMainUI)
 	{
-		if (GameType == EGameModeType::Normal)
-			TemaMainUI->OpenESCMenu();
-		else if (GameType == EGameModeType::Battle)
-			TemaMainUI->OpenBattleESCMenu();
-		else if (GameType == EGameModeType::UI)
+		if (TemaMainUI->MainIsInViewport())
 		{
-			if (!LastWidget.IsEmpty())
+			if (GameType == EGameModeType::Normal)
+				TemaMainUI->OpenESCMenu();
+			else if (GameType == EGameModeType::Battle)
+				TemaMainUI->OpenBattleESCMenu();
+			else if (GameType == EGameModeType::UI)
 			{
-				LastWidget.Top()->SetCloseFunction();
-				if (LastWidget.IsEmpty()) // 이제서야 다 비워졌다면
+				if (!LastWidget.IsEmpty())
 				{
-					GameType = EGameModeType::Normal;
+					LastWidget.Top()->SetCloseFunction();
+					if (LastWidget.IsEmpty()) // 이제서야 다 비워졌다면
+					{
+						GameType = EGameModeType::Normal;
+					}
 				}
-			}
-			else
-			{
-				TemaMainUI->CloseESCMenu();
-			}
+				else
+				{
+					TemaMainUI->CloseESCMenu();
+				}
 
+			}
 		}
+		else if (TemaMainUI->BattleIsInViewport())
+		{
+			BattleESC();
+		}
+
+
 	}
 }
 
@@ -213,4 +238,106 @@ void AJRPGPlayerController::SetPartyChange()
 	{
 		TemaMainUI->SetPartyChange();
 	}
+}
+
+void AJRPGPlayerController::SetParty_First()
+{
+	SetRepreCharacterSpawn(0);
+}
+
+void AJRPGPlayerController::SetParty_Second()
+{
+	SetRepreCharacterSpawn(1);
+}
+
+void AJRPGPlayerController::SetParty_Third()
+{
+	SetRepreCharacterSpawn(2);
+}
+
+
+
+void AJRPGPlayerController::SetRepreCharacterSpawn(int32 index)
+{
+	if (CurrentParty.IsValidIndex(index) && CurrentPartyIndex != index)
+	{
+		FRotator Rot = GetControlRotation();
+		FVector Loc = RepreCharacter->GetActorLocation();
+		AJRPGUnit* Unit = GM->GetCharacterSpawn(CurrentParty[index], RepreCharacter->GetActorTransform());
+		RepreCharacter->Destroy();
+		RepreCharacter = Unit;
+		OnPossess(RepreCharacter);
+		RepreCharacter->SetActorLocation(Loc);
+		SetControlRotation(Rot);
+		CurrentPartyIndex = index;
+	}
+}
+
+
+void AJRPGPlayerController::SetRepreCharacterSpawnUI(int32 index)
+{
+	if (CurrentParty.IsValidIndex(index))
+	{
+		if (RepreCharacterNum != CurrentParty[index])
+		{
+			FVector Loc = RepreCharacter->GetActorLocation();
+			AJRPGUnit* Unit = GM->GetCharacterSpawn(CurrentParty[index], RepreCharacter->GetActorTransform());
+			RepreCharacter->Destroy();
+			RepreCharacter = Unit;
+			OnPossess(RepreCharacter);
+			RepreCharacter->SetActorLocation(Loc);
+			CurrentPartyIndex = index;
+		}
+		else
+		{
+			OnPossess(RepreCharacter);
+		}
+		
+	}
+	else
+	{
+		_DEBUG("DDDD");
+	}
+}
+
+
+
+// 맨처음 위젯애니메이션 효과주기
+void AJRPGPlayerController::StartBattleWidget()
+{
+	if (TemaMainUI)
+	{
+		TemaMainUI->PlayBattleWidget();
+
+	}
+}
+
+
+// 턴시작시 위젯애니메이션 없이 위젯 갱신하기.
+void AJRPGPlayerController::BattleTurnStart()
+{
+	TemaMainUI->BattleTurnStart();	
+}
+
+
+void AJRPGPlayerController::SetVisibleBattleWidget(bool bFlag)
+{
+	TemaMainUI->SetVisibleBattleWidget(bFlag);
+}
+
+void AJRPGPlayerController::BattleESC()
+{
+	if (CurrentUnit->GetUsingSkill())
+	{
+		CurrentUnit->UnitSkillESC();
+		return;
+	}
+
+	// 나가기 위젯 띄우기
+}
+
+
+void AJRPGPlayerController::SetDyCameraRot(FRotator Rotation)
+{
+	// 다이나믹 카메라 회전시키기.
 }

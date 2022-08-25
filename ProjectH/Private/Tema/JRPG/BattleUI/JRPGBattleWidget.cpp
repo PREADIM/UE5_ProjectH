@@ -2,22 +2,174 @@
 
 
 #include "Tema/JRPG/BattleUI/JRPGBattleWidget.h"
+#include "Tema/JRPG/JRPGGameMode.h"
+#include "Tema/JRPG/JRPGUnit.h"
+#include "Tema/JRPG/JRPGPlayerController.h"
+#include "Tema/JRPG/BattleUI/JRPGPriority.h"
+#include "Tema/JRPG/BattleUI/JRPGSkillButton.h"
+#include "Tema/JRPG/BattleUI/JRPGULTButton.h"
+#include "Tema/JRPG/JRPGUnit.h"
+#include "Components/Button.h"
+#include "Components/HorizontalBox.h"
+#include "Tema/JRPG/BattleUI/EnermyIconButton.h"
+#include "Kismet/KismetMathLibrary.h"
+
+void UJRPGBattleWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+}
+
+
+
+void UJRPGBattleWidget::NativeTick(const FGeometry& MyGeometry, const float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+
+	if (TargetUnit)
+	{	
+		TargetLockOn = TargetUnit->GetActorLocation();
+		OwnerController->ProjectWorldLocationToScreen(TargetLockOn, Pos);
+		LockOnIcon->SetPositionInViewport(Pos);
+	}
+
+}
+
+
 
 void UJRPGBattleWidget::Init()
 {
+	JRPGPriorityList->GM = GM;
+	JRPGPriorityList->OwnerController = OwnerController;
 
+	NormalAttack->GM = GM;
+	NormalAttack->OwnerController = OwnerController;
+	SkillButton->GM = GM;
+	SkillButton->OwnerController = OwnerController;
+	ULTButton->GM = GM;
+	ULTButton->OwnerController = OwnerController;
+
+	if (BP_LockOnIcon)
+	{
+		LockOnIcon = CreateWidget<UUserWidget>(GetWorld(), BP_LockOnIcon);
+	}
 }
 
 
-
-/*float UJRPGBattleWidget::GetESCRenderOpacity()
+void UJRPGBattleWidget::PlayPriority()
 {
-	return ESCMenu->GetRenderOpacity();
-}*/
-
-
-
-void UJRPGBattleWidget::SetPartyChange()
-{
-
+	JRPGPriorityList->PlayInit();
+	EnermyListBeginInit();
 }
+
+void UJRPGBattleWidget::SetUnitList()
+{
+	JRPGPriorityList->SetUnitList();
+}
+
+void UJRPGBattleWidget::EnermyListBeginInit()
+{
+	EnermyListInit();
+	// 맨처음 실행하는 것이라서, 여기에 애니메이션 실행하는 것도 ㄱㅊ을듯.
+}
+
+void UJRPGBattleWidget::EnermyListInit()
+{
+	if (BP_EnermyIcon && GM)
+	{
+		EnermyList->ClearChildren();
+		TArray<AJRPGUnit*> Units = GM->EnermyList;
+		for (int32 i = 0; i < Units.Num(); i++)
+		{
+			UEnermyIconButton* Button = CreateWidget<UEnermyIconButton>(GetWorld(), BP_EnermyIcon);
+			FJRPGUnitUIStruct* UI = OwnerController->GetUnitUI(Units[i]->CharNum);
+
+			if (Button && UI)
+			{
+				Button->GM = GM;
+				Button->OwnerController = OwnerController;
+				Button->OwnerWidget = this;
+				Button->Init(UI->CharTex, i);
+				Button->SetPadding(FMargin(0.f, 0.f, 10.f, 0.f));
+				EnermyList->AddChild(Button);
+			}
+		}
+		SetLockOn();
+
+	}
+}
+
+
+void UJRPGBattleWidget::SetVisible(bool bFlag)
+{
+	if (bFlag)
+	{
+		SetVisibility(ESlateVisibility::Visible);
+	}
+	else
+	{
+		SetVisibility(ESlateVisibility::Hidden);
+	}
+}
+
+void UJRPGBattleWidget::SetButtonVisible(bool bFlag)
+{
+	if (bFlag)
+	{
+		NormalAttack->SetVisibility(ESlateVisibility::Visible);
+		SkillButton->SetVisibility(ESlateVisibility::Visible);
+		ULTButton->SetVisibility(ESlateVisibility::Visible);
+		SetLockOn();
+		bButtonVisible = true;
+	}
+	else
+	{
+		NormalAttack->SetVisibility(ESlateVisibility::Hidden);
+		SkillButton->SetVisibility(ESlateVisibility::Hidden);
+		ULTButton->SetVisibility(ESlateVisibility::Hidden);
+		HiddenLockOn();
+		bButtonVisible = false;
+	}
+}
+
+void UJRPGBattleWidget::SetLockOn(int32 Num)
+{
+	// 회전값이 바뀔때 아이콘 위치도 바뀌어야 한다.
+	if (LockOnIcon)
+	{
+		if (!LockOnIcon->IsInViewport())
+		{
+			LockOnIcon->AddToViewport();
+		}
+
+		if (GM->EnermyList.IsValidIndex(Num))
+		{
+			TargetUnit = GM->EnermyList[Num];
+			OwnerController->TargetUnit = TargetUnit;
+		}
+	}
+	
+}
+
+void UJRPGBattleWidget::HiddenLockOn()
+{
+	if (LockOnIcon)
+	{
+		LockOnIcon->RemoveFromParent();
+	}
+}
+
+
+void UJRPGBattleWidget::BattleTurnInit()
+{
+	NormalAttack->Init();
+	SkillButton->Init();
+	ULTButton->Init();
+}
+
+void UJRPGBattleWidget::EnermyTurnFirst()
+{
+	NormalAttack->EnermyTurnFirstInit();
+	SkillButton->EnermyTurnFirstInit();
+	ULTButton->EnermyTurnFirstInit();
+}
+

@@ -9,7 +9,6 @@
 #include "Tema/JRPG/JRPGGameMode.h"
 #include "Tema/JRPG/MainUI/PartySettingField.h"
 #include "Tema/JRPG/JRPGUnit.h"
-#include "Tema/JRPG/CustomWidget.h"
 
 
 void UJRPGPartySettingUI::SetCloseFunction()
@@ -33,7 +32,7 @@ void UJRPGPartySettingUI::ExitWidget()
 {
 	if (PartyField)
 	{
-		for (int32 i = 0; i < 4; i++)
+		for (int32 i = 0; i < 3; i++)
 		{
 			if (PartyField->SpawnChars[i] != nullptr)
 			{
@@ -46,7 +45,7 @@ void UJRPGPartySettingUI::ExitWidget()
 		PartyField->SpawnChars.Empty();
 		PartyField->SettingUI->OwnerField = nullptr;
 		PartyField->Destroy();
-		OwnerController->OnPossess(OwnerController->RepreCharacter);
+		OwnerController->SetRepreCharacterSpawnUI(OwnerController->CurrentPartyIndex);
 		OwnerController->MouseOff();
 		OwnerMainUI->SetVisibility(ESlateVisibility::Visible);
 

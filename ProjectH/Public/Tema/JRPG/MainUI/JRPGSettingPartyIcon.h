@@ -30,9 +30,17 @@ public:
 	UPROPERTY()
 		class APartySettingField* OwnerField;
 
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FLinearColor SelectColor;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FLinearColor NormalColor;
+
 public:
 	void Init(UTexture2D* Texture);
 
 	UFUNCTION()
 		void SetPartyList();
+
+	void SetSelectColor(bool bFlag); // 선택된 아이콘은 컬러를 입힌다. 
 };
