@@ -9,21 +9,23 @@
 
 void UJRPGPriority::PlayInit()
 {
-	if (BP_UnitIcon && GM)
+	/*if (BP_UnitIcon && GM)
 	{	
 		float WaitTime = 0.2f;
 		Units = GM->UnitList;
 		UnitList->ClearChildren();
-		cnt = 0;
+		Icons.Empty();
 
 		GetWorld()->GetTimerManager().SetTimer(TimerHandle, FTimerDelegate::CreateLambda([&]()
 		{
-			if (Units.Num() > cnt)
+			if (!Units.IsEmpty())
 			{
+				FPriorityUnit HeapTop;
+				Units.HeapPop(HeapTop, PriorityUnitFunc());
 				UJRPGBattleUnitIcon* Icon = CreateWidget<UJRPGBattleUnitIcon>(GetWorld(), BP_UnitIcon);
 				if (Icon)
 				{
-					FJRPGUnitUIStruct* UnitUI = OwnerController->GetUnitUI(Units[cnt].Unit->CharNum);
+					FJRPGUnitUIStruct* UnitUI = OwnerController->GetUnitUI(HeapTop.Unit->CharNum);
 					// 색다른 UI를 쓰려면 여기에 추가해서 사용해도 될듯.
 
 					if (UnitUI)
@@ -34,7 +36,6 @@ void UJRPGPriority::PlayInit()
 						Icons.Add(Icon);
 					}
 				}
-				cnt++;
 			}
 			else
 			{					
@@ -44,10 +45,52 @@ void UJRPGPriority::PlayInit()
 		}), WaitTime, true);
 
 
-		FTimerHandle Handle2; // currentAnim을 위한 타이머
-		float WaitTime2 = 1.8f;
-		GetWorld()->GetTimerManager().SetTimer(Handle2, this, &UJRPGPriority::PlayCurrentUnit, WaitTime2, false);
+		PlayTurnStart();
+	
+	}*/
+
+	if (BP_UnitIcon && GM)
+	{
+		float WaitTime = 0.2f;
+		Units = GM->SetUnitList;
+		UnitList->ClearChildren();
+		Icons.Empty();
+		cnt = 0;
+
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle, FTimerDelegate::CreateLambda([&]()
+			{
+				if (Units.Num() > cnt)
+				{
+					FPriorityUnit Unit = Units[cnt];
+					UJRPGBattleUnitIcon* Icon = CreateWidget<UJRPGBattleUnitIcon>(GetWorld(), BP_UnitIcon);
+					if (Icon)
+					{
+						FJRPGUnitUIStruct* UnitUI = OwnerController->GetUnitUI(Unit.Unit->CharNum);
+						// 색다른 UI를 쓰려면 여기에 추가해서 사용해도 될듯.
+
+						if (UnitUI)
+						{
+							Icon->Init(UnitUI->CharTex, UnitUI->CharName);
+							Icon->SetPadding(FMargin(0.f, 0.f, 0.f, 5.f));
+							UnitList->AddChild(Icon);
+							Icons.Add(Icon);
+
+							++cnt;
+						}
+					}
+				}
+				else
+				{
+					GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
+					_DEBUG("Clear");
+				}
+			}), WaitTime, true);
+
+
+		PlayTurnStart();
+
 	}
+
 
 }
 
@@ -56,16 +99,18 @@ void UJRPGPriority::PlayInit()
 // 평상시 PartyList Set
 void UJRPGPriority::SetUnitList()
 {
-	Units = GM->UnitList;
+	/*Units = GM->UnitList;
 	UnitList->ClearChildren();
+	Icons.Empty();
 
-	for (int32 i = 0; i < Units.Num(); i++)
+	while (!Units.IsEmpty())
 	{
-
+		FPriorityUnit HeapTop;
+		Units.HeapPop(HeapTop, PriorityUnitFunc());
 		UJRPGBattleUnitIcon* Icon = CreateWidget<UJRPGBattleUnitIcon>(GetWorld(), BP_UnitIcon);
 		if (Icon)
 		{
-			FJRPGUnitUIStruct* UnitUI = OwnerController->GetUnitUI(Units[i].Unit->CharNum);
+			FJRPGUnitUIStruct* UnitUI = OwnerController->GetUnitUI(HeapTop.Unit->CharNum);
 			// 색다른 UI를 쓰려면 여기에 추가해서 사용해도 될듯.
 
 			if (UnitUI)
@@ -78,19 +123,52 @@ void UJRPGPriority::SetUnitList()
 		}
 	}
 
-	FTimerHandle Handle2; // currentAnim을 위한 타이머
-	float WaitTime2 = 0.3f;
-	GetWorld()->GetTimerManager().SetTimer(Handle2, this, &UJRPGPriority::PlayCurrentUnit, WaitTime2, false);
+	PlayTurnStart();*/
+
+
+	Units = GM->SetUnitList;
+	UnitList->ClearChildren();
+	Icons.Empty();
+
+	for(cnt = 0; cnt < Units.Num(); cnt++)
+	{
+		FPriorityUnit Unit = Units[cnt];
+		UJRPGBattleUnitIcon* Icon = CreateWidget<UJRPGBattleUnitIcon>(GetWorld(), BP_UnitIcon);
+		if (Icon)
+		{
+			FJRPGUnitUIStruct* UnitUI = OwnerController->GetUnitUI(Unit.Unit->CharNum);
+			// 색다른 UI를 쓰려면 여기에 추가해서 사용해도 될듯.
+
+			if (UnitUI)
+			{
+				Icon->Init(UnitUI->CharTex, UnitUI->CharName);
+				Icon->SetPadding(FMargin(0.f, 0.f, 0.f, 5.f));
+				UnitList->AddChild(Icon);
+				Icons.Add(Icon);
+			}
+		}
+	}
+
+	PlayTurnStart();
 }
+
+
+void UJRPGPriority::PlayTurnStart()
+{
+	GM->TurnStart();
+	FTimerHandle TurnStartHandle;
+	float WaitTime = 1.0f;
+	GetWorld()->GetTimerManager().SetTimer(TurnStartHandle, this, &UJRPGPriority::PlayCurrentUnit, WaitTime, false);
+}
+
 
 void UJRPGPriority::PlayCurrentUnit()
 {
 	if (Icons.IsValidIndex(0))
 	{
-		FTimerHandle TurnStartHandle;
-		float WaitTime = 0.2f;
-		Icons[0]->PlayCurrentAnim();
-		GetWorld()->GetTimerManager().SetTimer(TurnStartHandle, GM, &AJRPGGameMode::TurnStart, WaitTime, false);
+		Icons[0]->PlayCurrentAnim();	
 	}
 }
+
+
 

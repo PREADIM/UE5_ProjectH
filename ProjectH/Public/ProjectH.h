@@ -15,3 +15,16 @@ const FString RES_COMMAND = "r.SetRes ";
 const FString AA_COMMAND = "r.PostProcessAAQuality ";
 const FString S_COMMAND = "sg.ShadowQuality ";
 const FString T_COMMAND = "sg.TextureQuality ";
+
+
+UENUM(BlueprintType)
+enum class EJRPGAttackState : uint8
+{
+	NONE UMETA(DisplayName = "NONE"),
+	NormalAttack UMETA(DisplayName = "NormalAttack"),
+	SkillAttack UMETA(DisplayName = "SkillAttack"),
+	ULTAttack UMETA(DisplayName = "ULTAttack"),
+	AttackEnd UMETA(DisplayName = "AttackEnd")
+
+};
+

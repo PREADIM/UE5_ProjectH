@@ -78,13 +78,17 @@ public:
 
 	// 배틀 
 	void StartBattleWidget();
-	void BattleTurnStart();
+	void BattleTurnStart(bool bFlag);
 	void SetVisibleBattleWidget(bool bFlag); // 배틀위젯 숨기거나 켜기.
+	void SetEnermyTurnWidget(bool bFlag); // 적 턴에서 필요한 위젯만 키기
 
-	void BattleESC();
+	void BattleESC(); // 스킬 취소 및, 나가기 위젯 뛰우기
+	void VisibleDamage(float Damage, FVector TargetLocation); // 데미지 띄우기
 
-	void SetDyCameraRot(FRotator Rotation);
 
+	void UnitTurnEnd(); // 턴엔드 유닛에서 블루프린트에서 해당 함수를 호출한다.
+
+	void EnermyListSetup(); // 애님이 다 끝나고 턴 시작후에 카메라랑 락온을 변경해야한다.
 
 public:
 	UPROPERTY(VisibleAnywhere)
@@ -131,14 +135,23 @@ public:
 
 
 	UPROPERTY()
-		TArray<UCustomWidget*> LastWidget; // 마지막 Widget을 스택처럼 저장하는 배열.
+		TArray<class UCustomWidget*> LastWidget; // 마지막 Widget을 스택처럼 저장하는 배열.
 	// AddToViewport 를 사용하는 UI만 저장한다. Animation을 가지고있는 이미 할당되어있는 UI는 제외.
 
 
 	UPROPERTY(VisibleAnywhere)
 		class AJRPGUnit* CurrentUnit; // ESC를 할 Unit 스킬을 실행 중이면 취소하고 , 아무것도 실행중이지 않으면 나가기 창을 띄운다.
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(BlueprintReadWrite)
 		class AJRPGUnit* TargetUnit; // BattleWidget에서 정한 현재 공격할 TargetUnit;
+	UPROPERTY(BlueprintReadWrite)
+		TArray<class AJRPGUnit*> TargetUnits;
+	UFUNCTION(BlueprintCallable)
+		void TargetToRotation();
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<class UDamageWidget> BP_DamageSkin;
+	
 
 };

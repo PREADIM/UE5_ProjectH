@@ -44,10 +44,13 @@ public:
 		FLinearColor DisableColor;
 
 public:
+
 	void Init();
 	void EnermyTurnFirstInit(); // 적이 맨처음 사작이라 어쩔수없이 내 캐릭터중 가장 빠른캐릭터의 것으로 초기화.
 	void SkillSetActive(); // MP가 적으면 사용을 할수 없으므로 비활성화 해야하기 때문.
 	void ButtonSetImage(FSlateBrush Icon);
+
+	void SetButton(UTexture2D* Tex);
 
 
 	UFUNCTION()

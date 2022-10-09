@@ -20,6 +20,8 @@ AJRPGCamera::AJRPGCamera()
 	SpringArm->SetupAttachment(Root);
 	Camera->SetupAttachment(SpringArm);
 
+	CurrentSpringArm = SpringArm->TargetArmLength;
+	TargetSpringArm = CurrentSpringArm;
 }
 
 // Called when the game starts or when spawned
@@ -44,6 +46,11 @@ void AJRPGCamera::Tick(float DeltaTime)
 	if (CurrentRotation != TargetRotation)
 	{
 		SetActorRotation(UKismetMathLibrary::RInterpTo(CurrentRotation, TargetRotation, DeltaTime, 5.0f));
+	}
+
+	if (CurrentSpringArm != TargetSpringArm)
+	{
+		SpringArm->TargetArmLength = UKismetMathLibrary::FInterpTo(CurrentSpringArm, TargetSpringArm, DeltaTime, 3.0f);
 	}
 
 }

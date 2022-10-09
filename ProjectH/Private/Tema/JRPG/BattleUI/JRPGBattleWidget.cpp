@@ -17,6 +17,7 @@
 void UJRPGBattleWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+	TargetNumber = 0;
 }
 
 
@@ -58,7 +59,6 @@ void UJRPGBattleWidget::Init()
 void UJRPGBattleWidget::PlayPriority()
 {
 	JRPGPriorityList->PlayInit();
-	EnermyListBeginInit();
 }
 
 void UJRPGBattleWidget::SetUnitList()
@@ -91,11 +91,16 @@ void UJRPGBattleWidget::EnermyListInit()
 				Button->Init(UI->CharTex, i);
 				Button->SetPadding(FMargin(0.f, 0.f, 10.f, 0.f));
 				EnermyList->AddChild(Button);
+				Buttons.Add(Button);
 			}
 		}
-		SetLockOn();
-
+		Buttons[TargetNumber]->TargetLockOn();
 	}
+}
+
+void UJRPGBattleWidget::TargetToRotation()
+{
+	Buttons[TargetNumber]->TargetLockOn();
 }
 
 
@@ -111,6 +116,28 @@ void UJRPGBattleWidget::SetVisible(bool bFlag)
 	}
 }
 
+
+void UJRPGBattleWidget::EnermyTurnHidden(bool bFlag)
+{
+	if (bFlag) // Àû Â÷·Ê½Ã
+	{
+		NormalAttack->SetVisibility(ESlateVisibility::Hidden);
+		SkillButton->SetVisibility(ESlateVisibility::Hidden);
+		ULTButton->SetVisibility(ESlateVisibility::Hidden);
+		EnermyList->SetVisibility(ESlateVisibility::Hidden);
+		LockOnIcon->SetVisibility(ESlateVisibility::Hidden);
+
+	}
+	else
+	{
+		NormalAttack->SetVisibility(ESlateVisibility::Visible);
+		SkillButton->SetVisibility(ESlateVisibility::Visible);
+		ULTButton->SetVisibility(ESlateVisibility::Visible);
+		EnermyList->SetVisibility(ESlateVisibility::Visible);
+		LockOnIcon->SetVisibility(ESlateVisibility::Visible);
+	}
+}
+
 void UJRPGBattleWidget::SetButtonVisible(bool bFlag)
 {
 	if (bFlag)
@@ -118,7 +145,7 @@ void UJRPGBattleWidget::SetButtonVisible(bool bFlag)
 		NormalAttack->SetVisibility(ESlateVisibility::Visible);
 		SkillButton->SetVisibility(ESlateVisibility::Visible);
 		ULTButton->SetVisibility(ESlateVisibility::Visible);
-		SetLockOn();
+		SetLockOn(TargetNumber);
 		bButtonVisible = true;
 	}
 	else
@@ -146,6 +173,8 @@ void UJRPGBattleWidget::SetLockOn(int32 Num)
 			TargetUnit = GM->EnermyList[Num];
 			OwnerController->TargetUnit = TargetUnit;
 		}
+
+		TargetNumber = Num;
 	}
 	
 }

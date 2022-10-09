@@ -12,21 +12,25 @@ void UJRPGULTButton::Init()
 {
 	if (GM)
 	{
-		CurrentUnit = GM->UnitList[0].Unit;
+		//CurrentUnit = GM->UnitList.HeapTop().Unit;
+		CurrentUnit = GM->SetUnitList[0].Unit;
 		ULTGage = CurrentUnit->ULTGage;
 		FProgressBarStyle Style;
 		FSlateBrush SlateWidget = UWidgetBlueprintLibrary::MakeBrushFromTexture(CurrentUnit->UnitSkills.ULT.ULTImg);
 		FSlateBrush FillWidget = UWidgetBlueprintLibrary::MakeBrushFromTexture(CurrentUnit->UnitSkills.ULT.FillULTImg);
 		Style.SetBackgroundImage(SlateWidget);
-		Style.SetFillImage(SlateWidget);
+		Style.SetFillImage(FillWidget);
 
 		PB_ULT->WidgetStyle = Style;
 		if (CurrentUnit->MaxULTGage <= ULTGage)
 			bULT = true;
 		else
 			bULT = false;
-
-		ULTButton->OnClicked.AddDynamic(this, &UJRPGULTButton::UseSkill);
+		if (!ULTButton->OnClicked.IsBound())
+		{
+			ULTButton->OnClicked.AddDynamic(this, &UJRPGULTButton::UseSkill);
+		}
+		
 	}
 }
 
@@ -37,7 +41,7 @@ void UJRPGULTButton::UseSkill()
 	{
 		if (CurrentUnit->MaxULTGage <= ULTGage)
 		{
-			CurrentUnit->CallULT();
+			CurrentUnit->Skill_ULT();
 		}
 	}
 
@@ -48,7 +52,7 @@ void UJRPGULTButton::EnermyTurnFirstInit()
 {
 	if (GM)
 	{
-		CurrentUnit = GM->OwnerUnits[0].Unit;
+		CurrentUnit = GM->OwnerUnits.HeapTop().Unit;
 		ULTGage = CurrentUnit->ULTGage;
 		FProgressBarStyle Style;
 		FSlateBrush SlateWidget = UWidgetBlueprintLibrary::MakeBrushFromTexture(CurrentUnit->UnitSkills.ULT.ULTImg);

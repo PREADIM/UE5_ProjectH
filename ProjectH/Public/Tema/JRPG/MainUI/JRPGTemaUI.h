@@ -44,10 +44,13 @@ public:
 
 	void SetPartyChange(); // 파티 리스트 새롭게 변경.
 
-
+	void EnermyListSetup();
 
 	//배틀 상황일때
 	void PlayBattleWidget();
-	void BattleTurnStart();
-	void SetVisibleBattleWidget(bool bFlag);
+	void BattleTurnStart(bool bFlag);
+	void SetVisibleBattleWidget(bool bFlag); // 배틀위젯 자체를 Hidden
+	void EnermyTurnWidget(bool bFlag); // 적 턴일때 보이게할 위젯만 키기
+
+	void TargetToRotation(); // 적 쪽으로 몸 돌리기.
 };

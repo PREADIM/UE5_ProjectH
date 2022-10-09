@@ -5,6 +5,7 @@
 #include "Tema/JRPG/JRPGComponent.h"
 #include "Tema/JRPG/JRPGPlayerController.h"
 #include "Tema/JRPG/JRPGGameMode.h"
+#include "Tema/JRPG/JRPGAIController.h"
 
 // Sets default values
 AJRPGUnit::AJRPGUnit()
@@ -18,9 +19,6 @@ AJRPGUnit::AJRPGUnit()
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 520.f, 0.f);
-
-	BattleComponent = CreateDefaultSubobject<UJRPGComponent>(TEXT("BattleComponent"));
-
 
 	//3인칭을 표현 할 스프링암
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
@@ -43,11 +41,8 @@ AJRPGUnit::AJRPGUnit()
 void AJRPGUnit::BeginPlay()
 {
 	Super::BeginPlay();
-	BattleComponent->OwnerUnit = this;
-
-
-
 	// ★★ 스폰했을때 이것이 실행될것이니, 캐릭터 넘버로 검색해서 스탯을 가져온다.
+	GM = Cast<AJRPGGameMode>(GetWorld()->GetAuthGameMode());
 }
 
 // Called every frame
@@ -61,14 +56,18 @@ void AJRPGUnit::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 
-	OwnerController = Cast<AJRPGPlayerController>(NewController);
-	if (OwnerController)
-	{		
-		OwnerController->RepreCharacterNum = CharNum; // 다시 빙의해야하는 캐릭터 저장.
-		OwnerController->RepreCharacter = this;
-		
-		//★ 대표 캐릭터 변경로직 실행시 여기서 해당 캐릭터의 정보를 위젯에 초기화하는 작업 수행.
+	if(Cast<AJRPGPlayerController>(NewController))
+	{
+		OwnerController = Cast<AJRPGPlayerController>(NewController);
+		if (OwnerController)
+		{
+			OwnerController->RepreCharacterNum = CharNum; // 다시 빙의해야하는 캐릭터 저장.
+			OwnerController->RepreCharacter = this;
+
+			//★ 대표 캐릭터 변경로직 실행시 여기서 해당 캐릭터의 정보를 위젯에 초기화하는 작업 수행.
+		}
 	}
+	
 
 }
 
@@ -126,17 +125,31 @@ float AJRPGUnit::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent,
 {
 	float DamageApplied = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
-	if (PlayerType == EPlayerType::Enermy) // 플레이어가 때림.
+	if (CurrentHP < DamageAmount)
 	{
+		CurrentHP = 0;
 		
+		TArray<FLiveUnit> OwnerList = GM->OwnerList;
+		for (FLiveUnit Unit : OwnerList)
+		{
+			if (Unit.Unit == this)
+			{
+				_DEBUG("Dead");
+				Unit.bLive = false;
+			}
+		}
 	}
-	else if (PlayerType == EPlayerType::Player) // 플레이어가 맞음.
+	else
 	{
-		
+		CurrentHP -= DamageAmount;
 	}
+	
+	
+	OwnerController->VisibleDamage(DamageAmount, GetActorLocation());
 
 	return DamageApplied;
 }
+
 
 
 void AJRPGUnit::LMB()
@@ -171,20 +184,27 @@ void AJRPGUnit::Skill_ULT()
 
 
 
-// 해당 캐릭터의 턴 이라는 것.
-void AJRPGUnit::BattleStart()
+// 해당 캐릭터의 턴 이라는 것. true는 오너, false는 적이다.
+void AJRPGUnit::BattleStart(bool bFlag) // 이 함수는 아직 위젯을 보이게 하기전에 먼저 위젯 아이콘을 미리 셋팅해두는 함수.
 {
-	//BattleComponent->Init(); // 해당 캐릭터의 정보를 나타내기 위해 위젯 초기화.
-	//BattleComponent->BattleStart();
-
 	// BattleComponent를 안쓰는 방법.
 	if (OwnerController)
 	{
-		OwnerController->SetVisibleBattleWidget(true);
-		OwnerController->BattleTurnStart();
+		OwnerController->BattleTurnStart(bFlag);
 	}
 
 	// UI에 모든 정보를 초기화 해두고, UI에서 실행.
+}
+
+void AJRPGUnit::OwnerUnitBattleStart()
+{
+	if (!OwnerController)
+		return;
+
+	OwnerController->CameraSetUp(GetActorLocation());
+	OwnerController->EnermyListSetup();
+	OwnerController->SetEnermyTurnWidget(false);
+	OwnerController->SetVisibleBattleWidget(true);
 }
 
 void AJRPGUnit::EnermyBattleStart()
@@ -192,8 +212,20 @@ void AJRPGUnit::EnermyBattleStart()
 	if (!OwnerController)
 		return;
 
-	OwnerController->SetVisibleBattleWidget(false); // 위젯 간소화.
-	// 화면에있는 UI를 간소화.
+	OwnerController->SetVisibleBattleWidget(true);
+	OwnerController->SetEnermyTurnWidget(true); // 적의 차례니까 위젯을 필요한것만 남긴다.
+	_DEBUG("Enermy");
+
+	if (!OwnerAIController)
+	{
+		_DEBUG("Not AI Controller");
+		return;
+	}
+
+
+	OwnerAIController->SetIsTurn(true); // 턴이다.
+
+
 	// 적이 취할 행동 설정.
 	// 적이 때릴 내 캐릭터 타겟 설정.
 	// 타겟을 정했으면 해당 타겟으로 카메라 이동. 
@@ -208,4 +240,67 @@ void AJRPGUnit::InitCurrentStat()
 	CurrentHP = CharacterStat.MaxHP;
 	CurrentMP = CharacterStat.MaxMP;
 	MaxULTGage = CharacterStat.MaxULT;
+	ULTGage = MaxULTGage; // ★★ 궁극기 테스트
+}
+
+void AJRPGUnit::TargetAttack(float ATK)
+{
+	if (OwnerController)
+	{
+		FDamageEvent DamageEvent;
+		OwnerController->TargetUnit->TakeDamage(ATK, DamageEvent, OwnerController, this);
+	}
+
+}
+
+void AJRPGUnit::TargetManyAttack(float ATK)
+{
+	if (OwnerController)
+	{
+		for (AJRPGUnit* Unit : OwnerController->TargetUnits)
+		{
+			FDamageEvent DamageEvent;
+			Unit->TakeDamage(ATK, DamageEvent, OwnerController, this);
+		}
+	}
+
+}
+
+void AJRPGUnit::AddMPAndULT()
+{
+	AJRPGUnit* Unit = OwnerController->TargetUnit;
+	Unit->CurrentMP = FMath::Clamp(Unit->CurrentMP + 10.f, 0.0f, Unit->CharacterStat.MaxMP); // 맞은 유닛은 마나가 차게한다.
+	Unit->ULTGage = FMath::Clamp(Unit->ULTGage + 10.f, 0.0f, Unit->MaxULTGage); // 맞은 유닛은 궁게가 차게한다.
+}
+
+void AJRPGUnit::AddManyMPAndULT()
+{
+	for (AJRPGUnit* Unit : OwnerController->TargetUnits)
+	{
+		Unit->CurrentMP = FMath::Clamp(Unit->CurrentMP + 10.f, 0.0f, Unit->CharacterStat.MaxMP); // 맞은 유닛은 마나가 차게한다.
+		Unit->ULTGage = FMath::Clamp(Unit->ULTGage + 10.f, 0.0f, Unit->MaxULTGage); // 맞은 유닛은 궁게가 차게한다.
+	}	
+}
+
+
+
+void AJRPGUnit::UnitTurnEnd()
+{
+	if (OwnerController)
+	{
+		OwnerController->UnitTurnEnd();
+	}
+}
+
+
+void AJRPGUnit::AttackEnd()
+{
+	OwnerController->SetVisibleBattleWidget(false);
+}
+
+
+
+void AJRPGUnit::CallAIAttackEnd()
+{
+	OnAIAttackEnd.Broadcast();
 }

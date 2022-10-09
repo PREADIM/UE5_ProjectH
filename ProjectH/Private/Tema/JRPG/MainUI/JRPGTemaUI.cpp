@@ -122,7 +122,8 @@ void UJRPGTemaUI::PlayBattleWidget()
 {
 	if (BattleWidget)
 	{
-		if (GM->UnitList[0].Unit->PlayerType == EPlayerType::Player)
+		//if (GM->UnitList[0].Unit->PlayerType == EPlayerType::Player)
+		if (GM->SetUnitList[0].Unit->PlayerType == EPlayerType::Player)
 			BattleWidget->BattleTurnInit();
 		else
 		{
@@ -134,14 +135,37 @@ void UJRPGTemaUI::PlayBattleWidget()
 
 
 
-void UJRPGTemaUI::BattleTurnStart()
+void UJRPGTemaUI::BattleTurnStart(bool bFlag)
 {
-	BattleWidget->BattleTurnInit();
-	BattleWidget->SetUnitList();
-
+	if (bFlag) // 오너 유닛
+	{
+		BattleWidget->BattleTurnInit(); // 스킬 Init
+		BattleWidget->SetUnitList(); // PlayPriority가 아닌 단순한 유닛 리스트
+	}
+	else
+	{
+		BattleWidget->SetUnitList();
+	}
+	
 }
 
 void UJRPGTemaUI::SetVisibleBattleWidget(bool bFlag)
 {
 	BattleWidget->SetVisible(bFlag);
+}
+
+void UJRPGTemaUI::EnermyTurnWidget(bool bFlag)
+{
+	BattleWidget->EnermyTurnHidden(bFlag);
+}
+
+void UJRPGTemaUI::EnermyListSetup()
+{
+	BattleWidget->EnermyListBeginInit();
+}
+
+
+void UJRPGTemaUI::TargetToRotation()
+{
+	BattleWidget->TargetToRotation();
 }

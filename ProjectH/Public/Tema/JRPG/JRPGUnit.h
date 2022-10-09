@@ -8,6 +8,8 @@
 #include "JRPGUnit.generated.h"
 
 
+DECLARE_MULTICAST_DELEGATE(FAIAttackEnd);
+
 UENUM(BlueprintType)
 enum class EPlayerType : uint8
 {
@@ -46,6 +48,34 @@ public:
 
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
+	/*----------------------
+			AI & BT
+	------------------------*/
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UBehaviorTree* BT; 
+	class UBehaviorTree* GetBT() { return BT; }
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		class AJRPGAIController* OwnerAIController;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		class AJRPGGameMode* GM;
+
+	FAIAttackEnd OnAIAttackEnd; // BT에서 공격이 완료되면 호출될 델리게이트.
+
+	UFUNCTION(BlueprintCallable)
+		void CallAIAttackEnd(); // AI 델리게이트 호출.
+
+	//----------
+
+
+	UFUNCTION(BlueprintCallable)
+		void AddMPAndULT(); // 맞은 대상의 MP와 ULT 게이지가 찬다.
+	// 연타 기술을 대비해서 함수로 따로만들어서 한번만 호출하게 한다.
+	UFUNCTION(BlueprintCallable)
+		void AddManyMPAndULT(); // 다수 공격
+
 	UFUNCTION()
 		void Forward(float Value);
 	UFUNCTION()
@@ -79,16 +109,39 @@ public:
 		void CallULT();
 
 
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+		void NormalAttackDamage();
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+		void SkillAttackDamage();
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+		void ULTAttackDamage();
+	/* 이 함수들은 캐릭마다 데미지 계산이 다르므로 블루 프린트에서 계산해줌. */
+
+
 	bool GetUsingSkill() { return bUsingSkill; }
 	UFUNCTION(BlueprintImplementableEvent)
 		void UnitSkillESC();
 
+	UFUNCTION(BlueprintCallable)
+		void UnitTurnEnd();
+
+	UFUNCTION(BlueprintCallable)
+		void AttackEnd(); // 캐릭터의 공격이 끝났을때
+	
 
 public:
-	void BattleStart();
+	void BattleStart(bool bFlag);
+	void OwnerUnitBattleStart();
 	void EnermyBattleStart();
 
 	void InitCurrentStat(); // 현재 체력과 MP를 가져온다.
+
+	UFUNCTION(BlueprintCallable)
+		void TargetAttack(float ATK); // 하나만 때린다.
+	UFUNCTION(BlueprintCallable)
+		void TargetManyAttack(float ATK); // 여러 마리를 때린다.
+
+
 
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
@@ -108,20 +161,29 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		float MouseSensitivity;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		int32 CharNum; // 해당 캐릭터의 넘버
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FJRPGUnitSkill UnitSkills;
 
+	
+
 	/*-----------------
 		전투 스테이스
 	-------------------*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = JRPGUnit)
+		bool bIsJRPGUnit = false; // 해당 캐릭터가 JRPG 유닛으로 스폰된 캐릭터인지 확인하는 변수. 
+	// 이 변수로 움직이는 애니메이션을 바꾼다.
+	UFUNCTION(BlueprintImplementableEvent)
+		void SetIsJRPGUnit(bool bFlag); // 위 변수를 셋업할 함수. 해당 함수를 통해 애님블프 설정도 바꿈.
+
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BattlePriority)
 		int32 Priority; // 우선순위
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int32 CharacterNum; // 캐릭터의 모든정보를 가진 넘버. 이걸로 거의 모든것을 해결할 수있음.
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	//	int32 CharacterNum; // 캐릭터의 모든정보를 가진 넘버. 이걸로 거의 모든것을 해결할 수있음.
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FJRPGCharStat CharacterStat; // 해당 캐릭터의 스텟
@@ -132,7 +194,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float CurrentMP; // 적은 미리 정해줌.
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float ULTGage; // 궁극기 게이지.
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
@@ -146,4 +208,8 @@ public:
 		bool bUsingSkill; // 스킬 실행중. 스킬실행중이면 ESC로 끄기 위해서.
 
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float AttackDamage; 
+	// Call Skill에서 애니메이션을 실행후에 , 노티파이로 특정구간에서 여기서 계산된 데미지를 
+	// TargetAttack 함수로 보낸다.
 };

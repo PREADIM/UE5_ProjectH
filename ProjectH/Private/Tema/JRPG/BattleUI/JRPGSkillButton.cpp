@@ -8,28 +8,39 @@
 #include "Tema/JRPG/JRPGUnit.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
 
+
+
 void UJRPGSkillButton::Init()
 {
 	if (GM)
 	{
-		FSlateBrush Icon;
+		/*switch (ButtonType)
+		{
+		case EButtonType::NormalAttack :
+			CurrentUnit = GM->UnitList.HeapTop().Unit;
+			CostMP = 0;
+			SetButton(CurrentUnit->UnitSkills.NormalAttack.SkillImg);
+			break;
+		case EButtonType::SkillAttack :
+			CurrentUnit = GM->UnitList.HeapTop().Unit;
+			CostMP = CurrentUnit->UnitSkills.Skill_1.CostMP;
+			SetButton(CurrentUnit->UnitSkills.Skill_1.SkillImg);		
+			SkillSetActive();
+			break;
+		}*/
 
 		switch (ButtonType)
 		{
-		case EButtonType::NormalAttack :
-			CurrentUnit = GM->UnitList[0].Unit;
-			Icon = UWidgetBlueprintLibrary::MakeBrushFromTexture(CurrentUnit->UnitSkills.NormalAttack.SkillImg);
+		case EButtonType::NormalAttack:
+			CurrentUnit = GM->SetUnitList[0].Unit;
 			CostMP = 0;
-			ButtonSetImage(Icon);
-			SkillButton->OnClicked.AddDynamic(this, &UJRPGSkillButton::UseSkill);
+			SetButton(CurrentUnit->UnitSkills.NormalAttack.SkillImg);
 			break;
-		case EButtonType::SkillAttack :
-			CurrentUnit = GM->UnitList[0].Unit;
-			Icon = UWidgetBlueprintLibrary::MakeBrushFromTexture(CurrentUnit->UnitSkills.Skill_1.SkillImg);
+		case EButtonType::SkillAttack:
+			CurrentUnit = GM->SetUnitList[0].Unit;
 			CostMP = CurrentUnit->UnitSkills.Skill_1.CostMP;
-			ButtonSetImage(Icon);
+			SetButton(CurrentUnit->UnitSkills.Skill_1.SkillImg);
 			SkillSetActive();
-			SkillButton->OnClicked.AddDynamic(this, &UJRPGSkillButton::UseSkill);
 			break;
 		}
 	}
@@ -44,18 +55,15 @@ void UJRPGSkillButton::EnermyTurnFirstInit()
 		switch (ButtonType)
 		{
 		case EButtonType::NormalAttack:
-			CurrentUnit = GM->OwnerUnits[0].Unit;
+			CurrentUnit = GM->OwnerUnits.HeapTop().Unit;
 			CostMP = 0;
-			Icon = UWidgetBlueprintLibrary::MakeBrushFromTexture(CurrentUnit->UnitSkills.NormalAttack.SkillImg);
-			ButtonSetImage(Icon);
-			SkillButton->OnClicked.AddDynamic(this, &UJRPGSkillButton::UseSkill);
+			SetButton(CurrentUnit->UnitSkills.NormalAttack.SkillImg);
 			break;
 		case EButtonType::SkillAttack:
-			CurrentUnit = GM->OwnerUnits[0].Unit;
+			CurrentUnit = GM->OwnerUnits.HeapTop().Unit;
 			CostMP = CurrentUnit->UnitSkills.Skill_1.CostMP;
-			Icon = UWidgetBlueprintLibrary::MakeBrushFromTexture(CurrentUnit->UnitSkills.Skill_1.SkillImg);
-			ButtonSetImage(Icon);
-			SkillButton->OnClicked.AddDynamic(this, &UJRPGSkillButton::UseSkill);
+			SetButton(CurrentUnit->UnitSkills.Skill_1.SkillImg);
+			SkillSetActive();
 			break;
 		}
 	}
@@ -68,12 +76,12 @@ void UJRPGSkillButton::UseSkill()
 		switch (ButtonType)
 		{
 		case EButtonType::NormalAttack:
-			CurrentUnit->CallNormalAttack();
+			CurrentUnit->NormalAttack();
 			break;
 		case EButtonType::SkillAttack:
 			if (CurrentUnit->CurrentMP >= CostMP)
 			{
-				CurrentUnit->CallSkill_1();
+				CurrentUnit->Skill_1();
 			}
 			break;
 		}
@@ -110,4 +118,15 @@ void UJRPGSkillButton::SkillSetActive()
 	}
 	else
 		SkillButton->SetIsEnabled(true);
+}
+
+void UJRPGSkillButton::SetButton(UTexture2D* Tex)
+{
+	FSlateBrush Icon;
+	Icon = UWidgetBlueprintLibrary::MakeBrushFromTexture(Tex);
+	ButtonSetImage(Icon);
+	if (!SkillButton->OnClicked.IsBound())
+	{
+		SkillButton->OnClicked.AddDynamic(this, &UJRPGSkillButton::UseSkill);
+	}
 }

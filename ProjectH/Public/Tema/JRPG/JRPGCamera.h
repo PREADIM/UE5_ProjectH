@@ -47,6 +47,11 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		FRotator CurrentRotation;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float TargetSpringArm;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+		float CurrentSpringArm;
+
 	UPROPERTY(VisibleAnywhere)
 		class AJRPGPlayerController* OwnerController;
 	UPROPERTY(VisibleAnywhere)

@@ -37,6 +37,6 @@ public:
 	void PlayInit();
 	void SetUnitList();
 	void PlayCurrentUnit();
-
+	void PlayTurnStart();
 	
 };

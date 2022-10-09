@@ -45,8 +45,8 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Material", meta = (AllowPrivateAccess = "true"))
 		class UMaterialInstance* PoseableMaterial;
 
-
-	class UMaterialInstanceDynamic* Materials;
+	UPROPERTY()
+		class UMaterialInstanceDynamic* Materials;
 
 	bool bSpawned = false;
 	float FadeCnt;

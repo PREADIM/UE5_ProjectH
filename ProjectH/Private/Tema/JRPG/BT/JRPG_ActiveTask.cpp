@@ -1,0 +1,108 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+
+#include "Tema/JRPG/BT/JRPG_ActiveTask.h"
+#include "Tema/JRPG/JRPGGameMode.h"
+#include "BehaviorTree/BlackboardComponent.h"
+#include "Tema/JRPG/JRPGUnit.h"
+#include "Tema/JRPG/JRPGAIController.h"
+
+
+
+UJRPG_ActiveTask::UJRPG_ActiveTask()
+{
+	NodeName = TEXT("JRPG_ActiveTask");
+}
+
+EBTNodeResult::Type UJRPG_ActiveTask::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
+{
+	EBTNodeResult::Type Result = Super::ExecuteTask(OwnerComp, NodeMemory);
+
+	AJRPGGameMode* GM = Cast<AJRPGGameMode>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(FName("GM")));
+
+	OwnerComp.GetBlackboardComponent()->SetValueAsEnum(FName("ActiveType"), 0U); // NONE
+
+	if (!GM)
+	{
+		_DEBUG("Not BT GM");
+		return EBTNodeResult::Failed;
+	}
+
+
+	AJRPGUnit* AIUnit = Cast<AJRPGUnit>(OwnerComp.GetAIOwner()->GetPawn());
+	if (!AIUnit)
+	{
+		_DEBUG("Not AIUnit");
+		return EBTNodeResult::Failed;
+	}
+
+
+	TArray<FLiveUnit> OwnerList = GM->OwnerList;
+	AJRPGUnit* TargetAttackUnit = nullptr;
+	for (FLiveUnit Unit : OwnerList)
+	{
+		// 여기서 if문으로 도발 스킬중인 유닛이있으면 바로 해당 유닛으로 하고 break 하면 될듯.
+
+
+		if (Unit.bLive)
+		{
+			if (TargetAttackUnit == nullptr)
+			{
+				TargetAttackUnit = Unit.Unit;
+			}
+			else
+			{
+				TargetAttackUnit = TargetAttackUnit->CurrentHP < Unit.Unit->CurrentHP ? TargetAttackUnit : Unit.Unit;
+			}
+		}
+	}
+
+
+	if (AIUnit->ULTGage >= AIUnit->MaxULTGage)
+	{
+		if (AIUnit->CurrentMP >= AIUnit->UnitSkills.Skill_1.CostMP)
+		{
+			float Damage = AIUnit->UnitSkills.Skill_1.SkillDamage * AIUnit->CharacterStat.Attack;
+			if (TargetAttackUnit->CurrentHP <= Damage)
+			{
+				// 열거형으로 무슨 상태가 가능한지 선택한다.
+				// 스킬을 쓸수있는 상태
+				OwnerComp.GetBlackboardComponent()->SetValueAsEnum(FName("ActiveType"), 2U);
+				_DEBUG("Skill_1");
+			}
+			else
+			{
+				// 궁극기 상태
+				OwnerComp.GetBlackboardComponent()->SetValueAsEnum(FName("ActiveType"), 3U);
+				_DEBUG("ULT");
+			}
+		}
+		else
+		{
+			// 궁극기 상태
+			OwnerComp.GetBlackboardComponent()->SetValueAsEnum(FName("ActiveType"), 3U);
+			_DEBUG("ULT");
+		}
+	}
+	else if (AIUnit->CurrentMP >= AIUnit->UnitSkills.Skill_1.CostMP)
+	{
+		// 스킬 상태
+		OwnerComp.GetBlackboardComponent()->SetValueAsEnum(FName("ActiveType"), 2U);
+		_DEBUG("Skill_2");
+	}
+	else
+	{
+		// 일반 공격 상태
+		OwnerComp.GetBlackboardComponent()->SetValueAsEnum(FName("ActiveType"), 1U);	
+		_DEBUG("Normal");
+	}
+	
+
+	OwnerComp.GetBlackboardComponent()->SetValueAsObject(FName("TargetUnit"), TargetAttackUnit);
+
+
+	_DEBUG("Enum : %d", OwnerComp.GetBlackboardComponent()->GetValueAsEnum(FName("ActiveType")));
+
+
+	return EBTNodeResult::Succeeded;
+}

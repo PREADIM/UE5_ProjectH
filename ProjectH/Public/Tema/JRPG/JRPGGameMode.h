@@ -11,6 +11,20 @@
  * 
  */
 USTRUCT()
+struct FLiveUnit
+{
+	GENERATED_USTRUCT_BODY()
+public:
+	FLiveUnit();
+	FLiveUnit(class AJRPGUnit* U, bool b);
+
+	class AJRPGUnit* Unit;
+	bool bLive;
+
+};
+
+
+USTRUCT()
 struct FPriorityUnit
 {
 	GENERATED_USTRUCT_BODY()
@@ -26,11 +40,13 @@ public:
 
 struct PriorityUnitFunc
 {
-	bool operator() (const FPriorityUnit& A, const FPriorityUnit& Other) const
+	bool operator()(const FPriorityUnit& A, const FPriorityUnit& Other) const
 	{
 		return A.Priority > Other.Priority; // 최대힙
 	}
 };
+
+
 
 
 
@@ -64,9 +80,12 @@ public:
 	bool GetBattleField(int32 FieldNum);
 	void BattleStart(int32 FieldNum, TArray<int32> Enermys);
 	void TurnStart();
-	void TurnEnd();
+
+	UFUNCTION(BlueprintCallable)
+		void TurnEnd();
 
 	void TurnListInit();
+	void SetUnitListArray(); // 힙 정렬로 우선순위 정렬 한 것을 큐로 저장.
 	void TurnListSet();
 
 	void GameEnd(); // 아군이나 적이 다 죽었을 경우 해당 게임을 끝내기.
@@ -85,14 +104,22 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		class AJRPGPlayerController* OwnerController;
 	UPROPERTY()
-		TArray<FPriorityUnit> UnitList; 
+		TArray<FPriorityUnit> UnitList; // 우선순위 힙정렬을 위한 배열
+	UPROPERTY()
+		TArray <FPriorityUnit> SetUnitList; // 정렬된 것을 여기에 차례차례 정렬해서 사용
 
 	UPROPERTY()
 		TArray<FPriorityUnit> EnermyUnits;
 	UPROPERTY()
+
 		TArray<class AJRPGUnit*> EnermyList;
 	UPROPERTY()
 		TArray<FPriorityUnit> OwnerUnits;
+	UPROPERTY()
+		TArray<FLiveUnit> OwnerList; // 그냥 캐릭터의 리스트 죽으면 체크
+
+	
+
 	// 적이나 캐릭터가 공격받아 배틀 start를 하기전에 먼저 이 게임모드에 적절하게 먼저 넣게 한다.
 	// 결국엔 이것은 캐릭터안에 있는 것을 넣는것. 
 	// 만약 원신처럼 대표캐릭터를 바꿀수 있는 게임이라면, 캐릭터를 스폰하면서 보유 캐릭터도 보낸다.

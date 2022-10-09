@@ -14,6 +14,8 @@ public:
 		float CostMP;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UTexture2D* SkillImg;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float SkillDamage; // 스킬 데미지 계수.
 };
 
 
@@ -31,5 +33,7 @@ public:
 		class UTexture2D* ULTImg;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UTexture2D* FillULTImg;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float ULTDamage; // 스킬 데미지 계수.
 };
 

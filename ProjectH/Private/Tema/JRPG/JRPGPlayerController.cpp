@@ -8,6 +8,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Tema/JRPG/MainUI/PartySettingField.h"
 #include "Tema/JRPG/CustomWidget.h"
+#include "Tema/JRPG/BattleUI/DamageWidget.h"
 
 
 AJRPGPlayerController::AJRPGPlayerController()
@@ -34,7 +35,6 @@ void AJRPGPlayerController::BeginPlay()
 		TemaMainUI->Init();
 		TemaMainUI->AddToViewport();
 	}
-
 	GameType = EGameModeType::Normal;
 }
 
@@ -48,7 +48,10 @@ void AJRPGPlayerController::OnPossess(APawn* NewPawn)
 		RepreCharacterNum = RepreCharacter->CharNum;
 		// ★★ 원래는 이미 있는 RepreCharacter로 HaveCharStat에서 받아오는 것이지만, 나중에 구현.
 
-		GM->SetControllerInit(); // OnPossess를 하면 왜인지는 모르겠으나, 값이 초기화된다. 그래서 다시 설정.
+		if (GM)
+		{
+			GM->SetControllerInit(); // OnPossess를 하면 왜인지는 모르겠으나, 값이 초기화된다. 그래서 다시 설정.
+		}	
 	}	
 }
 
@@ -124,6 +127,7 @@ void AJRPGPlayerController::PlayBattleMode(TArray<int32> EnermyUnits)
 	{
 		if (RepreCharacter)
 		{
+			RepreCharacter->bIsLMBAttack = true;
 			FieldLocation = RepreCharacter->GetActorTransform();
 			GM->SetSaveJRPG();
 
@@ -308,21 +312,25 @@ void AJRPGPlayerController::StartBattleWidget()
 	if (TemaMainUI)
 	{
 		TemaMainUI->PlayBattleWidget();
-
 	}
 }
 
 
 // 턴시작시 위젯애니메이션 없이 위젯 갱신하기.
-void AJRPGPlayerController::BattleTurnStart()
+void AJRPGPlayerController::BattleTurnStart(bool bFlag)
 {
-	TemaMainUI->BattleTurnStart();	
+	TemaMainUI->BattleTurnStart(bFlag);
 }
 
 
 void AJRPGPlayerController::SetVisibleBattleWidget(bool bFlag)
 {
 	TemaMainUI->SetVisibleBattleWidget(bFlag);
+}
+
+void AJRPGPlayerController::SetEnermyTurnWidget(bool bFlag)
+{
+	TemaMainUI->EnermyTurnWidget(bFlag);
 }
 
 void AJRPGPlayerController::BattleESC()
@@ -337,7 +345,39 @@ void AJRPGPlayerController::BattleESC()
 }
 
 
-void AJRPGPlayerController::SetDyCameraRot(FRotator Rotation)
+
+void AJRPGPlayerController::VisibleDamage(float Damage, FVector TargetLocation)
 {
-	// 다이나믹 카메라 회전시키기.
+	UDamageWidget* DamageSkin = nullptr;
+
+	if (BP_DamageSkin)
+	{
+		DamageSkin = CreateWidget<UDamageWidget>(GetWorld(), BP_DamageSkin);
+		if (DamageSkin != nullptr)
+		{
+			DamageSkin->OwnerController = this;
+			DamageSkin->Init(Damage, TargetLocation);
+		}
+	}
+}
+
+
+
+void AJRPGPlayerController::UnitTurnEnd()
+{
+	if (GM)
+	{
+		GM->TurnEnd();
+	}
+}
+
+void AJRPGPlayerController::EnermyListSetup()
+{
+	TemaMainUI->EnermyListSetup();
+}
+
+
+void AJRPGPlayerController::TargetToRotation()
+{
+	TemaMainUI->TargetToRotation();
 }
