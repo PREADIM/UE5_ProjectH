@@ -37,32 +37,31 @@ EBTNodeResult::Type UJRPG_ActiveTask::ExecuteTask(UBehaviorTreeComponent& OwnerC
 	}
 
 
-	TArray<FLiveUnit> OwnerList = GM->OwnerList;
+	TArray<AJRPGUnit*> OwnerList = GM->OwnerList;
 	AJRPGUnit* TargetAttackUnit = nullptr;
-	for (FLiveUnit Unit : OwnerList)
+
+
+	for (AJRPGUnit* Unit : OwnerList)
 	{
 		// 여기서 if문으로 도발 스킬중인 유닛이있으면 바로 해당 유닛으로 하고 break 하면 될듯.
-
-
-		if (Unit.bLive)
+	
+		if (TargetAttackUnit == nullptr)
 		{
-			if (TargetAttackUnit == nullptr)
-			{
-				TargetAttackUnit = Unit.Unit;
-			}
-			else
-			{
-				TargetAttackUnit = TargetAttackUnit->CurrentHP < Unit.Unit->CurrentHP ? TargetAttackUnit : Unit.Unit;
-			}
+			TargetAttackUnit = Unit;
+		}
+		else
+		{
+			TargetAttackUnit = TargetAttackUnit->CurrentHP < Unit->CurrentHP ? TargetAttackUnit : Unit;
 		}
 	}
+
 
 
 	if (AIUnit->ULTGage >= AIUnit->MaxULTGage)
 	{
 		if (AIUnit->CurrentMP >= AIUnit->UnitSkills.Skill_1.CostMP)
 		{
-			float Damage = AIUnit->UnitSkills.Skill_1.SkillDamage * AIUnit->CharacterStat.Attack;
+			float Damage = AIUnit->UnitSkills.Skill_1.SkillDamage * AIUnit->CharacterStat.Attack - TargetAttackUnit->CharacterStat.Shelid;
 			if (TargetAttackUnit->CurrentHP <= Damage)
 			{
 				// 열거형으로 무슨 상태가 가능한지 선택한다.
@@ -99,10 +98,6 @@ EBTNodeResult::Type UJRPG_ActiveTask::ExecuteTask(UBehaviorTreeComponent& OwnerC
 	
 
 	OwnerComp.GetBlackboardComponent()->SetValueAsObject(FName("TargetUnit"), TargetAttackUnit);
-
-
-	_DEBUG("Enum : %d", OwnerComp.GetBlackboardComponent()->GetValueAsEnum(FName("ActiveType")));
-
 
 	return EBTNodeResult::Succeeded;
 }

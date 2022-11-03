@@ -194,7 +194,7 @@ void APartySettingField::SetPartyList(int32 CharNum, UJRPGSettingPartyIcon* Owne
 {
 	if (SettingUI)
 	{
-		// 아예 새로 추가하는 로직
+		// 아예 새로 추가하는 로직 // 파티 셋팅 빈칸인 곳을 눌렀을때 로직. ★★
 		if (!OwnerController->CurrentParty.IsValidIndex(SelectNumber))
 		{
 
@@ -206,6 +206,7 @@ void APartySettingField::SetPartyList(int32 CharNum, UJRPGSettingPartyIcon* Owne
 					bCan = false; // 이미 있으므로 하지 말것
 					SettingUI->PlayWarningText();
 					//여기서 이미 존재한다고 경고창 띄우기.
+					// 
 					// OwnerController->LastWidget에 넣기.
 					break;
 				}
@@ -223,6 +224,7 @@ void APartySettingField::SetPartyList(int32 CharNum, UJRPGSettingPartyIcon* Owne
 
 		// 위의 조건문은 아예 새로 추가하므로 아래 로직을 실행할 필요가 x
 
+		//여기서 부터는 빈칸이 아닌곳일 때. ★★
 		if (SpawnChars[SelectNumber]->CharNum == CharNum && CharNum != 0) // 같은걸 선택하면 애초에 해제하기만 떠야함. 스폰 할 필요x
 		{
 			// ★ 여기가 중요하다. 컨트롤러의 원래 파티에 있던 자리인지 파악해서, 해제하기인지 아닌지 판단한다.
@@ -230,6 +232,7 @@ void APartySettingField::SetPartyList(int32 CharNum, UJRPGSettingPartyIcon* Owne
 			{
 				// 선택한 캐릭터를 해제할때
 				// JRPGSettingPartySlot 위젯의 해제하기 버튼을 Visible 하기
+
 				SettingUI->SetVisibilitySelectButton(false); // 선택하기 끄기
 				SettingUI->SetVisibilityOutButton(true); // 해제하기 켜기.
 
@@ -265,10 +268,12 @@ void APartySettingField::SetPartyList(int32 CharNum, UJRPGSettingPartyIcon* Owne
 
 			if (SwapCharNumber != -1 && SelectNumber != SwapCharNumber)
 			{		
+				// 현재 파티에 이미 존재하는 경우. 자리를 바꾼다. ★
 				SetSpawnUnit(SwapCharFieldNum, SwapCharNumber); // 기존 캐릭터 위치 변경		
 			}
 			else if(SwapCharNumber == -1 || SelectNumber == SwapCharNumber)// -1인데도 불구하고 이 로직이 실행된다는 것은, 파티에는없는데 캐릭터를 교체 한다는 뜻.
 			{
+				// 현재 파티에는 없지만, 분명히 내가 목록에 가지고 있는 캐릭터인 경우. ★
 				SwapIconColor();
 				CurrentPartyIcons[SelectNumber] = OwnerIcon; // 새로운 아이콘이 자리 잡기.
 			}

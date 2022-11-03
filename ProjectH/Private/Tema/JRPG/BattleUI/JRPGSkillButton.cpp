@@ -14,21 +14,6 @@ void UJRPGSkillButton::Init()
 {
 	if (GM)
 	{
-		/*switch (ButtonType)
-		{
-		case EButtonType::NormalAttack :
-			CurrentUnit = GM->UnitList.HeapTop().Unit;
-			CostMP = 0;
-			SetButton(CurrentUnit->UnitSkills.NormalAttack.SkillImg);
-			break;
-		case EButtonType::SkillAttack :
-			CurrentUnit = GM->UnitList.HeapTop().Unit;
-			CostMP = CurrentUnit->UnitSkills.Skill_1.CostMP;
-			SetButton(CurrentUnit->UnitSkills.Skill_1.SkillImg);		
-			SkillSetActive();
-			break;
-		}*/
-
 		switch (ButtonType)
 		{
 		case EButtonType::NormalAttack:

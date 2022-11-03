@@ -53,4 +53,5 @@ public:
 	void EnermyTurnWidget(bool bFlag); // 적 턴일때 보이게할 위젯만 키기
 
 	void TargetToRotation(); // 적 쪽으로 몸 돌리기.
+	void EnermyTargetToRotation();
 };

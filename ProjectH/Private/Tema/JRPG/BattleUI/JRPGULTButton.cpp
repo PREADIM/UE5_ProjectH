@@ -12,9 +12,9 @@ void UJRPGULTButton::Init()
 {
 	if (GM)
 	{
-		//CurrentUnit = GM->UnitList.HeapTop().Unit;
 		CurrentUnit = GM->SetUnitList[0].Unit;
 		ULTGage = CurrentUnit->ULTGage;
+		MaxULTGage = CurrentUnit->MaxULTGage;
 		FProgressBarStyle Style;
 		FSlateBrush SlateWidget = UWidgetBlueprintLibrary::MakeBrushFromTexture(CurrentUnit->UnitSkills.ULT.ULTImg);
 		FSlateBrush FillWidget = UWidgetBlueprintLibrary::MakeBrushFromTexture(CurrentUnit->UnitSkills.ULT.FillULTImg);
@@ -22,15 +22,14 @@ void UJRPGULTButton::Init()
 		Style.SetFillImage(FillWidget);
 
 		PB_ULT->WidgetStyle = Style;
-		if (CurrentUnit->MaxULTGage <= ULTGage)
-			bULT = true;
-		else
-			bULT = false;
+		PB_ULT->PercentDelegate.BindUFunction(this, "BindULTGage");
+		PB_ULT->SynchronizeProperties();
+
 		if (!ULTButton->OnClicked.IsBound())
 		{
 			ULTButton->OnClicked.AddDynamic(this, &UJRPGULTButton::UseSkill);
 		}
-		
+
 	}
 }
 
@@ -47,6 +46,12 @@ void UJRPGULTButton::UseSkill()
 
 }
 
+float UJRPGULTButton::BindULTGage()
+{
+	return ULTGage / MaxULTGage;
+}
+
+
 
 void UJRPGULTButton::EnermyTurnFirstInit()
 {
@@ -61,11 +66,9 @@ void UJRPGULTButton::EnermyTurnFirstInit()
 		Style.SetFillImage(SlateWidget);
 
 		PB_ULT->WidgetStyle = Style;
-		if (CurrentUnit->MaxULTGage <= ULTGage)
-			bULT = true;
-		else
-			bULT = false;
 
 		ULTButton->OnClicked.AddDynamic(this, &UJRPGULTButton::UseSkill);
 	}
 }
+
+

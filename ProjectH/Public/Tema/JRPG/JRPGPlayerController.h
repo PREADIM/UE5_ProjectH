@@ -51,7 +51,6 @@ public:
 	void CameraRotSetUp(FRotator Rotation);
 	void ExitCamera();
 	FVector GetCameraLocation();
-	void PlayBattleMode(TArray<int32> EnermyUnits);
 
 	void GameEndSpawnCharacter();
 
@@ -77,6 +76,9 @@ public:
 	
 
 	// 배틀 
+	void PlayBattleMode(TArray<int32> EnermyUnits); // 배틀 시작.
+	void ReturnMainWidget(); // 배틀 종료후 돌아가기.
+
 	void StartBattleWidget();
 	void BattleTurnStart(bool bFlag);
 	void SetVisibleBattleWidget(bool bFlag); // 배틀위젯 숨기거나 켜기.
@@ -123,6 +125,7 @@ public:
 	// 나중에 퀘스트 넘버처럼 번호와 BP 패스를 가지고 해당 넘버만 저장하고 불러오는 형식으로 만들어도될듯.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		TMap<int32, FJRPGCharStat> HaveCharStat; // 가지고 있는 캐릭터의 스텟들.
+		//TMap<int32, int32> HaveCharStat; // 가지고 있는 캐릭터의 레벨들. (레벨로 스탯을 데이터테이블에서 검색해서 가져옴)
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MainUI)
@@ -148,6 +151,8 @@ public:
 		TArray<class AJRPGUnit*> TargetUnits;
 	UFUNCTION(BlueprintCallable)
 		void TargetToRotation();
+	UFUNCTION(BlueprintCallable)
+		void EnermyTargetToRotation();
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

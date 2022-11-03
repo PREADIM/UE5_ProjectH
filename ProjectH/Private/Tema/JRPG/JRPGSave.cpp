@@ -3,11 +3,18 @@
 
 #include "Tema/JRPG/JRPGSave.h"
 #include "Tema/JRPG/JRPGPlayerController.h"
+#include "Tema/JRPG/JRPGEnermy.h"
 
 const FString UJRPGSave::SlotName = FString("JRPGSave");
 
 
 FJRPGSerial::FJRPGSerial()
+{
+
+}
+
+
+FJRPGFieldEnermy::FJRPGFieldEnermy()
 {
 
 }
@@ -47,6 +54,7 @@ void UJRPGSave::SetLoadCharacter(AJRPGPlayerController* OwnerController)
 	OwnerController->CurrentFieldNum = JRPGSerial.CurrentFieldNum;
 	OwnerController->HaveCharList = JRPGSerial.HaveCharList;
 	OwnerController->HaveCharStat = JRPGSerial.HaveCharStat;
+
 }
 
 
@@ -59,8 +67,42 @@ void UJRPGSave::SetSave(class AJRPGPlayerController* OwnerController)
 	JRPGSerial.HaveCharList = OwnerController->HaveCharList;
 	JRPGSerial.HaveCharStat = OwnerController->HaveCharStat;
 
-	_DEBUG("%d !!", JRPGSerial.RepreCharacterNum);
 	SaveSlot();
+}
+
+
+void UJRPGSave::SetFieldEnermy(class AJRPGEnermy* FieldEnermy, int32 KillCnt)
+{
+	if (JRPGFieldEnermy.FieldEnermyIsLive.Find(FieldEnermy->FieldEnermyNumber))
+	{
+		JRPGFieldEnermy.FieldEnermyIsLive[FieldEnermy->FieldEnermyNumber] = FieldEnermy->bDead;
+	}
+	else
+	{
+		JRPGFieldEnermy.FieldEnermyIsLive.Add(FieldEnermy->FieldEnermyNumber, FieldEnermy->bDead);
+	}
+
+	JRPGFieldEnermy.KillCnt = KillCnt;
+	SaveSlot();
+}
+
+
+bool UJRPGSave::GetFieldEnermy(int32 FieldEnermyNum)
+{
+	if (JRPGFieldEnermy.FieldEnermyIsLive.Find(FieldEnermyNum))
+	{
+		return JRPGFieldEnermy.FieldEnermyIsLive[FieldEnermyNum];
+	}
+	else
+	{
+		JRPGFieldEnermy.FieldEnermyIsLive.Add(FieldEnermyNum, false);
+		return false;
+	}
+}
+
+float UJRPGSave::GetKillCnt()
+{
+	return JRPGFieldEnermy.KillCnt;
 }
 
 

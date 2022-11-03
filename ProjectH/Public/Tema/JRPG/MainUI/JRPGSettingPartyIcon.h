@@ -29,6 +29,8 @@ public:
 
 	UPROPERTY()
 		class APartySettingField* OwnerField;
+	UPROPERTY()
+		class AJRPGPlayerController* OwnerController;
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -36,11 +38,23 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FLinearColor NormalColor;
 
+	UPROPERTY()
+		class UJRPGSettingPartySlot* OwnerWidget; // 디테일 호버위젯을 위한 용도.
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<class UPartyHoveredWidget> BP_HoveredWidget;
+	UPROPERTY()
+		class UPartyHoveredWidget* HoveredWidget;
+
 public:
 	void Init(UTexture2D* Texture);
 
 	UFUNCTION()
 		void SetPartyList();
+	UFUNCTION()
+		void SetHoveredWidget();
+	UFUNCTION()
+		void SetUnHoveredWidget();
 
 	void SetSelectColor(bool bFlag); // 선택된 아이콘은 컬러를 입힌다. 
 };

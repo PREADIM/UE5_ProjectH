@@ -10,7 +10,7 @@
 /**
  * 
  */
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FLiveUnit
 {
 	GENERATED_USTRUCT_BODY()
@@ -24,7 +24,7 @@ public:
 };
 
 
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FPriorityUnit
 {
 	GENERATED_USTRUCT_BODY()
@@ -33,8 +33,10 @@ public:
 	FPriorityUnit();
 	FPriorityUnit(class AJRPGUnit* Char);
 
-	class AJRPGUnit* Unit;
-	int32 Priority;
+	UPROPERTY(BlueprintReadWrite)
+		class AJRPGUnit* Unit;
+	UPROPERTY(BlueprintReadWrite)
+		int32 Priority;
 };
 
 
@@ -70,6 +72,7 @@ class PROJECTH_API AJRPGGameMode : public AGameModeBase
 // ㄴ 적이 다 죽었거나, 아군이 다 죽었을 경우 -> 유닛의 공격 당한 함수에서 팀이 다죽었는지 판별. 그리고 끝내기.
 public:
 	AJRPGGameMode();
+	void SetDataTable(UDataTable* Table, FString TablePath); // 데이터 테이블 적용 함수.
 	virtual void PostLogin(APlayerController* Login) override;
 
 
@@ -88,16 +91,14 @@ public:
 	void SetUnitListArray(); // 힙 정렬로 우선순위 정렬 한 것을 큐로 저장.
 	void TurnListSet();
 
-	void GameEnd(); // 아군이나 적이 다 죽었을 경우 해당 게임을 끝내기.
-	// 적이나 아군이나 어처피 AJRPGUnit이므로 TakeDamage에서 데미지를 주고, 캐스트 하면 될듯하다.
+	void GameEnd(bool bWinner); // 아군이나 적이 다 죽었을 경우 해당 게임을 끝내기.
+	// true는 플레이어가 승자, false는 적이 승리.
+
 
 	void ReturnWorld(); // 게임끝나고 원래 전장으로 돌아가기
 
 	void SetOwnerUnits(); // 아군 유닛 스폰 및 리스트 할당.
 	void SetEnermyUnits(TArray<int32> Enermys); // 적군 유닛 스폰 및 리스트 할당.
-
-	void FirstStartSaveStat(); // 마땅히 저장되어있는 세이브파일이 없다는 것은 가장 기초 캐릭터가 없다는 뜻이므로.
-	// 기초 캐릭터를 저장함.
 
 	void SetControllerInit();
 public:
@@ -108,15 +109,19 @@ public:
 	UPROPERTY()
 		TArray <FPriorityUnit> SetUnitList; // 정렬된 것을 여기에 차례차례 정렬해서 사용
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadWrite)
 		TArray<FPriorityUnit> EnermyUnits;
-	UPROPERTY()
-
+	UPROPERTY(BlueprintReadWrite)
 		TArray<class AJRPGUnit*> EnermyList;
-	UPROPERTY()
+	// 적의 살아있는 수. UI로도 연동
+
+	UPROPERTY(BlueprintReadWrite)
 		TArray<FPriorityUnit> OwnerUnits;
-	UPROPERTY()
-		TArray<FLiveUnit> OwnerList; // 그냥 캐릭터의 리스트 죽으면 체크
+	//UPROPERTY(BlueprintReadWrite)
+		//TArray<FLiveUnit> OwnerList; // 그냥 캐릭터의 리스트 죽으면 체크
+	UPROPERTY(BlueprintReadWrite)
+		TArray<class AJRPGUnit*> OwnerList;
+	// 아군의 실질적인 살아있는 수.
 
 	
 
@@ -133,6 +138,8 @@ public:
 		class UDataTable* CharListTable; // JPRG캐릭터 테이블.
 	UPROPERTY(VisibleAnywhere)
 		class UDataTable* EnermyListTable; // JPRG캐릭터 테이블.
+
+
 
 
 	UPROPERTY()
@@ -159,5 +166,15 @@ public:
 	// 아직은 활용 x 몇개중에 몇개 보유 확인할 때 필요할 듯.
 
 	void SetSaveJRPG();
+
+	void SetSaveEnermyUnits(class AJRPGEnermy* FieldEnermy);
+	bool GetSaveEnermyUnits(int32 EnermyUnitNum); 
+	// 이 둘은 필드의 적이 죽엇는지 살았는지 세이브하는 함수들.
+
+	UPROPERTY()
+		class AJRPGEnermy* CurrentBattleEnermy; // 현재 싸우는 필드 유닛을 저장.
+	// 게임이 끝나고 죽었는지 살았는지 알아야 하기때문.
 	
+	UPROPERTY(BlueprintReadOnly)
+		int32 KillCnt; // 추후 기믹을 위해. 카운트
 };

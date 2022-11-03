@@ -49,7 +49,5 @@ EBTNodeResult::Type UJRPG_TargetLook::ExecuteTask(UBehaviorTreeComponent& OwnerC
 	OwnerController->CameraRotSetUp(Rot);
 	
 	SelfUnit->SetActorRotation(EnermyRot);
-
-
 	return EBTNodeResult::Succeeded;
 }

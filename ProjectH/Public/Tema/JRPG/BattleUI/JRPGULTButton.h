@@ -21,16 +21,22 @@ public:
 
 	UPROPERTY()
 		class AJRPGUnit* CurrentUnit;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY()
 		float ULTGage;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		bool bULT; // 궁극기 사용가능 여부.
+	UPROPERTY()
+		float MaxULTGage;
 
 public:
 	void Init();
 	UFUNCTION()
 		void UseSkill();
+	UFUNCTION(BlueprintCallable)
+		float BindULTGage();
+
 	void EnermyTurnFirstInit(); // 적이 맨처음 사작이라 어쩔수없이 내 캐릭터중 가장 빠른캐릭터의 것으로 초기화.
+
+
+
+
 
 };

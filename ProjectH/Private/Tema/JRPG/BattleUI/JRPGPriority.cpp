@@ -9,46 +9,6 @@
 
 void UJRPGPriority::PlayInit()
 {
-	/*if (BP_UnitIcon && GM)
-	{	
-		float WaitTime = 0.2f;
-		Units = GM->UnitList;
-		UnitList->ClearChildren();
-		Icons.Empty();
-
-		GetWorld()->GetTimerManager().SetTimer(TimerHandle, FTimerDelegate::CreateLambda([&]()
-		{
-			if (!Units.IsEmpty())
-			{
-				FPriorityUnit HeapTop;
-				Units.HeapPop(HeapTop, PriorityUnitFunc());
-				UJRPGBattleUnitIcon* Icon = CreateWidget<UJRPGBattleUnitIcon>(GetWorld(), BP_UnitIcon);
-				if (Icon)
-				{
-					FJRPGUnitUIStruct* UnitUI = OwnerController->GetUnitUI(HeapTop.Unit->CharNum);
-					// 색다른 UI를 쓰려면 여기에 추가해서 사용해도 될듯.
-
-					if (UnitUI)
-					{
-						Icon->Init(UnitUI->CharTex, UnitUI->CharName);
-						Icon->SetPadding(FMargin(0.f, 0.f, 0.f, 5.f));
-						UnitList->AddChild(Icon);
-						Icons.Add(Icon);
-					}
-				}
-			}
-			else
-			{					
-				GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
-				_DEBUG("Clear");
-			}
-		}), WaitTime, true);
-
-
-		PlayTurnStart();
-	
-	}*/
-
 	if (BP_UnitIcon && GM)
 	{
 		float WaitTime = 0.2f;
@@ -99,33 +59,6 @@ void UJRPGPriority::PlayInit()
 // 평상시 PartyList Set
 void UJRPGPriority::SetUnitList()
 {
-	/*Units = GM->UnitList;
-	UnitList->ClearChildren();
-	Icons.Empty();
-
-	while (!Units.IsEmpty())
-	{
-		FPriorityUnit HeapTop;
-		Units.HeapPop(HeapTop, PriorityUnitFunc());
-		UJRPGBattleUnitIcon* Icon = CreateWidget<UJRPGBattleUnitIcon>(GetWorld(), BP_UnitIcon);
-		if (Icon)
-		{
-			FJRPGUnitUIStruct* UnitUI = OwnerController->GetUnitUI(HeapTop.Unit->CharNum);
-			// 색다른 UI를 쓰려면 여기에 추가해서 사용해도 될듯.
-
-			if (UnitUI)
-			{
-				Icon->Init(UnitUI->CharTex, UnitUI->CharName);
-				Icon->SetPadding(FMargin(0.f, 0.f, 0.f, 5.f));
-				UnitList->AddChild(Icon);
-				Icons.Add(Icon);
-			}
-		}
-	}
-
-	PlayTurnStart();*/
-
-
 	Units = GM->SetUnitList;
 	UnitList->ClearChildren();
 	Icons.Empty();

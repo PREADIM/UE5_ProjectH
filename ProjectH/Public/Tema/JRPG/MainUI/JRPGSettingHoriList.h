@@ -16,6 +16,10 @@ class PROJECTH_API UJRPGSettingHoriList : public UUserWidget
 	GENERATED_BODY()
 
 public:
+	UPROPERTY()
+		class UJRPGSettingPartySlot* OwnerWidget;
+
+
 	UPROPERTY(EditAnywhere)
 		TSubclassOf<class UJRPGSettingPartyIcon> BP_UnitIcon; // 아이콘들
 

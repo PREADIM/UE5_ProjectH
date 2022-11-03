@@ -70,7 +70,10 @@ public:
 	void SetUnitList(); // 게임할때 Hidden 하고 다시 Visible 하면 애초에 바뀐상태로 UnitList가 되어있음.
 	void EnermyListBeginInit(); // 맨 처음에 현재 존재하는 적 리스트 초기화.
 	void EnermyListInit(); // 적 리스트 초기화.
+
 	void TargetToRotation(); // 캐릭터의 회전을 다시 락온쪽으로 돌림.
+	void EnermyTargetToRotation();
+
 	void SetVisible(bool bFlag);
 	void EnermyTurnHidden(bool bFlag); // 적 차례시 위젯 단순화
 	void SetButtonVisible(bool bFlag);

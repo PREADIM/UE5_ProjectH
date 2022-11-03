@@ -2,16 +2,21 @@
 
 
 #include "Tema/JRPG/JRPGUnit.h"
+#include "Tema/JRPG/JRPGCamera.h"
 #include "Tema/JRPG/JRPGComponent.h"
 #include "Tema/JRPG/JRPGPlayerController.h"
 #include "Tema/JRPG/JRPGGameMode.h"
 #include "Tema/JRPG/JRPGAIController.h"
+#include "Components/WidgetComponent.h"
+#include "Tema/JRPG/BattleUI/JRPGBattleHPWidget.h"
+#include "Tema/JRPG/JRPGCamera.h"
+#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
 AJRPGUnit::AJRPGUnit()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
@@ -32,6 +37,11 @@ AJRPGUnit::AJRPGUnit()
 	Camera->SetupAttachment(SpringArm);
 	Camera->bUsePawnControlRotation = false;
 
+	BattleHPComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("BattleHP"));
+	BattleHPComponent->SetupAttachment(RootComponent);
+	BattleHPComponent->SetWidgetSpace(EWidgetSpace::Screen);
+	BattleHPComponent->SetDrawSize(FVector2D(150.f, 35.f));
+
 	Priority = 0;
 
 	bIsLMBAttack = false;
@@ -43,6 +53,13 @@ void AJRPGUnit::BeginPlay()
 	Super::BeginPlay();
 	// ★★ 스폰했을때 이것이 실행될것이니, 캐릭터 넘버로 검색해서 스탯을 가져온다.
 	GM = Cast<AJRPGGameMode>(GetWorld()->GetAuthGameMode());
+	BattleHPWidget = Cast<UJRPGBattleHPWidget>(BattleHPComponent->GetUserWidgetObject());
+	if (BattleHPWidget)
+	{
+		BattleHPWidget->OwnerUnit = this;
+		BattleHPWidget->SetRenderOpacity(0.0f);
+	}
+
 }
 
 // Called every frame
@@ -50,6 +67,15 @@ void AJRPGUnit::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (bIsJRPGUnit) // 턴제 유닛으로 소환된 경우.
+	{
+		if (OwnerController->TargetUnit)
+		{
+			FVector V = OwnerController->DynamicCamera->GetActorLocation() - GetActorLocation();
+			float Range = UKismetMathLibrary::MapRangeUnclamped(V.Length(), 100.f, 600.f, 1.f, 0.8f);
+			BattleHPWidget->SetRenderScale(FVector2D(Range, Range));
+		}
+	}
 }
 
 void AJRPGUnit::PossessedBy(AController* NewController)
@@ -125,27 +151,64 @@ float AJRPGUnit::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent,
 {
 	float DamageApplied = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
-	if (CurrentHP < DamageAmount)
+
+	float Damage = DamageAmount - CharacterStat.Shelid;
+
+	if (CurrentHP <= Damage)
 	{
 		CurrentHP = 0;
 		
-		TArray<FLiveUnit> OwnerList = GM->OwnerList;
-		for (FLiveUnit Unit : OwnerList)
+		if (PlayerType == EPlayerType::Player)
 		{
-			if (Unit.Unit == this)
+			// 캐릭터 생사여부를 위한 지우기. 적이 공격할 아군을 찾기위한 배열.
+			TArray<AJRPGUnit*>& OwnerList = GM->OwnerList;
+			for (int32 i = 0; i < OwnerList.Num(); i++)
 			{
-				_DEBUG("Dead");
-				Unit.bLive = false;
+				if (OwnerList[i] == this)
+				{
+					_DEBUG("Dead");
+					OwnerList.RemoveAt(i);
+					break;
+				}
 			}
 		}
+		else
+		{
+			// 적 선택 리스트 UI를 위해 지우기.
+			TArray<AJRPGUnit*>& EnermyList = GM->EnermyList;
+			for (int32 i = 0; i < EnermyList.Num(); i++)
+			{
+				if (EnermyList[i] == this)
+				{
+					EnermyList.RemoveAt(i);
+				}
+			}
+
+		}
+
+		TArray<FPriorityUnit>& SetUnitList = GM->SetUnitList;
+		for (int32 i = 0; i < SetUnitList.Num(); ++i)
+		{
+			if (SetUnitList[i].Unit == this)
+			{
+				SetUnitList.RemoveAt(i);
+			}
+		}
+
+		GetCharacterMovement()->DisableMovement();
+		PlayAnimMontage(DeadAnim);
+		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		DeadUnit();
 	}
 	else
 	{
-		CurrentHP -= DamageAmount;
+		CurrentHP -= Damage;
+		PlayAnimMontage(HitAnim);
 	}
 	
 	
-	OwnerController->VisibleDamage(DamageAmount, GetActorLocation());
+	OwnerController->VisibleDamage(Damage, GetActorLocation());
 
 	return DamageApplied;
 }
@@ -232,6 +295,7 @@ void AJRPGUnit::EnermyBattleStart()
 	// (해당 캐릭터가 그 적을 보고있어야하므로, 그 적을 향해서 카메라가 회전해야한다.)
 	// (FindLookAtRotation) 을 활용하면 될듯.
 	// 적 행동을 실행.
+	// BT로 구현
 }
 
 
@@ -266,6 +330,21 @@ void AJRPGUnit::TargetManyAttack(float ATK)
 
 }
 
+void AJRPGUnit::DeadUnit()
+{
+	DropItem();
+}
+
+void AJRPGUnit::ThisUnitBattleUnit(bool bFlag)
+{
+	if (bFlag)
+		BattleHPWidget->SetRenderOpacity(1.0f);
+	else
+		BattleHPWidget->SetRenderOpacity(0.0f);
+	bIsJRPGUnit = bFlag;
+	SetIsJRPGUnit(bFlag);
+}
+
 void AJRPGUnit::AddMPAndULT()
 {
 	AJRPGUnit* Unit = OwnerController->TargetUnit;
@@ -283,6 +362,16 @@ void AJRPGUnit::AddManyMPAndULT()
 }
 
 
+void AJRPGUnit::OwnerAddMPAndULT()
+{
+	CurrentMP = FMath::Clamp(CurrentMP + 20.f, 0.0f, CharacterStat.MaxMP);
+	ULTGage = FMath::Clamp(ULTGage + 20.f, 0.0f, MaxULTGage);
+}
+
+void AJRPGUnit::OwnerAddULT()
+{
+	ULTGage = FMath::Clamp(ULTGage + 20.f, 0.0f, MaxULTGage);
+}
 
 void AJRPGUnit::UnitTurnEnd()
 {

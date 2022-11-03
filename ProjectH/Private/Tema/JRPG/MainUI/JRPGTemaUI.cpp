@@ -2,6 +2,7 @@
 
 
 #include "Tema/JRPG/MainUI/JRPGTemaUI.h"
+#include "Tema/JRPG/JRPGPlayerController.h"
 #include "Tema/JRPG/MainUI/JRPGMainWidget.h"
 #include "Tema/JRPG/JRPGGameMode.h"
 #include "Tema/JRPG/BattleUI/JRPGBattleWidget.h"
@@ -90,9 +91,13 @@ void UJRPGTemaUI::StartMainWidget()
 {
 	if (BattleWidget->IsInViewport())
 	{
+		BattleWidget->HiddenLockOn();
 		BattleWidget->RemoveFromParent();
 	}
 
+	OwnerController->SetInputMode(FInputModeGameOnly());
+	OwnerController->GameType = EGameModeType::Normal;
+	OwnerController->SetShowMouseCursor(false);
 	MainWidget->AddToViewport();
 }
 
@@ -122,7 +127,6 @@ void UJRPGTemaUI::PlayBattleWidget()
 {
 	if (BattleWidget)
 	{
-		//if (GM->UnitList[0].Unit->PlayerType == EPlayerType::Player)
 		if (GM->SetUnitList[0].Unit->PlayerType == EPlayerType::Player)
 			BattleWidget->BattleTurnInit();
 		else
@@ -168,4 +172,10 @@ void UJRPGTemaUI::EnermyListSetup()
 void UJRPGTemaUI::TargetToRotation()
 {
 	BattleWidget->TargetToRotation();
+}
+
+
+void UJRPGTemaUI::EnermyTargetToRotation()
+{
+	BattleWidget->EnermyTargetToRotation();
 }

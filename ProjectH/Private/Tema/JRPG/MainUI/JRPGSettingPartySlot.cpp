@@ -2,6 +2,7 @@
 
 
 #include "Tema/JRPG/MainUI/JRPGSettingPartySlot.h"
+#include "Tema/JRPG/BattleUI/PartyHoveredWidget.h"
 #include "Tema/JRPG/JRPGUnit.h"
 #include "Components/Image.h"
 #include "Components/Button.h"
@@ -10,6 +11,7 @@
 #include "Tema/JRPG/MainUI/JRPGSettingHoriList.h"
 #include "Tema/JRPG/MainUI/PartySettingField.h"
 #include "Tema/JRPG/JRPGGameMode.h"
+#include "Blueprint/WidgetLayoutLibrary.h"
 
 
 
@@ -38,10 +40,12 @@ void UJRPGSettingPartySlot::SetList()
 	for (int32 Row = 0; Row < num; Row++)
 	{
 		UJRPGSettingHoriList* HoriList = CreateWidget<UJRPGSettingHoriList>(GetWorld(), BP_HoriList);
+		HoriList->OwnerWidget = this;
 		if (HoriList)
 		{
 			HoriList->OwnerController = OwnerController;
 			HoriList->OwnerField = OwnerField;
+			HoriList->OwnerWidget = this;
 
 			int32 cnt = 0;
 			for (int32 i = Row * 4; OwnerController->HaveCharList.IsValidIndex(i) && cnt < 4; i++)
@@ -54,6 +58,18 @@ void UJRPGSettingPartySlot::SetList()
 			HoriList->SetPadding(FMargin(0.f, 10.f, 0.f, 0.f));
 			Scroll->AddChild(HoriList);
 		}
+	}
+}
+
+void UJRPGSettingPartySlot::NativeTick(const FGeometry& MyGeometry, const float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+
+	if (HoveredWidget)
+	{	
+		HoveredWidget->SetRenderTranslation(UWidgetLayoutLibrary::GetMousePositionOnViewport(this) + FVector2D(5.f, 5.f));
+		if(!HoveredWidget->IsInViewport())
+			HoveredWidget->AddToViewport();
 	}
 }
 

@@ -10,6 +10,7 @@
 #include "Tema/JRPG/JRPGComponent.h"
 #include "Tema/JRPG/JRPGSave.h"
 #include "Tema/JRPG/JRPGUnit.h"
+#include "Tema/JRPG/JRPGEnermy.h"
 
 
 FLiveUnit::FLiveUnit()
@@ -37,11 +38,20 @@ AJRPGGameMode::AJRPGGameMode()
 {
 	PlayerControllerClass = AJRPGPlayerController::StaticClass();
 
-	FString FieldDataPath = TEXT("DataTable'/Game/PROJECT/BP_CLASS/Tema/JRPG/DataBase/BattleFieldList.BattleFieldList'");
+	SetDataTable(FieldTable, TEXT("DataTable'/Game/PROJECT/BP_CLASS/Tema/JRPG/DataBase/BattleFieldList.BattleFieldList'"));
+	SetDataTable(CharListTable, TEXT("DataTable'/Game/PROJECT/BP_CLASS/Tema/JRPG/DataBase/JRPGCharList.JRPGCharList'"));
+	SetDataTable(EnermyListTable, TEXT("DataTable'/Game/PROJECT/BP_CLASS/Tema/JRPG/DataBase/EnermyList.EnermyList'"));
+
+
+
+
+
+	/*FString FieldDataPath = TEXT("DataTable'/Game/PROJECT/BP_CLASS/Tema/JRPG/DataBase/BattleFieldList.BattleFieldList'");
 	static ConstructorHelpers::FObjectFinder<UDataTable> DT_FieldData(*FieldDataPath);
 	if (DT_FieldData.Succeeded())
 	{
 		FieldTable = DT_FieldData.Object;
+		
 	}
 
 	FString CharListDataPath = TEXT("DataTable'/Game/PROJECT/BP_CLASS/Tema/JRPG/DataBase/JRPGCharList.JRPGCharList'");
@@ -56,6 +66,16 @@ AJRPGGameMode::AJRPGGameMode()
 	if (DT_EnermyListData.Succeeded())
 	{
 		EnermyListTable = DT_EnermyListData.Object;
+	}*/
+
+}
+
+void AJRPGGameMode::SetDataTable(UDataTable* Table, FString TablePath)
+{
+	static ConstructorHelpers::FObjectFinder<UDataTable> DT_Table(*TablePath);
+	if (DT_Table.Succeeded())
+	{
+		Table = DT_Table.Object;
 	}
 }
 
@@ -74,6 +94,7 @@ void AJRPGGameMode::PostLogin(APlayerController* Login)
 			{
 				JRPGSave = Cast<UJRPGSave>(UGameplayStatics::LoadGameFromSlot(UJRPGSave::SlotName, 0));
 				_DEBUG("Load");
+				KillCnt = JRPGSave->GetKillCnt();
 			}
 			else // 없는경우 (첫 시작)
 			{
@@ -81,8 +102,6 @@ void AJRPGGameMode::PostLogin(APlayerController* Login)
 				JRPGSave->FirstSave();		
 			}
 
-			// ★★ JRPGSave->SetLoadCharacter(OwnerController);
-			//AJRPGUnit* DefaultCharacter = GetCharacterSpawn(OwnerController->RepreCharacterNum, OwnerController->FieldLocation);
 
 			AJRPGUnit* DefaultCharacter = GetCharacterSpawn(JRPGSave->JRPGSerial.RepreCharacterNum, JRPGSave->JRPGSerial.FieldLocation);
 
@@ -164,6 +183,7 @@ void AJRPGGameMode::BattleStart(int32 FieldNum, TArray<int32> Enermys)
 
 	_DEBUG("BattleStart");
 
+	SetUnitList.Empty();
 	SetOwnerUnits(); // 오너 컨트롤러에 있는 파티 리스트 캐릭터 생성.
 	SetEnermyUnits(Enermys); // 적 생성.
 
@@ -182,13 +202,10 @@ void AJRPGGameMode::BattleStart(int32 FieldNum, TArray<int32> Enermys)
 	OwnerController->CameraPossess(OwnerUnits[0].Unit->GetActorLocation(), OwnerUnits[0].Unit->GetActorRotation());	// 카메라에 컨트롤러 빙의
 	//OwnerController->CameraPossess(UnitList[0].Unit->GetActorLocation(), UnitList[0].Unit->GetActorRotation());	// 카메라에 컨트롤러 빙의
 	OwnerController->DynamicCamera->CurrentField = CurrentField;
+	OwnerController->GameType = EGameModeType::Battle;
 
 	// 여기서 시네마틱도 전달해서 해당 시네마틱을 실행해도 될듯하다. (미구현)
 
-
-	// 여기까지오면 아이콘 설정을 해야하니 아이콘 InitAnimation을 실행하여
-	// 타이머로 0.2초 간격으로 애니를 실행하여 연출을 주고, 다 끝내고 턴 스타트를 진행한다.
-	// 다 끝나면 CurrentAnimation을 실행하고 TurnStart를 실행한다.
 
 	OwnerController->StartBattleWidget();
 }
@@ -237,16 +254,12 @@ void AJRPGGameMode::TurnListInit()
 	for (FPriorityUnit Units : EnermyUnits)
 	{
 		UnitList.HeapPush(FPriorityUnit(Units.Unit), PriorityUnitFunc());
-		// 특정 위치에 위치해 있도록 설정.
-		// 배틀 필드를 가져와서 해당 위치에 하나씩 놓자.
 	}
 
 
 	for (FPriorityUnit Units : OwnerUnits)
 	{
 		UnitList.HeapPush(FPriorityUnit(Units.Unit), PriorityUnitFunc());
-		// 특정 위치에 위치해 있도록 설정.
-		// 배틀 필드를 가져와서 해당 위치에 하나씩 놓자.
 	}
 
 	SetUnitListArray();
@@ -267,25 +280,18 @@ void AJRPGGameMode::SetUnitListArray()
 void AJRPGGameMode::TurnListSet()
 {
 	// ★★ 캐릭터나 적이 죽었을경우에는 죽은 캐릭터를 Find하여 지운뒤, 이 함수를 실행.
-	/*if (UnitList.Num() > 1 && OwnerUnits.Num() > 0 && EnermyUnits.Num() > 0)
+
+	if (OwnerList.Num() <= 0)
 	{
-		FPriorityUnit HeapTop;
-		UnitList.HeapPop(HeapTop, PriorityUnitFunc());
-		HeapTop.Priority = 0;
-		UnitList.HeapPush(HeapTop, PriorityUnitFunc());
-		if (UnitList.HeapTop().Unit->PlayerType == EPlayerType::Player)
-		{
-			UnitList.HeapTop().Unit->BattleStart(true); // 아이콘을 보이게하고, 갱신하는 함수.
-		}
-		else
-		{
-			UnitList.HeapTop().Unit->BattleStart(false);
-		}
-
-		//_DEBUG("Now Number : %d", UnitList.HeapTop().Unit->CharNum);
-	}*/
-
-	if (SetUnitList.Num() > 1 && OwnerUnits.Num() > 0 && EnermyUnits.Num() > 0)
+		//여기서 게임이 끝났다는 시간을 인지하게하고 돌아가야한다.
+		GameEnd(false); // 적이 승.
+	}
+	else if(EnermyList.Num() <= 0)
+	{
+		//여기서 게임이 끝났다는 시간을 인지하게하고 돌아가야한다.
+		GameEnd(true); // 플레이어 승.
+	}
+	else
 	{
 		FPriorityUnit Unit = SetUnitList[0];
 		SetUnitList.RemoveAt(0);
@@ -300,34 +306,35 @@ void AJRPGGameMode::TurnListSet()
 			Unit.Unit->BattleStart(false);
 		}
 	}
-	else
-	{
-		GameEnd();
-	}
 }
 
 
 
-void AJRPGGameMode::GameEnd()
+void AJRPGGameMode::GameEnd(bool bWinner)
 {
-
 	OwnerController->UnPossess();
 
-	for (FPriorityUnit Unit : EnermyUnits)
+	for (FPriorityUnit& Unit : EnermyUnits)
 	{
-		Unit.Unit->Destroy();
+		if(IsValid(Unit.Unit))
+			Unit.Unit->Destroy();
 	}
 
-	for (FPriorityUnit Unit : OwnerUnits)
+	for (FPriorityUnit& Unit : OwnerUnits)
 	{
-		Unit.Unit->Destroy();
+		if (IsValid(Unit.Unit))
+			Unit.Unit->Destroy();
 	}
-
-
 
 	 /*캐릭터 전부 삭제*/
 	/* 원래 전장으로 복귀 */
 	ReturnWorld();
+
+	if (bWinner)
+	{
+		KillCnt++;
+		CurrentBattleEnermy->FieldEnermyDead(); // 플레이어가 승리.	
+	}
 
 }
 
@@ -335,8 +342,12 @@ void AJRPGGameMode::GameEnd()
 void AJRPGGameMode::ReturnWorld()
 {
 	// 여기서는 스폰해서 돌아가는 형식으로했는데, 배틀모드 진입할떄 그냥 바로 빙의로 들어갔으므로, 스폰새로안하고 빙의해도 될듯.
-	OwnerController->RepreCharacter = GetCharacterSpawn(OwnerController->RepreCharacterNum, OwnerController->FieldLocation);
+	if(OwnerController->RepreCharacter == nullptr)
+		OwnerController->RepreCharacter = GetCharacterSpawn(OwnerController->RepreCharacterNum, OwnerController->FieldLocation);
+
 	OwnerController->OnPossess(Cast<APawn>(OwnerController->RepreCharacter));
+	OwnerController->ReturnMainWidget();
+
 }
 
 /* 오너 유닛 생성 컨트롤러에서 받아온다.*/
@@ -347,6 +358,7 @@ void AJRPGGameMode::SetOwnerUnits()
 
 	TArray<int32> CharList = OwnerController->CurrentParty;
 	OwnerUnits.Empty();
+	OwnerList.Empty();
 
 	for (int32 i = 0; i < CharList.Num(); i++)
 	{
@@ -373,10 +385,10 @@ void AJRPGGameMode::SetOwnerUnits()
 		
 			if (OwnerController->HaveCharStat.Find(CharList[i]) != nullptr)
 			{
-				Unit->SetIsJRPGUnit(true);
+				Unit->ThisUnitBattleUnit(true);
 				Unit->CharacterStat = OwnerController->HaveCharStat[CharList[i]];
 				Unit->InitCurrentStat();
-				OwnerList.Add(FLiveUnit(Unit, true));
+				OwnerList.Add(Unit);
 			}
 			
 			OwnerUnits.HeapPush(FPriorityUnit(Unit), PriorityUnitFunc());
@@ -387,6 +399,8 @@ void AJRPGGameMode::SetOwnerUnits()
 
 void AJRPGGameMode::SetEnermyUnits(TArray<int32> Enermys)
 {
+	EnermyUnits.Empty();
+	EnermyList.Empty();
 
 	for (int32 i = 0; i < Enermys.Num(); i++)
 	{
@@ -411,12 +425,11 @@ void AJRPGGameMode::SetEnermyUnits(TArray<int32> Enermys)
 		if (Unit != nullptr)
 		{
 			Unit->OwnerController = OwnerController;
-			//Unit->SpawnDefaultController(); // ★★
-			Unit->SetIsJRPGUnit(true);
+			Unit->ThisUnitBattleUnit(true);
 			Unit->InitCurrentStat();
 
 			EnermyUnits.HeapPush(FPriorityUnit(Unit), PriorityUnitFunc());
-			EnermyList.Add(Unit); // 이건 그냥 필드 칸 어디에 있는지 판단하는 배열.
+			EnermyList.Add(Unit); // 적의 실질적인 리스트.
 		}
 
 	}
@@ -424,13 +437,19 @@ void AJRPGGameMode::SetEnermyUnits(TArray<int32> Enermys)
 
 
 
-void AJRPGGameMode::FirstStartSaveStat()
-{
-	// 기초 캐릭터 저장식. controller에 add Map을 한다.
-}
-
-
 void AJRPGGameMode::SetSaveJRPG()
 {
 	JRPGSave->SetSave(OwnerController);
+}
+
+
+
+void AJRPGGameMode::SetSaveEnermyUnits(class AJRPGEnermy* FieldEnermy)
+{
+	JRPGSave->SetFieldEnermy(FieldEnermy, KillCnt);
+}
+
+bool AJRPGGameMode::GetSaveEnermyUnits(int32 EnermyUnitNum)
+{
+	return JRPGSave->GetFieldEnermy(EnermyUnitNum);
 }

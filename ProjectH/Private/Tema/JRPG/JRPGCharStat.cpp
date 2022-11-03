@@ -9,6 +9,7 @@ FJRPGCharStat::FJRPGCharStat()
 	MaxHP = 0.0f;
 	MaxMP = 0.0f;
 	MaxULT = 0.0f;
+	EXP = 0.0f;
 }
 
 FJRPGCharStat::FJRPGCharStat(float HP, float MP, float AT, float DFS, float ULT)
@@ -19,4 +20,5 @@ FJRPGCharStat::FJRPGCharStat(float HP, float MP, float AT, float DFS, float ULT)
 	MaxHP = HP;
 	MaxMP = MP;
 	MaxULT = ULT;
+	EXP = 0.0f;
 }

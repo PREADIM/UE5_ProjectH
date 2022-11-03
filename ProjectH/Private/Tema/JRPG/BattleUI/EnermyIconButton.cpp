@@ -34,8 +34,15 @@ void UEnermyIconButton::TargetLockOn()
 {
 	if (GM && OwnerController)
 	{
+		if (!GM->EnermyList.IsValidIndex(Num))
+		{
+			if (!GM->EnermyList.IsValidIndex(0))
+				return;
+			else
+				Num = 0;
+		}
+
 		AJRPGUnit* Unit = GM->EnermyList[Num];
-		//AJRPGUnit* OwnerUnit = GM->UnitList.HeapTop().Unit;
 		AJRPGUnit* OwnerUnit = GM->SetUnitList[0].Unit;
 		FRotator UnitRot = UKismetMathLibrary::FindLookAtRotation(OwnerUnit->GetActorLocation(), Unit->GetActorLocation());
 		OwnerController->CameraRotSetUp(UnitRot);

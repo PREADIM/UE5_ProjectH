@@ -137,6 +137,12 @@ void AJRPGPlayerController::PlayBattleMode(TArray<int32> EnermyUnits)
 	}
 }
 
+void AJRPGPlayerController::ReturnMainWidget()
+{
+	TemaMainUI->StartMainWidget();
+}
+
+
 
 void AJRPGPlayerController::GameEndSpawnCharacter()
 {
@@ -335,12 +341,7 @@ void AJRPGPlayerController::SetEnermyTurnWidget(bool bFlag)
 
 void AJRPGPlayerController::BattleESC()
 {
-	if (CurrentUnit->GetUsingSkill())
-	{
-		CurrentUnit->UnitSkillESC();
-		return;
-	}
-
+	
 	// ³ª°¡±â À§Á¬ ¶ç¿ì±â
 }
 
@@ -380,4 +381,10 @@ void AJRPGPlayerController::EnermyListSetup()
 void AJRPGPlayerController::TargetToRotation()
 {
 	TemaMainUI->TargetToRotation();
+}
+
+
+void AJRPGPlayerController::EnermyTargetToRotation()
+{
+	TemaMainUI->EnermyTargetToRotation();
 }

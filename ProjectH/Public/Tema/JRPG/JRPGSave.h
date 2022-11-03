@@ -40,6 +40,22 @@ public:
 };
 
 
+USTRUCT(BlueprintType)
+struct FJRPGFieldEnermy
+{
+	GENERATED_USTRUCT_BODY()
+
+public:
+	UPROPERTY(VisibleAnywhere)
+		TMap<int32, bool> FieldEnermyIsLive;
+	UPROPERTY(VisibleAnywhere)
+		int32 KillCnt;
+
+	FJRPGFieldEnermy();
+
+};
+
+
 
 
 UCLASS()
@@ -57,12 +73,17 @@ public:
 
 	UPROPERTY(VisibleAnywhere)
 		FJRPGSerial JRPGSerial;
+	UPROPERTY(VisibleAnywhere)
+		FJRPGFieldEnermy JRPGFieldEnermy;
 
 public:
 	void SetLoadCharacter(class AJRPGPlayerController* OwnerController);
 	void SetSave(class AJRPGPlayerController* OwnerController);
-	void SaveSlot();
 
-	
-	
+	void SetFieldEnermy(class AJRPGEnermy* FieldEnermy, int32 KillCnt);
+	bool GetFieldEnermy(int32 FieldEnermyNum);
+	float GetKillCnt();
+
+
+	void SaveSlot();
 };

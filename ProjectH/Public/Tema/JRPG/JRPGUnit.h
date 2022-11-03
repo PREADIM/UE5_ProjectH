@@ -75,6 +75,11 @@ public:
 	// 연타 기술을 대비해서 함수로 따로만들어서 한번만 호출하게 한다.
 	UFUNCTION(BlueprintCallable)
 		void AddManyMPAndULT(); // 다수 공격
+	UFUNCTION(BlueprintCallable)
+		void OwnerAddMPAndULT(); // 공격한 사람도 마나와 궁극기 게이지가 차긴 해야한다.
+	// 궁극기를 사용한 경우에는 차지 않음. // 일반 공격일때 만 사용.
+	UFUNCTION(BlueprintCallable)
+		void OwnerAddULT(); // 스킬을 사용한 경우에는 궁게이지만 찬다.
 
 	UFUNCTION()
 		void Forward(float Value);
@@ -117,11 +122,6 @@ public:
 		void ULTAttackDamage();
 	/* 이 함수들은 캐릭마다 데미지 계산이 다르므로 블루 프린트에서 계산해줌. */
 
-
-	bool GetUsingSkill() { return bUsingSkill; }
-	UFUNCTION(BlueprintImplementableEvent)
-		void UnitSkillESC();
-
 	UFUNCTION(BlueprintCallable)
 		void UnitTurnEnd();
 
@@ -141,7 +141,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void TargetManyAttack(float ATK); // 여러 마리를 때린다.
 
+	UFUNCTION(BlueprintImplementableEvent)
+		void DropItem();
+		// 죽을때 떨어뜨릴 것들
 
+	UFUNCTION(BlueprintCallable)
+		void DeadUnit();
 
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
@@ -175,9 +180,16 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = JRPGUnit)
 		bool bIsJRPGUnit = false; // 해당 캐릭터가 JRPG 유닛으로 스폰된 캐릭터인지 확인하는 변수. 
 	// 이 변수로 움직이는 애니메이션을 바꾼다.
+	// 이 변수로 턴제 유닛인 경우 위젯 사이즈 스케일을 변하게 해준다.
 	UFUNCTION(BlueprintImplementableEvent)
 		void SetIsJRPGUnit(bool bFlag); // 위 변수를 셋업할 함수. 해당 함수를 통해 애님블프 설정도 바꿈.
+	void ThisUnitBattleUnit(bool bFlag); // c++에서 이걸로 실행
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Widget)
+		class UWidgetComponent* BattleHPComponent;
+
+	UPROPERTY()
+		class UJRPGBattleHPWidget* BattleHPWidget;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BattlePriority)
 		int32 Priority; // 우선순위
@@ -200,16 +212,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 		float MaxULTGage; // 최대 궁극기 게이지.
 
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool bIsLMBAttack;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		bool bUsingSkill; // 스킬 실행중. 스킬실행중이면 ESC로 끄기 위해서.
-
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float AttackDamage; 
-	// Call Skill에서 애니메이션을 실행후에 , 노티파이로 특정구간에서 여기서 계산된 데미지를 
-	// TargetAttack 함수로 보낸다.
+		class UAnimMontage* DeadAnim;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UAnimMontage* HitAnim;
+
+
 };

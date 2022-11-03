@@ -32,13 +32,22 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void PlayerCollisionOverlap(class AJRPGUnit* PlayerUnit); // 적이 공격함.
 
+	void FieldEnermyDead(); // 죽음 처리 함수.
+
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int32 CharacterNum;
+		int32 FieldEnermyNumber; // Save파일에서 이걸로 검색한다.
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TArray<int32> EnermyUnits; // 적 유닛만 사용하는 기능, 무슨 유닛을가지고 있는지 판단.
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		bool bDead;
+		bool bDead; // 이 개체가 죽었는지 살았는지 결정한다.
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		class AJRPGGameMode* GM; // 이 개체가 죽었는지 살았는지 결정한다.
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UAnimMontage* DeadMontage; 
+
 };

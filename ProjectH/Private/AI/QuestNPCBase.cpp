@@ -123,7 +123,7 @@ void AQuestNPCBase::Tick(float DeltaTime)
 	if (PlayerCharacter != nullptr)
 	{
 		FVector V = GetActorLocation() - PlayerCharacter->GetActorLocation();
-		float Range = UKismetMathLibrary::MapRangeUnclamped(V.Length(), 100, 6000, 1.0, 0.2);
+		float Range = UKismetMathLibrary::MapRangeUnclamped(V.Length(), 100.f, 6000.f, 1.0f, 0.2f);
 		if (bQuestSucceed)
 		{
 			SucceedWidget->GetUserWidgetObject()->SetRenderScale(FVector2D(Range, Range));

@@ -103,6 +103,21 @@ void UJRPGBattleWidget::TargetToRotation()
 	Buttons[TargetNumber]->TargetLockOn();
 }
 
+void UJRPGBattleWidget::EnermyTargetToRotation()
+{
+	AJRPGUnit* SelfUnit = GM->SetUnitList[0].Unit;
+
+	FVector TargetLocation = TargetUnit->GetActorLocation();
+	FVector SelfLocation = SelfUnit->GetActorLocation();
+	FRotator Rot = UKismetMathLibrary::FindLookAtRotation(TargetLocation, SelfLocation);
+	FRotator EnermyRot = UKismetMathLibrary::FindLookAtRotation(SelfLocation, TargetLocation);
+
+	OwnerController->CameraSetUp(TargetLocation);
+	OwnerController->CameraRotSetUp(Rot);
+
+	SelfUnit->SetActorRotation(EnermyRot);
+}
+
 
 void UJRPGBattleWidget::SetVisible(bool bFlag)
 {
