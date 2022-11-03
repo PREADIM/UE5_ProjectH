@@ -4,7 +4,7 @@
 
 #include "ProjectH.h"
 #include "GameFramework/GameModeBase.h"
-#include "Tema/JRPG/JRPGUnit.h"
+#include "Tema/JRPG/JRPGCharStat.h"
 #include "JRPGGameMode.generated.h"
 
 /**
@@ -78,8 +78,8 @@ public:
 
 
 public:
-	AJRPGUnit* GetCharacterSpawn(int32 CharacterNum, FTransform UnitLocation);
-	AJRPGUnit* GetEnermySpawn(int32 CharacterNum, FTransform UnitLocation);
+	class AJRPGUnit* GetCharacterSpawn(int32 CharacterNum, FTransform UnitLocation);
+	class AJRPGUnit* GetEnermySpawn(int32 CharacterNum, FTransform UnitLocation);
 	bool GetBattleField(int32 FieldNum);
 	void BattleStart(int32 FieldNum, TArray<int32> Enermys);
 	void TurnStart();
@@ -123,12 +123,11 @@ public:
 		TArray<class AJRPGUnit*> OwnerList;
 	// 아군의 실질적인 살아있는 수.
 
+
+
+	//캐릭터 스텟을 레벨로 검색해서 가져온다.
+	FJRPGCharStat GetCharStat(int32 CharNum, int32 Level);
 	
-
-	// 적이나 캐릭터가 공격받아 배틀 start를 하기전에 먼저 이 게임모드에 적절하게 먼저 넣게 한다.
-	// 결국엔 이것은 캐릭터안에 있는 것을 넣는것. 
-	// 만약 원신처럼 대표캐릭터를 바꿀수 있는 게임이라면, 캐릭터를 스폰하면서 보유 캐릭터도 보낸다.
-
 
 
 	/* 테마들은 각각 게임모드를 게임 인스턴스처럼 사용해야함. 세이브 파일도 물론 여기에 있다. */
@@ -138,8 +137,8 @@ public:
 		class UDataTable* CharListTable; // JPRG캐릭터 테이블.
 	UPROPERTY(VisibleAnywhere)
 		class UDataTable* EnermyListTable; // JPRG캐릭터 테이블.
-
-
+	UPROPERTY(VisibleAnywhere)
+		class UDataTable* CharStatTablePaths; // 캐릭터 스탯이 있는 테이블들의 경로들.
 
 
 	UPROPERTY()

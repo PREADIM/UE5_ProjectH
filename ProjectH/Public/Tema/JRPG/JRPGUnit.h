@@ -145,8 +145,9 @@ public:
 		void DropItem();
 		// Á×À»¶§ ¶³¾î¶ß¸± °Íµé
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintNativeEvent)
 		void DeadUnit();
+	virtual void DeadUnit_Implementation();
 
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)

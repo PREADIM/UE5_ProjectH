@@ -3,7 +3,7 @@
 #pragma once
 
 #include "ProjectH.h"
-#include "Blueprint/UserWidget.h"
+#include "Tema/JRPG/CustomWidget.h"
 #include "JRPGPartySlot.generated.h"
 
 /**

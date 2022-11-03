@@ -9,8 +9,9 @@
 #include "Tema/JRPG/BattleField.h"
 #include "Tema/JRPG/JRPGComponent.h"
 #include "Tema/JRPG/JRPGSave.h"
-#include "Tema/JRPG/JRPGUnit.h"
 #include "Tema/JRPG/JRPGEnermy.h"
+#include "Tema/JRPG/JRPGUnit.h"
+#include "Tema/JRPG/JRPGCharStatTablePaths.h"
 
 
 FLiveUnit::FLiveUnit()
@@ -41,9 +42,7 @@ AJRPGGameMode::AJRPGGameMode()
 	SetDataTable(FieldTable, TEXT("DataTable'/Game/PROJECT/BP_CLASS/Tema/JRPG/DataBase/BattleFieldList.BattleFieldList'"));
 	SetDataTable(CharListTable, TEXT("DataTable'/Game/PROJECT/BP_CLASS/Tema/JRPG/DataBase/JRPGCharList.JRPGCharList'"));
 	SetDataTable(EnermyListTable, TEXT("DataTable'/Game/PROJECT/BP_CLASS/Tema/JRPG/DataBase/EnermyList.EnermyList'"));
-
-
-
+	SetDataTable(CharStatTablePaths, TEXT("DataTable'/Game/PROJECT/BP_CLASS/Tema/JRPG/DataBase/JRPGCharStatTablePaths.JRPGCharStatTablePaths'"));
 
 
 	/*FString FieldDataPath = TEXT("DataTable'/Game/PROJECT/BP_CLASS/Tema/JRPG/DataBase/BattleFieldList.BattleFieldList'");
@@ -78,6 +77,9 @@ void AJRPGGameMode::SetDataTable(UDataTable* Table, FString TablePath)
 		Table = DT_Table.Object;
 	}
 }
+
+
+
 
 
 void AJRPGGameMode::PostLogin(APlayerController* Login)
@@ -119,6 +121,20 @@ void AJRPGGameMode::SetControllerInit()
 {
 	JRPGSave->SetLoadCharacter(OwnerController);
 	
+}
+
+
+// ★★ 캐릭터 스탯 테이블을 가져와서 그 테이블에서 레벨로 검색해서 스텟을 가져오기.
+FJRPGCharStat AJRPGGameMode::GetCharStat(int32 CharNum, int32 Level)
+{
+	//데이터 테이블은 FString형을 FindRow로 못가져온다. 그렇기때문에 구조체로 한번 묶어놓는다.
+	FTablePath* CharStatTablePath = CharStatTablePaths->FindRow<FTablePath>(*FString::FromInt(CharNum), TEXT(""));
+	UDataTable* StatTable = nullptr;
+
+	SetDataTable(StatTable, *CharStatTablePath->Path); // 캐릭터 스텟 테이블 가져오기
+	FJRPGCharStat* Stat = StatTable->FindRow<FJRPGCharStat>(*FString::FromInt(Level), TEXT(""));
+
+	return *Stat;
 }
 
 /*캐릭터 검색해서 해당 캐릭터 스폰하기.*/
@@ -190,9 +206,6 @@ void AJRPGGameMode::BattleStart(int32 FieldNum, TArray<int32> Enermys)
 
 	TurnListInit(); // 리스트 맨처음 초기화.
 
-	/*if (UnitList.IsEmpty())
-		return;*/
-
 	if (SetUnitList.IsEmpty())
 		return;
 
@@ -200,7 +213,6 @@ void AJRPGGameMode::BattleStart(int32 FieldNum, TArray<int32> Enermys)
 
 
 	OwnerController->CameraPossess(OwnerUnits[0].Unit->GetActorLocation(), OwnerUnits[0].Unit->GetActorRotation());	// 카메라에 컨트롤러 빙의
-	//OwnerController->CameraPossess(UnitList[0].Unit->GetActorLocation(), UnitList[0].Unit->GetActorRotation());	// 카메라에 컨트롤러 빙의
 	OwnerController->DynamicCamera->CurrentField = CurrentField;
 	OwnerController->GameType = EGameModeType::Battle;
 
@@ -214,13 +226,10 @@ void AJRPGGameMode::BattleStart(int32 FieldNum, TArray<int32> Enermys)
 void AJRPGGameMode::TurnStart()
 {
 	//여기서 리스트 맨위의 캐릭터의 컴포넌트에 접근하여, 해당 캐릭터의 정보를 위젯에 초기화.
-	/*if (UnitList.IsEmpty())
-		return;*/
 
 	if (SetUnitList.IsEmpty())
 		return;
 
-	//AJRPGUnit* Unit = UnitList[0].Unit;
 	AJRPGUnit* Unit = SetUnitList[0].Unit;
 
 	OwnerController->CurrentUnit = Unit;
@@ -386,7 +395,7 @@ void AJRPGGameMode::SetOwnerUnits()
 			if (OwnerController->HaveCharStat.Find(CharList[i]) != nullptr)
 			{
 				Unit->ThisUnitBattleUnit(true);
-				Unit->CharacterStat = OwnerController->HaveCharStat[CharList[i]];
+				Unit->CharacterStat = GetCharStat(CharList[i], OwnerController->HaveCharStat[CharList[i]]);
 				Unit->InitCurrentStat();
 				OwnerList.Add(Unit);
 			}

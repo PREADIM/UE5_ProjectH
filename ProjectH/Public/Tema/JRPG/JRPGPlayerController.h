@@ -72,6 +72,9 @@ public:
 	void SetRepreCharacterSpawn(int32 index); // 다시 대표 캐릭터로 OnPossess하는 함수
 	void SetRepreCharacterSpawnUI(int32 index); // UI에서 다시Character로 돌아오는 함수.
 
+	FJRPGCharStat GetCharStat(int32 CharNum);
+	//게임 모드에 있는 GetCharStat을 컨트롤러에서 받아오는 방법. 위젯에서 쓸모 있음.
+	// 결국엔 Char의 레벨을 가지고있는 이 컨트롤러이니 여기서 받아오는 것도 괜찮을듯
 
 	
 
@@ -123,10 +126,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		TArray<int32> HaveCharList; // 가지고 있는 전체 캐릭터 넘버 (추후 세이브 로드 해야함).
 	// 나중에 퀘스트 넘버처럼 번호와 BP 패스를 가지고 해당 넘버만 저장하고 불러오는 형식으로 만들어도될듯.
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		TMap<int32, FJRPGCharStat> HaveCharStat; // 가지고 있는 캐릭터의 스텟들.
-		//TMap<int32, int32> HaveCharStat; // 가지고 있는 캐릭터의 레벨들. (레벨로 스탯을 데이터테이블에서 검색해서 가져옴)
-
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)	
+		TMap<int32, int32> HaveCharStat; // 가지고 있는 캐릭터의 레벨들. (레벨로 스탯을 데이터테이블에서 검색해서 가져옴)
+	//TMap<int32, FJRPGCharStat> HaveCharStat; // 가지고 있는 캐릭터의 스텟들.
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MainUI)
 		TSubclassOf<class UJRPGTemaUI> BP_TemaMainUI;

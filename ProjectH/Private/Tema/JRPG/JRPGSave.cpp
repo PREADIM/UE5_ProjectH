@@ -13,6 +13,12 @@ FJRPGSerial::FJRPGSerial()
 
 }
 
+void FJRPGSerial::SetCharNum(int32 Num)
+{
+	HaveCharList.Add(Num);
+	HaveCharStat.Add(Num);
+}
+
 
 FJRPGFieldEnermy::FJRPGFieldEnermy()
 {
@@ -30,18 +36,16 @@ void UJRPGSave::FirstSave()
 	// 여기서 첫 시작시에 필요한 모든 정보를 초기화.
 	JRPGSerial.FieldLocation = FTransform(FRotator(0.0f, 90.0f, 0.0f), FVector(2518.f, -1835.f, 670.f)); // 첫 시작
 	JRPGSerial.RepreCharacterNum = 101;
-	JRPGSerial.CurrentParty.Add(101);
+
+	JRPGSerial.CurrentParty.Add(101); // 현재 등록한 파티의 정보.
 	JRPGSerial.CurrentParty.Add(102);
 	JRPGSerial.CurrentParty.Add(103);
+
+	JRPGSerial.SetCharNum(101); // 가지고있는 캐릭터와, 스텟 저장
+	JRPGSerial.SetCharNum(102);
+	JRPGSerial.SetCharNum(103);
+
 	JRPGSerial.CurrentFieldNum = 1;
-
-	JRPGSerial.HaveCharList.Add(101);
-	JRPGSerial.HaveCharList.Add(102);
-	JRPGSerial.HaveCharList.Add(103);
-
-	JRPGSerial.HaveCharStat.Add(101, FJRPGCharStat(1000.f, 100.f, 100.f, 30.f, 80.f));
-	JRPGSerial.HaveCharStat.Add(102, FJRPGCharStat(800.f, 100.f, 110.f, 20.f, 80.f));
-	JRPGSerial.HaveCharStat.Add(103, FJRPGCharStat(900.f, 100.f, 125.f, 25.f, 80.f));
 
 	SaveSlot();
 }

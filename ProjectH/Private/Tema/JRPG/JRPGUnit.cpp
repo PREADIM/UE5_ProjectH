@@ -330,7 +330,7 @@ void AJRPGUnit::TargetManyAttack(float ATK)
 
 }
 
-void AJRPGUnit::DeadUnit()
+void AJRPGUnit::DeadUnit_Implementation()
 {
 	DropItem();
 }

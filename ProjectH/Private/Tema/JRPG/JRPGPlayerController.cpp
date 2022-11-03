@@ -310,6 +310,11 @@ void AJRPGPlayerController::SetRepreCharacterSpawnUI(int32 index)
 	}
 }
 
+FJRPGCharStat AJRPGPlayerController::GetCharStat(int32 CharNum)
+{
+	return GM->GetCharStat(CharNum, HaveCharStat[CharNum]);
+}
+
 
 
 // 맨처음 위젯애니메이션 효과주기

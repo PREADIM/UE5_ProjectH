@@ -14,7 +14,8 @@ void UPartyHoveredWidget::Init()
 	
 		if (OwnerController->HaveCharStat.Find(CharNum) != nullptr)
 		{
-			FJRPGCharStat Stat = OwnerController->HaveCharStat[CharNum];
+
+			FJRPGCharStat Stat = OwnerController->GetCharStat(CharNum);
 
 			CharName->SetText(FText::FromString(OwnerController->GetUnitUI(CharNum)->CharName));
 			CharLevel->SetText(FText::FromString(FString::FromInt(Stat.CharLevel)));

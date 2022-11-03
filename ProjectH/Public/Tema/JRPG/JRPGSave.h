@@ -31,11 +31,13 @@ public:
 		TArray<int32> HaveCharList; // 가지고 있는 전체 캐릭터 넘버 (추후 세이브 로드 해야함).
 	// 나중에 퀘스트 넘버처럼 번호와 BP 패스를 가지고 해당 넘버만 저장하고 불러오는 형식으로 만들어도될듯.
 	UPROPERTY(VisibleAnywhere)
-		TMap<int32, FJRPGCharStat> HaveCharStat; // 가지고 있는 캐릭터의 스텟들.
+		TMap<int32, int32> HaveCharStat;
+		//TMap<int32, FJRPGCharStat> HaveCharStat; // 가지고 있는 캐릭터의 스텟들.
 
 
 public:
 	FJRPGSerial();
+	void SetCharNum(int32 Num);
 
 };
 

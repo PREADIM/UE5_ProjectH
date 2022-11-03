@@ -44,5 +44,5 @@ float UJRPGBattleHPWidget::RetULT()
 	if (!OwnerUnit)
 		return 0.0f;
 
-	return  OwnerUnit->ULTGage / OwnerUnit->CharacterStat.MaxULT;
+	return  OwnerUnit->ULTGage / OwnerUnit->MaxULTGage;
 }
