@@ -5,11 +5,15 @@
 #include "ProjectH.h"
 #include "GameFramework/GameModeBase.h"
 #include "Tema/JRPG/JRPGCharStat.h"
+#include "Tema/JRPG/JRPGDropStruct.h"
 #include "JRPGGameMode.generated.h"
 
 /**
  * 
  */
+
+struct FEnermys;
+
 USTRUCT(BlueprintType)
 struct FLiveUnit
 {
@@ -72,7 +76,7 @@ class PROJECTH_API AJRPGGameMode : public AGameModeBase
 // ㄴ 적이 다 죽었거나, 아군이 다 죽었을 경우 -> 유닛의 공격 당한 함수에서 팀이 다죽었는지 판별. 그리고 끝내기.
 public:
 	AJRPGGameMode();
-	void SetDataTable(UDataTable* Table, FString TablePath); // 데이터 테이블 적용 함수.
+	void SetDataTable(UDataTable*& Table, FString TablePath); // 데이터 테이블 적용 함수.
 	virtual void PostLogin(APlayerController* Login) override;
 
 
@@ -81,7 +85,7 @@ public:
 	class AJRPGUnit* GetCharacterSpawn(int32 CharacterNum, FTransform UnitLocation);
 	class AJRPGUnit* GetEnermySpawn(int32 CharacterNum, FTransform UnitLocation);
 	bool GetBattleField(int32 FieldNum);
-	void BattleStart(int32 FieldNum, TArray<int32> Enermys);
+	void BattleStart(int32 FieldNum, TArray<FEnermys> Enermys);
 	void TurnStart();
 
 	UFUNCTION(BlueprintCallable)
@@ -98,9 +102,11 @@ public:
 	void ReturnWorld(); // 게임끝나고 원래 전장으로 돌아가기
 
 	void SetOwnerUnits(); // 아군 유닛 스폰 및 리스트 할당.
-	void SetEnermyUnits(TArray<int32> Enermys); // 적군 유닛 스폰 및 리스트 할당.
+	void SetEnermyUnits(TArray<FEnermys> Enermys); // 적군 유닛 스폰 및 리스트 할당.
 
 	void SetControllerInit();
+
+
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		class AJRPGPlayerController* OwnerController;
@@ -124,10 +130,12 @@ public:
 	// 아군의 실질적인 살아있는 수.
 
 
-
 	//캐릭터 스텟을 레벨로 검색해서 가져온다.
 	FJRPGCharStat GetCharStat(int32 CharNum, int32 Level);
 	
+	void SetCurrentExpAndNextExp(); // 가지고있는 유닛의 현재 경험치와, 다음렙업에 필요한 경험치를 가져온다.
+
+
 
 
 	/* 테마들은 각각 게임모드를 게임 인스턴스처럼 사용해야함. 세이브 파일도 물론 여기에 있다. */
@@ -139,14 +147,15 @@ public:
 		class UDataTable* EnermyListTable; // JPRG캐릭터 테이블.
 	UPROPERTY(VisibleAnywhere)
 		class UDataTable* CharStatTablePaths; // 캐릭터 스탯이 있는 테이블들의 경로들.
+	UPROPERTY(VisibleAnywhere)
+		class UDataTable* FieldEnermyDropTable; // 필드 적의 떨구는 경험치 및 아이템.
+
 
 
 	UPROPERTY()
 		class ABattleField* CurrentField;
 	FVector FieldLocation;
 	// 배틀필드 클래스를 가져오기. 배틀필드 또한 지역 넘버를 가지고있고 해당 위치를 데이터베이스에서 가져옴.
-
-
 
 
 
@@ -169,6 +178,9 @@ public:
 	void SetSaveEnermyUnits(class AJRPGEnermy* FieldEnermy);
 	bool GetSaveEnermyUnits(int32 EnermyUnitNum); 
 	// 이 둘은 필드의 적이 죽엇는지 살았는지 세이브하는 함수들.
+
+	FJRPGDropStruct GetFieldEnermyDropStruct(int32 EnermyUnitNum);
+	// 필드 적이 죽을 때 남길 아이템.
 
 	UPROPERTY()
 		class AJRPGEnermy* CurrentBattleEnermy; // 현재 싸우는 필드 유닛을 저장.

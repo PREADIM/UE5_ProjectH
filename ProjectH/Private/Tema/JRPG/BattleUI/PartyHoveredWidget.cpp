@@ -12,7 +12,7 @@ void UPartyHoveredWidget::Init()
 	if (OwnerController)
 	{
 	
-		if (OwnerController->HaveCharStat.Find(CharNum) != nullptr)
+		if (OwnerController->HaveCharLevels.Find(CharNum) != nullptr)
 		{
 
 			FJRPGCharStat Stat = OwnerController->GetCharStat(CharNum);
@@ -22,8 +22,12 @@ void UPartyHoveredWidget::Init()
 			CharHP->SetText(FText::FromString(FString::FromInt(Stat.MaxHP)));
 			CharMP->SetText(FText::FromString(FString::FromInt(Stat.MaxMP)));
 			CharAttack->SetText(FText::FromString(FString::FromInt(Stat.Attack)));
-			CharAttack->SetText(FText::FromString(FString::FromInt(Stat.Shelid)));
+			CharShelid->SetText(FText::FromString(FString::FromInt(Stat.Shelid)));
 			MaxULT->SetText(FText::FromString(FString::FromInt(Stat.MaxULT)));
+			UnitPriority->SetText(FText::FromString(FString::FromInt(Stat.Priority)));
+			CurrentExp->SetText(FText::FromString(FString::FromInt(OwnerController->CurrentExp[CharNum])));
+			NextExp->SetText(FText::FromString(FString::FromInt(Stat.NextEXP)));
+
 		}
 	
 	}

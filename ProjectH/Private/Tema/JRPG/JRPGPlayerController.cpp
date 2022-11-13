@@ -9,6 +9,11 @@
 #include "Tema/JRPG/MainUI/PartySettingField.h"
 #include "Tema/JRPG/CustomWidget.h"
 #include "Tema/JRPG/BattleUI/DamageWidget.h"
+#include "Tema/JRPG/JRPGUnit.h"
+#include <LevelSequencePlayer.h>
+#include <LevelSequenceActor.h>
+#include <MovieSceneSequencePlayer.h>
+#include "Tema/JRPG/BattleUI/JRPGBattleWidget.h"
 
 
 AJRPGPlayerController::AJRPGPlayerController()
@@ -20,8 +25,6 @@ AJRPGPlayerController::AJRPGPlayerController()
 		UnitUITable = DT_UnitUI.Object;
 	}
 }
-
-
 
 void AJRPGPlayerController::BeginPlay()
 {
@@ -119,8 +122,24 @@ FVector AJRPGPlayerController::GetCameraLocation()
 	return DynamicCamera->TargetLocation;
 }
 
+
+void AJRPGPlayerController::AddDropChar(int32 CharNum)
+{
+	if (!HaveCharList.Find(CharNum))
+	{
+		HaveCharList.Add(CharNum);
+		HaveCharLevels.Add(CharNum);
+		CharStats.Add(CharNum, GetCharStat(CharNum));
+
+		CurrentExp.Add(CharNum, 0.0f);
+		NextExp.Add(CharNum, CharStats[CharNum].NextEXP);
+	}
+
+	SetSave();
+}
+
 /* 유닛에서 공격을 받던 공격을 하던 배틀 시작할때 이것을 실행. */
-void AJRPGPlayerController::PlayBattleMode(TArray<int32> EnermyUnits)
+void AJRPGPlayerController::PlayBattleMode(TArray<FEnermys> EnermyUnits)
 {
 	// 에너미 유닛은 추후에 캐릭터가 공격했을때 닿은 적이 가지고있는 것으르 가져온다.
 	if (GM)
@@ -304,17 +323,33 @@ void AJRPGPlayerController::SetRepreCharacterSpawnUI(int32 index)
 		}
 		
 	}
-	else
-	{
-		_DEBUG("DDDD");
-	}
 }
 
 FJRPGCharStat AJRPGPlayerController::GetCharStat(int32 CharNum)
 {
-	return GM->GetCharStat(CharNum, HaveCharStat[CharNum]);
+	return GM->GetCharStat(CharNum, HaveCharLevels[CharNum]);
 }
 
+void AJRPGPlayerController::AddCharExp(int32 CharNum, float DropExp)
+{
+	float Exp = CurrentExp[CharNum] + DropExp;
+
+	if (CurrentExp[CharNum] == 5)
+		return;
+
+	if (Exp >= NextExp[CharNum])
+	{
+		CurrentExp[CharNum] = Exp - NextExp[CharNum]; // 현재 경험치 초기화
+		HaveCharLevels[CharNum] += 1; // 레벨 증가
+		CharStats[CharNum] = GetCharStat(CharNum); // 스탯 재정비
+	}
+	else
+	{
+		CurrentExp[CharNum] = Exp;
+	}
+
+	GM->SetSaveJRPG();
+}
 
 
 // 맨처음 위젯애니메이션 효과주기
@@ -393,3 +428,70 @@ void AJRPGPlayerController::EnermyTargetToRotation()
 {
 	TemaMainUI->EnermyTargetToRotation();
 }
+
+float AJRPGPlayerController::BattleStartSequence()
+{
+	SequencePlayer = nullptr;
+
+	ALevelSequenceActor* LQActor;
+	if (StartSequence)
+		SequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(GetWorld(), StartSequence, FMovieSceneSequencePlaybackSettings(), LQActor);
+
+	if (SequencePlayer)
+	{
+		BattleUIOnOff(false);
+		SequencePlayer->Play();
+		return SequencePlayer->GetEndTime().AsSeconds();
+	}
+
+	return 0.0f;
+}
+
+float AJRPGPlayerController::BattleEndSequence()
+{
+	SequencePlayer = nullptr;
+
+	ALevelSequenceActor* LQActor;
+	if (EndSequence)
+		SequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(GetWorld(), EndSequence, FMovieSceneSequencePlaybackSettings(), LQActor);
+
+	if (SequencePlayer)
+	{
+		SequencePlayer->Play();
+		return SequencePlayer->GetEndTime().AsSeconds();
+	}
+
+	return 0.0f;
+}
+
+
+void AJRPGPlayerController::BattleUIOnOff(bool bOnOff)
+{
+	if (bOnOff)
+	{
+		TemaMainUI->BattleWidget->SetRenderOpacity(1.0f);
+		for (FPriorityUnit Unit : GM->SetUnitList)
+		{
+			Unit.Unit->BattleWidgetOnOff(true);
+		}
+	}
+	else
+	{
+		TemaMainUI->BattleWidget->SetRenderOpacity(0.0f);
+		for (FPriorityUnit Unit : GM->SetUnitList)
+		{
+			Unit.Unit->BattleWidgetOnOff(false);
+		}
+	}
+}
+
+void AJRPGPlayerController::PlayPriority()
+{
+	TemaMainUI->BattleWidget->PlayPriority();
+}
+
+
+
+
+
+

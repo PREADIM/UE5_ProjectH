@@ -107,7 +107,7 @@ void UJRPGBattleWidget::EnermyTargetToRotation()
 {
 	AJRPGUnit* SelfUnit = GM->SetUnitList[0].Unit;
 
-	FVector TargetLocation = TargetUnit->GetActorLocation();
+	FVector TargetLocation = OwnerController->TargetUnit->GetActorLocation();
 	FVector SelfLocation = SelfUnit->GetActorLocation();
 	FRotator Rot = UKismetMathLibrary::FindLookAtRotation(TargetLocation, SelfLocation);
 	FRotator EnermyRot = UKismetMathLibrary::FindLookAtRotation(SelfLocation, TargetLocation);

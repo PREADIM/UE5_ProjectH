@@ -16,7 +16,11 @@ FJRPGSerial::FJRPGSerial()
 void FJRPGSerial::SetCharNum(int32 Num)
 {
 	HaveCharList.Add(Num);
-	HaveCharStat.Add(Num);
+	HaveCharLevels.Add(Num, 1);
+	CharStats.Add(Num, FJRPGCharStat());
+
+	CurrentExp.Add(Num, 0.0f);
+	NextExp.Add(Num, 0.0f);
 }
 
 
@@ -57,8 +61,15 @@ void UJRPGSave::SetLoadCharacter(AJRPGPlayerController* OwnerController)
 	OwnerController->CurrentParty = JRPGSerial.CurrentParty;
 	OwnerController->CurrentFieldNum = JRPGSerial.CurrentFieldNum;
 	OwnerController->HaveCharList = JRPGSerial.HaveCharList;
-	OwnerController->HaveCharStat = JRPGSerial.HaveCharStat;
+	OwnerController->HaveCharLevels = JRPGSerial.HaveCharLevels;
+	OwnerController->CharStats = JRPGSerial.CharStats;
 
+	OwnerController->NextExp = JRPGSerial.NextExp;
+	OwnerController->CurrentExp = JRPGSerial.CurrentExp;
+
+	// ★★★ NextExp와 CharStats은 세이브를 하지않고, 게임 시작시 데이터 테이블에서 가져온 스탯값으로 저장한다.
+	// 추후 값이 변경 되는 것을 우려해야하기 때문. 이미 저장되어있으면 데이터가 이상해진다.
+	// ★★ 하지만 어처피 Add를 통해 키값을 저장해야하는 것을 해야하므로 세이브 자체는 해둔다. (키값때문에 저장.)
 }
 
 
@@ -69,7 +80,11 @@ void UJRPGSave::SetSave(class AJRPGPlayerController* OwnerController)
 	JRPGSerial.CurrentParty = OwnerController->CurrentParty;
 	JRPGSerial.CurrentFieldNum = OwnerController->CurrentFieldNum;
 	JRPGSerial.HaveCharList = OwnerController->HaveCharList;
-	JRPGSerial.HaveCharStat = OwnerController->HaveCharStat;
+	JRPGSerial.HaveCharLevels = OwnerController->HaveCharLevels;
+	JRPGSerial.CharStats = OwnerController->CharStats;
+
+	JRPGSerial.CurrentExp = OwnerController->CurrentExp;
+	JRPGSerial.NextExp = OwnerController->NextExp;
 
 	SaveSlot();
 }

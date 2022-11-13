@@ -133,7 +133,7 @@ void UJRPGTemaUI::PlayBattleWidget()
 		{
 			BattleWidget->EnermyTurnFirst();
 		}
-		BattleWidget->PlayPriority(); // 우선순위로 짜여진 캐릭터 리스트 위젯 애님 실행.	
+		//BattleWidget->PlayPriority(); // 우선순위로 짜여진 캐릭터 리스트 위젯 애님 실행.	
 	}
 }
 

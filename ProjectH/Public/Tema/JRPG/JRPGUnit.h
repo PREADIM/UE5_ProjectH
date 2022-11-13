@@ -141,14 +141,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void TargetManyAttack(float ATK); // 여러 마리를 때린다.
 
-	UFUNCTION(BlueprintImplementableEvent)
-		void DropItem();
-		// 죽을때 떨어뜨릴 것들
-
-	UFUNCTION(BlueprintNativeEvent)
-		void DeadUnit();
-	virtual void DeadUnit_Implementation();
-
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		class AJRPGPlayerController* OwnerController;
@@ -169,6 +161,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		int32 CharNum; // 해당 캐릭터의 넘버
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		int32 EnermyLevel = 1; // (적 유닛 한정) 적의 레벨. 데이터 테이블에 검색해서 스탯을 가져오기 위함이다.
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FJRPGUnitSkill UnitSkills;
@@ -192,20 +187,23 @@ public:
 	UPROPERTY()
 		class UJRPGBattleHPWidget* BattleHPWidget;
 
+	void BattleWidgetOnOff(bool bOnOff);
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BattlePriority)
 		int32 Priority; // 우선순위
 
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	//	int32 CharacterNum; // 캐릭터의 모든정보를 가진 넘버. 이걸로 거의 모든것을 해결할 수있음.
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FJRPGCharStat CharacterStat; // 해당 캐릭터의 스텟
 	// 플레이어는 Save & Load를 하지만, 적은 블루프린트에서 정해줌.
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float CurrentHP; // 적은 미리 정해주자.
+		float CurrentHP; 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float CurrentMP; // 적은 미리 정해줌.
+		float CurrentMP; 
+
+	UPROPERTY(BlueprintReadWrite)
+		float CurrentExp;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float ULTGage; // 궁극기 게이지.

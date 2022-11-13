@@ -3,6 +3,19 @@
 #include "Engine/DataTable.h"
 #include "JRPGCharStat.generated.h"
 
+USTRUCT(BlueprintType)
+struct FEnermys
+{
+	GENERATED_USTRUCT_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		int32 EnermyUnits; // 적 유닛만 사용하는 기능, 무슨 유닛을가지고 있는지 판단.
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		int32 EnermyLevel;
+};
+
 
 
 USTRUCT(BlueprintType)
@@ -30,12 +43,14 @@ public:
 		float MaxULT;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float EXP;
+		float NextEXP;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		int32 Priority;
 
 
 public:
 	FJRPGCharStat();
-	FJRPGCharStat(float HP, float MP, float AT, float DFS, float ULT);
 };
 
 

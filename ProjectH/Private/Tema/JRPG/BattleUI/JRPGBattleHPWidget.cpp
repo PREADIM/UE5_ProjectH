@@ -4,6 +4,7 @@
 #include "Tema/JRPG/BattleUI/JRPGBattleHPWidget.h"
 #include "Components/ProgressBar.h"
 #include "Tema/JRPG/JRPGUnit.h"
+#include "Components/TextBlock.h"
 
 void UJRPGBattleHPWidget::NativeConstruct()
 {
@@ -14,12 +15,11 @@ void UJRPGBattleHPWidget::NativeConstruct()
 	MP->SynchronizeProperties();
 	ULT->SynchronizeProperties();
 
-
 }
 
 void UJRPGBattleHPWidget::Init()
 {
-
+	CharLevel->SetText(FText::FromString(FString::FromInt(OwnerUnit->CharacterStat.CharLevel)));
 }
 
 float UJRPGBattleHPWidget::RetHP()

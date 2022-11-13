@@ -11,6 +11,7 @@
 #include "Tema/JRPG/JRPGSave.h"
 #include "Tema/JRPG/JRPGEnermy.h"
 #include "Tema/JRPG/JRPGUnit.h"
+#include "Tema/JRPG/JRPGCharStat.h"
 #include "Tema/JRPG/JRPGCharStatTablePaths.h"
 
 
@@ -39,13 +40,15 @@ AJRPGGameMode::AJRPGGameMode()
 {
 	PlayerControllerClass = AJRPGPlayerController::StaticClass();
 
-	SetDataTable(FieldTable, TEXT("DataTable'/Game/PROJECT/BP_CLASS/Tema/JRPG/DataBase/BattleFieldList.BattleFieldList'"));
-	SetDataTable(CharListTable, TEXT("DataTable'/Game/PROJECT/BP_CLASS/Tema/JRPG/DataBase/JRPGCharList.JRPGCharList'"));
-	SetDataTable(EnermyListTable, TEXT("DataTable'/Game/PROJECT/BP_CLASS/Tema/JRPG/DataBase/EnermyList.EnermyList'"));
-	SetDataTable(CharStatTablePaths, TEXT("DataTable'/Game/PROJECT/BP_CLASS/Tema/JRPG/DataBase/JRPGCharStatTablePaths.JRPGCharStatTablePaths'"));
 
+	/*SetDataTable(FieldTable, FString(TEXT("DataTable'/Game/PROJECT/BP_CLASS/Tema/JRPG/DataBase/BattleFieldList.BattleFieldList'")));
+	SetDataTable(CharListTable, FString(TEXT("DataTable'/Game/PROJECT/BP_CLASS/Tema/JRPG/DataBase/JRPGCharList.JRPGCharList'")));
+	SetDataTable(EnermyListTable, FString(TEXT("DataTable'/Game/PROJECT/BP_CLASS/Tema/JRPG/DataBase/EnermyList.EnermyList'")));
+	SetDataTable(CharStatTablePaths, FString(TEXT("DataTable'/Game/PROJECT/BP_CLASS/Tema/JRPG/DataBase/JRPGCharStatTablePaths.JRPGCharStatTablePaths'")));
+	SetDataTable(FieldEnermyDropTable, FString(TEXT("DataTable'/Game/PROJECT/BP_CLASS/Tema/JRPG/DataBase/FieldEnermyDropTable.FieldEnermyDropTable'")));
+	*/
 
-	/*FString FieldDataPath = TEXT("DataTable'/Game/PROJECT/BP_CLASS/Tema/JRPG/DataBase/BattleFieldList.BattleFieldList'");
+	FString FieldDataPath = TEXT("DataTable'/Game/PROJECT/BP_CLASS/Tema/JRPG/DataBase/BattleFieldList.BattleFieldList'");
 	static ConstructorHelpers::FObjectFinder<UDataTable> DT_FieldData(*FieldDataPath);
 	if (DT_FieldData.Succeeded())
 	{
@@ -65,11 +68,26 @@ AJRPGGameMode::AJRPGGameMode()
 	if (DT_EnermyListData.Succeeded())
 	{
 		EnermyListTable = DT_EnermyListData.Object;
-	}*/
+	}
+
+	FString StatTable = TEXT("DataTable'/Game/PROJECT/BP_CLASS/Tema/JRPG/DataBase/JRPGCharStatTablePaths.JRPGCharStatTablePaths'");
+	static ConstructorHelpers::FObjectFinder<UDataTable> DT_StatTable(*StatTable);
+	if (DT_StatTable.Succeeded())
+	{
+		CharStatTablePaths = DT_StatTable.Object;
+	}
+
+
+	FString FieldDropTable = TEXT("DataTable'/Game/PROJECT/BP_CLASS/Tema/JRPG/DataBase/FieldEnermyDropTable.FieldEnermyDropTable'");
+	static ConstructorHelpers::FObjectFinder<UDataTable> DT_FieldDropTable(*FieldDropTable);
+	if (DT_FieldDropTable.Succeeded())
+	{
+		FieldEnermyDropTable = DT_FieldDropTable.Object;
+	}
 
 }
 
-void AJRPGGameMode::SetDataTable(UDataTable* Table, FString TablePath)
+void AJRPGGameMode::SetDataTable(UDataTable*& Table, FString TablePath)
 {
 	static ConstructorHelpers::FObjectFinder<UDataTable> DT_Table(*TablePath);
 	if (DT_Table.Succeeded())
@@ -77,9 +95,6 @@ void AJRPGGameMode::SetDataTable(UDataTable* Table, FString TablePath)
 		Table = DT_Table.Object;
 	}
 }
-
-
-
 
 
 void AJRPGGameMode::PostLogin(APlayerController* Login)
@@ -95,7 +110,6 @@ void AJRPGGameMode::PostLogin(APlayerController* Login)
 			if (UGameplayStatics::DoesSaveGameExist(UJRPGSave::SlotName, 0))
 			{
 				JRPGSave = Cast<UJRPGSave>(UGameplayStatics::LoadGameFromSlot(UJRPGSave::SlotName, 0));
-				_DEBUG("Load");
 				KillCnt = JRPGSave->GetKillCnt();
 			}
 			else // 없는경우 (첫 시작)
@@ -110,7 +124,10 @@ void AJRPGGameMode::PostLogin(APlayerController* Login)
 			if (DefaultCharacter)
 			{
 				OwnerController->OnPossess(Cast<APawn>(DefaultCharacter));
+
+				SetCurrentExpAndNextExp();
 			}
+
 			SetSaveJRPG();
 		}
 
@@ -127,15 +144,74 @@ void AJRPGGameMode::SetControllerInit()
 // ★★ 캐릭터 스탯 테이블을 가져와서 그 테이블에서 레벨로 검색해서 스텟을 가져오기.
 FJRPGCharStat AJRPGGameMode::GetCharStat(int32 CharNum, int32 Level)
 {
-	//데이터 테이블은 FString형을 FindRow로 못가져온다. 그렇기때문에 구조체로 한번 묶어놓는다.
-	FTablePath* CharStatTablePath = CharStatTablePaths->FindRow<FTablePath>(*FString::FromInt(CharNum), TEXT(""));
-	UDataTable* StatTable = nullptr;
+	if (OwnerController->CharStats.Find(CharNum))
+	{
+		if(OwnerController->CharStats[CharNum].CharLevel >= 1)
+			return OwnerController->CharStats[CharNum];
+	}
 
-	SetDataTable(StatTable, *CharStatTablePath->Path); // 캐릭터 스텟 테이블 가져오기
-	FJRPGCharStat* Stat = StatTable->FindRow<FJRPGCharStat>(*FString::FromInt(Level), TEXT(""));
+	FJRPGCharStatTablePaths* CharStatTablePath = CharStatTablePaths->FindRow<FJRPGCharStatTablePaths>(*FString::FromInt(CharNum), TEXT(""));
+	if (CharStatTablePath != nullptr)
+	{
+		// ★★★ FObjectFinder는 COD에서만 가능하다.
+		/*static ConstructorHelpers::FObjectFinder<UDataTable> DT_Table(*CharStatTablePath->Path);
+		if (DT_Table.Succeeded())
+		{
+			StatTable = DT_Table.Object;
+		}*/
 
-	return *Stat;
+		//★★ 데이터 테이블 런타임에서 가져오는 방법.
+		UDataTable* StatTable;
+
+		// ★ 첫번째 방법.
+		/*FSoftObjectPath Path = FSoftObjectPath(*CharStatTablePath->Path);
+		StatTable = Cast<UDataTable>(Path.ResolveObject());
+		if (StatTable)
+		{
+			FJRPGCharStat* Stat = StatTable->FindRow<FJRPGCharStat>(*FString::FromInt(Level), TEXT(""));
+			return *Stat;
+		}
+		else
+			StatTable = Cast<UDataTable>(Path.TryLoad());
+
+		if (StatTable)
+		{
+			FJRPGCharStat* Stat = StatTable->FindRow<FJRPGCharStat>(*FString::FromInt(Level), TEXT(""));
+			return *Stat;
+		}
+
+		return FJRPGCharStat();*/
+
+		//★ 두번째 방법
+		StatTable = Cast<UDataTable>(StaticLoadObject(UDataTable::StaticClass(), NULL, *CharStatTablePath->Path));
+		if (StatTable)
+		{
+			FJRPGCharStat* Stat = StatTable->FindRow<FJRPGCharStat>(*FString::FromInt(Level), TEXT(""));
+			return *Stat;
+		}
+		else
+			return FJRPGCharStat();
+	}
+
+
+	return FJRPGCharStat();	
 }
+
+void AJRPGGameMode::SetCurrentExpAndNextExp()
+{
+	for (int32 CharNum : OwnerController->HaveCharList)
+	{
+		FJRPGCharStat Stat = GetCharStat(CharNum, OwnerController->HaveCharLevels[CharNum]);
+		OwnerController->CharStats[CharNum] = Stat;
+		OwnerController->NextExp[CharNum] = Stat.NextEXP;
+	}
+
+	// ★★★ NextExp와 CharStats은 세이브를 하지않고, 게임 시작시 데이터 테이블에서 가져온 스탯값으로 저장한다.
+	// 추후 값이 변경 되는 것을 우려해야하기 때문. 이미 저장되어있으면 데이터가 이상해진다.
+	// ★★ 하지만 어처피 Add를 통해 키값을 저장해야하는 것을 해야하므로 세이브 자체는 해둔다.
+
+}
+
 
 /*캐릭터 검색해서 해당 캐릭터 스폰하기.*/
 AJRPGUnit* AJRPGGameMode::GetCharacterSpawn(int32 CharacterNum, FTransform UnitLocation)
@@ -192,34 +268,34 @@ bool AJRPGGameMode::GetBattleField(int32 FieldNum)
 
 
 /* 실질적인 JRPG 시작. */
-void AJRPGGameMode::BattleStart(int32 FieldNum, TArray<int32> Enermys)
+void AJRPGGameMode::BattleStart(int32 FieldNum, TArray<FEnermys> Enermys)
 {
 	if (!GetBattleField(FieldNum)) // 필드 생성.
 		return;
 
-	_DEBUG("BattleStart");
-
 	SetUnitList.Empty();
 	SetOwnerUnits(); // 오너 컨트롤러에 있는 파티 리스트 캐릭터 생성.
 	SetEnermyUnits(Enermys); // 적 생성.
-
-
 	TurnListInit(); // 리스트 맨처음 초기화.
-
-	if (SetUnitList.IsEmpty())
-		return;
-
-	// 배틀에 진입하는 시네마틱 구현해야한다. 여기서 실행하든 캐릭터와 오버랩될때 시작하든 한다.
 
 
 	OwnerController->CameraPossess(OwnerUnits[0].Unit->GetActorLocation(), OwnerUnits[0].Unit->GetActorRotation());	// 카메라에 컨트롤러 빙의
 	OwnerController->DynamicCamera->CurrentField = CurrentField;
 	OwnerController->GameType = EGameModeType::Battle;
 
-	// 여기서 시네마틱도 전달해서 해당 시네마틱을 실행해도 될듯하다. (미구현)
+	float Delay = OwnerController->BattleStartSequence();
 
+	if (SetUnitList.IsEmpty())
+		return;
 
 	OwnerController->StartBattleWidget();
+
+	FTimerHandle Timer;
+	GetWorld()->GetTimerManager().SetTimer(Timer, FTimerDelegate::CreateLambda([&]()
+	{
+			OwnerController->BattleUIOnOff(true);
+			OwnerController->PlayPriority(); // 우선순위로 짜여진 캐릭터 리스트 위젯 애님 실행.				
+	}), Delay, false);
 }
 
 
@@ -260,13 +336,14 @@ void AJRPGGameMode::TurnEnd()
 void AJRPGGameMode::TurnListInit()
 {
 	// 내 캐릭터들과, 적 캐릭터들의 목록 추가하기.
-	for (FPriorityUnit Units : EnermyUnits)
+
+	for (FPriorityUnit Units : OwnerUnits)
 	{
 		UnitList.HeapPush(FPriorityUnit(Units.Unit), PriorityUnitFunc());
 	}
 
 
-	for (FPriorityUnit Units : OwnerUnits)
+	for (FPriorityUnit Units : EnermyUnits)
 	{
 		UnitList.HeapPush(FPriorityUnit(Units.Unit), PriorityUnitFunc());
 	}
@@ -292,13 +369,25 @@ void AJRPGGameMode::TurnListSet()
 
 	if (OwnerList.Num() <= 0)
 	{
-		//여기서 게임이 끝났다는 시간을 인지하게하고 돌아가야한다.
-		GameEnd(false); // 적이 승.
+		//여기서 게임이 끝났다는 시간을 인지하게하고 돌아가야한다.	
+		float Delay = OwnerController->BattleEndSequence();
+		FTimerHandle Handle;
+		GetWorld()->GetTimerManager().SetTimer(Handle, FTimerDelegate::CreateLambda([&]()
+		{
+
+			GameEnd(false); // 적이 승.
+		}), Delay, false);
 	}
 	else if(EnermyList.Num() <= 0)
 	{
 		//여기서 게임이 끝났다는 시간을 인지하게하고 돌아가야한다.
-		GameEnd(true); // 플레이어 승.
+		float Delay = OwnerController->BattleEndSequence();
+		FTimerHandle Handle;
+		GetWorld()->GetTimerManager().SetTimer(Handle, FTimerDelegate::CreateLambda([&]()
+		{
+
+			GameEnd(true); // 플레이어 승.
+		}), Delay, false);	
 	}
 	else
 	{
@@ -392,10 +481,10 @@ void AJRPGGameMode::SetOwnerUnits()
 		{
 			Unit->OwnerController = OwnerController;
 		
-			if (OwnerController->HaveCharStat.Find(CharList[i]) != nullptr)
+			if (OwnerController->HaveCharLevels.Find(CharList[i]) != nullptr)
 			{
 				Unit->ThisUnitBattleUnit(true);
-				Unit->CharacterStat = GetCharStat(CharList[i], OwnerController->HaveCharStat[CharList[i]]);
+				Unit->CharacterStat = OwnerController->CharStats[CharList[i]];
 				Unit->InitCurrentStat();
 				OwnerList.Add(Unit);
 			}
@@ -406,7 +495,7 @@ void AJRPGGameMode::SetOwnerUnits()
 }
 
 
-void AJRPGGameMode::SetEnermyUnits(TArray<int32> Enermys)
+void AJRPGGameMode::SetEnermyUnits(TArray<FEnermys> Enermys)
 {
 	EnermyUnits.Empty();
 	EnermyList.Empty();
@@ -429,11 +518,13 @@ void AJRPGGameMode::SetEnermyUnits(TArray<int32> Enermys)
 			break;
 		}
 
-		AJRPGUnit* Unit = GetEnermySpawn(Enermys[i], UnitLocation); // 없는 넘버는 nullptr 빈공간
+		AJRPGUnit* Unit = GetEnermySpawn(Enermys[i].EnermyUnits, UnitLocation); // 없는 넘버는 nullptr 빈공간
 
 		if (Unit != nullptr)
 		{
 			Unit->OwnerController = OwnerController;
+			Unit->EnermyLevel = Enermys[i].EnermyLevel;
+			Unit->CharacterStat = GetCharStat(Enermys[i].EnermyUnits, Enermys[i].EnermyLevel);
 			Unit->ThisUnitBattleUnit(true);
 			Unit->InitCurrentStat();
 
@@ -461,4 +552,18 @@ void AJRPGGameMode::SetSaveEnermyUnits(class AJRPGEnermy* FieldEnermy)
 bool AJRPGGameMode::GetSaveEnermyUnits(int32 EnermyUnitNum)
 {
 	return JRPGSave->GetFieldEnermy(EnermyUnitNum);
+}
+
+FJRPGDropStruct AJRPGGameMode::GetFieldEnermyDropStruct(int32 EnermyUnitNum)
+{
+	FJRPGDropStruct* Drop = FieldEnermyDropTable->FindRow<FJRPGDropStruct>(*FString::FromInt(EnermyUnitNum), TEXT(""));
+
+	if (Drop)
+	{
+		return *Drop;
+	}
+	else
+	{
+		return FJRPGDropStruct();
+	}
 }

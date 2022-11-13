@@ -3,22 +3,13 @@
 
 FJRPGCharStat::FJRPGCharStat()
 {
-	CharLevel = 1;
+	CharLevel = 0;
 	Attack = 0;
 	Shelid = 0.0f;
 	MaxHP = 0.0f;
 	MaxMP = 0.0f;
 	MaxULT = 0.0f;
-	EXP = 0.0f;
+	NextEXP = 0.0f;
+	Priority = 0;
 }
 
-FJRPGCharStat::FJRPGCharStat(float HP, float MP, float AT, float DFS, float ULT)
-{
-	CharLevel = 1;
-	Attack = AT;
-	Shelid = DFS;
-	MaxHP = HP;
-	MaxMP = MP;
-	MaxULT = ULT;
-	EXP = 0.0f;
-}

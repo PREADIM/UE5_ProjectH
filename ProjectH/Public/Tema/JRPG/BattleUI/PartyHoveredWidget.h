@@ -29,6 +29,12 @@ public:
 		class UTextBlock* CharShelid;
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 		class UTextBlock* MaxULT;
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+		class UTextBlock* UnitPriority;
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+		class UTextBlock* CurrentExp;
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+		class UTextBlock* NextExp;
 
 	
 	int32 CharNum;

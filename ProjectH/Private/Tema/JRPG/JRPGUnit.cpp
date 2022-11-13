@@ -57,7 +57,7 @@ void AJRPGUnit::BeginPlay()
 	if (BattleHPWidget)
 	{
 		BattleHPWidget->OwnerUnit = this;
-		BattleHPWidget->SetRenderOpacity(0.0f);
+		BattleWidgetOnOff(false);
 	}
 
 }
@@ -152,7 +152,8 @@ float AJRPGUnit::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent,
 	float DamageApplied = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
 
-	float Damage = DamageAmount - CharacterStat.Shelid;
+	float DFEDamage = 100 / (100 + CharacterStat.Shelid);
+	float Damage = DamageAmount * DFEDamage;
 
 	if (CurrentHP <= Damage)
 	{
@@ -166,7 +167,6 @@ float AJRPGUnit::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent,
 			{
 				if (OwnerList[i] == this)
 				{
-					_DEBUG("Dead");
 					OwnerList.RemoveAt(i);
 					break;
 				}
@@ -199,7 +199,6 @@ float AJRPGUnit::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent,
 		PlayAnimMontage(DeadAnim);
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		DeadUnit();
 	}
 	else
 	{
@@ -277,7 +276,6 @@ void AJRPGUnit::EnermyBattleStart()
 
 	OwnerController->SetVisibleBattleWidget(true);
 	OwnerController->SetEnermyTurnWidget(true); // ÀûÀÇ Â÷·Ê´Ï±î À§Á¬À» ÇÊ¿äÇÑ°Í¸¸ ³²±ä´Ù.
-	_DEBUG("Enermy");
 
 	if (!OwnerAIController)
 	{
@@ -303,8 +301,11 @@ void AJRPGUnit::InitCurrentStat()
 {
 	CurrentHP = CharacterStat.MaxHP;
 	CurrentMP = CharacterStat.MaxMP;
+	Priority = CharacterStat.Priority;
 	MaxULTGage = CharacterStat.MaxULT;
-	ULTGage = MaxULTGage; // ¡Ú¡Ú ±Ã±Ø±â Å×½ºÆ®
+	BattleHPWidget->Init();
+
+	//ULTGage = MaxULTGage; // ¡Ú¡Ú ±Ã±Ø±â Å×½ºÆ®
 }
 
 void AJRPGUnit::TargetAttack(float ATK)
@@ -330,19 +331,27 @@ void AJRPGUnit::TargetManyAttack(float ATK)
 
 }
 
-void AJRPGUnit::DeadUnit_Implementation()
-{
-	DropItem();
-}
 
 void AJRPGUnit::ThisUnitBattleUnit(bool bFlag)
 {
 	if (bFlag)
-		BattleHPWidget->SetRenderOpacity(1.0f);
+		BattleWidgetOnOff(true);
 	else
-		BattleHPWidget->SetRenderOpacity(0.0f);
+		BattleWidgetOnOff(false);
 	bIsJRPGUnit = bFlag;
 	SetIsJRPGUnit(bFlag);
+}
+
+void AJRPGUnit::BattleWidgetOnOff(bool bOnOff)
+{
+	if (bOnOff)
+	{
+		BattleHPWidget->SetRenderOpacity(1.0f);
+	}
+	else
+	{
+		BattleHPWidget->SetRenderOpacity(0.0f);
+	}
 }
 
 void AJRPGUnit::AddMPAndULT()

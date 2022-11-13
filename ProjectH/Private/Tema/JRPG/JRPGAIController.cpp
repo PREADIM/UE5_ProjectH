@@ -65,6 +65,5 @@ void AJRPGAIController::SetIsTurn(bool bFlag)
 	if (BB->GetBlackboardAsset() != nullptr)
 	{
 		BB->SetValueAsBool(FName("IsTurn"), bFlag);
-		_DEBUG("Set IS Turn");
 	}
 }

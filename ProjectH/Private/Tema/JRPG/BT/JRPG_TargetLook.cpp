@@ -24,7 +24,6 @@ EBTNodeResult::Type UJRPG_TargetLook::ExecuteTask(UBehaviorTreeComponent& OwnerC
 	AJRPGGameMode* GM = Cast<AJRPGGameMode>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(FName("GM")));
 	if (!GM)
 	{
-		_DEBUG("Not GM !");
 		return EBTNodeResult::Failed;
 	}
 
@@ -32,7 +31,6 @@ EBTNodeResult::Type UJRPG_TargetLook::ExecuteTask(UBehaviorTreeComponent& OwnerC
 
 	if (!OwnerController)
 	{
-		_DEBUG("Not OwnerController !");
 		return EBTNodeResult::Failed;
 	}
 

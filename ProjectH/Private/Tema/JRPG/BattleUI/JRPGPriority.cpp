@@ -42,16 +42,12 @@ void UJRPGPriority::PlayInit()
 				else
 				{
 					GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
-					_DEBUG("Clear");
 				}
 			}), WaitTime, true);
 
 
 		PlayTurnStart();
-
 	}
-
-
 }
 
 

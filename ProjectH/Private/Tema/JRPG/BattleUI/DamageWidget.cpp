@@ -17,7 +17,6 @@ void UDamageWidget::Init(float Damage, FVector TargetLocation)
 		SetPositionInViewport(Pos);
 		AddToViewport();
 		PlayAnim();
-		_DEBUG("Damage");
 	}	
 }
 

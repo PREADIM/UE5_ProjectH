@@ -26,15 +26,12 @@ EBTNodeResult::Type UJRPG_AttackTask::ExecuteTask(UBehaviorTreeComponent& OwnerC
 	{
 	case 1U: // Nroaml
 		SelfUnit->NormalAttack();
-		_DEBUG("Call Normal");
 		break;
 	case 2U: // Skill
 		SelfUnit->Skill_1();
-		_DEBUG("Call Skill");
 		break;
 	case 3U: // ULT
 		SelfUnit->Skill_ULT();
-		_DEBUG("Call ULT");
 		break;
 	default:
 		break;
@@ -45,15 +42,3 @@ EBTNodeResult::Type UJRPG_AttackTask::ExecuteTask(UBehaviorTreeComponent& OwnerC
 	return EBTNodeResult::Succeeded;
 }
 
-
-
-/*void UJRPG_AttackTask::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
-{
-	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
-
-	if (4U == OwnerComp.GetBlackboardComponent()->GetValueAsEnum(FName("ActiveType")))
-	{
-		_DEBUG("Finish");
-		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
-	}
-}*/

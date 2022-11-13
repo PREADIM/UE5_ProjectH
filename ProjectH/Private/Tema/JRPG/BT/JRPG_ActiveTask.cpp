@@ -24,7 +24,6 @@ EBTNodeResult::Type UJRPG_ActiveTask::ExecuteTask(UBehaviorTreeComponent& OwnerC
 
 	if (!GM)
 	{
-		_DEBUG("Not BT GM");
 		return EBTNodeResult::Failed;
 	}
 
@@ -32,7 +31,6 @@ EBTNodeResult::Type UJRPG_ActiveTask::ExecuteTask(UBehaviorTreeComponent& OwnerC
 	AJRPGUnit* AIUnit = Cast<AJRPGUnit>(OwnerComp.GetAIOwner()->GetPawn());
 	if (!AIUnit)
 	{
-		_DEBUG("Not AIUnit");
 		return EBTNodeResult::Failed;
 	}
 
@@ -51,7 +49,7 @@ EBTNodeResult::Type UJRPG_ActiveTask::ExecuteTask(UBehaviorTreeComponent& OwnerC
 		}
 		else
 		{
-			TargetAttackUnit = TargetAttackUnit->CurrentHP < Unit->CurrentHP ? TargetAttackUnit : Unit;
+			TargetAttackUnit = TargetAttackUnit->CurrentHP > Unit->CurrentHP ? TargetAttackUnit : Unit;
 		}
 	}
 
@@ -61,39 +59,36 @@ EBTNodeResult::Type UJRPG_ActiveTask::ExecuteTask(UBehaviorTreeComponent& OwnerC
 	{
 		if (AIUnit->CurrentMP >= AIUnit->UnitSkills.Skill_1.CostMP)
 		{
-			float Damage = AIUnit->UnitSkills.Skill_1.SkillDamage * AIUnit->CharacterStat.Attack - TargetAttackUnit->CharacterStat.Shelid;
+			float DFEDamage = 100 / (100 + TargetAttackUnit->CharacterStat.Shelid);
+			float SkillDamage = AIUnit->UnitSkills.Skill_1.SkillDamage * AIUnit->CharacterStat.Attack;
+			float Damage = SkillDamage * DFEDamage;
 			if (TargetAttackUnit->CurrentHP <= Damage)
 			{
 				// 열거형으로 무슨 상태가 가능한지 선택한다.
 				// 스킬을 쓸수있는 상태
 				OwnerComp.GetBlackboardComponent()->SetValueAsEnum(FName("ActiveType"), 2U);
-				_DEBUG("Skill_1");
 			}
 			else
 			{
 				// 궁극기 상태
 				OwnerComp.GetBlackboardComponent()->SetValueAsEnum(FName("ActiveType"), 3U);
-				_DEBUG("ULT");
 			}
 		}
 		else
 		{
 			// 궁극기 상태
 			OwnerComp.GetBlackboardComponent()->SetValueAsEnum(FName("ActiveType"), 3U);
-			_DEBUG("ULT");
 		}
 	}
 	else if (AIUnit->CurrentMP >= AIUnit->UnitSkills.Skill_1.CostMP)
 	{
 		// 스킬 상태
 		OwnerComp.GetBlackboardComponent()->SetValueAsEnum(FName("ActiveType"), 2U);
-		_DEBUG("Skill_2");
 	}
 	else
 	{
 		// 일반 공격 상태
 		OwnerComp.GetBlackboardComponent()->SetValueAsEnum(FName("ActiveType"), 1U);	
-		_DEBUG("Normal");
 	}
 	
 

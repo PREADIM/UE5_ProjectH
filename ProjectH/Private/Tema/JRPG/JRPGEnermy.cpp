@@ -32,6 +32,11 @@ void AJRPGEnermy::BeginPlay()
 		{
 			Destroy(); // 비긴 플레이때 있다는 것은 이미 죽음처리가 한번이라도 된적이 있는 것이니 바로 삭제.
 		}
+		else
+		{
+			DropStruct = GM->GetFieldEnermyDropStruct(FieldEnermyNumber);
+		}
+
 	}	
 }
 
@@ -54,6 +59,7 @@ void AJRPGEnermy::EnermyCollisionOverlap(AJRPGPlayerController* PC)
 {
 	if (PC)
 	{
+		OwnerController = PC;
 		PC->PlayBattleMode(EnermyUnits);
 		GM->CurrentBattleEnermy = this;
 	}
@@ -64,6 +70,7 @@ void AJRPGEnermy::PlayerCollisionOverlap(AJRPGUnit* PlayerUnit)
 {
 	if (PlayerUnit)
 	{
+		OwnerController = PlayerUnit->OwnerController;
 		PlayerUnit->OwnerController->PlayBattleMode(EnermyUnits);
 		GM->CurrentBattleEnermy = this;
 	}
@@ -71,9 +78,29 @@ void AJRPGEnermy::PlayerCollisionOverlap(AJRPGUnit* PlayerUnit)
 
 void AJRPGEnermy::FieldEnermyDead()
 {
-	PlayAnimMontage(DeadMontage);
+	DeadUnit();
 	bDead = true;
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	GM->SetSaveEnermyUnits(this);
+	PlayAnimMontage(DeadMontage);	
+}
+
+
+
+void AJRPGEnermy::DropItem_Implementation()
+{
+	if (OwnerController)
+	{
+		for (int32 CharNum : OwnerController->CurrentParty)
+		{
+			OwnerController->AddCharExp(CharNum, DropStruct.DropExp);
+			_DEBUG(" %d Add Exp : %d", CharNum, DropStruct.DropExp);
+		}
+	}
+}
+
+void AJRPGEnermy::DeadUnit_Implementation()
+{
+	DropItem();
 }

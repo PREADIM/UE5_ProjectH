@@ -11,6 +11,9 @@
 /**
  * 
  */
+
+struct FEnermy;
+
 UENUM(BlueprintType)
 enum class EGameModeType : uint8
 {
@@ -76,10 +79,16 @@ public:
 	//게임 모드에 있는 GetCharStat을 컨트롤러에서 받아오는 방법. 위젯에서 쓸모 있음.
 	// 결국엔 Char의 레벨을 가지고있는 이 컨트롤러이니 여기서 받아오는 것도 괜찮을듯
 
+	void AddCharExp(int32 CharNum, float DropExp);
+	//★★ 필드 에너미에서 캐릭터 번호를 가져와서 해당 캐릭터의 경험치를 증가시킨다.
+	// 경험치가 다음 경험치를 넘기는 경우 레벨업을 시키고, 새롭게 스탯을 가져와야한다.
+
+
+	void AddDropChar(int32 CharNum); // 만일 캐릭터를 얻을때의 경우 추가하는 함수. ★★
 	
 
 	// 배틀 
-	void PlayBattleMode(TArray<int32> EnermyUnits); // 배틀 시작.
+	void PlayBattleMode(TArray<FEnermys> EnermyUnits); // 배틀 시작.
 	void ReturnMainWidget(); // 배틀 종료후 돌아가기.
 
 	void StartBattleWidget();
@@ -127,8 +136,20 @@ public:
 		TArray<int32> HaveCharList; // 가지고 있는 전체 캐릭터 넘버 (추후 세이브 로드 해야함).
 	// 나중에 퀘스트 넘버처럼 번호와 BP 패스를 가지고 해당 넘버만 저장하고 불러오는 형식으로 만들어도될듯.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)	
-		TMap<int32, int32> HaveCharStat; // 가지고 있는 캐릭터의 레벨들. (레벨로 스탯을 데이터테이블에서 검색해서 가져옴)
-	//TMap<int32, FJRPGCharStat> HaveCharStat; // 가지고 있는 캐릭터의 스텟들.
+		TMap<int32, int32> HaveCharLevels; // 가지고 있는 캐릭터의 레벨들. (레벨로 스탯을 데이터테이블에서 검색해서 가져옴)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		TMap<int32, FJRPGCharStat> CharStats; // 가지고 있는 캐릭터의 스텟들.
+	// 게임모드의 포스트 로그인에서 레벨로 데이터 테이블을 검색해서 스탯들을 미리 다 가져온다 .
+
+	UPROPERTY(VisibleAnywhere)
+		TMap<int32, float> CurrentExp; // 현재 경험치
+	UPROPERTY(VisibleAnywhere)
+		TMap<int32, float> NextExp; // 현재 경험치
+
+	// ★★★ NextExp와 CharStats은 세이브를 하지않고, 게임 시작시 데이터 테이블에서 가져온 스탯값으로 저장한다.
+	// 추후 값이 변경 되는 것을 우려해야하기 때문. 이미 저장되어있으면 데이터가 이상해진다.
+	// 하지만 어처피 Add를 통해 키값을 저장해야하는 것을 해야하므로 세이브 자체는 해둔다.
+
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MainUI)
 		TSubclassOf<class UJRPGTemaUI> BP_TemaMainUI;
@@ -159,6 +180,21 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TSubclassOf<class UDamageWidget> BP_DamageSkin;
+
+	UPROPERTY()
+		class ULevelSequencePlayer* SequencePlayer;
+	UPROPERTY(EditAnywhere)
+		class ULevelSequence* StartSequence;
+	UPROPERTY(EditAnywhere)
+		class ULevelSequence* EndSequence;
+
 	
+	float BattleStartSequence();
+	// 배틀 시작할때 위젯 인비지블 및 시퀀서 실행
+	float BattleEndSequence();
+	//배틀 종료 후의 시퀀스.
+
+	void BattleUIOnOff(bool bOnOff); // UI 켜기 끄기.
+	void PlayPriority();
 
 };
