@@ -179,3 +179,10 @@ void UJRPGTemaUI::EnermyTargetToRotation()
 {
 	BattleWidget->EnermyTargetToRotation();
 }
+
+void UJRPGTemaUI::HiddenRockOn()
+{
+	BattleWidget->HiddenLockOn();
+}
+
+

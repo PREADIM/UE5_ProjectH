@@ -28,6 +28,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Mesh)
 		class USceneComponent* Root;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Mesh)
+		class USceneComponent* AllShotLocation; // 필드의 전체가 보이는 카메라 구도 위치.
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Mesh)
 		class UStaticMeshComponent* MainStaticMesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Mesh)
@@ -44,6 +47,5 @@ public:
 		class USceneComponent* Enermy2;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Mesh)
 		class USceneComponent* Enermy3;
-
 
 };

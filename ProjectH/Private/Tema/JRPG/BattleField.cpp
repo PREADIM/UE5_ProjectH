@@ -10,6 +10,7 @@ ABattleField::ABattleField()
 	PrimaryActorTick.bCanEverTick = false;
 
 	Root = CreateDefaultSubobject<class USceneComponent>(TEXT("RootComponent"));
+	AllShotLocation = CreateDefaultSubobject<class USceneComponent>(TEXT("AllShotLocation"));
 	MainStaticMesh = CreateDefaultSubobject<class UStaticMeshComponent>(TEXT("MainBody"));
 
 
@@ -22,6 +23,7 @@ ABattleField::ABattleField()
 
 	RootComponent = Root;
 	MainStaticMesh->SetupAttachment(Root);
+	AllShotLocation->SetupAttachment(Root);
 
 	Unit1->SetupAttachment(Root);
 	Unit2->SetupAttachment(Root);

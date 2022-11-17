@@ -27,8 +27,6 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	UFUNCTION(BlueprintCallable)
 		void EnermyCollisionOverlap(class AJRPGPlayerController* PC); // 플레이어가 공격함
@@ -38,14 +36,13 @@ public:
 
 	void FieldEnermyDead(); // 죽음 처리 함수.
 
-	UFUNCTION(BlueprintNativeEvent)
+	UFUNCTION()
 		void DropItem();
-	virtual void DropItem_Implementation();
 	// 죽을때 떨어뜨릴 것들
 
-	UFUNCTION(BlueprintNativeEvent)
+	//UFUNCTION(BlueprintNativeEvent)
 		void DeadUnit();
-	virtual void DeadUnit_Implementation();
+	//virtual void DeadUnit_Implementation();
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -68,6 +65,5 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FJRPGDropStruct DropStruct;
-
 
 };

@@ -43,6 +43,9 @@ public:
 		FVector CurrentLocation;
 
 	UPROPERTY(VisibleAnywhere)
+		FVector TempLocation; // 스킬로인해 카메라 시점변환할때 잠깐 저장해둘 공간
+
+	UPROPERTY(VisibleAnywhere)
 		FRotator TargetRotation;
 	UPROPERTY(VisibleAnywhere)
 		FRotator CurrentRotation;

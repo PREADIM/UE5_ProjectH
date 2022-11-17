@@ -14,6 +14,8 @@
 #include <LevelSequenceActor.h>
 #include <MovieSceneSequencePlayer.h>
 #include "Tema/JRPG/BattleUI/JRPGBattleWidget.h"
+#include "Tema/JRPG/BattleUI/DropItemWidget.h"
+#include "Tema/JRPG/BattleUI/DropExpWidget.h"
 
 
 AJRPGPlayerController::AJRPGPlayerController()
@@ -38,6 +40,15 @@ void AJRPGPlayerController::BeginPlay()
 		TemaMainUI->Init();
 		TemaMainUI->AddToViewport();
 	}
+
+	if (BP_DropItemWidget && BP_DropExpWidget)
+	{
+		DropCharWidget = CreateWidget<UDropItemWidget>(GetWorld(), BP_DropItemWidget);
+		DropExpWidget = CreateWidget<UDropExpWidget>(GetWorld(), BP_DropExpWidget);
+
+		DropCharWidget->OwnerController = this;
+	}
+
 	GameType = EGameModeType::Normal;
 }
 
@@ -125,16 +136,16 @@ FVector AJRPGPlayerController::GetCameraLocation()
 
 void AJRPGPlayerController::AddDropChar(int32 CharNum)
 {
-	if (!HaveCharList.Find(CharNum))
+	if (HaveCharList.Find(CharNum) == INDEX_NONE)
 	{
 		HaveCharList.Add(CharNum);
-		HaveCharLevels.Add(CharNum);
+		HaveCharLevels.Add(CharNum, 1);
 		CharStats.Add(CharNum, GetCharStat(CharNum));
 
 		CurrentExp.Add(CharNum, 0.0f);
 		NextExp.Add(CharNum, CharStats[CharNum].NextEXP);
-	}
 
+	}
 	SetSave();
 }
 
@@ -334,7 +345,7 @@ void AJRPGPlayerController::AddCharExp(int32 CharNum, float DropExp)
 {
 	float Exp = CurrentExp[CharNum] + DropExp;
 
-	if (CurrentExp[CharNum] == 5)
+	if (HaveCharLevels[CharNum] == 5)
 		return;
 
 	if (Exp >= NextExp[CharNum])
@@ -417,6 +428,11 @@ void AJRPGPlayerController::EnermyListSetup()
 	TemaMainUI->EnermyListSetup();
 }
 
+void AJRPGPlayerController::HiddenRockOn()
+{
+	TemaMainUI->HiddenRockOn();
+}
+
 
 void AJRPGPlayerController::TargetToRotation()
 {
@@ -457,6 +473,7 @@ float AJRPGPlayerController::BattleEndSequence()
 
 	if (SequencePlayer)
 	{
+		BattleUIOnOff(false);
 		SequencePlayer->Play();
 		return SequencePlayer->GetEndTime().AsSeconds();
 	}
@@ -470,6 +487,7 @@ void AJRPGPlayerController::BattleUIOnOff(bool bOnOff)
 	if (bOnOff)
 	{
 		TemaMainUI->BattleWidget->SetRenderOpacity(1.0f);
+		TemaMainUI->BattleWidget->LockOnIcon->SetRenderOpacity(1.0f);
 		for (FPriorityUnit Unit : GM->SetUnitList)
 		{
 			Unit.Unit->BattleWidgetOnOff(true);
@@ -478,6 +496,7 @@ void AJRPGPlayerController::BattleUIOnOff(bool bOnOff)
 	else
 	{
 		TemaMainUI->BattleWidget->SetRenderOpacity(0.0f);
+		TemaMainUI->BattleWidget->LockOnIcon->SetRenderOpacity(0.0f);
 		for (FPriorityUnit Unit : GM->SetUnitList)
 		{
 			Unit.Unit->BattleWidgetOnOff(false);

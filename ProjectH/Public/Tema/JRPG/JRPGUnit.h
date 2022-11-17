@@ -145,9 +145,6 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		class AJRPGPlayerController* OwnerController;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component)
-		class UJRPGComponent* BattleComponent;
-
 
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
 		EPlayerType PlayerType;

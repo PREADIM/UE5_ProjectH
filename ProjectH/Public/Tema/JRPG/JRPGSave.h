@@ -58,6 +58,10 @@ public:
 		TMap<int32, bool> FieldEnermyIsLive;
 	UPROPERTY(VisibleAnywhere)
 		int32 KillCnt;
+	UPROPERTY(VisibleAnywhere)
+		bool bTutorial = false;
+	UPROPERTY(VisibleAnywhere)
+		bool bPartyTutorial = false;
 
 	FJRPGFieldEnermy();
 
@@ -91,7 +95,8 @@ public:
 	void SetFieldEnermy(class AJRPGEnermy* FieldEnermy, int32 KillCnt);
 	bool GetFieldEnermy(int32 FieldEnermyNum);
 	float GetKillCnt();
-
+	void SetBattleTutorial(); // Æ©Åä¸®¾ó ³¡.
+	void SetPartyTutorial();
 
 	void SaveSlot();
 };

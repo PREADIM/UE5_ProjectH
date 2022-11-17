@@ -43,13 +43,14 @@ void UJRPGSave::FirstSave()
 
 	JRPGSerial.CurrentParty.Add(101); // 현재 등록한 파티의 정보.
 	JRPGSerial.CurrentParty.Add(102);
-	JRPGSerial.CurrentParty.Add(103);
+	//JRPGSerial.CurrentParty.Add(103);
 
 	JRPGSerial.SetCharNum(101); // 가지고있는 캐릭터와, 스텟 저장
 	JRPGSerial.SetCharNum(102);
-	JRPGSerial.SetCharNum(103);
+	//JRPGSerial.SetCharNum(103);
 
 	JRPGSerial.CurrentFieldNum = 1;
+
 
 	SaveSlot();
 }
@@ -122,6 +123,16 @@ bool UJRPGSave::GetFieldEnermy(int32 FieldEnermyNum)
 float UJRPGSave::GetKillCnt()
 {
 	return JRPGFieldEnermy.KillCnt;
+}
+
+void UJRPGSave::SetBattleTutorial()
+{
+	JRPGFieldEnermy.bTutorial = true;
+}
+
+void UJRPGSave::SetPartyTutorial()
+{
+	JRPGFieldEnermy.bPartyTutorial = true;
 }
 
 

@@ -116,6 +116,14 @@ void UJRPGSettingPartySlot::ExitWidget()
 	if (OwnerField)
 	{
 		RemoveFromParent();
+		if (HoveredWidget)
+		{
+			if (HoveredWidget->IsInViewport())
+			{
+				HoveredWidget->RemoveFromParent();
+				HoveredWidget = nullptr;
+			}
+		}
 		OwnerController->LastWidget.Pop();
 		OwnerField->ResomeUI();
 	}

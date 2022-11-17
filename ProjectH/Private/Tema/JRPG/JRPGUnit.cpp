@@ -195,6 +195,7 @@ float AJRPGUnit::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent,
 			}
 		}
 
+		BattleWidgetOnOff(false);
 		GetCharacterMovement()->DisableMovement();
 		PlayAnimMontage(DeadAnim);
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);

@@ -27,7 +27,9 @@ void UJRPGMainWidget::PlayESCAnim(bool bPlay)
 	ESCMenu->SetVisibility(bPlay ? ESlateVisibility::Visible : ESlateVisibility::HitTestInvisible);
 	if (bPlay)
 	{
-		OwnerController->MouseOnOff();
+		if(!OwnerController->bShowMouseCursor)
+			OwnerController->MouseOnOff();
+
 		MainPartyUI->SetVisibility(ESlateVisibility::Hidden);
 		OwnerController->GameType = EGameModeType::UI;
 	}

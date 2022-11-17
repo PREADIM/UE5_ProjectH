@@ -13,6 +13,7 @@
 #include "Tema/JRPG/JRPGUnit.h"
 #include "Tema/JRPG/JRPGCharStat.h"
 #include "Tema/JRPG/JRPGCharStatTablePaths.h"
+#include "Blueprint/UserWidget.h"
 
 
 FLiveUnit::FLiveUnit()
@@ -116,9 +117,11 @@ void AJRPGGameMode::PostLogin(APlayerController* Login)
 			{
 				JRPGSave = Cast<UJRPGSave>(UGameplayStatics::CreateSaveGameObject(UJRPGSave::StaticClass()));
 				JRPGSave->FirstSave();		
+
 			}
 
-
+			bBattleTutorial = JRPGSave->JRPGFieldEnermy.bTutorial;
+			bPartyTutorial = JRPGSave->JRPGFieldEnermy.bPartyTutorial;
 			AJRPGUnit* DefaultCharacter = GetCharacterSpawn(JRPGSave->JRPGSerial.RepreCharacterNum, JRPGSave->JRPGSerial.FieldLocation);
 
 			if (DefaultCharacter)
@@ -144,12 +147,6 @@ void AJRPGGameMode::SetControllerInit()
 // ★★ 캐릭터 스탯 테이블을 가져와서 그 테이블에서 레벨로 검색해서 스텟을 가져오기.
 FJRPGCharStat AJRPGGameMode::GetCharStat(int32 CharNum, int32 Level)
 {
-	if (OwnerController->CharStats.Find(CharNum))
-	{
-		if(OwnerController->CharStats[CharNum].CharLevel >= 1)
-			return OwnerController->CharStats[CharNum];
-	}
-
 	FJRPGCharStatTablePaths* CharStatTablePath = CharStatTablePaths->FindRow<FJRPGCharStatTablePaths>(*FString::FromInt(CharNum), TEXT(""));
 	if (CharStatTablePath != nullptr)
 	{
@@ -317,6 +314,10 @@ void AJRPGGameMode::TurnStart()
 		if (Unit->PlayerType == EPlayerType::Player)
 		{
 			Unit->OwnerUnitBattleStart();
+			if (!bBattleTutorial) // 튜토리얼 실행
+			{
+				BattleTutorialStart();
+			}
 		}
 		else // 적의 차례
 		{
@@ -536,6 +537,36 @@ void AJRPGGameMode::SetEnermyUnits(TArray<FEnermys> Enermys)
 }
 
 
+
+void AJRPGGameMode::BattleTutorialStart()
+{
+	if (BP_BattleTutorialWidget)
+	{
+		UUserWidget* BattleTT = CreateWidget<UUserWidget>(GetWorld(), BP_BattleTutorialWidget);
+		if (BattleTT)
+		{
+			BattleTT->AddToViewport();
+			bBattleTutorial = true;
+			JRPGSave->SetBattleTutorial();
+		}
+	}
+}
+
+void AJRPGGameMode::PartyTutorialStart()
+{
+	if (BP_PartyTutorialWidget)
+	{
+		UUserWidget* PartyTT = CreateWidget<UUserWidget>(GetWorld(), BP_PartyTutorialWidget);
+		if (PartyTT)
+		{
+			PartyTT->AddToViewport();
+			bPartyTutorial = true;
+			JRPGSave->SetPartyTutorial();
+		}
+
+	}
+
+}
 
 void AJRPGGameMode::SetSaveJRPG()
 {

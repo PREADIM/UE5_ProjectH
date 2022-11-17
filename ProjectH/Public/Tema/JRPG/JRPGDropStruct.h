@@ -13,10 +13,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float DropExp; // 죽으면 나올 경험치.
 
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		int32 DropCharNum;
 	//여기서 입맛에 맞게 떨구는 아이템을 작성하면 될듯.
 
 public:
-	FJRPGDropStruct() {}
+	FJRPGDropStruct();
 
 };
 

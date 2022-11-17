@@ -54,4 +54,6 @@ public:
 
 	void TargetToRotation(); // 적 쪽으로 몸 돌리기.
 	void EnermyTargetToRotation();
+
+	void HiddenRockOn(); // 전체 스킬을 사용할때 락온을 가리는 용도.
 };

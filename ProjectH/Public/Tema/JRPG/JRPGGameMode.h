@@ -132,7 +132,6 @@ public:
 
 	//캐릭터 스텟을 레벨로 검색해서 가져온다.
 	FJRPGCharStat GetCharStat(int32 CharNum, int32 Level);
-	
 	void SetCurrentExpAndNextExp(); // 가지고있는 유닛의 현재 경험치와, 다음렙업에 필요한 경험치를 가져온다.
 
 
@@ -152,12 +151,20 @@ public:
 
 
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 		class ABattleField* CurrentField;
 	FVector FieldLocation;
 	// 배틀필드 클래스를 가져오기. 배틀필드 또한 지역 넘버를 가지고있고 해당 위치를 데이터베이스에서 가져옴.
 
 
+	UPROPERTY(EditAnywhere)
+		TSubclassOf<class UUserWidget> BP_BattleTutorialWidget;
+	UPROPERTY(EditAnywhere)
+		TSubclassOf<class UUserWidget> BP_PartyTutorialWidget;
+
+
+	void BattleTutorialStart();
+	void PartyTutorialStart();
 
 	/*------------------
 	
@@ -168,6 +175,8 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		class UJRPGSave* JRPGSave; // 세이브
 
+	bool bBattleTutorial = false; // 튜토리얼을 했는지 안했는지 알아오는 것.
+	bool bPartyTutorial = false; // 튜토리얼을 했는지 안했는지 알아오는 것.
 
 	UPROPERTY(EditAnywhere)
 		int32 MaxCharCnt; // 이 게임이 가지는 최대 캐릭터 수

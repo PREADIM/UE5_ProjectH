@@ -5,6 +5,8 @@
 #include "Tema/JRPG/JRPGPlayerController.h"
 #include "Tema/JRPG/JRPGUnit.h"
 #include "Tema/JRPG/JRPGGameMode.h"
+#include "Tema/JRPG/BattleUI/DropItemWidget.h"
+#include "Tema/JRPG/BattleUI/DropExpWidget.h"
 
 // Sets default values
 AJRPGEnermy::AJRPGEnermy()
@@ -47,13 +49,6 @@ void AJRPGEnermy::Tick(float DeltaTime)
 
 }
 
-// Called to bind functionality to input
-void AJRPGEnermy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-}
-
 
 void AJRPGEnermy::EnermyCollisionOverlap(AJRPGPlayerController* PC)
 {
@@ -88,19 +83,43 @@ void AJRPGEnermy::FieldEnermyDead()
 
 
 
-void AJRPGEnermy::DropItem_Implementation()
+void AJRPGEnermy::DropItem()
 {
 	if (OwnerController)
 	{
 		for (int32 CharNum : OwnerController->CurrentParty)
 		{
 			OwnerController->AddCharExp(CharNum, DropStruct.DropExp);
-			_DEBUG(" %d Add Exp : %d", CharNum, DropStruct.DropExp);
+			//_DEBUG(" %d Add Exp : %f", CharNum, DropStruct.DropExp);
+		}
+
+		if (OwnerController->DropExpWidget)
+		{
+			OwnerController->DropExpWidget->Init(DropStruct.DropExp);
+			OwnerController->DropExpWidget->AddToViewport();
+		}
+
+		_DEBUG("DropStruct Char Num : %d", DropStruct.DropCharNum);
+
+		if (DropStruct.DropCharNum != 0)
+		{
+			OwnerController->AddDropChar(DropStruct.DropCharNum);
+			FString Name = OwnerController->GetUnitUI(DropStruct.DropCharNum)->CharName;
+			if (OwnerController->DropCharWidget)
+			{
+				OwnerController->DropCharWidget->Init(Name);
+				OwnerController->DropCharWidget->AddToViewport();
+			}
+
+			if (!GM->bPartyTutorial) // 캐릭터 드랍했으니 파티 설정 해보라는 튜토리얼 실행.
+			{
+				GM->PartyTutorialStart();
+			}
 		}
 	}
 }
 
-void AJRPGEnermy::DeadUnit_Implementation()
+void AJRPGEnermy::DeadUnit()
 {
 	DropItem();
 }

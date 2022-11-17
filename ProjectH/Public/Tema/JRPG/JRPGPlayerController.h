@@ -50,8 +50,11 @@ public:
 	// 메인 위젯이 두개이다. 평상시 위젯과, JRPG때의 위젯. 서로 다른 위젯이고 배틀일때 달라진다.
 
 	void CameraPossess(FVector Location, FRotator Rotation);
-	void CameraSetUp(FVector Location);
-	void CameraRotSetUp(FRotator Rotation);
+
+	UFUNCTION(BlueprintCallable)
+		void CameraSetUp(FVector Location);
+	UFUNCTION(BlueprintCallable)
+		void CameraRotSetUp(FRotator Rotation);
 	void ExitCamera();
 	FVector GetCameraLocation();
 
@@ -59,6 +62,7 @@ public:
 
 	void OpenESC();
 	void MouseOnOff();
+
 	void MouseOn();
 	void MouseOff(); // 이렇게 따로 두는 이유는 필요에따라 계속해서 따로 On Off를 하기 위해서.
 
@@ -103,6 +107,10 @@ public:
 	void UnitTurnEnd(); // 턴엔드 유닛에서 블루프린트에서 해당 함수를 호출한다.
 
 	void EnermyListSetup(); // 애님이 다 끝나고 턴 시작후에 카메라랑 락온을 변경해야한다.
+
+	UFUNCTION(BlueprintCallable)
+		void HiddenRockOn(); // 전체 스킬을 사용할때 락온 위젯이 가려지는 용도.
+
 
 public:
 	UPROPERTY(VisibleAnywhere)
@@ -158,6 +166,17 @@ public:
 
 	UPROPERTY(VisibleAnywhere)
 		class UDataTable* UnitUITable;
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<class UDropItemWidget> BP_DropItemWidget;
+	UPROPERTY()
+		class UDropItemWidget* DropCharWidget;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<class UDropExpWidget> BP_DropExpWidget;
+	UPROPERTY()
+		class UDropExpWidget* DropExpWidget;
 
 
 	UPROPERTY()

@@ -94,8 +94,6 @@ void APartySettingField::Init(class UJRPGMainWidget* OwnerMainUI)
 			SettingUI->GM = GM;
 			SettingUI->OwnerField = this;
 			SettingUI->Init();
-	
-			UE_LOG(LogTemp, Warning, TEXT("Init"));
 		}
 	}
 }
@@ -108,7 +106,7 @@ void APartySettingField::SetCurrentParty()
 
 		OwnerController->LastWidget.AddUnique(PartySettingUI);
 		PartySettingUI->AddToViewport();
-		UE_LOG(LogTemp, Warning, TEXT("SetCurrentParty"));
+		//UE_LOG(LogTemp, Warning, TEXT("SetCurrentParty"));
 	}
 
 }
@@ -339,7 +337,7 @@ void APartySettingField::LMB()
 		class AJRPGUnit* LastUnit = Cast<class AJRPGUnit>(HitResult.GetActor());
 		if (LastUnit)
 		{
-			_DEBUG("%s", *LastUnit->GetName());
+			//_DEBUG("%s", *LastUnit->GetName());
 
 			for (int32 i = 0; i < 4; i++)
 			{
