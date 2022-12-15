@@ -11,6 +11,7 @@
 #include "Tema/JRPG/BattleUI/JRPGBattleHPWidget.h"
 #include "Tema/JRPG/JRPGCamera.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "GameMode/ProjectHGameInstance.h"
 
 // Sets default values
 AJRPGUnit::AJRPGUnit()
@@ -44,6 +45,8 @@ AJRPGUnit::AJRPGUnit()
 
 	Priority = 0;
 
+	WalkSpeed = 450.f; // AIMoveTo하는 유닛은 이걸 넣어주기.
+
 	bIsLMBAttack = false;
 }
 
@@ -58,6 +61,12 @@ void AJRPGUnit::BeginPlay()
 	{
 		BattleHPWidget->OwnerUnit = this;
 		BattleWidgetOnOff(false);
+	}
+
+	UProjectHGameInstance* GI = Cast<UProjectHGameInstance>(UGameplayStatics::GetGameInstance(this));
+	if (GI)
+	{
+		MouseSensitivity = GI->MS;
 	}
 
 }
@@ -119,15 +128,15 @@ void AJRPGUnit::MoveRight(float Value)
 
 void AJRPGUnit::LookUp(float AxisValue)
 {
-	//AddControllerPitchInput(AxisValue * MouseSensitivity * GetWorld()->GetDeltaSeconds());
-	AddControllerPitchInput(AxisValue);
+	AddControllerPitchInput(AxisValue * MouseSensitivity * GetWorld()->GetDeltaSeconds());
+	//AddControllerPitchInput(AxisValue);
 }
 
 
 void AJRPGUnit::LookRight(float AxisValue)
 {
-	//AddControllerYawInput(AxisValue * MouseSensitivity * GetWorld()->GetDeltaSeconds());
-	AddControllerYawInput(AxisValue);
+	AddControllerYawInput(AxisValue * MouseSensitivity * GetWorld()->GetDeltaSeconds());
+	//AddControllerYawInput(AxisValue);
 }
 
 
@@ -141,7 +150,10 @@ void AJRPGUnit::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAxis("LookRight", this, &AJRPGUnit::LookRight);
 
 	PlayerInputComponent->BindAction("LMB", IE_Pressed, this, &AJRPGUnit::LMB);
+
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
+	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
+
 	PlayerInputComponent->BindAction("TestKey", IE_Pressed, this, &AJRPGUnit::TestKey);
 }
 

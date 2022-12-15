@@ -31,6 +31,7 @@ void UJRPGBattleWidget::NativeTick(const FGeometry& MyGeometry, const float InDe
 		TargetLockOn = TargetUnit->GetActorLocation();
 		OwnerController->ProjectWorldLocationToScreen(TargetLockOn, Pos);
 		LockOnIcon->SetPositionInViewport(Pos);
+		//_DEBUG("%f, %f", Pos.X, Pos.Y);
 	}
 
 }
@@ -107,15 +108,23 @@ void UJRPGBattleWidget::EnermyTargetToRotation()
 {
 	AJRPGUnit* SelfUnit = GM->SetUnitList[0].Unit;
 
-	FVector TargetLocation = OwnerController->TargetUnit->GetActorLocation();
-	FVector SelfLocation = SelfUnit->GetActorLocation();
-	FRotator Rot = UKismetMathLibrary::FindLookAtRotation(TargetLocation, SelfLocation);
-	FRotator EnermyRot = UKismetMathLibrary::FindLookAtRotation(SelfLocation, TargetLocation);
+	if (OwnerController->TargetUnit)
+	{
+		FVector TargetLocation = OwnerController->TargetUnit->GetActorLocation();
+		FVector SelfLocation = SelfUnit->GetActorLocation();
+		FRotator Rot = UKismetMathLibrary::FindLookAtRotation(TargetLocation, SelfLocation);
+		FRotator EnermyRot = UKismetMathLibrary::FindLookAtRotation(SelfLocation, TargetLocation);
 
-	OwnerController->CameraSetUp(TargetLocation);
-	OwnerController->CameraRotSetUp(Rot);
+		OwnerController->CameraSetUp(TargetLocation);
+		OwnerController->CameraRotSetUp(Rot);
 
-	SelfUnit->SetActorRotation(EnermyRot);
+		SelfUnit->SetActorRotation(EnermyRot);
+	}
+	else
+	{
+		SelfUnit->SetActorRelativeRotation(FRotator(0.f, 0.f, 90.f));
+	}
+
 }
 
 

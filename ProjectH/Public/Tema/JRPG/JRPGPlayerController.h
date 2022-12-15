@@ -116,7 +116,7 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		class AJRPGGameMode* GM;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		EGameModeType GameType;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

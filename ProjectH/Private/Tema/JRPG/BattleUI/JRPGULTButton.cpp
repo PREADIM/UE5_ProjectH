@@ -21,7 +21,7 @@ void UJRPGULTButton::Init()
 		Style.SetBackgroundImage(SlateWidget);
 		Style.SetFillImage(FillWidget);
 
-		PB_ULT->WidgetStyle = Style;
+		PB_ULT->SetWidgetStyle(Style);
 		PB_ULT->PercentDelegate.BindUFunction(this, "BindULTGage");
 		PB_ULT->SynchronizeProperties();
 
@@ -65,7 +65,7 @@ void UJRPGULTButton::EnermyTurnFirstInit()
 		Style.SetBackgroundImage(SlateWidget);
 		Style.SetFillImage(SlateWidget);
 
-		PB_ULT->WidgetStyle = Style;
+		PB_ULT->SetWidgetStyle(Style);
 
 		ULTButton->OnClicked.AddDynamic(this, &UJRPGULTButton::UseSkill);
 	}

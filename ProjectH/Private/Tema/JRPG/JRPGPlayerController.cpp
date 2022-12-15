@@ -18,6 +18,7 @@
 #include "Tema/JRPG/BattleUI/DropExpWidget.h"
 
 
+
 AJRPGPlayerController::AJRPGPlayerController()
 {
 	FString UnitUIDataPath = TEXT("DataTable'/Game/PROJECT/BP_CLASS/Tema/JRPG/DataBase/JRPGUnitUIState.JRPGUnitUIState'");
@@ -50,6 +51,7 @@ void AJRPGPlayerController::BeginPlay()
 	}
 
 	GameType = EGameModeType::Normal;
+
 }
 
 void AJRPGPlayerController::OnPossess(APawn* NewPawn)
@@ -188,9 +190,9 @@ void AJRPGPlayerController::SetupInputComponent()
 	// 임시로 P키에 지정함.
 	InputComponent->BindAction(TEXT("MouseOnOff"), IE_Released, this, &AJRPGPlayerController::MouseOnOff);
 
-	InputComponent->BindAction(TEXT("Party_F"), IE_Released, this, &AJRPGPlayerController::SetParty_First);
-	InputComponent->BindAction(TEXT("Party_S"), IE_Released, this, &AJRPGPlayerController::SetParty_Second);
-	InputComponent->BindAction(TEXT("Party_T"), IE_Released, this, &AJRPGPlayerController::SetParty_Third);
+	InputComponent->BindAction(TEXT("1"), IE_Released, this, &AJRPGPlayerController::SetParty_First);
+	InputComponent->BindAction(TEXT("2"), IE_Released, this, &AJRPGPlayerController::SetParty_Second);
+	InputComponent->BindAction(TEXT("3"), IE_Released, this, &AJRPGPlayerController::SetParty_Third);
 
 }
 

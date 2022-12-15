@@ -165,6 +165,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FJRPGUnitSkill UnitSkills;
 
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float WalkSpeed;
 	
 
 	/*-----------------

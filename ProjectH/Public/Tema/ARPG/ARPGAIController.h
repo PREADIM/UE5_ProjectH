@@ -4,19 +4,22 @@
 
 #include "ProjectH.h"
 #include "AIController.h"
-#include "JRPGAIController.generated.h"
+#include "ARPGAIController.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECTH_API AJRPGAIController : public AAIController
+class PROJECTH_API AARPGAIController : public AAIController
 {
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UBlackboardComponent* BB;
 
-	AJRPGAIController();
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class AARPGEnermy* OwnerUnit;
 
 public:
 	/*-------------------
@@ -25,15 +28,6 @@ public:
 	virtual void BeginPlay();
 	virtual void OnPossess(APawn* InPawn);
 	virtual void OnUnPossess();
-
-	void SetIsTurn(bool bFlag);
-
-public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
-		class UBlackboardComponent* BB;
-	UPROPERTY()
-		class AJRPGUnit* OwnerCharacter;
-
-
 	
+	AARPGAIController();
 };

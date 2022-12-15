@@ -8,7 +8,6 @@
 void UDropItemWidget::Init(FString CharName)
 {
 	DropCharName->SetText(FText::FromString(CharName));
-	//PlayItemAnim();
 }
 
 void UDropItemWidget::MouseOff()
@@ -19,7 +18,3 @@ void UDropItemWidget::MouseOff()
 	}
 }
 
-/*void UDropItemWidget::PlayItemAnim()
-{
-	PlayAnimation(ItemAnimation, 0.f, 1, EUMGSequencePlayMode::Forward);
-}*/

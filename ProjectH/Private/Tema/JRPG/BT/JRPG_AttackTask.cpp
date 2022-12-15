@@ -22,15 +22,15 @@ EBTNodeResult::Type UJRPG_AttackTask::ExecuteTask(UBehaviorTreeComponent& OwnerC
 		});*/
 
 
-	switch (OwnerComp.GetBlackboardComponent()->GetValueAsEnum(FName("ActiveType")))
+	switch ((EJRPGAttackState)OwnerComp.GetBlackboardComponent()->GetValueAsEnum(FName("ActiveType")))
 	{
-	case 1U: // Nroaml
+	case EJRPGAttackState::NormalAttack : // Normal
 		SelfUnit->NormalAttack();
 		break;
-	case 2U: // Skill
+	case EJRPGAttackState::SkillAttack :// Skill
 		SelfUnit->Skill_1();
 		break;
-	case 3U: // ULT
+	case EJRPGAttackState::ULTAttack : // ULT
 		SelfUnit->Skill_ULT();
 		break;
 	default:
@@ -42,3 +42,37 @@ EBTNodeResult::Type UJRPG_AttackTask::ExecuteTask(UBehaviorTreeComponent& OwnerC
 	return EBTNodeResult::Succeeded;
 }
 
+
+
+//EBTNodeResult::Type UJRPG_AttackTask::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
+//{
+//	EBTNodeResult::Type Result = Super::ExecuteTask(OwnerComp, NodeMemory);
+//
+//	AJRPGUnit* SelfUnit = Cast<AJRPGUnit>(OwnerComp.GetAIOwner()->GetPawn());
+//
+//	/*SelfUnit->OnAIAttackEnd.Clear();
+//	SelfUnit->OnAIAttackEnd.AddLambda([this, &OwnerComp]()->void
+//		{
+//			OwnerComp.GetBlackboardComponent()->SetValueAsEnum(FName("ActiveType"), 4U);
+//		});*/
+//
+//
+//	switch (OwnerComp.GetBlackboardComponent()->GetValueAsEnum(FName("ActiveType")))
+//	{
+//	case 1U: // Noraml
+//		SelfUnit->NormalAttack();
+//		break;
+//	case 2U: // Skill
+//		SelfUnit->Skill_1();
+//		break;
+//	case 3U: // ULT
+//		SelfUnit->Skill_ULT();
+//		break;
+//	default:
+//		break;
+//	}
+//
+//	OwnerComp.GetBlackboardComponent()->SetValueAsBool(FName("IsTurn"), false);
+//
+//	return EBTNodeResult::Succeeded;
+//}

@@ -39,7 +39,7 @@ void UEnermyIconButton::TargetLockOn()
 			if (!GM->EnermyList.IsValidIndex(0))
 			{
 				AJRPGUnit* Unit = GM->SetUnitList[0].Unit;
-				Unit->SetActorRelativeRotation(FRotator(0.f, 0.f, 0.f));
+				Unit->SetActorRelativeRotation(FRotator(0.f, -90.f, 0.f));
 				return;
 			}
 			else
