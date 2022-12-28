@@ -7,7 +7,6 @@
 #include "Tema/JRPG/BattleFieldList.h"
 #include "Tema/JRPG/JRPGCharList.h"
 #include "Tema/JRPG/BattleField.h"
-#include "Tema/JRPG/JRPGComponent.h"
 #include "Tema/JRPG/JRPGSave.h"
 #include "Tema/JRPG/JRPGEnermy.h"
 #include "Tema/JRPG/JRPGUnit.h"

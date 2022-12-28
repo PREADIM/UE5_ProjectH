@@ -49,16 +49,17 @@ void UBTService_Overlap::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* Node
 				OwnerComp.GetBlackboardComponent()->SetValueAsObject(FName("TargetUnit"), Unit);
 				DrawDebugSphere(World, Center, CollisionRadius, 16, FColor::Green, false, 0.2f);
 				DrawDebugPoint(World, Unit->GetActorLocation(), 10.f, FColor::Blue, false, 0.2f);
-				_DEBUG("%s", *OwnerComp.GetBlackboardComponent()->GetValueAsObject(FName("TargetUnit"))->GetName());
+				//_DEBUG("%s", *OwnerComp.GetBlackboardComponent()->GetValueAsObject(FName("TargetUnit"))->GetName());
 
 				OwnerPawn->PlayerUnit = Unit; // 타겟 플레이어 설정.
+				OwnerPawn->bMoving = true; // 무빙 실행★
+				OwnerPawn->SetBattleMode(true); // 배틀모드
 				OwnerPawn->SetCollisionRadius(true);
 				return;
 			}
 		}	
 	}
 
-	OwnerPawn->SetCollisionRadius(false);
 	OwnerComp.GetBlackboardComponent()->SetValueAsObject(FName("TargetUnit"), nullptr);
 	DrawDebugSphere(World, Center, CollisionRadius, 16, FColor::Red, false, 0.2f);
 }

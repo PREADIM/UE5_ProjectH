@@ -56,9 +56,15 @@ public:
 
 	virtual void PostInitializeComponents();
 
+	class UARPGAttackComponent* GetAttackComponent() { return AttackComponent; }
+
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AttackComponent", meta = (AllowPrivateAccess = "true"))
+		class UARPGAttackComponent* AttackComponent;
+
+
 public:
 	FOnAttack OnAttack;
-	FOnMoving OnMoving;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		bool bBlocking;
@@ -82,7 +88,11 @@ public:
 		float BattleSpeed;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float PrevSpeed; // 백무빙을 할때는 속도가 줄어야 하므로 잠시 저장용
+		float AttackCoolTime; // 공격 딜레이
+
+	const float& GetAttackCoolTime() { return AttackCoolTime; }
+
+	//-----------------------------------
 
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
@@ -91,6 +101,8 @@ public:
 	// 적이 어떻게 움직일지 해당 값으로 EnermyMoveState를 결정한다.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		EEnermyMoveMode State = EEnermyMoveMode::None;
+
+	//-----------------------
 	
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
@@ -102,19 +114,29 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float BattleCollisionRadius; // 배틀 수색 범위
 
+	float GetCollisionRadius() { return CurrentCollisionRadius; }
+	void SetCollisionRadius(bool bFlag); // 플레이어를 찾았으면 수색범위가 늘어나고, 아닌경우는 원래 수색범위 (원신 같은경우)
+
+	//----------------------------
+
 	// 이 유닛의 전투 태세에 들어가는 범위. 적마다 다르기때문에 이 값을 실시간으로 가져와서 바꾼다.
 	// 보스의 경우에는 무조건 락온 -> 공격 이므로 필요하지 않을수도 있음.
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float BattleDistance; 
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float NormalDistance;
+	float GetBattleDistance() { return BattleDistance; }
+	void SetBattleDistance(float Distance) { BattleDistance = Distance; }
+
+
+	//------------------------------
 
 	// 공격 거리를 나타내는 변수 적마다 다르기때문에 따로 이 값을 수시로 바꿔준다.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float AttackDistance;
 
 	float GetAttackDistance() { return AttackDistance; }
+
+	//--------------------------------
 
 
 	UPROPERTY()
@@ -131,10 +153,21 @@ public:
 		class UBehaviorTree* BT;
 	class UBehaviorTree* GetBT() { return BT; }
 
-public:
-	virtual void Attack() {} // 공격 함수
-	virtual void Garud() {} // 막는 함수
+	//------------------------------------
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TArray<TSubclassOf<class UAttackClass>> BP_Attacks;
+	// ★★ 어택 컴포넌트에서 사용할 어택 클래스들
+
+	//------------------------------------
+
+
+public:
+	virtual void Attack(int32 index) {} // 공격 함수
+	virtual void Garud() {} // 막는 함수
+	virtual void Parring() {} // 패링 함수
+
+	//-------------------------------------
 
 	UFUNCTION(BlueprintImplementableEvent)
 		void EnermyMoving(); // 블루프린트에서 각 적에 알맞는 행동 하게하기 실질적인 Tick에서 실행할 메인 함수.
@@ -145,25 +178,21 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void LockOnPlayer(); // SetActorRotation으로 플레이어 락온하는 함수.
 
-	UFUNCTION(BlueprintImplementableEvent)
-		void ParringMontage();
-
 	UFUNCTION(BlueprintCallable)
 		float GetDirection(FVector MoveDirection); // 현재 어떤 방향인지 애님블프에 전달하는 함수.
 
-
-	float GetCollisionRadius() { return CurrentCollisionRadius; }
-	void SetCollisionRadius(bool bFlag); // 플레이어를 찾았으면 수색범위가 늘어나고, 아닌경우는 원래 수색범위 (원신 같은경우)
-	
-
-	float GetBattleDistance() { return BattleDistance; }
-	void SetBattleDistance(float Distance) { BattleDistance = Distance; }
-
-	void SetBlocking(bool bFlag); // BT에서 방패를 들건지 설정해줌
-	void SetBattleMode(bool bFlag); // BT에서 방패를 들건지 설정해줌
-
 	void SetEnermyMoveMode(EEnermyMoveMode Mode); // 움직일 모드 설정
 
-	void CastMoving();
-	//무빙이 끝나고 캐스트하여 무빙이 다 끝났다는걸 알려주는 함수.
+
+	//-----------------------------------------
+
+	void SetBlocking(bool bFlag); // BT에서 방패를 들건지 설정해줌
+
+	void SetBattleMode(bool bFlag); 
+
+	//-----------------------------------------
+
+	UFUNCTION(BlueprintImplementableEvent)
+		void SetDynamicDelegateBind();
+	// ex) 어택 클래스의 다이나믹 델리게이트에 바인드 해야할때.
 };

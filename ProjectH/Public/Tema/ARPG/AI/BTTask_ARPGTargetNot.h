@@ -4,24 +4,19 @@
 
 #include "ProjectH.h"
 #include "BehaviorTree/BTTaskNode.h"
-#include "BTTask_ARPGAttack.generated.h"
+#include "BTTask_ARPGTargetNot.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECTH_API UBTTask_ARPGAttack : public UBTTaskNode
+class PROJECTH_API UBTTask_ARPGTargetNot : public UBTTaskNode
 {
 	GENERATED_BODY()
 
+
 public:
-	UBTTask_ARPGAttack();
+	UBTTask_ARPGTargetNot();
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 	
-protected:
-	virtual void TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeletaSeconds) override;
-
-private:
-	class AARPGEnermy* OwnerPawn;
-	bool bAttack;
 };

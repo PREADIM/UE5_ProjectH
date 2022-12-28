@@ -9,13 +9,6 @@ AARPGWeapon::AARPGWeapon()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
-	SwordMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SwordMesh"));
-
-	SwordCollision = CreateDefaultSubobject<UCapsuleComponent>(TEXT("SwordCollision"));
-	SwordCollision->SetupAttachment(SwordMesh);
-
-	SwordCollision->OnComponentBeginOverlap.AddDynamic(this, &AARPGWeapon::SwordBeginOverlap);
-
 }
 
 // Called when the game starts or when spawned
@@ -32,11 +25,13 @@ void AARPGWeapon::Tick(float DeltaTime)
 
 }
 
-
-void AARPGWeapon::SwordBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+AController* AARPGWeapon::GetOwnerController()
 {
-	if (OtherActor != GetOwner() && OtherActor->GetOwner() != GetOwner())
-	{
+	APawn* OwnerPawn = Cast<APawn>(GetOwner());
+	if (OwnerPawn == nullptr) 
+		return nullptr;
 
-	}
+	return OwnerPawn->GetController();
 }
+
+

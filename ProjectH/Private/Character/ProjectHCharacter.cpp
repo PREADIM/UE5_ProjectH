@@ -116,6 +116,7 @@ void AProjectHCharacter::BeginPlay()
 	if (QuestComponent)
 		QuestComponent->StartQuestLoad();
 
+
 	OwnerController = Cast<class AProjectH_PC>(GetController());
 	if (OwnerController)
 	{

@@ -17,22 +17,18 @@ public:
 
 protected:
 	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+	virtual void BeginPlay();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh")
-		class USkeletalMeshComponent* ShieldMesh;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh")
-		class UBoxComponent* ShieldCollision;
 
 public:
 	UPROPERTY()
 		class AActor* OwnerUnit;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh")
+		class UBoxComponent* ShieldCollision;
+
 public:	
 	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	virtual void Tick(float DeltaTime);
 
-	UFUNCTION()
-		void ShieldBeginOverlap(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 };

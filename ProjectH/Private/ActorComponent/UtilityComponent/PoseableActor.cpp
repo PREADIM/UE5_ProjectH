@@ -62,7 +62,7 @@ void APoseableActor::Tick(float DeltaTime)
 
 void APoseableActor::SetPoseMesh(USkeletalMeshComponent* Mesh)
 {
-	PoseableMesh->SetSkeletalMesh(Mesh->SkeletalMesh);
+	PoseableMesh->SetSkeletalMesh(Mesh->GetSkeletalMeshAsset());
 }
 
 

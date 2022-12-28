@@ -27,14 +27,14 @@ EBTNodeResult::Type UBTTask_ARPGMoving::ExecuteTask(UBehaviorTreeComponent& Owne
 
 
 	uint8 MoveMode = OwnerComp.GetBlackboardComponent()->GetValueAsEnum(TEXT("MoveMode"));
-	uint8 Temp;
+	uint8 Temp = 0U;
 	switch ((EEnermyMoveMode)MoveMode)
 	{
 	case EEnermyMoveMode::None:
-		Temp = (uint8)EEnermyMoveMode::ForwardMoving;
+		/*Temp = (uint8)EEnermyMoveMode::ForwardMoving;
 		OwnerPawn->SetEnermyMoveMode((EEnermyMoveMode)Temp);
 		_DEBUG("None");
-		break;
+		break;*/
 	case EEnermyMoveMode::LeftMoving:
 	case EEnermyMoveMode::RightMoving:
 	case EEnermyMoveMode::BackMoving:
@@ -53,18 +53,24 @@ EBTNodeResult::Type UBTTask_ARPGMoving::ExecuteTask(UBehaviorTreeComponent& Owne
 
 EEnermyMoveMode UBTTask_ARPGMoving::RandomMoving()
 {
-	switch (FMath::RandRange(1, 4))
+	switch (FMath::RandRange(0, 7))
 	{
+	case 0:
+		_DEBUG("N");
+		return EEnermyMoveMode::None;
 	case 1:
+	case 2:
 		_DEBUG("L");
 		return EEnermyMoveMode::LeftMoving;
-	case 2:
+	case 3:
+	case 4:
 		_DEBUG("R");
 		return EEnermyMoveMode::RightMoving;
-	case 3:
+	case 5:
+	case 6:
 		_DEBUG("F");
 		return EEnermyMoveMode::ForwardMoving;
-	case 4:
+	case 7:
 		_DEBUG("B");
 		return EEnermyMoveMode::BackMoving;
 	}

@@ -134,14 +134,21 @@ void AARPGUnit::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 void AARPGUnit::Forward(float Value)
 {
 	//AddMovementInput(FRotationMatrix(GetControlRotation()).GetScaledAxis(EAxis::X), Value);
-	AddMovementInput(GetActorForwardVector(), Value);
-
+	//AddMovementInput(GetActorForwardVector(), Value);
+	FVector Direction = FRotationMatrix(GetControlRotation()).GetScaledAxis(EAxis::X);
+	Direction.Z = 0.f;
+	Direction.Normalize();
+	AddMovementInput(Direction, Value);
 }
 
 void AARPGUnit::MoveRight(float Value)
 {
 	//AddMovementInput(FRotationMatrix(GetControlRotation()).GetScaledAxis(EAxis::Y), Value);
-	AddMovementInput(GetActorRightVector(), Value);
+	//AddMovementInput(GetActorRightVector(), Value);
+	FVector Direction = FRotationMatrix(GetControlRotation()).GetScaledAxis(EAxis::Y);
+	Direction.Z = 0.f;
+	Direction.Normalize();
+	AddMovementInput(Direction, Value);
 }
 
 void AARPGUnit::LookUp(float AxisValue)
@@ -293,6 +300,9 @@ void AARPGUnit::LockOnSetPosition(FVector TargetPos)
 
 float AARPGUnit::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
+	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+
 	return 0.0f;
 }
 

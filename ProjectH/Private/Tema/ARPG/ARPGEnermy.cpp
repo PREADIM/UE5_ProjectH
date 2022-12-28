@@ -5,12 +5,15 @@
 #include "Tema/ARPG/AI/ARPG_EnermyAnimInstance.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Tema/ARPG/ARPGUnit.h"
+#include "Tema/ARPG/ARPGAttackComponent.h"
 
 // Sets default values
 AARPGEnermy::AARPGEnermy()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	AttackComponent = CreateDefaultSubobject<class UARPGAttackComponent>(TEXT("AttackComponent"));
 
 	GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
 	Tags.Add(FName("Enermy"));
@@ -20,6 +23,11 @@ AARPGEnermy::AARPGEnermy()
 void AARPGEnermy::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if(AttackComponent)
+		AttackComponent->Init(BP_Attacks);
+
+	SetDynamicDelegateBind();
 }
 
 // Called every frame
@@ -29,8 +37,8 @@ void AARPGEnermy::Tick(float DeltaTime)
 
 	if (bMoving) // 이 변수는 Task에서 켜준다.
 	{
-		//_DEBUG("ParentTick");
-		EnermyMoving(); 
+		EnermyMoving(); // 각 에너미마다 다르므로 일단 해당 함수의 조립은 블프에서 제작.
+
 		// 적이 플레이어가 시야에 들어왔을때 어떻게 움직일 것인지.
 		// 다크소울이나 엘더스크롤 느낌으로 제작해야함. 원신이나 RPG류는 해당 방식이 어울리지 않음
 	}
@@ -65,26 +73,28 @@ void AARPGEnermy::PostInitializeComponents()
 FVector AARPGEnermy::GetMovingValue()
 {
 	FVector Direction;
-	GetCharacterMovement()->MaxWalkSpeed = BattleSpeed;
 
 	switch (EnermyMoveState)
 	{
 	case EMovingState::Forward:
+		GetCharacterMovement()->MaxWalkSpeed = BattleSpeed;
 		Direction = GetActorForwardVector();
 		break;
 	case EMovingState::Back:
-		GetCharacterMovement()->MaxWalkSpeed -= 60.f;
+		GetCharacterMovement()->MaxWalkSpeed = BattleSpeed - 50.f;
 		Direction = GetActorForwardVector() * -1.f;
 		break;
 	case EMovingState::Right:
+		GetCharacterMovement()->MaxWalkSpeed = BattleSpeed;
 		Direction = GetActorRightVector();
 		break;
 	case EMovingState::Left:
+		GetCharacterMovement()->MaxWalkSpeed = BattleSpeed;
 		Direction = GetActorRightVector() * -1.f;
 		break;
 	}
 
-	AddMovementInput(Direction, 0.8f);
+	AddMovementInput(Direction, 1.0f);
 
 	return Direction;
 }
@@ -123,11 +133,6 @@ void AARPGEnermy::SetBattleMode(bool bFlag)
 void AARPGEnermy::SetEnermyMoveMode(EEnermyMoveMode Mode)
 {
 	State = Mode;
-}
-
-void AARPGEnermy::CastMoving()
-{
-	OnMoving.Broadcast();
 }
 
 

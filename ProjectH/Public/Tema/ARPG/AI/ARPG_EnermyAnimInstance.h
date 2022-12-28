@@ -47,4 +47,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float Direction;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool bAccelerating;
+	
 };

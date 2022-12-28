@@ -18,11 +18,15 @@ void UARPG_EnermyAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	if (::IsValid(OwnerPawn))
 	{
 		Speed = OwnerPawn->GetVelocity().Size();
+		/*if(Speed <= 50.0f)
+			_DEBUG("%f", Speed);*/
+
 		Direction = SetDircection(OwnerPawn);
 
 		if (CurrentCharacter)
 		{
-			bInAir = CurrentCharacter->IsFalling();
+			bInAir = CurrentCharacter->GetCharacterMovement()->IsFalling();
+			bAccelerating = CurrentCharacter->GetCharacterMovement()->GetCurrentAcceleration().Length() > 0.0f;
 		}
 	}
 }
@@ -34,7 +38,7 @@ float UARPG_EnermyAnimInstance::SetDircection(APawn* Pawn)
 		FRotator Temp;
 		Temp = UKismetMathLibrary::NormalizedDeltaRotator(Pawn->GetActorRotation(), Pawn->GetVelocity().Rotation());
 
-		return Temp.Yaw * -1.f;
+		return Temp.Yaw;
 	}
 
 	return 0.0f;

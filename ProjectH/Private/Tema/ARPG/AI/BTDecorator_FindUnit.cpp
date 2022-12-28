@@ -34,21 +34,15 @@ bool UBTDecorator_FindUnit::CalculateRawConditionValue(UBehaviorTreeComponent& O
 	bResult = OwnerPawn->GetDistanceTo(Target) <= OwnerPawn->GetBattleDistance();
 	// 일촉즉발의 상황인가?
 
-	OwnerPawn->SetBlocking(bResult); // 방패 들기.
-	OwnerPawn->SetBattleMode(bResult); // 배틀모드
-	OwnerPawn->bMoving = bResult; // 무빙 실행★
-
 	if (bResult)
 	{
 		OwnerPawn->GetCharacterMovement()->MaxWalkSpeed = OwnerPawn->BattleSpeed;	
-		OwnerPawn->SetBattleDistance(OwnerPawn->BattleCollisionRadius);
 		//_DEBUG("Find true");
 	}
 	else
 	{
 		OwnerPawn->GetCharacterMovement()->MaxWalkSpeed = OwnerPawn->NormalSpeed;
 		OwnerPawn->SetEnermyMoveMode(EEnermyMoveMode::None);
-		OwnerPawn->SetBattleDistance(OwnerPawn->NormalDistance);
 		//_DEBUG("Find false");
 	}
 

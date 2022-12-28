@@ -3,7 +3,6 @@
 
 #include "Tema/JRPG/JRPGUnit.h"
 #include "Tema/JRPG/JRPGCamera.h"
-#include "Tema/JRPG/JRPGComponent.h"
 #include "Tema/JRPG/JRPGPlayerController.h"
 #include "Tema/JRPG/JRPGGameMode.h"
 #include "Tema/JRPG/JRPGAIController.h"
