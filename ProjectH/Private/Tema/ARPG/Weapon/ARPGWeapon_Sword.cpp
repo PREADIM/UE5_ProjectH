@@ -3,6 +3,7 @@
 
 #include "Tema/ARPG/Weapon/ARPGWeapon_Sword.h"
 #include "DrawDebugHelpers.h"
+#include "Tema/ARPG/ARPGUnitBase.h"
 
 AARPGWeapon_Sword::AARPGWeapon_Sword()
 {
@@ -12,7 +13,6 @@ AARPGWeapon_Sword::AARPGWeapon_Sword()
 	WeaponCollision->SetupAttachment(SwordMesh);
 
 	WeaponCollision->OnComponentBeginOverlap.AddDynamic(this, &AARPGWeapon_Sword::SwordBeginOverlap);
-	WeaponCollision->OnComponentEndOverlap.AddDynamic(this, &AARPGWeapon_Sword::SwordEndOverlap);
 	ARPGUnitChannel = ECollisionChannel::ECC_GameTraceChannel12;
 	ARPGShieldChannel = ECollisionChannel::ECC_GameTraceChannel11;
 
@@ -47,19 +47,20 @@ void AARPGWeapon_Sword::AttackEnd()
 
 void AARPGWeapon_Sword::SwordBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (HitEndActor.Num() > 0)
+	if (!HitEndActor.IsEmpty())
 	{
 		for (auto Hit : HitEndActor)
 		{
 			if (OtherActor == Hit)
 			{
+				_DEBUG("Return");
 				return; 
 				// 이미 닿은 액터라 데미지 중첩 방지.
 			}
 		}
 	}
 
-	if (OtherActor != GetOwner() && OtherActor->GetOwner() != GetOwner())
+	if (OtherActor != OwnerUnit && OtherActor->GetOwner() != OwnerUnit)
 	{
 		TArray<AActor*> OutActors;
 		
@@ -67,36 +68,35 @@ void AARPGWeapon_Sword::SwordBeginOverlap(UPrimitiveComponent* OverlappedComp, A
 		DrawDebugSphere(GetWorld(), GetActorLocation(), SphereRadius, 20, bOverlap ? FColor::Green : FColor::Red, false, 4.0f);
 		if (bOverlap)
 		{
-
 		}
-
 
 		if (OtherComp->GetCollisionObjectType() == ARPGUnitChannel)
 		{
-			FDamageEvent DamageEvent;
-			OtherActor->TakeDamage(TotalDamage, DamageEvent, GetOwnerController(), this);
-			_DEBUG("Unit Overlap");
+			// 공통 분모
+			AARPGUnitBase* Unit = Cast<AARPGUnitBase>(OtherActor);
+			if (Unit)
+			{
+				if (Unit->bBlocking != true)
+				{
+					if (OwnerUnit)
+					{
+						FDamageEvent DamageEvent;
+						TotalDamage = WeaponDamage + OwnerUnit->UnitState.ATK;
+						OtherActor->TakeDamage(TotalDamage, DamageEvent, GetOwnerController(), this);
+					}
+				}
+
+				HitEndActor.AddUnique(OtherActor);
+				_DEBUG("Overlap Enermy Actor : %s", *OtherActor->GetName());
+				return;
+			}
 		}
 		else if(OtherComp->GetCollisionObjectType() == ARPGShieldChannel)
 		{
+			HitEndActor.AddUnique(OtherActor);
 			_DEBUG("Shield Overlap");
 		}
-
 	}
-	else
-	{
-		_DEBUG("Not Overlap");
-	}
-
-
 }
 
-void AARPGWeapon_Sword::SwordEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-	if (OtherActor != GetOwner() && OtherActor->GetOwner() != GetOwner())
-	{
-		HitEndActor.AddUnique(OtherActor);
-	}
-
-}
 

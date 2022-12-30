@@ -3,11 +3,11 @@
 #pragma once
 
 #include "ProjectH.h"
-#include "GameFramework/Character.h"
+#include "Tema/ARPG/ARPGUnitBase.h"
 #include "ARPGUnit.generated.h"
 
 UCLASS()
-class PROJECTH_API AARPGUnit : public ACharacter
+class PROJECTH_API AARPGUnit : public AARPGUnitBase
 {
 	GENERATED_BODY()
 
@@ -23,6 +23,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	virtual void PostInitializeComponents() override;;
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
@@ -43,16 +44,25 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		class AARPGPlayerController* OwnerController;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		class UARPG_UnitAnimInstance* FPSMeshAnimInstance;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TSubclassOf<class AARPGWeapon> BP_Sword;
 	UPROPERTY(BlueprintReadWrite)
-		class AARPGWeapon* Sword;
+		class AARPGWeapon* Weapon;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FName WeaponSocketName;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TSubclassOf<class AARPGShield> BP_Shield;
 	UPROPERTY(BlueprintReadWrite)
 		class AARPGShield* Shield;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FName ShieldSocketName;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FName IdleSocketName;
 
 	//---------------------------------------------------------------------
 
@@ -61,12 +71,6 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		bool bSprint;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		bool bBlocking;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		bool bAttacking;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		bool bAttackLeft;
@@ -82,9 +86,6 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		bool bShieldHit;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		bool bParring;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		float AttackCharge;
@@ -124,6 +125,8 @@ public:
 	UPROPERTY()
 		TArray<AActor*> IgnoreActor;
 
+	//--------------------------------------------------
+
 public:
 
 	UFUNCTION()
@@ -154,10 +157,19 @@ public:
 		void Parring();
 
 
-	UFUNCTION(BlueprintImplementableEvent)
-		void ParringMontage(int32 ParringState);
-	// 1 앞 2 오 3 왼 4 뒤
+	//------------------------------------------
 
+	UFUNCTION(BlueprintCallable)
+		void SetWeaponCollision(bool bFlag);
+
+	UFUNCTION(BlueprintCallable)
+		void AttackEnd();
+	UFUNCTION(BlueprintCallable)
+		void WeaponOverlapEnd();
+
+	void Death();
+	void TakeHit(bool bFlag);
+	//공격 당했는지 판단 하는 함수.
 
 public:
 	void LockOn();

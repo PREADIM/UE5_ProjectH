@@ -18,8 +18,6 @@ void UARPG_EnermyAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	if (::IsValid(OwnerPawn))
 	{
 		Speed = OwnerPawn->GetVelocity().Size();
-		/*if(Speed <= 50.0f)
-			_DEBUG("%f", Speed);*/
 
 		Direction = SetDircection(OwnerPawn);
 

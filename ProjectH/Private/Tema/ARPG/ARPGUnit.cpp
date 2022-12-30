@@ -8,6 +8,7 @@
 #include "Tema/ARPG/ARPGShield.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/KismetmathLibrary.h"
+#include "Tema/ARPG/ARPG_UnitAnimInstance.h"
 
 // Sets default values
 AARPGUnit::AARPGUnit()
@@ -50,17 +51,17 @@ void AARPGUnit::BeginPlay()
 
 	if (BP_Sword && BP_Shield)
 	{
-		Sword = GetWorld()->SpawnActor<AARPGWeapon>(BP_Sword);
+		Weapon = GetWorld()->SpawnActor<AARPGWeapon>(BP_Sword);
 		Shield = GetWorld()->SpawnActor<AARPGShield>(BP_Shield);
 		
-		if (Sword && Shield)
+		if (Weapon && Shield)
 		{
-			Sword->OwnerUnit = this;
+			Weapon->OwnerUnit = this;
 			Shield->OwnerUnit = this;
-			Sword->SetOwner(this);
+			Weapon->SetOwner(this);
 			Shield->SetOwner(this);
 
-			Sword->AttachToComponent(FPSMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("IdleSword"));
+			Weapon->AttachToComponent(FPSMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("IdleSword"));
 			Shield->AttachToComponent(FPSMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("ShieldSocket"));
 		}
 	}
@@ -101,6 +102,13 @@ void AARPGUnit::Tick(float DeltaTime)
 			}
 		}
 	}
+}
+
+void AARPGUnit::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	FPSMeshAnimInstance = Cast<UARPG_UnitAnimInstance>(FPSMesh->GetAnimInstance());
 }
 
 // Called to bind functionality to input
@@ -242,6 +250,8 @@ void AARPGUnit::Sheathed()
 	{
 		WalkSpeed = BattleSpeed;
 	}
+
+	FPSMeshAnimInstance->WeaponOnOff(bNormalMode);
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 }
 
@@ -250,6 +260,45 @@ void AARPGUnit::Parring()
 	if(bBlocking && !bParring)
 		bParring = true;
 
+}
+
+void AARPGUnit::Death()
+{
+	FPSMeshAnimInstance->Death();
+}
+
+void AARPGUnit::TakeHit(bool bFlag)
+{
+	if (FPSMeshAnimInstance)
+	{
+		FPSMeshAnimInstance->Hit();
+	}	
+}
+
+
+void AARPGUnit::SetWeaponCollision(bool bFlag)
+{
+	if (bFlag)
+	{
+		Weapon->WeaponCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+		//_DEBUG("Collision On");
+	}
+	else
+	{
+		Weapon->WeaponCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		//_DEBUG("Collision Off");
+	}
+}
+
+void AARPGUnit::AttackEnd()
+{
+	bAttacking = false;
+	WeaponOverlapEnd();
+}
+
+void AARPGUnit::WeaponOverlapEnd()
+{
+	Weapon->AttackEnd();
 }
 
 // Àû ¶ô¿Â
@@ -301,9 +350,22 @@ void AARPGUnit::LockOnSetPosition(FVector TargetPos)
 float AARPGUnit::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	_DEBUG("TakeDamage");
+
+	float CurrentHP = UnitState.HP;
+	if (CurrentHP <= DamageAmount)
+	{
+		CurrentHP = 0.f;
+
+	}
+
+	CurrentHP -= DamageAmount;
 
 
-	return 0.0f;
+	TakeHit(true);
+	UnitState.SetTakeDamageHP(CurrentHP);
+
+	return DamageAmount;
 }
 
 

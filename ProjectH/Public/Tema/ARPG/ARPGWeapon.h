@@ -21,7 +21,7 @@ protected:
 
 public:
 	UPROPERTY()
-		class AActor* OwnerUnit;
+		class AARPGUnitBase* OwnerUnit;
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Collision")

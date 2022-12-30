@@ -34,7 +34,7 @@ void UBTService_ARPGCoolTime::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 	{
 		AttackCoolTime = OwnerPawn->GetAttackCoolTime();
 		CoolTime += DeltaSeconds;
-		_DEBUG("%f", CoolTime);
+		//_DEBUG("%f", CoolTime);
 		if (AttackCoolTime <= CoolTime)
 		{
 			bCoolTime = false;

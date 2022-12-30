@@ -58,6 +58,35 @@ void AARPGEnermy_Mini::PostInitializeComponents()
 	Super::PostInitializeComponents();
 }
 
+float AARPGEnermy_Mini::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	_DEBUG("Enermy TakeDamage");
+
+	float CurrentHP = UnitState.HP;
+	if (CurrentHP <= DamageAmount)
+	{
+		CurrentHP = 0.f;
+	}
+	else
+	{
+		CurrentHP -= DamageAmount;
+	}
+
+	TakeHit(true);
+	UnitState.SetTakeDamageHP(CurrentHP);
+
+	return DamageAmount;
+}
+
+void AARPGEnermy_Mini::TakeHit(bool bFlag)
+{
+	if (bHitting)
+	{
+		PlayAnimMontage(HitMontage);
+	}
+}
+
 
 // 이게 실행되었다는 것은 결국 BT에서 AttackDistance로 검사해서 문제없다는 뜻이다.
 void AARPGEnermy_Mini::Attack(int32 index)
@@ -87,12 +116,12 @@ void AARPGEnermy_Mini::SetWeaponCollision(bool bFlag)
 	if (bFlag)
 	{
 		Weapon->WeaponCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-		_DEBUG("Collision On");
+		//_DEBUG("Collision On");
 	}
 	else
 	{
 		Weapon->WeaponCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		_DEBUG("Collision Off");
+		//_DEBUG("Collision Off");
 	}
 }
 
@@ -119,6 +148,7 @@ void AARPGEnermy_Mini::AttackEnd()
 	bAttacking = false;
 	OnAttack.Broadcast();
 	WeaponOverlapEnd();
+	OnAttack.Clear();
 }
 
 void AARPGEnermy_Mini::WeaponOverlapEnd()

@@ -26,7 +26,7 @@ void UARPGAttackComponent::Init(TArray<TSubclassOf<UAttackClass>> BP_Attacks)
 
 	AttackCnt = 0;
 	Attacks.Empty();
-	MaxAttackDistance = 0.0f;
+	MaxAttackDistance = -100.0f;
 
 	for (TSubclassOf<UAttackClass> BP_Attack : BP_Attacks)
 	{

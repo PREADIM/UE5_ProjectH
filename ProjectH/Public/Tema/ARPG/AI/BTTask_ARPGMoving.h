@@ -4,6 +4,7 @@
 
 #include "ProjectH.h"
 #include "BehaviorTree/BTTaskNode.h"
+#include "Tema/ARPG/ARPGEnermy.h"
 #include "BTTask_ARPGMoving.generated.h"
 
 /**
@@ -17,7 +18,6 @@ class PROJECTH_API UBTTask_ARPGMoving : public UBTTaskNode
 public:
 	UBTTask_ARPGMoving();
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
-	//virtual void TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 public:
 	EEnermyMoveMode RandomMoving();
 

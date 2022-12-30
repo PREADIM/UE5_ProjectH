@@ -3,7 +3,6 @@
 
 
 #include "Tema/ARPG/AI/BTTask_ARPGMoving.h"
-#include "Tema/ARPG/ARPGEnermy.h"
 #include "Tema/JRPG/JRPGAIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
@@ -16,8 +15,6 @@ EBTNodeResult::Type UBTTask_ARPGMoving::ExecuteTask(UBehaviorTreeComponent& Owne
 {
 	Super::ExecuteTask(OwnerComp, NodeMemory);
 	
-
-
 	AARPGEnermy* OwnerPawn = Cast<AARPGEnermy>(OwnerComp.GetAIOwner()->GetPawn());
 	if (!OwnerPawn)
 	{
@@ -31,17 +28,17 @@ EBTNodeResult::Type UBTTask_ARPGMoving::ExecuteTask(UBehaviorTreeComponent& Owne
 	switch ((EEnermyMoveMode)MoveMode)
 	{
 	case EEnermyMoveMode::None:
-		/*Temp = (uint8)EEnermyMoveMode::ForwardMoving;
+		Temp = (uint8)EEnermyMoveMode::ForwardMoving;
 		OwnerPawn->SetEnermyMoveMode((EEnermyMoveMode)Temp);
-		_DEBUG("None");
-		break;*/
+		//_DEBUG("None");
+		break;
 	case EEnermyMoveMode::LeftMoving:
 	case EEnermyMoveMode::RightMoving:
 	case EEnermyMoveMode::BackMoving:
 	case EEnermyMoveMode::ForwardMoving:
 		Temp = (uint8)RandomMoving();
 		OwnerPawn->SetEnermyMoveMode((EEnermyMoveMode)Temp);
-		_DEBUG("Random");
+		//_DEBUG("Random");
 		break;
 	}
 
@@ -56,22 +53,22 @@ EEnermyMoveMode UBTTask_ARPGMoving::RandomMoving()
 	switch (FMath::RandRange(0, 7))
 	{
 	case 0:
-		_DEBUG("N");
+		//_DEBUG("N");
 		return EEnermyMoveMode::None;
 	case 1:
 	case 2:
-		_DEBUG("L");
+		//_DEBUG("L");
 		return EEnermyMoveMode::LeftMoving;
 	case 3:
 	case 4:
-		_DEBUG("R");
+		//_DEBUG("R");
 		return EEnermyMoveMode::RightMoving;
 	case 5:
 	case 6:
-		_DEBUG("F");
+		//_DEBUG("F");
 		return EEnermyMoveMode::ForwardMoving;
 	case 7:
-		_DEBUG("B");
+		//_DEBUG("B");
 		return EEnermyMoveMode::BackMoving;
 	}
 

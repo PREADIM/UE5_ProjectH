@@ -30,11 +30,15 @@ public:
 
 	virtual void PostInitializeComponents() override;
 
+	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+
 public:
 	virtual void Attack(int32 index) override; // 공격 함수
 	virtual void Garud() override;
 	virtual void Parring() override;
 
+	void TakeHit(bool bFlag);
+	//공격 당했는지 판단 하는 함수.
 	//---------------------------------------
 
 	UFUNCTION(BlueprintCallable)

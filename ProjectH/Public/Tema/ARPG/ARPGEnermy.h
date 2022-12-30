@@ -3,7 +3,7 @@
 #pragma once
 
 #include "ProjectH.h"
-#include "GameFramework/Character.h"
+#include "Tema/ARPG/ARPGUnitBase.h"
 #include "ARPGEnermy.generated.h"
 
 
@@ -36,7 +36,7 @@ enum class EEnermyMoveMode : uint8
 // 적이 어떻게 움직일건지 해당 Enum 값으로 MovingState를 결정한다.
 
 UCLASS()
-class PROJECTH_API AARPGEnermy : public ACharacter
+class PROJECTH_API AARPGEnermy : public AARPGUnitBase
 {
 	GENERATED_BODY()
 
@@ -58,6 +58,7 @@ public:
 
 	class UARPGAttackComponent* GetAttackComponent() { return AttackComponent; }
 
+	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AttackComponent", meta = (AllowPrivateAccess = "true"))
 		class UARPGAttackComponent* AttackComponent;
@@ -67,16 +68,10 @@ public:
 	FOnAttack OnAttack;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		bool bBlocking;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		bool bAttacking;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		bool bParring;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		bool bBattleMode;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		bool bHitting = false;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		bool bMoving; // 양 옆으로 움직이거나 백스텝을 함.
@@ -166,6 +161,7 @@ public:
 	virtual void Attack(int32 index) {} // 공격 함수
 	virtual void Garud() {} // 막는 함수
 	virtual void Parring() {} // 패링 함수
+
 
 	//-------------------------------------
 

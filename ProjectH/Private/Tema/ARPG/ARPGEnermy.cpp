@@ -69,6 +69,15 @@ void AARPGEnermy::PostInitializeComponents()
 	}
 }
 
+float AARPGEnermy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	
+	return DamageAmount;
+}
+
+
+
 // 어느 방향의 Value인지 나타낸다.
 FVector AARPGEnermy::GetMovingValue()
 {
