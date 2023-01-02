@@ -218,8 +218,10 @@ void AARPGUnit::RMBReleased()
 {
 	bBlocking = false;
 	bParring = false;
-
+	//bHitting = false;
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+	SetShieldCollision(false);
+	BlockEnd();
 }
 
 void AARPGUnit::Sprint()
@@ -267,12 +269,16 @@ void AARPGUnit::Death()
 	FPSMeshAnimInstance->Death();
 }
 
-void AARPGUnit::TakeHit(bool bFlag)
+void AARPGUnit::Hit(bool bFlag)
 {
 	if (FPSMeshAnimInstance)
 	{
 		FPSMeshAnimInstance->Hit();
 	}	
+}
+
+void AARPGUnit::ZeroAP()
+{
 }
 
 
@@ -290,15 +296,39 @@ void AARPGUnit::SetWeaponCollision(bool bFlag)
 	}
 }
 
+void AARPGUnit::SetShieldCollision(bool bFlag)
+{
+	if (bFlag)
+	{
+		Shield->ShieldCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+		//_DEBUG("Collision On");
+	}
+	else
+	{
+		Shield->ShieldCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		//_DEBUG("Collision Off");
+	}
+}
+
 void AARPGUnit::AttackEnd()
 {
 	bAttacking = false;
+	SetWeaponCollision(false);
 	WeaponOverlapEnd();
 }
 
 void AARPGUnit::WeaponOverlapEnd()
 {
 	Weapon->AttackEnd();
+}
+
+void AARPGUnit::BlockEnd()
+{
+	//bBlocking = false;
+	// 어처피 RMBRealese에서 false됨
+
+	Shield->BlockEnd();
+	bHitting = false;
 }
 
 // 적 락온
@@ -350,19 +380,21 @@ void AARPGUnit::LockOnSetPosition(FVector TargetPos)
 float AARPGUnit::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-	_DEBUG("TakeDamage");
+
+	AttackEnd();
+	GetWorld()->GetFirstPlayerController()->ClientPlayCameraShake(BP_CS, 1.3f);
 
 	float CurrentHP = UnitState.HP;
 	if (CurrentHP <= DamageAmount)
 	{
 		CurrentHP = 0.f;
-
+		Death();
 	}
 
 	CurrentHP -= DamageAmount;
 
 
-	TakeHit(true);
+	Hit(true);
 	UnitState.SetTakeDamageHP(CurrentHP);
 
 	return DamageAmount;

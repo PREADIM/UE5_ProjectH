@@ -23,9 +23,13 @@ public:
 	UPROPERTY()
 		class AARPGUnitBase* OwnerUnit;
 
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Collision")
 		class UCapsuleComponent* WeaponCollision;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float WeaponAP_DMG = 0.0f;
+	// 무기마다 AP를 까는 수치가 다를 수도 있으므로 이것으로 계산
+	// 공격마다의 AP를 까는 수치를 더 한다.
 
 
 public:	

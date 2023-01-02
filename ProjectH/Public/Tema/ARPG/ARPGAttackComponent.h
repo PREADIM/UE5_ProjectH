@@ -40,7 +40,7 @@ public:
 		TArray<class UAttackClass*> Attacks;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		class AARPGEnermy* OwnerEnermy;
+		class AARPGUnitBase* OwnerUnit;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		int32 AttackCnt; // 어택이 등록된 수

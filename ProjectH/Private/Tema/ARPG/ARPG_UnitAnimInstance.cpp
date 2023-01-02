@@ -29,7 +29,7 @@ void UARPG_UnitAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		bIsSprint = OwnerUnit->bSprint;
 		bIsParring = OwnerUnit->bParring;
 		bIsBlocking = OwnerUnit->bBlocking;
-		bShieldHit = OwnerUnit->bShieldHit;
+		bHitting = OwnerUnit->bHitting;
 
 		bIsAttacking = OwnerUnit->bAttacking;
 		AttackingLeft = OwnerUnit->bAttackLeft;
@@ -103,6 +103,22 @@ void UARPG_UnitAnimInstance::AnimNotify_Attack_End()
 	{
 		OwnerUnit->SetWeaponCollision(false);
 		OwnerUnit->AttackEnd();
+	}
+}
+
+void UARPG_UnitAnimInstance::AnimNotify_BlockStart()
+{
+	if (OwnerUnit)
+	{
+		OwnerUnit->SetShieldCollision(true);
+	}
+}
+
+void UARPG_UnitAnimInstance::AnimNotify_BlockHitEnd()
+{
+	if (OwnerUnit)
+	{
+		OwnerUnit->BlockEnd();
 	}
 }
 

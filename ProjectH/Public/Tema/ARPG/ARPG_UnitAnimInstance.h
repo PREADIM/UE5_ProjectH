@@ -36,6 +36,10 @@ public:
 	UFUNCTION()
 		void AnimNotify_Attack_End();
 	UFUNCTION()
+		void AnimNotify_BlockStart();
+	UFUNCTION()
+		void AnimNotify_BlockHitEnd();
+	UFUNCTION()
 		void AnimNotify_ParringEnd();
 
 	//----------------------------------
@@ -93,7 +97,7 @@ public:
 		bool AttackingBackward;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		bool bShieldHit;
+		bool bHitting;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		bool bIsParring;

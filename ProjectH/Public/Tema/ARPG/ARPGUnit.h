@@ -19,14 +19,17 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+public:
+	/*----------------------------
+		virtual function
+	----------------------------*/
 
+	virtual void Tick(float DeltaTime) override;
 	virtual void PostInitializeComponents() override;;
-	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	virtual void ZeroAP() override;
+	// AP가 제로가 되면 실행될 함수.
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
@@ -46,6 +49,10 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		class UARPG_UnitAnimInstance* FPSMeshAnimInstance;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<class UCameraShakeBase> BP_CS;
+	// 카메라 쉐이크
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TSubclassOf<class AARPGWeapon> BP_Sword;
@@ -83,9 +90,6 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		bool bAttackBackward;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		bool bShieldHit;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		float AttackCharge;
@@ -161,15 +165,22 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		void SetWeaponCollision(bool bFlag);
+	UFUNCTION(BlueprintCallable)
+		void SetShieldCollision(bool bFlag);
 
 	UFUNCTION(BlueprintCallable)
 		void AttackEnd();
 	UFUNCTION(BlueprintCallable)
 		void WeaponOverlapEnd();
+	UFUNCTION(BlueprintCallable)
+		void BlockEnd();
+
+	//------------------------------------------
 
 	void Death();
-	void TakeHit(bool bFlag);
+	void Hit(bool bFlag);
 	//공격 당했는지 판단 하는 함수.
+
 
 public:
 	void LockOn();

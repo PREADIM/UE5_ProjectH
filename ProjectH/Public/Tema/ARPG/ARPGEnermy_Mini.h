@@ -34,11 +34,14 @@ public:
 
 public:
 	virtual void Attack(int32 index) override; // 공격 함수
-	virtual void Garud() override;
-	virtual void Parring() override;
-
-	void TakeHit(bool bFlag);
+	virtual void Garud(bool bFlag) override;
+	virtual void Parring(bool bFlag) override;
+	virtual void Death() override; 	// 죽음 함수
+	virtual void Hit(bool bFlag) override;
 	//공격 당했는지 판단 하는 함수.
+	
+	virtual void ZeroAP() override;
+
 	//---------------------------------------
 
 	UFUNCTION(BlueprintCallable)
@@ -62,14 +65,6 @@ public:
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UAnimMontage* GuardMontage;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UAnimMontage* HitMontage;
-
-	//-------------------------------------------------
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TSubclassOf<class AARPGWeapon> BP_Weapon;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		class AARPGWeapon* Weapon;
@@ -84,4 +79,5 @@ public:
 		FName ShieldSockName;
 
 	//--------------------------------------------------
+
 };

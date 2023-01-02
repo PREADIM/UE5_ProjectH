@@ -17,10 +17,10 @@ void UARPGAttackComponent::BeginPlay()
 
 void UARPGAttackComponent::Init(TArray<TSubclassOf<UAttackClass>> BP_Attacks)
 {
-	OwnerEnermy = Cast<AARPGEnermy>(GetOwner());
-	if (OwnerEnermy == nullptr)
+	OwnerUnit = Cast<AARPGUnitBase>(GetOwner());
+	if (OwnerUnit == nullptr)
 	{
-		_DEBUG("AttackComp Not OwnerEnermy");
+		_DEBUG("AttackComp Not OwnerUnit");
 		return;
 	}
 
@@ -34,6 +34,7 @@ void UARPGAttackComponent::Init(TArray<TSubclassOf<UAttackClass>> BP_Attacks)
 		if (temp)
 		{
 			temp->Init();
+			temp->OwnerUnit = OwnerUnit;
 			Attacks.Add(temp);	
 			_DEBUG("Attack distance : %f", Attacks[AttackCnt]->AttackStruct.AttackDistance);
 			AttackCnt++;
@@ -49,9 +50,9 @@ void UARPGAttackComponent::SetAttackDelegate(int32 index, FName FuncName)
 {
 	if (Attacks.IsValidIndex(index))
 	{
-		if (OwnerEnermy)
+		if (OwnerUnit)
 		{
-			Attacks[index]->CppAttackFunc.AddUFunction(OwnerEnermy, FuncName);
+			Attacks[index]->CppAttackFunc.AddUFunction(OwnerUnit, FuncName);
 			_DEBUG("Cpp AddUFunction %s", *FuncName.ToString());
 		}
 	}

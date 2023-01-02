@@ -49,29 +49,29 @@ protected:
 	virtual void BeginPlay() override;
 
 public:	
-	// Called every frame
+	/*----------------------------
+	
+			virtual function
+	
+	----------------------------*/
+
+
 	virtual void Tick(float DeltaTime);
-	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
 	virtual void PostInitializeComponents();
-
-	class UARPGAttackComponent* GetAttackComponent() { return AttackComponent; }
-
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
-protected:
+	virtual void ZeroAP() {}
+
+public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AttackComponent", meta = (AllowPrivateAccess = "true"))
 		class UARPGAttackComponent* AttackComponent;
-
+	class UARPGAttackComponent* GetAttackComponent() { return AttackComponent; }
 
 public:
 	FOnAttack OnAttack;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		bool bBattleMode;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		bool bHitting = false;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		bool bMoving; // 양 옆으로 움직이거나 백스텝을 함.
@@ -159,8 +159,10 @@ public:
 
 public:
 	virtual void Attack(int32 index) {} // 공격 함수
-	virtual void Garud() {} // 막는 함수
-	virtual void Parring() {} // 패링 함수
+	virtual void Garud(bool bFlag) {} // 막는 함수
+	virtual void Parring(bool bFlag) {} // 패링 함수
+	virtual void Death() {} // 죽음 함수
+	virtual void Hit(bool bFlag) {}
 
 
 	//-------------------------------------

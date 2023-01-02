@@ -26,6 +26,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UAnimMontage* AttackMontage;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		class AARPGUnitBase* OwnerUnit;
+
 	UPROPERTY(BlueprintAssignable, VisibleAnywhere, BlueprintReadWrite)
 		FOnAttackFunc AttackFunc;
 	//블루 프린트용 델리게이트
@@ -40,4 +43,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		void SetCanThisAttack(bool bFlag);
+
+	UFUNCTION(BlueprintImplementableEvent)
+		void BindFunction();
+	// 해당 클래스마다 실행해야할 함수가 있다면 이걸로 호출
 };

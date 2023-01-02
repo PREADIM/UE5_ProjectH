@@ -4,9 +4,11 @@
 #include "Tema/ARPG/Weapon/ARPGWeapon_Sword.h"
 #include "DrawDebugHelpers.h"
 #include "Tema/ARPG/ARPGUnitBase.h"
+#include "Tema/ARPG/ARPGShield.h"
 
 AARPGWeapon_Sword::AARPGWeapon_Sword()
 {
+	PrimaryActorTick.bCanEverTick = false;
 	SwordMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SwordMesh"));
 
 	WeaponCollision = CreateDefaultSubobject<UCapsuleComponent>(TEXT("SwordCollision"));
@@ -70,6 +72,7 @@ void AARPGWeapon_Sword::SwordBeginOverlap(UPrimitiveComponent* OverlappedComp, A
 		{
 		}
 
+
 		if (OtherComp->GetCollisionObjectType() == ARPGUnitChannel)
 		{
 			// 공통 분모
@@ -81,7 +84,7 @@ void AARPGWeapon_Sword::SwordBeginOverlap(UPrimitiveComponent* OverlappedComp, A
 					if (OwnerUnit)
 					{
 						FDamageEvent DamageEvent;
-						TotalDamage = WeaponDamage + OwnerUnit->UnitState.ATK;
+						TotalDamage = OwnerUnit->CalculDamage(WeaponDamage);
 						OtherActor->TakeDamage(TotalDamage, DamageEvent, GetOwnerController(), this);
 					}
 				}
@@ -91,8 +94,15 @@ void AARPGWeapon_Sword::SwordBeginOverlap(UPrimitiveComponent* OverlappedComp, A
 				return;
 			}
 		}
-		else if(OtherComp->GetCollisionObjectType() == ARPGShieldChannel)
+		else if (OtherComp->GetCollisionObjectType() == ARPGShieldChannel)
 		{
+			AARPGShield* Sheild = Cast<AARPGShield>(OtherActor);
+			if (Sheild)
+			{
+				float APDMG = OwnerUnit->CalculAPDamage(WeaponAP_DMG);
+				Sheild->ShieldHit(APDMG);
+			}
+
 			HitEndActor.AddUnique(OtherActor);
 			_DEBUG("Shield Overlap");
 		}

@@ -58,11 +58,7 @@ void AARPGEnermy::PostInitializeComponents()
 	if (GetMesh()) // 가끔 C++ 클래스를 상속받은 블프가 디테일창이 사라지면서 null값을 넣기때문.(버그)
 	{
 		EnermyAnimInstance = Cast<UARPG_EnermyAnimInstance>(GetMesh()->GetAnimInstance());
-		if (EnermyAnimInstance != nullptr)
-		{
-			EnermyAnimInstance->CurrentCharacter = this;
-		}
-		else
+		if (EnermyAnimInstance == nullptr)
 		{
 			_DEBUG("Not AI Has AnimInstance");
 		}
@@ -136,7 +132,6 @@ void AARPGEnermy::SetBattleMode(bool bFlag)
 		return;
 
 	bBattleMode = bFlag;
-	EnermyAnimInstance->bBattleMode = bFlag;
 }
 
 void AARPGEnermy::SetEnermyMoveMode(EEnermyMoveMode Mode)

@@ -21,11 +21,14 @@ protected:
 	virtual void BeginPlay();
 
 public:	
-	// Called every frame
+	/*----------------------------
+	
+			virtual function
+	
+	----------------------------*/
 	virtual void Tick(float DeltaTime);
-
-	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent);
+	virtual void ZeroAP() {}
 
 public:
 
@@ -33,6 +36,22 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FUnitState UnitState;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		float CurrentAttackFactor; // 현재 공격의 계수
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		float CurrentAP_DMG; // 추가 AP 데미지
+
+	//-------------------------------------------
+
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		bool bZeroAP;
+	// 이 변수는 방패나 스태미너를 다썻을때 true가 된다.
+
+
+	//-------------------------------------------
+	
 
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
@@ -43,7 +62,12 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		bool bParring;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		bool bHitting;
 	
 public:
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
+	float CalculDamage(float Damage);
+	float CalculAPDamage(float APDamage);
 };

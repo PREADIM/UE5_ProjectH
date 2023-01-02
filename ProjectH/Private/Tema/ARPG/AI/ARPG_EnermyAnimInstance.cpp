@@ -3,42 +3,59 @@
 
 #include "Tema/ARPG/AI/ARPG_EnermyAnimInstance.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "Tema/ARPG/ARPGEnermy.h"
+#include "Tema/ARPG/ARPGEnermy_Mini.h"
 
 UARPG_EnermyAnimInstance::UARPG_EnermyAnimInstance()
 {
 
 }
 
+void UARPG_EnermyAnimInstance::NativeBeginPlay()
+{
+	Super::NativeBeginPlay();
+	OwnerUnit = Cast<AARPGEnermy_Mini>(TryGetPawnOwner());
+}
+
 void UARPG_EnermyAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
 	Super::NativeUpdateAnimation(DeltaSeconds);
 
-	OwnerPawn = TryGetPawnOwner();
-	if (::IsValid(OwnerPawn))
+	if (::IsValid(OwnerUnit))
 	{
-		Speed = OwnerPawn->GetVelocity().Size();
+		Speed = OwnerUnit->GetVelocity().Size();
+		Direction = SetDircection();
 
-		Direction = SetDircection(OwnerPawn);
-
-		if (CurrentCharacter)
-		{
-			bInAir = CurrentCharacter->GetCharacterMovement()->IsFalling();
-			bAccelerating = CurrentCharacter->GetCharacterMovement()->GetCurrentAcceleration().Length() > 0.0f;
-		}
+		bBattleMode = OwnerUnit->bBattleMode;
+		bBlocking = OwnerUnit->bBlocking;
+		bParring = OwnerUnit->bParring;
+		bHitting = OwnerUnit->bHitting;
+		bAttacking = OwnerUnit->bAttacking;
+		bInAir = OwnerUnit->GetCharacterMovement()->IsFalling();
+		bAccelerating = OwnerUnit->GetCharacterMovement()->GetCurrentAcceleration().Length() > 0.0f;
 	}
 }
 
-float UARPG_EnermyAnimInstance::SetDircection(APawn* Pawn)
+void UARPG_EnermyAnimInstance::PlayAttackMontage(UAnimMontage* AttackMontage)
 {
-	if (::IsValid(Pawn))
-	{
-		FRotator Temp;
-		Temp = UKismetMathLibrary::NormalizedDeltaRotator(Pawn->GetActorRotation(), Pawn->GetVelocity().Rotation());
+	Montage_Play(AttackMontage);
+}
 
-		return Temp.Yaw;
-	}
+void UARPG_EnermyAnimInstance::PlayHitMontage()
+{
+	Montage_Play(HitMontage);
+}
 
-	return 0.0f;
+void UARPG_EnermyAnimInstance::PlayDeadMontage()
+{
+	Montage_Play(DeadMontage);
+}
+
+float UARPG_EnermyAnimInstance::SetDircection()
+{
+	
+	FRotator Temp;
+	Temp = UKismetMathLibrary::NormalizedDeltaRotator(OwnerUnit->GetActorRotation(), OwnerUnit->GetVelocity().Rotation());
+
+	return Temp.Yaw;
 }
 

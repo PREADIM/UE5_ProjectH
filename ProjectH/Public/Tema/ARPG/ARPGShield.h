@@ -22,7 +22,7 @@ protected:
 
 public:
 	UPROPERTY()
-		class AActor* OwnerUnit;
+		class AARPGUnitBase* OwnerUnit;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh")
 		class UBoxComponent* ShieldCollision;
@@ -30,5 +30,8 @@ public:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime);
+	virtual void BlockEnd() {}
+	virtual void ShieldHit(float APDamage) {}
+	// 쉴드에 데미지를 가했을때 오너의 AP를 깎자
 
 };

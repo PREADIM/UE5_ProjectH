@@ -2,9 +2,11 @@
 
 
 #include "Tema/ARPG/Shield/ARPGShield_Normal.h"
+#include "Tema/ARPG/ARPGUnitBase.h"
 
 AARPGShield_Normal::AARPGShield_Normal()
 {
+	PrimaryActorTick.bCanEverTick = false;
 
 	ShieldMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("ShieldMesh"));
 
@@ -12,7 +14,6 @@ AARPGShield_Normal::AARPGShield_Normal()
 	ShieldCollision->SetupAttachment(ShieldMesh);
 
 	ShieldCollision->OnComponentBeginOverlap.AddDynamic(this, &AARPGShield_Normal::ShieldBeginOverlap);
-	ShieldCollision->OnComponentEndOverlap.AddDynamic(this, &AARPGShield_Normal::ShieldEndOverlap);
 
 	ObjectType.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel10));
 	IgnoreActor.Add(GetOwner());
@@ -34,17 +35,34 @@ void AARPGShield_Normal::BeginPlay()
 
 }
 
+void AARPGShield_Normal::BlockEnd()
+{
+	SetHitEndActor();
+}
 
 
 void AARPGShield_Normal::ShieldBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+
+	if (!HitEndActor.IsEmpty())
+	{
+		for (auto Hit : HitEndActor)
+		{
+			if (OtherActor == Hit)
+			{
+				_DEBUG("Shield Return");
+				return;
+				// 이미 닿은 액터라 데미지 중첩 방지.
+			}
+		}
+	}
+
 	if (OtherActor != GetOwner() && OtherActor->GetOwner() != GetOwner())
 	{
-
+		if (OwnerUnit)
+		{
+			OwnerUnit->bHitting = true;
+		}
 	}
 }
 
-void AARPGShield_Normal::ShieldEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-
-}

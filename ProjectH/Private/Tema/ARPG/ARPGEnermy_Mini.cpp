@@ -6,6 +6,8 @@
 #include "Tema/ARPG/ARPGAttackComponent.h"
 #include "Tema/ARPG/Weapon/ARPGWeapon_Sword.h"
 #include "Tema/ARPG/Shield/ARPGShield_Normal.h"
+#include "Tema/ARPG/AI/ARPG_EnermyAnimInstance.h"
+
 
 AARPGEnermy_Mini::AARPGEnermy_Mini()
 {
@@ -67,26 +69,30 @@ float AARPGEnermy_Mini::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 	if (CurrentHP <= DamageAmount)
 	{
 		CurrentHP = 0.f;
+		Death();
 	}
 	else
 	{
 		CurrentHP -= DamageAmount;
 	}
 
-	TakeHit(true);
+	Hit(true);
 	UnitState.SetTakeDamageHP(CurrentHP);
 
 	return DamageAmount;
 }
 
-void AARPGEnermy_Mini::TakeHit(bool bFlag)
+void AARPGEnermy_Mini::Hit(bool bFlag)
 {
-	if (bHitting)
-	{
-		PlayAnimMontage(HitMontage);
-	}
+	EnermyAnimInstance->PlayHitMontage();
+	bMoving = false;
+	SetEnermyMoveMode(EEnermyMoveMode::None);
+	AttackEnd();
 }
 
+void AARPGEnermy_Mini::ZeroAP()
+{
+}
 
 // 이게 실행되었다는 것은 결국 BT에서 AttackDistance로 검사해서 문제없다는 뜻이다.
 void AARPGEnermy_Mini::Attack(int32 index)
@@ -105,10 +111,9 @@ void AARPGEnermy_Mini::PlayAttack(int32 index)
 	}
 
 	bAttacking = true;
-	bMoving = false;
-	PlayAnimMontage(Attacks[index]->AttackMontage);
 	Attacks[index]->PlayAttack();
-
+	EnermyAnimInstance->PlayAttackMontage(Attacks[index]->AttackMontage);
+	//PlayAnimMontage(Attacks[index]->AttackMontage);
 }
 
 void AARPGEnermy_Mini::SetWeaponCollision(bool bFlag)
@@ -131,14 +136,23 @@ void AARPGEnermy_Mini::SetShieldCollision(bool bFlag)
 }
 
 
-void AARPGEnermy_Mini::Garud()
+void AARPGEnermy_Mini::Garud(bool bFlag)
 {
-
+	if (bFlag)
+	{
+		SetEnermyMoveMode(EEnermyMoveMode::None);
+	}
+	bBlocking = bFlag;
 }
 
-void AARPGEnermy_Mini::Parring()
+void AARPGEnermy_Mini::Parring(bool bFlag)
 {
+	bParring = bFlag;
+}
 
+void AARPGEnermy_Mini::Death()
+{
+	EnermyAnimInstance->PlayDeadMontage();
 }
 
 

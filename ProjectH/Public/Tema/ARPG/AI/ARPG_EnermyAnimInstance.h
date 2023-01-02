@@ -16,18 +16,29 @@ class PROJECTH_API UARPG_EnermyAnimInstance : public UAnimInstance
 
 public:
 	UARPG_EnermyAnimInstance();
+	virtual void NativeBeginPlay() override;
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 	
+	
+	//void PlayGuardMontage();
+	void PlayAttackMontage(class UAnimMontage* AttackMontage);
+	void PlayHitMontage();
+	void PlayDeadMontage();
 
 public:
-	float SetDircection(class APawn* Pawn);
+	float SetDircection();
 
 public:
 	UPROPERTY(BlueprintReadWrite)
-		class AARPGEnermy* CurrentCharacter;
+		class AARPGEnermy_Mini* OwnerUnit;
 
-	UPROPERTY(BlueprintReadWrite)
-		class APawn* OwnerPawn;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UAnimMontage* HitMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UAnimMontage* DeadMontage;
+
+	//-----------------------------------------------------------
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float Speed;
@@ -39,10 +50,16 @@ public:
 		bool bBlocking;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool bParring;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool bHitting;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool bBattleMode;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		bool bAttack;
+		bool bAttacking;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float Direction;
