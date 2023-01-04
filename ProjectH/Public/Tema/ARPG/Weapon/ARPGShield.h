@@ -3,11 +3,11 @@
 #pragma once
 
 #include "ProjectH.h"
-#include "GameFramework/Actor.h"
+#include "Tema/ARPG/Weapon/ARPGWeapon.h"
 #include "ARPGShield.generated.h"
 
 UCLASS()
-class PROJECTH_API AARPGShield : public AActor
+class PROJECTH_API AARPGShield : public AARPGWeapon
 {
 	GENERATED_BODY()
 	
@@ -15,23 +15,21 @@ public:
 	// Sets default values for this actor's properties
 	AARPGShield();
 
+public:
+	virtual void Tick(float DeltaTime) override;
+	virtual void AttackEnd() override {}
+	virtual void SetWeaponCollision(bool bFlag) override;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay();
 
 
 public:
-	UPROPERTY()
-		class AARPGUnitBase* OwnerUnit;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh")
 		class UBoxComponent* ShieldCollision;
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime);
-	virtual void BlockEnd() {}
-	virtual void ShieldHit(float APDamage) {}
-	// 쉴드에 데미지를 가했을때 오너의 AP를 깎자
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh")
+		class USkeletalMeshComponent* ShieldMesh;
 
 };

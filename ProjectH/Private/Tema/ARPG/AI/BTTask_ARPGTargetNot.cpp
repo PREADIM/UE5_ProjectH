@@ -3,7 +3,7 @@
 
 #include "Tema/ARPG/AI/BTTask_ARPGTargetNot.h"
 #include "Tema/ARPG/ARPGEnermy.h"
-#include "Tema/JRPG/JRPGAIController.h"
+#include "Tema/ARPG/ARPGAIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
 UBTTask_ARPGTargetNot::UBTTask_ARPGTargetNot()
@@ -13,7 +13,6 @@ UBTTask_ARPGTargetNot::UBTTask_ARPGTargetNot()
 
 EBTNodeResult::Type UBTTask_ARPGTargetNot::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-
 	Super::ExecuteTask(OwnerComp, NodeMemory);
 
 	AARPGEnermy* OwnerPawn = Cast<AARPGEnermy>(OwnerComp.GetAIOwner()->GetPawn());
@@ -25,7 +24,7 @@ EBTNodeResult::Type UBTTask_ARPGTargetNot::ExecuteTask(UBehaviorTreeComponent& O
 
 	OwnerPawn->bMoving = false;
 	OwnerPawn->SetEnermyMoveMode(EEnermyMoveMode::None);
-	OwnerPawn->SetBlocking(false); // 방패 들기.
+	//OwnerPawn->SetBlocking(false); // 방패 들기. Mini에 따로 교체
 	OwnerPawn->SetBattleMode(false); // 배틀모드
 	OwnerPawn->SetCollisionRadius(false);
 	OwnerPawn->GetCharacterMovement()->MaxWalkSpeed = OwnerPawn->NormalSpeed;

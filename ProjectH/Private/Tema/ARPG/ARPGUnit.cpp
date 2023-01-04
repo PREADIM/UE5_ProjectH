@@ -4,8 +4,7 @@
 #include "Tema/ARPG/ARPGUnit.h"
 #include "GameMode/ProjectHGameInstance.h"
 #include "Tema/ARPG/ARPGPlayerController.h"
-#include "Tema/ARPG/ARPGWeapon.h"
-#include "Tema/ARPG/ARPGShield.h"
+#include "Tema/ARPG/Weapon/ARPGWeapon.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/KismetmathLibrary.h"
 #include "Tema/ARPG/ARPG_UnitAnimInstance.h"
@@ -26,11 +25,6 @@ AARPGUnit::AARPGUnit()
 	FPSMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("FPSMesh"));
 	FPSMesh->SetupAttachment(FPSCamera);
 
-	/*static ConstructorHelpers::FObjectFinder<UStaticMesh> SwordM(TEXT(""));
-	if (SwordM.Succeeded())
-	{
-		SwordMesh->SetStaticMesh(SwordM.Object);
-	}*/
 
 	NormalSpeed = 250.f;
 	BattleSpeed = 150.f;
@@ -49,19 +43,35 @@ void AARPGUnit::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (BP_Sword && BP_Shield)
-	{
-		Weapon = GetWorld()->SpawnActor<AARPGWeapon>(BP_Sword);
-		Shield = GetWorld()->SpawnActor<AARPGShield>(BP_Shield);
-		
-		if (Weapon && Shield)
-		{
-			Weapon->OwnerUnit = this;
-			Shield->OwnerUnit = this;
-			Weapon->SetOwner(this);
-			Shield->SetOwner(this);
+	// 해당 게임은 무기를 바꿀 필요가 없으므로 무기를 이렇게 지정했지만,
+	// 소울류 게임에서처럼 무기를 변경 하는 게임인 경우는 인벤토리에서 직접 무기를 가져온다.
+	// 때문에 LMB_AP, RMB_AP로 변수를 만들어 무기를 변경할때 휘두를 수있는 AP가 달리지게 설계할듯.
 
+	//LMB
+	if (BP_Sword)
+	{
+		Weapon = GetWorld()->SpawnActor<AARPGWeapon>(BP_Sword);		
+		if (Weapon)
+		{
+			Weapon->OwnerUnit = this;		
+			Weapon->SetOwner(this);
+			LMB_AP = Weapon->UseAP;
 			Weapon->AttachToComponent(FPSMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("IdleSword"));
+		}
+	}
+
+	//RMB
+	// 소드 쉴드가 따로 있는 이유는 방패를 끼지않는 캐릭터도 존재 할 수 있기 때문.
+	// (하지만 지금 이 게임은 존재하지 않는다.)
+	if (BP_Shield)
+	{
+		Shield = GetWorld()->SpawnActor<AARPGWeapon>(BP_Shield);
+
+		if (Shield)
+		{
+			Shield->OwnerUnit = this;
+			Shield->SetOwner(this);
+			RMB_AP = Weapon->UseAP;
 			Shield->AttachToComponent(FPSMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("ShieldSocket"));
 		}
 	}
@@ -173,7 +183,7 @@ void AARPGUnit::LookRight(float AxisValue)
 
 void AARPGUnit::LMB()
 {
-	if (!bBlocking)
+	if (!bBlockMode || UnitState.AP >= LMB_AP)
 	{
 		bAttacking = true;
 		if (InputComponent->GetAxisValue(TEXT("MoveRight")) == 0.0f)
@@ -210,23 +220,26 @@ void AARPGUnit::LMBReleased()
 
 void AARPGUnit::RMB()
 {
-	bBlocking = true;
-	GetCharacterMovement()->MaxWalkSpeed = BlockSpeed;
+	if (UnitState.AP >= RMB_AP)
+	{
+		bBlockMode = true;
+		GetCharacterMovement()->MaxWalkSpeed = BlockSpeed;
+	}
 }
 
 void AARPGUnit::RMBReleased()
 {
+	bBlockMode = false;
 	bBlocking = false;
 	bParring = false;
-	//bHitting = false;
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 	SetShieldCollision(false);
-	BlockEnd();
+	BlockingEnd();
 }
 
 void AARPGUnit::Sprint()
 {
-	if (bBlocking)
+	if (bBlockMode)
 		return;
 
 	bSprint = true;
@@ -266,69 +279,138 @@ void AARPGUnit::Parring()
 
 void AARPGUnit::Death()
 {
+	bDeath = true;
 	FPSMeshAnimInstance->Death();
 }
 
-void AARPGUnit::Hit(bool bFlag)
+void AARPGUnit::Hit()
 {
-	if (FPSMeshAnimInstance)
+	if (!FPSMeshAnimInstance)
+		return;
+
+	bHitting = true;
+	if (bBlocking)
 	{
-		FPSMeshAnimInstance->Hit();
-	}	
+		FPSMeshAnimInstance->Hit(EUnitMode::BlockingMode);
+		PlayCameraShake(BP_BlockingMode_CS);
+	}
+	else
+	{
+		FPSMeshAnimInstance->Hit(EUnitMode::BattleMode);
+		PlayCameraShake(BP_BattleMode_CS);
+	}
 }
 
-void AARPGUnit::ZeroAP()
+bool AARPGUnit::CanThisDamage()
 {
+	// 따로 이런 함수를 만든 이유는, 쉴드 뿐만아니라 특정 상황에서 못때리는 상태 일 수도 있으므로,
+	if (bBlocking)
+		return false;
+
+	if (bDeath)
+		return false;
+
+	return true;
+}
+
+void AARPGUnit::PlayCameraShake(TSubclassOf<class UCameraShakeBase> CS)
+{
+	if (CS)
+		OwnerController->ClientPlayCameraShake(CS, 1.3f);
+}
+
+float AARPGUnit::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+	WeaponOverlapEnd();
+	AttackEnd();
+
+	float CurrentHP = UnitState.HP;
+	if (CurrentHP <= DamageAmount)
+	{
+		CurrentHP = 0.0f;
+		UnitState.SetTakeDamageHP(CurrentHP);
+		Death();
+		return DamageAmount;
+	}
+
+	CurrentHP -= DamageAmount;
+	Hit();
+	UnitState.SetTakeDamageHP(CurrentHP);
+
+	return DamageAmount;
+}
+
+// TakeDamage AP 버전
+void AARPGUnit::TakeDamageAP(float Damage)
+{
+	WeaponOverlapEnd();
+	AttackEnd();
+
+	float CurrentAP = UnitState.AP;
+
+	if (CurrentAP <= Damage)
+	{
+		CurrentAP = 0.0f;
+		UnitState.SetTakeDamageAP(CurrentAP);
+		ZeroAP();
+		return;
+	}
+
+	CurrentAP -= Damage;
+	Hit();
+	UnitState.SetTakeDamageAP(CurrentAP);	
 }
 
 
 void AARPGUnit::SetWeaponCollision(bool bFlag)
 {
-	if (bFlag)
-	{
-		Weapon->WeaponCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-		//_DEBUG("Collision On");
-	}
-	else
-	{
-		Weapon->WeaponCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		//_DEBUG("Collision Off");
-	}
+	Weapon->SetWeaponCollision(bFlag);
 }
 
+
+//쉴드의 중요 한것은. 결국 쉴드에 오버랩되는 것이 중요한게아니라
+//캐릭터가 닿았을때 Blocking 중인지가 중요하다. 굳이 쉴드 오버랩을 할 필요가없다.
+//결국 오버랩은 무기가 공격할때 쓰는 쪽으로 사용한다.
 void AARPGUnit::SetShieldCollision(bool bFlag)
 {
-	if (bFlag)
-	{
-		Shield->ShieldCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-		//_DEBUG("Collision On");
-	}
-	else
-	{
-		Shield->ShieldCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		//_DEBUG("Collision Off");
-	}
+	Shield->SetWeaponCollision(bFlag);
 }
 
+
+// 공격이 전부 다 끝났을때 호출.
 void AARPGUnit::AttackEnd()
 {
 	bAttacking = false;
-	SetWeaponCollision(false);
-	WeaponOverlapEnd();
 }
 
+// 콤보 공격이나, 콜리전을 잠시 꺼야할 때 호출.
 void AARPGUnit::WeaponOverlapEnd()
 {
+	_DEBUG("Owner Weapon AttackEnd");
+	SetWeaponCollision(false);
 	Weapon->AttackEnd();
 }
 
-void AARPGUnit::BlockEnd()
+// bHitting은 지금 그냥 변수만 있을뿐 딱히 활용 하지않고 있음 (23/01/05)
+void AARPGUnit::HitEnd()
 {
-	//bBlocking = false;
-	// 어처피 RMBRealese에서 false됨
-
-	Shield->BlockEnd();
 	bHitting = false;
+}
+
+// 방패 피격시 뭐 추가 기능이 있을수 있으니 방패 끄기 기능 함수를 따로 생성
+void AARPGUnit::BlockingEnd()
+{
+	HitEnd();
+}
+
+void AARPGUnit::ZeroAP()
+{
+	RMBReleased();
+	PlayCameraShake(BP_BlockingZeroAPMode_CS);
+	FPSMeshAnimInstance->ZeroAP();
+
 }
 
 // 적 락온
@@ -337,6 +419,7 @@ void AARPGUnit::LockOn()
 	if (bTargeting)
 	{
 		bTargeting = false;
+		LockOnAddViewport(false);
 		return;
 	}
 
@@ -359,6 +442,7 @@ void AARPGUnit::LockOn()
 			{
 				TargetingPawn = TargetPawn;
 				bTargeting = true;
+				LockOnAddViewport(true);
 				_DEBUG("Lock True");
 			}
 		}
@@ -377,28 +461,11 @@ void AARPGUnit::LockOnSetPosition(FVector TargetPos)
 	}
 }
 
-float AARPGUnit::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+void AARPGUnit::LockOnAddViewport(bool bFlag)
 {
-	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-
-	AttackEnd();
-	GetWorld()->GetFirstPlayerController()->ClientPlayCameraShake(BP_CS, 1.3f);
-
-	float CurrentHP = UnitState.HP;
-	if (CurrentHP <= DamageAmount)
-	{
-		CurrentHP = 0.f;
-		Death();
-	}
-
-	CurrentHP -= DamageAmount;
-
-
-	Hit(true);
-	UnitState.SetTakeDamageHP(CurrentHP);
-
-	return DamageAmount;
+	OwnerController->LockOnAddViewport(bFlag);
 }
+
 
 
 

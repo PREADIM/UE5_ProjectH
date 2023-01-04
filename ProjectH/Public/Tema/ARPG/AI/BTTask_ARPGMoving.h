@@ -21,6 +21,13 @@ public:
 public:
 	EEnermyMoveMode RandomMoving();
 
+private:
+	UPROPERTY()
+		class AARPGEnermy* OwnerPawn;
+
+	UPROPERTY()
+		class APawn* TargetUnit;
+
 };
 
 

@@ -28,8 +28,17 @@ public:
 	----------------------------*/
 	virtual void Tick(float DeltaTime);
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent);
-	virtual void ZeroAP() {}
+	// TakeDamage의 AP버전
+	virtual void TakeDamageAP(float Damage) {}
 
+	// 해당 함수는 모든 클래스들이 따로 제작해야한다.
+	// 맞았을때 이 함수를 공통적으로 실행하고 각 유닛의 모드별로 알아서 애님인스턴스에 해당하는 모드 히트를
+	// 알려주는 형식
+	virtual void Hit() {}
+
+	// 지금 이 유닛에 데미지를 줄수 있는가?
+	virtual bool CanThisDamage() { return false; }
+	
 public:
 
 	//-----------공통 분모---------------
@@ -44,21 +53,8 @@ public:
 
 	//-------------------------------------------
 
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		bool bZeroAP;
-	// 이 변수는 방패나 스태미너를 다썻을때 true가 된다.
-
-
-	//-------------------------------------------
-	
-
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		bool bAttacking;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		bool bBlocking;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		bool bParring;

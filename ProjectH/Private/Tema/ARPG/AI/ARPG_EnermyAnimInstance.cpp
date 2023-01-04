@@ -26,7 +26,7 @@ void UARPG_EnermyAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		Direction = SetDircection();
 
 		bBattleMode = OwnerUnit->bBattleMode;
-		bBlocking = OwnerUnit->bBlocking;
+		bBlocking = OwnerUnit->bBlockMode;
 		bParring = OwnerUnit->bParring;
 		bHitting = OwnerUnit->bHitting;
 		bAttacking = OwnerUnit->bAttacking;
@@ -40,9 +40,17 @@ void UARPG_EnermyAnimInstance::PlayAttackMontage(UAnimMontage* AttackMontage)
 	Montage_Play(AttackMontage);
 }
 
-void UARPG_EnermyAnimInstance::PlayHitMontage()
+void UARPG_EnermyAnimInstance::PlayHitMontage(EEnermy_Mini_Mode UnitMode)
 {
-	Montage_Play(HitMontage);
+	switch (UnitMode)
+	{
+	case EEnermy_Mini_Mode::BattleMode :
+		Montage_Play(HitMontage);
+		break;
+	case EEnermy_Mini_Mode::BlockingMode :
+		Montage_Play(BlockingHitMontage);
+		break;
+	}
 }
 
 void UARPG_EnermyAnimInstance::PlayDeadMontage()
@@ -50,9 +58,13 @@ void UARPG_EnermyAnimInstance::PlayDeadMontage()
 	Montage_Play(DeadMontage);
 }
 
+void UARPG_EnermyAnimInstance::ZeroAP()
+{
+	Montage_Play(BlockingZeroAPMontage);
+}
+
 float UARPG_EnermyAnimInstance::SetDircection()
 {
-	
 	FRotator Temp;
 	Temp = UKismetMathLibrary::NormalizedDeltaRotator(OwnerUnit->GetActorRotation(), OwnerUnit->GetVelocity().Rotation());
 

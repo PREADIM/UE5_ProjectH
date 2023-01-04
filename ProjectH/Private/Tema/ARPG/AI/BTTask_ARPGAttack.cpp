@@ -2,7 +2,7 @@
 
 
 #include "Tema/ARPG/AI/BTTask_ARPGAttack.h"
-#include "Tema/JRPG/JRPGAIController.h"
+#include "Tema/ARPG/ARPGAIController.h"
 #include "Tema/ARPG/ARPGEnermy.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
@@ -24,6 +24,8 @@ EBTNodeResult::Type UBTTask_ARPGAttack::ExecuteTask(UBehaviorTreeComponent& Owne
 		return EBTNodeResult::Failed;
 	}
 
+	OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("CanAttack"), false);
+
 	OwnerPawn->OnAttack.AddLambda([this, &OwnerComp]()->void
 	{
 			OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("CoolTime"), true);
@@ -43,9 +45,9 @@ EBTNodeResult::Type UBTTask_ARPGAttack::ExecuteTask(UBehaviorTreeComponent& Owne
 }
 
 
-void UBTTask_ARPGAttack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeletaSeconds)
+void UBTTask_ARPGAttack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
-	Super::TickTask(OwnerComp, NodeMemory, DeletaSeconds);
+	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
 
 	if (!bAttack)
 	{

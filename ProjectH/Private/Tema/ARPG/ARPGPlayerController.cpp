@@ -56,3 +56,18 @@ void AARPGPlayerController::SetLockPosition(FVector2D Pos)
 		LockOnUI->SetPositionInViewport(Pos);
 	}
 }
+
+void AARPGPlayerController::LockOnAddViewport(bool bFlag)
+{
+	if (!LockOnUI)
+		return;
+
+	if (bFlag)
+	{
+		LockOnUI->AddToViewport();
+	}
+	else
+	{
+		LockOnUI->RemoveFromParent();
+	}
+}

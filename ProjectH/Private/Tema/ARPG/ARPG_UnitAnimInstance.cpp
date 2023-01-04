@@ -3,8 +3,7 @@
 
 #include "Tema/ARPG/ARPG_UnitAnimInstance.h"
 #include "Tema/ARPG/ARPGUnit.h"
-#include "Tema/ARPG/ARPGWeapon.h"
-#include "Tema/ARPG/ARPGShield.h"
+#include "Tema/ARPG/Weapon/ARPGWeapon.h"
 
 UARPG_UnitAnimInstance::UARPG_UnitAnimInstance()
 {
@@ -28,7 +27,7 @@ void UARPG_UnitAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		IsMoving = OwnerUnit->GetVelocity().Length() > 0.f;
 		bIsSprint = OwnerUnit->bSprint;
 		bIsParring = OwnerUnit->bParring;
-		bIsBlocking = OwnerUnit->bBlocking;
+		bIsBlocking = OwnerUnit->bBlockMode;
 		bHitting = OwnerUnit->bHitting;
 
 		bIsAttacking = OwnerUnit->bAttacking;
@@ -37,12 +36,19 @@ void UARPG_UnitAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		AttackingForward = OwnerUnit->bAttackForward;
 		AttackingBackward = OwnerUnit->bAttackBackward;
 	}
-
 }
 
-void UARPG_UnitAnimInstance::Hit()
+void UARPG_UnitAnimInstance::Hit(EUnitMode UnitMode)
 {
-	Montage_Play(HitMontage);
+	switch (UnitMode)
+	{
+	case EUnitMode::BattleMode :
+		Montage_Play(HitMontage);
+		break;
+	case EUnitMode::BlockingMode :
+		Montage_Play(BlockingHitMontage);
+		break;
+	}	
 }
 
 void UARPG_UnitAnimInstance::Death()
@@ -63,6 +69,13 @@ void UARPG_UnitAnimInstance::WeaponOnOff(bool bFlag)
 
 	bIsSheathed = bFlag;
 }
+
+
+void UARPG_UnitAnimInstance::ZeroAP()
+{
+	Montage_Play(BlockingZeroAPMontage);
+}
+
 
 //----------------------------------
 // 노티파이
@@ -97,11 +110,18 @@ void UARPG_UnitAnimInstance::AnimNotify_AttackStart()
 	}
 }
 
+void UARPG_UnitAnimInstance::AnimNotify_ComboSection_End()
+{
+	if (OwnerUnit)
+	{
+		OwnerUnit->WeaponOverlapEnd();
+	}
+}
+
 void UARPG_UnitAnimInstance::AnimNotify_Attack_End()
 {
 	if (OwnerUnit)
 	{
-		OwnerUnit->SetWeaponCollision(false);
 		OwnerUnit->AttackEnd();
 	}
 }
@@ -110,27 +130,31 @@ void UARPG_UnitAnimInstance::AnimNotify_BlockStart()
 {
 	if (OwnerUnit)
 	{
-		OwnerUnit->SetShieldCollision(true);
+		OwnerUnit->bBlocking = true;
 	}
 }
 
-void UARPG_UnitAnimInstance::AnimNotify_BlockHitEnd()
+void UARPG_UnitAnimInstance::AnimNotify_HitEnd()
 {
 	if (OwnerUnit)
 	{
-		OwnerUnit->BlockEnd();
+		OwnerUnit->HitEnd();
+		_DEBUG("Hit End");
 	}
+}
+
+void UARPG_UnitAnimInstance::AnimNotify_ParringStart()
+{
+	OwnerUnit->SetShieldCollision(true);
+	OwnerUnit->bParring = true;
 }
 
 void UARPG_UnitAnimInstance::AnimNotify_ParringEnd()
 {
 	if (OwnerUnit)
 	{
+		OwnerUnit->SetShieldCollision(false);
 		OwnerUnit->bParring = false;
-		bIsParring = false;
 	}
 }
 
-
-
-//----------------------------------

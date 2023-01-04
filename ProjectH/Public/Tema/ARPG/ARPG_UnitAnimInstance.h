@@ -9,6 +9,14 @@
 /**
  * 
  */
+UENUM(BlueprintType)
+enum class EUnitMode : uint8
+{
+	BattleMode UMETA(DisplayName="BattleMode"),
+	BlockingMode UMETA(DisplayName="BlockingMode")
+};
+
+
 UCLASS()
 class PROJECTH_API UARPG_UnitAnimInstance : public UAnimInstance
 {
@@ -20,9 +28,10 @@ public:
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
 public:
-	void Hit();
+	void Hit(EUnitMode UnitMode);
 	void Death();
 	void WeaponOnOff(bool bFlag);
+	void ZeroAP();
 
 	//----------------------------------
 	// 노티파이
@@ -34,11 +43,15 @@ public:
 	UFUNCTION()
 		void AnimNotify_AttackStart();	
 	UFUNCTION()
+		void AnimNotify_ComboSection_End();
+	UFUNCTION()
 		void AnimNotify_Attack_End();
 	UFUNCTION()
 		void AnimNotify_BlockStart();
 	UFUNCTION()
-		void AnimNotify_BlockHitEnd();
+		void AnimNotify_HitEnd();
+	UFUNCTION()
+		void AnimNotify_ParringStart();
 	UFUNCTION()
 		void AnimNotify_ParringEnd();
 
@@ -62,6 +75,15 @@ public:
 		class UAnimMontage* HitMontage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UAnimMontage* BlockingHitMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UAnimMontage* BlockingZeroAPMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UAnimMontage* ParringHitMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UAnimMontage* DeathMontage;
 
 	//----------------------------------
@@ -69,16 +91,16 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		bool bIsInAir;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool IsMoving;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool bIsSprint;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		bool bIsSheathed;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool bIsBlocking;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)

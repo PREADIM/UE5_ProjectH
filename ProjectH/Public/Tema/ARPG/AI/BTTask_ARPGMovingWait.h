@@ -4,24 +4,32 @@
 
 #include "ProjectH.h"
 #include "BehaviorTree/BTTaskNode.h"
-#include "BTTask_ARPGAttack.generated.h"
+#include "BTTask_ARPGMovingWait.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECTH_API UBTTask_ARPGAttack : public UBTTaskNode
+class PROJECTH_API UBTTask_ARPGMovingWait : public UBTTaskNode
 {
 	GENERATED_BODY()
-
-public:
-	UBTTask_ARPGAttack();
-	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 	
+public:
+	UBTTask_ARPGMovingWait();
+	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
+
 protected:
 	virtual void TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 
-private:
-	class AARPGEnermy* OwnerPawn;
-	bool bAttack;
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float WaitTime;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float RandomTime;
+
+	float CurrentTime;
+	float RandomWaitTime;
+
+	bool bCoolTime;
+	bool bCanAttack;
 };

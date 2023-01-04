@@ -2,7 +2,7 @@
 
 
 #include "Tema/ARPG/AI/BTService_Overlap.h"
-#include "Tema/JRPG/JRPGAIController.h"
+#include "Tema/ARPG/ARPGAIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Tema/ARPG/ARPGUnit.h"
 #include "Tema/ARPG/ARPGEnermy.h"
@@ -17,7 +17,6 @@ void UBTService_Overlap::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* Node
 	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
 
 	AARPGEnermy* OwnerPawn = Cast<AARPGEnermy>(OwnerComp.GetAIOwner()->GetPawn());
-	//AARPGEnermy* OwnerPawn = Cast<AARPGEnermy>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(TEXT("CurrentUnit")));
 	if (!OwnerPawn)
 	{
 		_DEBUG("OwnerPawn Fail");

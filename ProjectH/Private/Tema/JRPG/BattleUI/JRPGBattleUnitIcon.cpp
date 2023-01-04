@@ -3,7 +3,7 @@
 
 #include "Tema/JRPG/BattleUI/JRPGBattleUnitIcon.h"
 #include "Components/Image.h"
-#include "COmponents/TextBlock.h"
+#include "Components/TextBlock.h"
 
 void UJRPGBattleUnitIcon::Init(class UTexture2D* CharTex, FString CharName)
 {

@@ -3,8 +3,7 @@
 
 #include "Tema/ARPG/AI/BTDecorator_CalculAttack.h"
 #include "Tema/ARPG/ARPGEnermy.h"
-#include "Tema/ARPG/ARPGUnit.h"
-#include "Tema/JRPG/JRPGAIController.h"
+#include "Tema/ARPG/ARPGAIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Tema/ARPG/ARPGAttackComponent.h"
 #include "Tema/ARPG/AttackClass.h"

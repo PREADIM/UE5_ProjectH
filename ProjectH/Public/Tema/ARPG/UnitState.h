@@ -11,8 +11,10 @@ struct FUnitState
 
 public:
 	FUnitState();
-	void SetTakeDamageHP(float TakeDamageHP);
 	//공격받은 HP로 Set
+	void SetTakeDamageHP(float TakeDamageHP);
+	//공격받은 AP로 Set
+	void SetTakeDamageAP(float TakeDamageAP);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float HP;

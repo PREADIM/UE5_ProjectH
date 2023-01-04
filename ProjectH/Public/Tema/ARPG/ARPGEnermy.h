@@ -10,6 +10,7 @@
 // 모든 적의 공통 부모 모든 적이 가지고 있어야할 것들만 가지고있어야함.
 // (ex. 수색 범위, 속도, 공격중, 패링중 , 블록킹 등 상태 같은 것들)
 
+
 DECLARE_MULTICAST_DELEGATE(FOnAttack)
 DECLARE_MULTICAST_DELEGATE(FOnMoving)
 
@@ -60,7 +61,16 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void PostInitializeComponents();
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
-	virtual void ZeroAP() {}
+	
+	virtual void TakeDamageAP(float Damage) {}
+	virtual void Hit() {}
+	virtual bool CanThisDamage() { return false; }
+	virtual void ChangeBattleMode(bool bFlag) {}
+
+	virtual void Attack(int32 index) {} // 공격 함수
+	virtual void Guard(bool bFlag) {} // 막는 함수
+	virtual void Parring(bool bFlag) {} // 패링 함수
+	virtual void Death() {} // 죽음 함수
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AttackComponent", meta = (AllowPrivateAccess = "true"))
@@ -75,6 +85,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		bool bMoving; // 양 옆으로 움직이거나 백스텝을 함.
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		bool bDeath = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float NormalSpeed;
@@ -158,15 +171,6 @@ public:
 
 
 public:
-	virtual void Attack(int32 index) {} // 공격 함수
-	virtual void Garud(bool bFlag) {} // 막는 함수
-	virtual void Parring(bool bFlag) {} // 패링 함수
-	virtual void Death() {} // 죽음 함수
-	virtual void Hit(bool bFlag) {}
-
-
-	//-------------------------------------
-
 	UFUNCTION(BlueprintImplementableEvent)
 		void EnermyMoving(); // 블루프린트에서 각 적에 알맞는 행동 하게하기 실질적인 Tick에서 실행할 메인 함수.
 
@@ -181,10 +185,7 @@ public:
 
 	void SetEnermyMoveMode(EEnermyMoveMode Mode); // 움직일 모드 설정
 
-
 	//-----------------------------------------
-
-	void SetBlocking(bool bFlag); // BT에서 방패를 들건지 설정해줌
 
 	void SetBattleMode(bool bFlag); 
 

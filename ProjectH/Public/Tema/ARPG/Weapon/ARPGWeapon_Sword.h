@@ -3,7 +3,7 @@
 #pragma once
 
 #include "ProjectH.h"
-#include "Tema/ARPG/ARPGWeapon.h"
+#include "Tema/ARPG/Weapon/ARPGWeapon.h"
 #include "ARPGWeapon_Sword.generated.h"
 
 /**
@@ -19,8 +19,8 @@ public:
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
 	virtual void AttackEnd() override;
+	virtual void SetWeaponCollision(bool bFlag) override;
 
 	UFUNCTION()
 		void SwordBeginOverlap(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
@@ -47,20 +47,17 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh")
 		class UStaticMeshComponent* SwordMesh;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Collision")
+		class UCapsuleComponent* WeaponCollision;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Controller")
 		class AController* OwnerController;
 
-
-
 	//----------------------------------------
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponDamage")
 		float WeaponDamage;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "WeaponDamage")
-		float TotalDamage;
-
 	//-------------------------------------------
 	ECollisionChannel ARPGUnitChannel;
-	ECollisionChannel ARPGShieldChannel;
 
 };

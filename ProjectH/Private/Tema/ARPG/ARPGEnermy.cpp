@@ -115,23 +115,18 @@ void AARPGEnermy::LockOnPlayer()
 	}
 }
 
-void AARPGEnermy::SetBlocking(bool bFlag)
-{
-	if (!EnermyAnimInstance)
-		return;
 
-	bBlocking = bFlag;
-	EnermyAnimInstance->bBlocking = bFlag;
-	
-
-}
 
 void AARPGEnermy::SetBattleMode(bool bFlag)
 {
 	if (!EnermyAnimInstance)
 		return;
 
+	if (bBattleMode == bFlag)
+		return;
+
 	bBattleMode = bFlag;
+	ChangeBattleMode(bFlag);
 }
 
 void AARPGEnermy::SetEnermyMoveMode(EEnermyMoveMode Mode)

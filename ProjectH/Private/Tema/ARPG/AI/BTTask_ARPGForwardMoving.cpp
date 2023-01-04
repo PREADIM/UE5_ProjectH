@@ -2,7 +2,7 @@
 
 #include "Tema/ARPG/AI/BTTask_ARPGForwardMoving.h"
 #include "Tema/ARPG/ARPGEnermy.h"
-#include "Tema/JRPG/JRPGAIController.h"
+#include "Tema/ARPG/ARPGAIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
 UBTTask_ARPGForwardMoving::UBTTask_ARPGForwardMoving()

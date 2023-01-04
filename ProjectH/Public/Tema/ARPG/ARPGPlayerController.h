@@ -20,9 +20,11 @@ public:
 	virtual void BeginPlay();
 	virtual void SetupInputComponent() override;
 
+	
 
 public:
 	void SetLockPosition(FVector2D Pos);
+	void LockOnAddViewport(bool bFlag);
 
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)

@@ -9,6 +9,14 @@
 /**
  * 
  */
+UENUM(BlueprintType)
+enum class EEnermy_Mini_Mode : uint8
+{
+	BattleMode UMETA(DisplayName = "BattleMode"),
+	BlockingMode UMETA(DisplayName = "BlockingMode")
+};
+
+
 UCLASS()
 class PROJECTH_API UARPG_EnermyAnimInstance : public UAnimInstance
 {
@@ -19,11 +27,12 @@ public:
 	virtual void NativeBeginPlay() override;
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 	
-	
-	//void PlayGuardMontage();
+
 	void PlayAttackMontage(class UAnimMontage* AttackMontage);
-	void PlayHitMontage();
+	void PlayHitMontage(EEnermy_Mini_Mode UnitMode);
 	void PlayDeadMontage();
+
+	void ZeroAP();
 
 public:
 	float SetDircection();
@@ -34,6 +43,15 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UAnimMontage* HitMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UAnimMontage* BlockingHitMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UAnimMontage* BlockingZeroAPMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UAnimMontage* ParringHitMontage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UAnimMontage* DeadMontage;

@@ -27,9 +27,13 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void PostInitializeComponents() override;;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
-	virtual void ZeroAP() override;
-	// AP가 제로가 되면 실행될 함수.
+	// 공격을 막아내 AP를 깎아야할때 사용하는 함수.
+	virtual void TakeDamageAP(float Damage) override;
+	//공격 당했는지 판단 하는 함수.
+	virtual void Hit() override;
+	virtual bool CanThisDamage() override;
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
@@ -50,9 +54,19 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		class UARPG_UnitAnimInstance* FPSMeshAnimInstance;
 
+	//------------------------------------------------------
+		// 카메라 쉐이크
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TSubclassOf<class UCameraShakeBase> BP_CS;
-	// 카메라 쉐이크
+		TSubclassOf<class UCameraShakeBase> BP_BattleMode_CS;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<class UCameraShakeBase> BP_BlockingMode_CS;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<class UCameraShakeBase> BP_BlockingZeroAPMode_CS;
+
+	// 카메라 쉐이크 실행 함수
+	void PlayCameraShake(TSubclassOf<class UCameraShakeBase> CS);
+
+	//-----------------------------------------------------
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TSubclassOf<class AARPGWeapon> BP_Sword;
@@ -62,9 +76,9 @@ public:
 		FName WeaponSocketName;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TSubclassOf<class AARPGShield> BP_Shield;
+		TSubclassOf<class AARPGWeapon> BP_Shield;
 	UPROPERTY(BlueprintReadWrite)
-		class AARPGShield* Shield;
+		class AARPGWeapon* Shield;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FName ShieldSocketName;
 
@@ -75,6 +89,12 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		bool bNormalMode;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		bool bBlockMode; // 이건 애니메이션을 위한 변수.
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		bool bBlocking; // 이게 실제 블럭 단계인지 검사하는 변수. 이것이 true여야 쉴드 전개 완료 인것.
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		bool bSprint;
@@ -118,6 +138,8 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		bool bTargeting = false;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		bool bDeath = false;
 
 	//------------------------------------------------------
 
@@ -131,6 +153,11 @@ public:
 
 	//--------------------------------------------------
 
+	// LMB와 RMB를 하기 위한 AP. 무기에서 가져온다
+	UPROPERTY(VisibleAnywhere)
+		float LMB_AP;
+	UPROPERTY(VisibleAnywhere)
+		float RMB_AP;
 public:
 
 	UFUNCTION()
@@ -173,21 +200,22 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void WeaponOverlapEnd();
 	UFUNCTION(BlueprintCallable)
-		void BlockEnd();
+		void HitEnd();
+
+	void BlockingEnd();
+	// 방패 OFF
+
+	// AP가 제로이다.
+	void ZeroAP();
 
 	//------------------------------------------
 
 	void Death();
-	void Hit(bool bFlag);
-	//공격 당했는지 판단 하는 함수.
-
 
 public:
 	void LockOn();
 	void LockOnSetPosition(FVector TargetPos);
+	void LockOnAddViewport(bool bFlag);
 
-
-public:
-	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
 };

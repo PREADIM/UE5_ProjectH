@@ -3,7 +3,7 @@
 
 
 #include "Tema/ARPG/AI/BTTask_ARPGMoving.h"
-#include "Tema/JRPG/JRPGAIController.h"
+#include "Tema/ARPG/ARPGAIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
 UBTTask_ARPGMoving::UBTTask_ARPGMoving()
@@ -15,10 +15,17 @@ EBTNodeResult::Type UBTTask_ARPGMoving::ExecuteTask(UBehaviorTreeComponent& Owne
 {
 	Super::ExecuteTask(OwnerComp, NodeMemory);
 	
-	AARPGEnermy* OwnerPawn = Cast<AARPGEnermy>(OwnerComp.GetAIOwner()->GetPawn());
+	OwnerPawn = Cast<AARPGEnermy>(OwnerComp.GetAIOwner()->GetPawn());
 	if (!OwnerPawn)
 	{
 		_DEBUG("OwnerPawn Fail");
+		return EBTNodeResult::Failed;
+	}
+
+	TargetUnit = Cast<APawn>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(TEXT("TargetUnit")));
+	if (!TargetUnit)
+	{
+		_DEBUG("TargetUnit Fail");
 		return EBTNodeResult::Failed;
 	}
 
@@ -50,28 +57,34 @@ EBTNodeResult::Type UBTTask_ARPGMoving::ExecuteTask(UBehaviorTreeComponent& Owne
 
 EEnermyMoveMode UBTTask_ARPGMoving::RandomMoving()
 {
-	switch (FMath::RandRange(0, 7))
+	int32 StartRange = 0;
+	if (OwnerPawn->GetDistanceTo(TargetUnit) <= 70.f)
+	{
+		StartRange = 2;
+	}
+
+	switch (FMath::RandRange(StartRange, 8))
 	{
 	case 0:
-		//_DEBUG("N");
-		return EEnermyMoveMode::None;
 	case 1:
+		//_DEBUG("F");		
+		return EEnermyMoveMode::ForwardMoving;
 	case 2:
-		//_DEBUG("L");
-		return EEnermyMoveMode::LeftMoving;
 	case 3:
+		//_DEBUG("N");
+		return EEnermyMoveMode::None;	
 	case 4:
+	case 5:
+		//_DEBUG("L");
+		return EEnermyMoveMode::LeftMoving;	
+	case 6:
+	case 7:
 		//_DEBUG("R");
 		return EEnermyMoveMode::RightMoving;
-	case 5:
-	case 6:
-		//_DEBUG("F");
-		return EEnermyMoveMode::ForwardMoving;
-	case 7:
+	case 8:
 		//_DEBUG("B");
 		return EEnermyMoveMode::BackMoving;
 	}
-
 	return EEnermyMoveMode::None;
 }
 

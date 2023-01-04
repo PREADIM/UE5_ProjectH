@@ -39,13 +39,13 @@ float AARPGUnitBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEv
 
 float AARPGUnitBase::CalculDamage(float Damage)
 {
-	return (Damage + UnitState.ATK) * CurrentAttackFactor;
+	float HPDMG = (Damage + UnitState.ATK) * CurrentAttackFactor;
+	_DEBUG("%f", HPDMG);
+	return HPDMG;
 }
 
 float AARPGUnitBase::CalculAPDamage(float APDamage)
 {
-	float APDMG = APDamage + CurrentAP_DMG;
-	_DEBUG("%f", APDMG);
 	return APDamage + CurrentAP_DMG;
 }
 

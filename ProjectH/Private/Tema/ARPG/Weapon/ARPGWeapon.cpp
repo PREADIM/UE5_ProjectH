@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Tema/ARPG/ARPGWeapon.h"
+#include "Tema/ARPG/Weapon/ARPGWeapon.h"
 
 // Sets default values
 AARPGWeapon::AARPGWeapon()
