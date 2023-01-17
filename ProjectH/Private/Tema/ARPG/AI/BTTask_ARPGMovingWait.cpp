@@ -3,6 +3,8 @@
 
 #include "Tema/ARPG/AI/BTTask_ARPGMovingWait.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Tema/ARPG/ARPGEnermy.h"
+#include "Tema/ARPG/ARPGAIController.h"
 
 UBTTask_ARPGMovingWait::UBTTask_ARPGMovingWait()
 {
@@ -21,6 +23,7 @@ EBTNodeResult::Type UBTTask_ARPGMovingWait::ExecuteTask(UBehaviorTreeComponent& 
 	Super::ExecuteTask(OwnerComp, NodeMemory);
 
 	//여기서 EnermtUnit 가져와서 Guard가 true라면 끝낼때 false 해주자.
+	OwnerPawn = Cast<AARPGEnermy>(OwnerComp.GetAIOwner()->GetPawn());
 
 	CurrentTime = 0.f;
 	RandomWaitTime = FMath::RandRange(0.f, RandomTime) + WaitTime;

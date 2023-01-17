@@ -49,28 +49,35 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	/*----------------------------
-	
+
 			virtual function
-	
+
 	----------------------------*/
 
 
-	virtual void Tick(float DeltaTime);
+	virtual void Tick(float DeltaSeconds);
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void PostInitializeComponents();
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
-	
+
 	virtual void TakeDamageAP(float Damage) {}
-	virtual void Hit() {}
+	virtual void Hit() {} // 맞았을때 함수
 	virtual bool CanThisDamage() { return false; }
 	virtual void ChangeBattleMode(bool bFlag) {}
+	virtual void HitEnd() {}
 
 	virtual void Attack(int32 index) {} // 공격 함수
 	virtual void Guard(bool bFlag) {} // 막는 함수
 	virtual void Parring(bool bFlag) {} // 패링 함수
-	virtual void Death() {} // 죽음 함수
+	virtual void Death(); // 죽음 함수
+	virtual void ParringHit() {} // 패링당함
+	virtual void DeathCollsionEnabled() {} 
+	virtual void DeathWeaponSimulate() {} // 죽어서 무기 물리 시뮬레이트
+	virtual void ZeroAP(); // AP가 제로이다
+
+
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AttackComponent", meta = (AllowPrivateAccess = "true"))
@@ -85,15 +92,6 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		bool bMoving; // 양 옆으로 움직이거나 백스텝을 함.
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		bool bDeath = false;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float NormalSpeed;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float BattleSpeed;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float AttackCoolTime; // 공격 딜레이
@@ -194,4 +192,15 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 		void SetDynamicDelegateBind();
 	// ex) 어택 클래스의 다이나믹 델리게이트에 바인드 해야할때.
+
+
+	//--------------------------------------------------
+
+	// 사용하는 몹이 있고 사용하지않는 몹이 있다.
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		bool bBlockMode; // 이건 애니메이션을 위한 변수.
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		bool bBlocking; // 이게 실제 블럭 단계인지 검사하는 변수. 이것이 true여야 쉴드 전개 완료 인것.
 };

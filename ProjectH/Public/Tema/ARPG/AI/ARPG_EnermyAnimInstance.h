@@ -29,8 +29,10 @@ public:
 	
 
 	void PlayAttackMontage(class UAnimMontage* AttackMontage);
+	void PlayBlockingMontage();
 	void PlayHitMontage(EEnermy_Mini_Mode UnitMode);
 	void PlayDeadMontage();
+	void PlayParringHitMontage();
 
 	void ZeroAP();
 
@@ -45,6 +47,9 @@ public:
 		class UAnimMontage* HitMontage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UAnimMontage* BlockingMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UAnimMontage* BlockingHitMontage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -53,10 +58,38 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UAnimMontage* ParringHitMontage;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UAnimMontage* DeadMontage;
+	// 패링을 실시한 유닛을 일시적으로 가져온다.
+	UPROPERTY(BlueprintReadWrite)
+		class AARPGUnitBase* ParringInstigatorUnit;
+
 
 	//-----------------------------------------------------------
+
+	UFUNCTION()
+		void AnimNotify_AttackStart();
+
+	UFUNCTION()
+		void AnimNotify_ComboSection_End();
+
+	UFUNCTION()
+		void AnimNotify_Attack_End();
+
+	UFUNCTION()
+		void AnimNotify_ParringHit();
+
+	UFUNCTION()
+		void AnimNotify_BlockStart();
+
+	UFUNCTION()
+		void AnimNotify_HitEnd();
+
+	UFUNCTION()
+		void AnimNotify_Death();
+
+	//-----------------------------------------------------------
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool bDeath;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float Speed;
@@ -70,8 +103,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool bParring;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		bool bHitting;
+	/*UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool bHitting;*/
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool bBattleMode;

@@ -5,6 +5,7 @@
 #include "Tema/ARPG/AI/ARPG_EnermyAnimInstance.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Tema/ARPG/ARPGUnit.h"
+#include "Tema/ARPG/ARPGAIController.h"
 #include "Tema/ARPG/ARPGAttackComponent.h"
 
 // Sets default values
@@ -31,11 +32,11 @@ void AARPGEnermy::BeginPlay()
 }
 
 // Called every frame
-void AARPGEnermy::Tick(float DeltaTime)
+void AARPGEnermy::Tick(float DeltaSeconds)
 {
-	Super::Tick(DeltaTime);
+	Super::Tick(DeltaSeconds);
 
-	if (bMoving) // 이 변수는 Task에서 켜준다.
+	if (!bDeath && bMoving) // 이 변수는 Task에서 켜준다.
 	{
 		EnermyMoving(); // 각 에너미마다 다르므로 일단 해당 함수의 조립은 블프에서 제작.
 
@@ -67,9 +68,22 @@ void AARPGEnermy::PostInitializeComponents()
 
 float AARPGEnermy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-	
+	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);	
+
 	return DamageAmount;
+}
+
+void AARPGEnermy::Death()
+{
+	Super::Death();
+	SetActorTickEnabled(false);
+	DeathCollsionEnabled();
+	OwnerAIController->OnUnPossess();
+}
+
+void AARPGEnermy::ZeroAP()
+{
+	Super::ZeroAP();
 }
 
 
@@ -81,6 +95,9 @@ FVector AARPGEnermy::GetMovingValue()
 
 	switch (EnermyMoveState)
 	{
+	case EMovingState::Stop :
+		Direction = FVector::ZeroVector;
+		break;
 	case EMovingState::Forward:
 		GetCharacterMovement()->MaxWalkSpeed = BattleSpeed;
 		Direction = GetActorForwardVector();

@@ -24,6 +24,15 @@ EBTNodeResult::Type UBTTask_ARPGAttack::ExecuteTask(UBehaviorTreeComponent& Owne
 		return EBTNodeResult::Failed;
 	}
 
+
+	if (OwnerPawn->bBlocking)
+	{
+		OwnerPawn->Guard(false);
+	}
+
+	if (OwnerPawn->bHitting)
+		OwnerPawn->bHitting = false;
+
 	OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("CanAttack"), false);
 
 	OwnerPawn->OnAttack.AddLambda([this, &OwnerComp]()->void

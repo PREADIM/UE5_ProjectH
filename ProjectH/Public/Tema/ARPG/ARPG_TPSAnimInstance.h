@@ -4,27 +4,26 @@
 
 #include "ProjectH.h"
 #include "Animation/AnimInstance.h"
-#include "Tema/ARPG/ARPG_TPSAnimInstance.h"
-#include "ARPG_UnitAnimInstance.generated.h"
+#include "ARPG_TPSAnimInstance.generated.h"
 
 /**
- * 
+ *
  */
-//UENUM(BlueprintType)
-//enum class EUnitMode : uint8
-//{
-//	BattleMode UMETA(DisplayName="BattleMode"),
-//	BlockingMode UMETA(DisplayName="BlockingMode")
-//};
+UENUM(BlueprintType)
+enum class EUnitMode : uint8
+{
+	BattleMode UMETA(DisplayName = "BattleMode"),
+	BlockingMode UMETA(DisplayName = "BlockingMode")
+};
 
 
 UCLASS()
-class PROJECTH_API UARPG_UnitAnimInstance : public UAnimInstance
+class PROJECTH_API UARPG_TPSAnimInstance : public UAnimInstance
 {
 	GENERATED_BODY()
 
 public:
-	UARPG_UnitAnimInstance();
+	UARPG_TPSAnimInstance();
 	virtual void NativeBeginPlay() override;
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
@@ -44,39 +43,7 @@ public:
 		void AnimNotify_BattleMode();
 	UFUNCTION()
 		void AnimNotify_NormalMode();
-	UFUNCTION()
-		void AnimNotify_AttackStart();	
-	UFUNCTION()
-		void AnimNotify_ComboSection_End();
-	UFUNCTION()
-		void AnimNotify_Attack_End();
-	UFUNCTION()
-		void AnimNotify_BlockStart();
-	UFUNCTION()
-		void AnimNotify_HitEnd();
-	UFUNCTION()
-		void AnimNotify_ParringStart();
-	UFUNCTION()
-		void AnimNotify_ParringEnd();
-	UFUNCTION()
-		void AnimNotify_ParringPlayingEnd();
-	UFUNCTION()
-		void AnimNotify_SprintStart();
 
-	UFUNCTION()
-		void AnimNotify_UseAP();
-	UFUNCTION()
-		void AnimNotify_HoldAP();
-	UFUNCTION()
-		void AnimNotify_HoldAttack();
-
-
-	//패링 성공 후 공격 시스템 ( 데미지 증가가 있어야함 )
-	UFUNCTION()
-		void AnimNotify_SpecialAttackEnd();
-
-	UFUNCTION()
-		void AnimNotify_Death();
 	//----------------------------------
 
 
@@ -146,10 +113,4 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		bool AttackingBackward;
 
-	/*UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		bool bHitting;*/
-
-	/*UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		bool bIsParring;*/
-	
 };

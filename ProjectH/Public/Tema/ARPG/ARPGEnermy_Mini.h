@@ -6,6 +6,8 @@
 #include "Tema/ARPG/ARPGEnermy.h"
 #include "ARPGEnermy_Mini.generated.h"
 
+
+// 무기와 방패를 들고있는 적에 대한 클래스.
 /**
  * 
  */
@@ -24,7 +26,7 @@ protected:
 
 public:
 	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	virtual void Tick(float DeltaSeconds) override;
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void PostInitializeComponents() override;
@@ -36,13 +38,25 @@ public:
 	virtual bool CanThisDamage() override;
 	// 공격 할수 있는지 판단 하는 함수.
 	virtual void ChangeBattleMode(bool bFlag) override;
+	virtual void HitEnd() override;
 
 	virtual void Attack(int32 index) override; // 공격 함수
 	virtual void Guard(bool bFlag) override;
 	virtual void Parring(bool bFlag) override;
 	virtual void Death() override; 	// 죽음 함수
+	virtual void ParringHit() override;
+
+	//적마다 콜리전이 다를 수도 있으므로 죽었을때 콜리전 해제하는 가상 함수.
+	virtual void DeathCollsionEnabled() override;
+	virtual void DeathWeaponSimulate() override;
+
+	virtual void ZeroAP() override; // AP가 제로이다
+
+
 
 	//---------------------------------------
+
+	void DeathReset(); // 죽어서 불필요한 변수들 초기화,
 
 	UFUNCTION(BlueprintCallable)
 		void AttackEnd();
@@ -61,7 +75,6 @@ public:
 	//-----------------------------------------
 
 	void SetBlocking(bool bFlag); // BT에서 방패를 들건지 설정해줌
-	void ZeroAP();
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -78,11 +91,4 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FName ShieldSockName;
 
-	//--------------------------------------------------
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		bool bBlockMode; // 이건 애니메이션을 위한 변수.
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		bool bBlocking; // 이게 실제 블럭 단계인지 검사하는 변수. 이것이 true여야 쉴드 전개 완료 인것.
 };

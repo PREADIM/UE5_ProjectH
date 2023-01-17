@@ -42,5 +42,6 @@ void AARPGAIController::OnPossess(APawn* InPawn)
 
 void AARPGAIController::OnUnPossess()
 {
-
+	GetBrainComponent()->StopLogic("");
+	Super::OnUnPossess();
 }

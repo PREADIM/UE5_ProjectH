@@ -16,9 +16,8 @@ AARPGWeapon_Sword::AARPGWeapon_Sword()
 	WeaponCollision->OnComponentBeginOverlap.AddDynamic(this, &AARPGWeapon_Sword::SwordBeginOverlap);
 	ARPGUnitChannel = ECollisionChannel::ECC_GameTraceChannel12;
 
-	SphereRadius = 20.f;
+	UseAP = 40.f;
 }
-
 
 void AARPGWeapon_Sword::Tick(float DeltaTime)
 {
@@ -28,11 +27,6 @@ void AARPGWeapon_Sword::Tick(float DeltaTime)
 void AARPGWeapon_Sword::BeginPlay()
 {
 	Super::BeginPlay();
-
-	ObjectType.Add(UEngineTypes::ConvertToObjectType(ARPGUnitChannel));
-
-	IgnoreActor.Add(GetOwner());
-	IgnoreActor.Add(this);
 
 	OwnerController = GetOwnerController();
 }
@@ -57,6 +51,47 @@ void AARPGWeapon_Sword::SetWeaponCollision(bool bFlag)
 	}
 }
 
+void AARPGWeapon_Sword::SetPhysics()
+{
+	SwordMesh->SetSimulatePhysics(true);
+	SwordMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+}
+
+void AARPGWeapon_Sword::SetOwnerNoSee(bool bFlag)
+{
+	if (bFlag)
+	{
+		SwordMesh->SetOwnerNoSee(true);
+	}
+	else
+	{
+		SwordMesh->SetOnlyOwnerSee(true);
+		SetWeaponCollision(false);
+	}
+
+}
+
+bool AARPGWeapon_Sword::IsChargeAttack()
+{	
+	return true;
+}
+
+float AARPGWeapon_Sword::ChargeAttack(float DeltaSeconds)
+{
+	ChargeTime += DeltaSeconds;
+	float ChargeDMG = ChargeTime / MaxChargeTime;
+	
+	Charge += ChargeDMG; // 해당 Charge로 WeaponDamage에 곱연산하여 딜 증가
+
+	return ChargeDMG;
+}
+
+void AARPGWeapon_Sword::EndAttack()
+{
+	Charge = 1.f;
+	ChargeTime = 0.f;
+}
+
 void AARPGWeapon_Sword::SwordBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (!HitEndActor.IsEmpty())
@@ -74,16 +109,16 @@ void AARPGWeapon_Sword::SwordBeginOverlap(UPrimitiveComponent* OverlappedComp, A
 	if (!OwnerUnit)
 		return;
 
-	if (OtherActor != OwnerUnit && OtherActor->GetOwner() != OwnerUnit)
+	if (OtherActor != OwnerUnit && OtherActor->GetOwner() != OwnerUnit->GetOwner())
 	{
 		TArray<AActor*> OutActors;
 
-		bool bOverlap = UKismetSystemLibrary::SphereOverlapActors(GetWorld(), GetActorLocation(), SphereRadius, ObjectType, nullptr, IgnoreActor, OutActors);
+		/*bool bOverlap = UKismetSystemLibrary::SphereOverlapActors(GetWorld(), GetActorLocation(), SphereRadius, ObjectType, nullptr, IgnoreActor, OutActors);
 		DrawDebugSphere(GetWorld(), GetActorLocation(), SphereRadius, 20, bOverlap ? FColor::Green : FColor::Red, false, 4.0f);
 		if (bOverlap)
 		{
-			// 안씀.
-		}
+			
+		}*/
 
 		if (OtherComp->GetCollisionObjectType() == ARPGUnitChannel)
 		{
@@ -94,13 +129,23 @@ void AARPGWeapon_Sword::SwordBeginOverlap(UPrimitiveComponent* OverlappedComp, A
 				FDamageEvent DamageEvent;
 				if (Unit->CanThisDamage()) // 공격 할 수 있는지 판단
 				{
-					float TotalDamage = OwnerUnit->CalculDamage(WeaponDamage);
+					float TotalDamage = OwnerUnit->CalculDamage(WeaponDamage * Charge);
 					Unit->TakeDamage(TotalDamage, DamageEvent, OwnerController, this);
+
 				}
-				else // 정상적인 데미지가 들어가지 않을경우 이렇게하면 코드를 보다 간결하고 공통으로 사용가능
+				else if (Unit->bDeath != true)
 				{
-					float APDMG = OwnerUnit->CalculAPDamage(WeaponAP_DMG);
-					Unit->TakeDamageAP(WeaponAP_DMG);
+					if (Unit->bParring == true)
+					{
+						_DEBUG("Parring");
+						OwnerUnit->ParringHit();
+						Unit->bCanParringAttack = true;
+					}
+					else
+					{
+						float APDMG = OwnerUnit->CalculAPDamage(WeaponAP_DMG);
+						Unit->TakeDamageAP(WeaponAP_DMG);
+					}
 				}
 
 				HitEndActor.AddUnique(OtherActor);

@@ -1,4 +1,5 @@
 #include "Tema/ARPG/UnitState.h"
+#include "Tema/ARPG/ARPGUnitBase.h"
 
 
 FUnitState::FUnitState()
@@ -6,12 +7,31 @@ FUnitState::FUnitState()
 
 }
 
-void FUnitState::SetTakeDamageHP(float TakeDamageHP)
+void FUnitState::Init(AARPGUnitBase* Unit)
 {
-	HP = TakeDamageHP;
+	OwnerUnit = Unit;
+
+	HP = NormallyHP;
+	MP = NormallyMP;
+	AP = NormallyAP;
+	ATK = NormallyATK;
+	DEF = NormallyDEF;
 }
 
-void FUnitState::SetTakeDamageAP(float TakeDamageAP)
+void FUnitState::SetTakeDamageHP(float TakeHP)
 {
-	AP = TakeDamageAP;
+	HP = FMath::Clamp(TakeHP, 0.f, NormallyHP);
+}
+
+void FUnitState::SetAP(float TakeAP)
+{
+	float Temp = FMath::Clamp(TakeAP, 0.f, NormallyAP);
+	AP = Temp;
+	if (Temp == 0.0f)
+	{
+		if (OwnerUnit)
+		{
+			OwnerUnit->ZeroAP();
+		}
+	}
 }

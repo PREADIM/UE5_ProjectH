@@ -19,6 +19,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void AttackEnd() override {}
 	virtual void SetWeaponCollision(bool bFlag) override;
+	virtual void SetPhysics() override;
+	virtual void SetOwnerNoSee(bool bFlag) override;
 
 protected:
 	// Called when the game starts or when spawned

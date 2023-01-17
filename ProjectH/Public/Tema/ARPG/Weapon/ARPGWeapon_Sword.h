@@ -21,6 +21,13 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void AttackEnd() override;
 	virtual void SetWeaponCollision(bool bFlag) override;
+	virtual void SetPhysics() override;
+	virtual void SetOwnerNoSee(bool bFlag) override;
+
+	virtual bool IsChargeAttack() override;
+	virtual float ChargeAttack(float DeltaSeconds) override;
+
+	virtual void EndAttack() override;
 
 	UFUNCTION()
 		void SwordBeginOverlap(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
@@ -34,14 +41,7 @@ protected:
 
 private:
 	UPROPERTY()
-		TArray<TEnumAsByte<EObjectTypeQuery>> ObjectType;
-	UPROPERTY()
-		TArray<AActor*> IgnoreActor; // 무시할 액터
-	UPROPERTY()
 		TArray<AActor*> HitEndActor;
-
-	UPROPERTY(VisibleAnywhere)
-		float SphereRadius; //SphereOverlapActors 의 반경
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh")
@@ -57,6 +57,16 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponDamage")
 		float WeaponDamage;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "ChargetAttack")
+		float Charge = 1.f; // 차지 데미지
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ChargetAttack")
+		float MaxChargeTime;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ChargetAttack")
+		float ChargeTime;
+
 	//-------------------------------------------
 	ECollisionChannel ARPGUnitChannel;
 

@@ -20,6 +20,15 @@ public:
 	virtual void Tick(float DeltaTime);
 	virtual void AttackEnd() {}
 	virtual void SetWeaponCollision(bool bFlag) {}
+	virtual void SetPhysics() {}
+	virtual void SetOwnerNoSee(bool bFlag) {}
+	
+	// 차지 어택이 가능한지 먼저 확인하고 true면 float형으로 현재 얼마나 차지되었는지 알려준다.
+	virtual bool IsChargeAttack() { return false; } // 무기마다 차지어택이 있을 수도 없을 수도 있다.
+	virtual float ChargeAttack(float DeltaSeconds) { return 0.f; }
+
+	// 공격이 종료되었을때 무기마다 초기화 해야하는 수치가 있다면 이 함수를 이용.
+	virtual void EndAttack() {}
 
 protected:
 	// Called when the game starts or when spawned

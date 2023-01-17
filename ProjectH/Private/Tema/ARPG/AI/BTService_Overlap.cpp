@@ -51,8 +51,8 @@ void UBTService_Overlap::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* Node
 				//_DEBUG("%s", *OwnerComp.GetBlackboardComponent()->GetValueAsObject(FName("TargetUnit"))->GetName());
 
 				OwnerPawn->PlayerUnit = Unit; // 타겟 플레이어 설정.
-				if(OwnerPawn->bHitting == false)
-					OwnerPawn->bMoving = true; // 무빙 실행★
+				//if(OwnerPawn->bHitting == false)
+				OwnerPawn->bMoving = true; // 무빙 실행★
 				OwnerPawn->SetBattleMode(true); // 배틀모드
 				OwnerPawn->SetCollisionRadius(true);
 				return;

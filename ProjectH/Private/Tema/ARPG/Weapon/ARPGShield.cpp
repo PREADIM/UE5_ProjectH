@@ -44,4 +44,24 @@ void AARPGShield::SetWeaponCollision(bool bFlag)
 	}
 }
 
+void AARPGShield::SetPhysics()
+{
+	ShieldMesh->SetSimulatePhysics(true);
+	ShieldMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+}
+
+void AARPGShield::SetOwnerNoSee(bool bFlag)
+{
+	if (bFlag)
+	{
+		ShieldMesh->SetOwnerNoSee(true);
+	}
+	else
+	{
+		ShieldMesh->SetOnlyOwnerSee(true);
+		SetWeaponCollision(false);
+	}
+	
+}
+
 

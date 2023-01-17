@@ -8,6 +8,8 @@
 
 void UJRPGBattleHPWidget::NativeConstruct()
 {
+	Super::NativeConstruct();
+
 	HP->PercentDelegate.BindUFunction(this, "RetHP");
 	MP->PercentDelegate.BindUFunction(this, "RetMP");
 	ULT->PercentDelegate.BindUFunction(this, "RetULT");

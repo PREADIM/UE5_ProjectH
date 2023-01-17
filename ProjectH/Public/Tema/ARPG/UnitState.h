@@ -11,24 +11,47 @@ struct FUnitState
 
 public:
 	FUnitState();
+
+	void Init(class AARPGUnitBase* Unit);
 	//공격받은 HP로 Set
-	void SetTakeDamageHP(float TakeDamageHP);
-	//공격받은 AP로 Set
-	void SetTakeDamageAP(float TakeDamageAP);
+	void SetTakeDamageHP(float TakeHP);
+	//새로운 AP로 Set
+	void SetAP(float TakeAP);
+
+	/* 평상시 기본 스텟 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float NormallyHP;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float NormallyMP;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float NormallyAP;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float NormallyATK;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float NormallyDEF;
+
+
+	/* 실시간 변경하는 스텟 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		float HP;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		float MP;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		float AP;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		float ATK;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		float DEF;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		class AARPGUnitBase* OwnerUnit; 
 
 };

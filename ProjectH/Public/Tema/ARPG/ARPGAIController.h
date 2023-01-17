@@ -26,8 +26,8 @@ public:
 		Virtual Function
 	---------------------*/
 	virtual void BeginPlay();
-	virtual void OnPossess(APawn* InPawn);
-	virtual void OnUnPossess();
+	virtual void OnPossess(APawn* InPawn) override;
+	virtual void OnUnPossess() override;
 	
 	AARPGAIController();
 };

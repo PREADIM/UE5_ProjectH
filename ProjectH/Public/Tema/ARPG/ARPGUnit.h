@@ -24,7 +24,7 @@ public:
 		virtual function
 	----------------------------*/
 
-	virtual void Tick(float DeltaTime) override;
+	virtual void Tick(float DeltaSeconds) override;
 	virtual void PostInitializeComponents() override;;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
@@ -34,25 +34,37 @@ public:
 	//공격 당했는지 판단 하는 함수.
 	virtual void Hit() override;
 	virtual bool CanThisDamage() override;
+	virtual void ParringHit() override;
+
+	virtual void ZeroAP() override; // AP가 제로이다. AP 회복이 잠시 멈춰야됨
+
+	// 죽었을때 무기 시뮬레이트 활성화
+	virtual void DeathWeaponSimulate() override;
+	// 죽음
+	virtual void Death() override;
+	
+
+	void ChargeAttackStart();
+	void ChargeAttackEnd();
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
 		class UCameraComponent* FPSCamera;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
+		class UCameraComponent* DeathCamera;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh")
 		class USkeletalMeshComponent* FPSMesh;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		class UProjectHGameInstance* GI;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		class AARPGGameMode* GM;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		class AARPGPlayerController* OwnerController;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		class UARPG_UnitAnimInstance* FPSMeshAnimInstance;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		class UARPG_TPSAnimInstance* TPSMeshAnimInstance;
 
 	//------------------------------------------------------
 		// 카메라 쉐이크
@@ -68,17 +80,24 @@ public:
 
 	//-----------------------------------------------------
 
+	// L
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TSubclassOf<class AARPGWeapon> BP_Sword;
 	UPROPERTY(BlueprintReadWrite)
-		class AARPGWeapon* Weapon;
+		class AARPGWeapon* TPSWeapon;
+	UPROPERTY(BlueprintReadWrite)
+		class AARPGWeapon* FPSWeapon;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FName WeaponSocketName;
 
+
+	// R
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TSubclassOf<class AARPGWeapon> BP_Shield;
 	UPROPERTY(BlueprintReadWrite)
-		class AARPGWeapon* Shield;
+		class AARPGWeapon* TPSShield;
+	UPROPERTY(BlueprintReadWrite)
+		class AARPGWeapon* FPSShield;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FName ShieldSocketName;
 
@@ -87,8 +106,19 @@ public:
 
 	//---------------------------------------------------------------------
 
+	void ResetMode(); // 변수들을 끄기
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		bool bSpecialAttackMode; // 해당 변수가 true면 무적이여야함.
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		bool bSpecialAttackPlaying; // 해당 변수가 true면 움직이면 안된다.
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		bool bNormalMode;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		bool bParringPlaying; // 이건 패링 애니메이션을 실행하기 위한 변수.
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		bool bBlockMode; // 이건 애니메이션을 위한 변수.
@@ -121,12 +151,6 @@ public:
 		float WalkSpeed; // 현재 속도
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float NormalSpeed; // 기본 속도
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float BattleSpeed; // 배틀 속도
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float BlockSpeed;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -139,7 +163,18 @@ public:
 		bool bTargeting = false;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		bool bDeath = false;
+		bool bChargeAttacking = false;
+
+
+
+	//이 변수들은 내가 여전히 누르고 있는지 판단하는 함수.
+	// ex) 패링에서 패링할때는 가드가 풀리는데, 
+	//		거기서 내가 아직 RMB를 누르고있으면 패링끝나고 알아서 BlockMode가 true가 된다.
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		bool bLMBPush = false;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		bool bRMBPush = false;
 
 	//------------------------------------------------------
 
@@ -179,6 +214,10 @@ public:
 		void RMBReleased();
 
 	UFUNCTION()
+		void Jumping();
+	UFUNCTION()
+		void StopJump();
+	UFUNCTION()
 		void Sprint();
 	UFUNCTION()
 		void SprintReleased();
@@ -187,6 +226,14 @@ public:
 	UFUNCTION()
 		void Parring();
 
+	//------------------------------------------
+
+	UFUNCTION()
+		void StartUseAPFunction(); // AP를 사용하는 액션을 사용하면 FOnUseAP 델리게이트로 호출 될 함수.
+	UFUNCTION()
+		void UsingAPFunction(); // AP를 지속적으로 사용하는 함수.
+	UFUNCTION()
+		void EndAPFunction(); // AP를 사용하는 액션을 사용하면 FOnEndAP 델리게이트로 호출 될 함수.
 
 	//------------------------------------------
 
@@ -202,20 +249,24 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void HitEnd();
 
-	void BlockingEnd();
-	// 방패 OFF
-
-	// AP가 제로이다.
-	void ZeroAP();
-
 	//------------------------------------------
+	// 방패 OFF
+	void BlockingEnd();
+	// 블럭킹 중에 맞아서 AP가 제로가 됨.
+	void ShieldZeroAP();
+	// 패링 성공 후 공격
+	void SpecialAttack();
 
-	void Death();
+	void SetDeathCamera(); // 죽었을때 카메라가 캐릭터 머리에 달린 것으로 블렌드 되어서 역동적인 연출.
+
 
 public:
 	void LockOn();
 	void LockOnSetPosition(FVector TargetPos);
 	void LockOnAddViewport(bool bFlag);
+
+	
+	
 
 
 };

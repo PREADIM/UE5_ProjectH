@@ -32,4 +32,7 @@ public:
 
 	bool bCoolTime;
 	bool bCanAttack;
+
+	UPROPERTY()
+		class AARPGEnermy* OwnerPawn;
 };

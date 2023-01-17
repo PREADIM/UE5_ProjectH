@@ -5,6 +5,7 @@
 #include "Tema/JRPG/BattleUI/JRPGBattleUnitIcon.h"
 #include "Tema/JRPG/JRPGPlayerController.h"
 #include "Components/VerticalBox.h"
+#include "Tema/JRPG/JRPGUnit.h"
 
 
 void UJRPGPriority::PlayInit()
