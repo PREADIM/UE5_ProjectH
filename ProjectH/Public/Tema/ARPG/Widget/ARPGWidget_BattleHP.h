@@ -37,6 +37,8 @@ public:
 	FTimerHandle DmgRenderTimer;
 
 	UPROPERTY(EditAnywhere)
+		float MaxDamageRenderDelay; // 데미지가 언제까지 뜨게 할 것인가?
+	UPROPERTY(EditAnywhere)
 		float MaxRenderDelay; // 데미지가 언제까지 뜨게 할 것인가?
 	float Delay;	
 

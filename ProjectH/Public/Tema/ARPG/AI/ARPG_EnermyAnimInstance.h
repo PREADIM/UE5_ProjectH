@@ -37,7 +37,7 @@ public:
 	void ZeroAP();
 
 public:
-	float SetDircection();
+	float SetDirection();
 
 public:
 	UPROPERTY(BlueprintReadWrite)
@@ -105,6 +105,9 @@ public:
 
 	/*UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool bHitting;*/
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool bSupArmor;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool bBattleMode;

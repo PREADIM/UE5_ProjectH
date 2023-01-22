@@ -28,7 +28,7 @@ public:
 	virtual float ChargeAttack(float DeltaSeconds) { return 0.f; }
 
 	// 공격이 종료되었을때 무기마다 초기화 해야하는 수치가 있다면 이 함수를 이용.
-	virtual void EndAttack() {}
+	virtual void End() {}
 
 protected:
 	// Called when the game starts or when spawned
@@ -48,4 +48,9 @@ public:
 	// 무기마다 해당 무기를 휘두를수 있는 필요 AP
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float UseAP;
+
+	// 해당 무기가 공격을 막는다면 감쇄할 수치. (방패는 100)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float BlockingDEF;
+
 };

@@ -58,9 +58,8 @@ public:
 
 
 	virtual void Tick(float DeltaSeconds);
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void PostInitializeComponents();
-	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
+	virtual float TakeDamageCalculator(float APDamage, float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
 
 	virtual void TakeDamageAP(float Damage) {}
 	virtual void Hit() {} // 맞았을때 함수
@@ -76,7 +75,6 @@ public:
 	virtual void DeathCollsionEnabled() {} 
 	virtual void DeathWeaponSimulate() {} // 죽어서 무기 물리 시뮬레이트
 	virtual void ZeroAP(); // AP가 제로이다
-
 
 
 public:
@@ -102,7 +100,7 @@ public:
 
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		EMovingState EnermyMoveState; // 어디로 입력 되는지.
+		EMovingState MainMovingState; // 어디로 입력 되는지.
 
 	// 적이 어떻게 움직일지 해당 값으로 EnermyMoveState를 결정한다.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
@@ -134,26 +132,14 @@ public:
 	void SetBattleDistance(float Distance) { BattleDistance = Distance; }
 
 
-	//------------------------------
-
-	// 공격 거리를 나타내는 변수 적마다 다르기때문에 따로 이 값을 수시로 바꿔준다.
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float AttackDistance;
-
-	float GetAttackDistance() { return AttackDistance; }
-
 	//--------------------------------
 
 
 	UPROPERTY()
 		class AARPGAIController* OwnerAIController;
 
-	UPROPERTY(BlueprintReadOnly)
-		class UARPG_EnermyAnimInstance* EnermyAnimInstance;
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		class AARPGUnit* PlayerUnit; // BT에서 오버랩하여 가져온 타겟.
-
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UBehaviorTree* BT;
@@ -179,6 +165,9 @@ public:
 		void LockOnPlayer(); // SetActorRotation으로 플레이어 락온하는 함수.
 
 	UFUNCTION(BlueprintCallable)
+		void SetState();
+
+	UFUNCTION(BlueprintCallable)
 		float GetDirection(FVector MoveDirection); // 현재 어떤 방향인지 애님블프에 전달하는 함수.
 
 	void SetEnermyMoveMode(EEnermyMoveMode Mode); // 움직일 모드 설정
@@ -187,16 +176,13 @@ public:
 
 	void SetBattleMode(bool bFlag); 
 
-	//-----------------------------------------
-
-	UFUNCTION(BlueprintImplementableEvent)
-		void SetDynamicDelegateBind();
-	// ex) 어택 클래스의 다이나믹 델리게이트에 바인드 해야할때.
-
 
 	//--------------------------------------------------
 
 	// 사용하는 몹이 있고 사용하지않는 몹이 있다.
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		bool bSupArmor; // 히트 모션을 취할 것인지. 보스의 경우 슈퍼 아머가 있기때문
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		bool bBlockMode; // 이건 애니메이션을 위한 변수.

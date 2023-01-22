@@ -36,12 +36,10 @@ void AARPGEnermy_Mini::BeginPlay()
 		{
 			Shield->OwnerUnit = this;
 			Shield->SetOwner(this);
+			BlockingDEF = Shield->BlockingDEF;
 			Shield->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, ShieldSockName);
 		}
 	}
-
-
-
 }
 
 void AARPGEnermy_Mini::Tick(float DeltaSeconds)
@@ -49,44 +47,55 @@ void AARPGEnermy_Mini::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 }
 
-void AARPGEnermy_Mini::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-}
 
 void AARPGEnermy_Mini::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
+
+	if (GetMesh()) // 가끔 C++ 클래스를 상속받은 블프가 디테일창이 사라지면서 null값을 넣기때문.(버그)
+	{
+		EnermyAnimInstance = Cast<UARPG_EnermyAnimInstance>(GetMesh()->GetAnimInstance());
+		if (EnermyAnimInstance == nullptr)
+		{
+			_DEBUG("Not AI Has AnimInstance");
+		}
+	}
 }
 
-float AARPGEnermy_Mini::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+float AARPGEnermy_Mini::TakeDamageCalculator(float APDamage, float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	if (bDeath)
+	if (bDeath || bSpecialAttackMode)
 	{
-		_DEBUG("Death");
 		return 0.0f;
 	}
 
-	_DEBUG("Enermy TakeDamage");
-
-	float Damaged = 0.0f;
+	float Damaged = DamageAmount;
 	float CurrentHP = UnitState.HP;
-	if (CurrentHP <= DamageAmount)
+
+	if (bBlocking)
+	{
+		Damaged = DamageAmount - (DamageAmount * BlockingDEF); // BlockingDEF는 0.0~1.0으로 되어있다.
+		TakeDamageAP(APDamage);
+	}
+
+	if (CurrentHP <= Damaged)
 	{
 		Damaged = CurrentHP; // 남은 체력이 곧 라스트 데미지
-		CurrentHP = 0.f;	
+		CurrentHP = 0.f;
 		UnitState.SetTakeDamageHP(CurrentHP);
 		Death();
 	}
 	else
 	{
-		CurrentHP -= DamageAmount;
-		Damaged = DamageAmount;
 		Hit();
-		UnitState.SetTakeDamageHP(CurrentHP);
+		if (Damaged > 0.f)
+		{
+			CurrentHP -= Damaged;
+			UnitState.SetTakeDamageHP(CurrentHP);
+		}
 	}
 
-	Super::TakeDamage(Damaged, DamageEvent, EventInstigator, DamageCauser);
+	Super::TakeDamageCalculator(APDamage, Damaged, DamageEvent, EventInstigator, DamageCauser);
 
 	return Damaged;
 }
@@ -145,7 +154,6 @@ bool AARPGEnermy_Mini::CanThisDamage()
 // 해당 클래스는 그런거 없는 기본 적이므로 그냥 배틀모드끝나면 가드중인거 풀기 정도.
 void AARPGEnermy_Mini::ChangeBattleMode(bool bFlag)
 {
-	//_DEBUG("Enermt Mini ChangeBattleMode");
 	if (!bFlag)
 	{
 		Guard(false);
@@ -177,8 +185,10 @@ void AARPGEnermy_Mini::SetBlocking(bool bFlag)
 
 }
 
+//에너미의 ZeroAP의 경우는 그로기 상태를 말한다.
 void AARPGEnermy_Mini::ZeroAP()
 {
+	Super::ZeroAP();
 	Guard(false);
 	EnermyAnimInstance->ZeroAP();
 }
@@ -189,11 +199,17 @@ void AARPGEnermy_Mini::DeathWeaponSimulate()
 
 	FDetachmentTransformRules Rule(EDetachmentRule::KeepWorld, false);
 
-	Weapon->DetachFromActor(Rule);
-	Shield->DetachFromActor(Rule);
-	Weapon->SetPhysics();
-	Shield->SetPhysics();
+	if (Weapon)
+	{
+		Weapon->DetachFromActor(Rule);
+		Weapon->SetPhysics();
+	}
 
+	if (Shield)
+	{
+		Shield->DetachFromActor(Rule);
+		Shield->SetPhysics();
+	}
 }
 
 
@@ -217,8 +233,11 @@ void AARPGEnermy_Mini::PlayAttack(int32 index)
 		return;
 	}
 
+
+	_DEBUG("Attack");
+
 	bAttacking = true;
-	Attacks[index]->PlayAttack();
+	Attacks[index]->PlayAttack(GetWorld());
 	EnermyAnimInstance->PlayAttackMontage(Attacks[index]->AttackMontage);
 }
 
@@ -288,7 +307,6 @@ void AARPGEnermy_Mini::AttackEnd()
 
 void AARPGEnermy_Mini::WeaponOverlapEnd()
 {
-	_DEBUG("Enermy Weapon AttackEnd");
 	SetWeaponCollision(false);
 	Weapon->AttackEnd();
 }

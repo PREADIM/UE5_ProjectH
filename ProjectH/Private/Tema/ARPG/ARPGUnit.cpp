@@ -96,7 +96,7 @@ void AARPGUnit::BeginPlay()
 			TPSShield->FinishSpawning(FTransform());
 			FPSShield->FinishSpawning(FTransform());
 
-			RMB_AP = TPSWeapon->UseAP;
+			RMB_AP = FPSShield->UseAP;
 			TPSShield->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("ShieldSocket"));
 			FPSShield->AttachToComponent(FPSMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("ShieldSocket"));
 		}
@@ -246,7 +246,7 @@ void AARPGUnit::ZeroAP()
 	if (bSprint)
 	{
 		bSprint = false;
-		SprintReleased();
+		GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 	}
 
 	LMBReleased();
@@ -314,9 +314,9 @@ void AARPGUnit::LMBReleased()
 	bAttackLeft = false;
 	bAttackRight = false;
 	AttackCharge = 0.f;
-	FPSWeapon->EndAttack();
-	ChargeAttackEnd();
-	ResetMode();
+
+	//EndAttack();
+	//ResetMode();
 }
 
 void AARPGUnit::RMB()
@@ -324,8 +324,11 @@ void AARPGUnit::RMB()
 	if (bDeath)
 		return;
 
-	
+	if (bAttacking)
+		return;
+
 	bRMBPush = true;
+	BlockingDEF = FPSShield->BlockingDEF;
 	bCanParringAttack = false;
 	bBlockMode = true;
 }
@@ -333,6 +336,9 @@ void AARPGUnit::RMB()
 void AARPGUnit::RMBReleased()
 {
 	if (bDeath)
+		return;
+
+	if (!bRMBPush)
 		return;
 
 	bRMBPush = false;
@@ -372,6 +378,9 @@ void AARPGUnit::Sprint()
 	if (bBlockMode)
 		return;
 
+	if (bAttacking)
+		return;
+
 	if(CanUseAP())
 		bSprint = true;
 }
@@ -379,6 +388,9 @@ void AARPGUnit::Sprint()
 void AARPGUnit::SprintReleased()
 {
 	if (bDeath)
+		return;
+
+	if (!bSprint)
 		return;
 
 	OnEndAP.Broadcast();
@@ -394,6 +406,8 @@ void AARPGUnit::Sheathed()
 
 	if(bUseAP)
 		OnEndAP.Broadcast();
+
+	AttackEnd();
 
 	bNormalMode = !bNormalMode;
 	if (bNormalMode)
@@ -458,6 +472,20 @@ void AARPGUnit::Death()
 
 	FPSMeshAnimInstance->Death();
 	TPSMeshAnimInstance->Death();
+}
+
+void AARPGUnit::EndAttack()
+{
+	bLMBPush = false;
+	bAttacking = false;
+	AttackCharge = false;
+	bAttackBackward = false;
+	bAttackForward = false;
+	bAttackLeft = false;
+	bAttackRight = false;
+	AttackCharge = 0.f;
+	FPSWeapon->End();
+	ChargeAttackEnd();
 }
 
 void AARPGUnit::ChargeAttackStart()
@@ -538,21 +566,26 @@ void AARPGUnit::ResetMode()
 	bParring = false;
 	bParringHit = false;
 	bParringPlaying = false;
-	bChargeAttacking = false;
+	EndAttack();
 }
 
-float AARPGUnit::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+float AARPGUnit::TakeDamageCalculator(float APDamage, float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-	
-	if (bDeath)
+	if (bDeath || bSpecialAttackMode)
 	{
 		return 0.0f;
 	}
 
-	float Damaged = 0.0f;
+	float Damaged = DamageAmount;
 	float CurrentHP = UnitState.HP;
-	if (CurrentHP <= DamageAmount)
+
+	if (bBlocking)
+	{
+		Damaged = DamageAmount - (DamageAmount * BlockingDEF); // BlockingDEF는 0.0~1.0으로 되어있다.
+		TakeDamageAP(APDamage);
+	}
+	
+	if (CurrentHP <= Damaged)
 	{
 		Damaged = CurrentHP; // 남은 체력이 곧 라스트 데미지
 		CurrentHP = 0.f;
@@ -561,24 +594,23 @@ float AARPGUnit::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent,
 	}
 	else
 	{
-		CurrentHP -= DamageAmount;
-		Damaged = DamageAmount;
 		Hit();
-		UnitState.SetTakeDamageHP(CurrentHP);
+		if (Damaged > 0.f)
+		{
+			CurrentHP -= Damaged;
+			UnitState.SetTakeDamageHP(CurrentHP);
+		}
 	}
 
-	Super::TakeDamage(Damaged, DamageEvent, EventInstigator, DamageCauser);
+	Super::TakeDamageCalculator(APDamage, Damaged, DamageEvent, EventInstigator, DamageCauser);
 
 	return Damaged;
 }
 
-// TakeDamage AP 버전 쉴드로 막아냈을때 실행
+// TakeDamage AP 버전 블록킹했을때 AP깎는 함수.
 void AARPGUnit::TakeDamageAP(float Damage)
 {
 	//여기서 만약 무슨 스킬로 인해 AP가 깎일 필요가없는경우 다른 함수를 실행하게한다.
-
-	if (bSpecialAttackMode) // 무적인 시간.
-		return;
 
 	float CurrentAP = UnitState.AP;
 	OnUseAP.Broadcast(); // 막아낸 공격이니 감소를 한다. 그뒤 잠시 멈춤
@@ -602,7 +634,7 @@ void AARPGUnit::TakeDamageAP(float Damage)
 
 void AARPGUnit::SetWeaponCollision(bool bFlag)
 {
-	TPSWeapon->SetWeaponCollision(bFlag);
+	FPSWeapon->SetWeaponCollision(bFlag);
 }
 
 
@@ -611,7 +643,7 @@ void AARPGUnit::SetWeaponCollision(bool bFlag)
 //결국 오버랩은 무기가 공격할때 쓰는 쪽으로 사용한다.
 void AARPGUnit::SetShieldCollision(bool bFlag)
 {
-	TPSShield->SetWeaponCollision(bFlag);
+	FPSWeapon->SetWeaponCollision(bFlag);
 }
 
 
@@ -621,6 +653,8 @@ void AARPGUnit::AttackEnd()
 	//bAttacking = false;
 	//몽타주 기반 공격도 아니고 섹션 점프도 없기때문에, 콤보 공격이 없어서,
 	//그냥 LMBRelease 함수에서 false를 하기 때문에 굳이 하지 않아도 된다.
+	EndAttack();
+
 }
 
 // 콤보 공격이나, 콜리전을 잠시 꺼야할 때 호출.
@@ -628,7 +662,7 @@ void AARPGUnit::WeaponOverlapEnd()
 {
 	_DEBUG("Owner Weapon AttackEnd");
 	SetWeaponCollision(false);
-	TPSWeapon->AttackEnd();
+	FPSWeapon->AttackEnd();
 }
 
 // bHitting은 맞고있을때 다른 애니메이션을 실행하지 않도록 하기위함.

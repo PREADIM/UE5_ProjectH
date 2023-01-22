@@ -36,7 +36,7 @@ void UARPGAttackComponent::Init(TArray<TSubclassOf<UAttackClass>> BP_Attacks)
 			temp->Init();
 			temp->OwnerUnit = OwnerUnit;
 			Attacks.Add(temp);	
-			_DEBUG("Attack distance : %f", Attacks[AttackCnt]->AttackStruct.AttackDistance);
+			//_DEBUG("Attack distance : %f", Attacks[AttackCnt]->AttackStruct.AttackDistance);
 			AttackCnt++;
 			MaxAttackDistance = MaxAttackDistance < temp->AttackStruct.AttackDistance ? temp->AttackStruct.AttackDistance : MaxAttackDistance;
 			// 공격의 가장 최대길이를 가져와서 해당 길이로 무빙을 칠건지 안칠건지 알수있음
@@ -45,7 +45,7 @@ void UARPGAttackComponent::Init(TArray<TSubclassOf<UAttackClass>> BP_Attacks)
 	}
 }
 
-
+// 어택클래스 안에 있는 델리게이트에 함수를 바인드하는 함수.
 void UARPGAttackComponent::SetAttackDelegate(int32 index, FName FuncName)
 {
 	if (Attacks.IsValidIndex(index))

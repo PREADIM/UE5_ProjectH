@@ -20,7 +20,7 @@ void UARPGWidgetMain::ChargeAttackInViewport(bool bFlag)
 {
 	if (bFlag)
 	{
-		if (!ChargeAttack->GetRenderOpacity() == 0.f)
+		if (ChargeAttack->GetRenderOpacity() == 0.f)
 			ChargeAttack->SetRenderOpacity(1.f);
 	}
 	else

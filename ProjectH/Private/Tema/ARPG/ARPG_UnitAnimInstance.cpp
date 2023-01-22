@@ -148,7 +148,7 @@ void UARPG_UnitAnimInstance::AnimNotify_Attack_End()
 	if (OwnerUnit)
 	{
 		OwnerUnit->OnEndAP.Broadcast();
-		//OwnerUnit->AttackEnd(); 하지 않는 이유는 ARPGUnit의 AttackEnd를 참조. ★★
+		OwnerUnit->AttackEnd();
 	}
 }
 
@@ -225,6 +225,7 @@ void UARPG_UnitAnimInstance::AnimNotify_HoldAttack()
 {
 	if (OwnerUnit->bChargeAttacking == false)
 	{
+		_DEBUG("HoldAttack")
 		OwnerUnit->ChargeAttackStart();
 	}
 }

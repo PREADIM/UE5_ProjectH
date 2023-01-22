@@ -27,7 +27,7 @@ public:
 	virtual bool IsChargeAttack() override;
 	virtual float ChargeAttack(float DeltaSeconds) override;
 
-	virtual void EndAttack() override;
+	virtual void End() override;
 
 	UFUNCTION()
 		void SwordBeginOverlap(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);

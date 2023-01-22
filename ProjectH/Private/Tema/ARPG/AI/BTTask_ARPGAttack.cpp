@@ -46,6 +46,7 @@ EBTNodeResult::Type UBTTask_ARPGAttack::ExecuteTask(UBehaviorTreeComponent& Owne
 	{
 		int32 index = OwnerComp.GetBlackboardComponent()->GetValueAsInt(TEXT("AttackIndex"));
 		bAttack = true;
+		OwnerPawn->bMoving = false;
 		OwnerPawn->Attack(index);
 	}
 

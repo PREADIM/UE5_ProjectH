@@ -27,8 +27,6 @@ void AARPGEnermy::BeginPlay()
 
 	if(AttackComponent)
 		AttackComponent->Init(BP_Attacks);
-
-	SetDynamicDelegateBind();
 }
 
 // Called every frame
@@ -45,30 +43,14 @@ void AARPGEnermy::Tick(float DeltaSeconds)
 	}
 }
 
-// Called to bind functionality to input
-void AARPGEnermy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-}
-
 void AARPGEnermy::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
-
-	if (GetMesh()) // 가끔 C++ 클래스를 상속받은 블프가 디테일창이 사라지면서 null값을 넣기때문.(버그)
-	{
-		EnermyAnimInstance = Cast<UARPG_EnermyAnimInstance>(GetMesh()->GetAnimInstance());
-		if (EnermyAnimInstance == nullptr)
-		{
-			_DEBUG("Not AI Has AnimInstance");
-		}
-	}
 }
 
-float AARPGEnermy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+float AARPGEnermy::TakeDamageCalculator(float APDamage, float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);	
+	Super::TakeDamageCalculator(APDamage, DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
 	return DamageAmount;
 }
@@ -83,7 +65,8 @@ void AARPGEnermy::Death()
 
 void AARPGEnermy::ZeroAP()
 {
-	Super::ZeroAP();
+	// 적은 AP가 곧 그로기 이기때문에 다르게 생성.
+
 }
 
 
@@ -93,7 +76,7 @@ FVector AARPGEnermy::GetMovingValue()
 {
 	FVector Direction;
 
-	switch (EnermyMoveState)
+	switch (MainMovingState)
 	{
 	case EMovingState::Stop :
 		Direction = FVector::ZeroVector;
@@ -132,13 +115,31 @@ void AARPGEnermy::LockOnPlayer()
 	}
 }
 
+void AARPGEnermy::SetState()
+{
+	switch(State)
+	{
+	case EEnermyMoveMode::None:
+		MainMovingState = EMovingState::Stop;
+		break;
+	case EEnermyMoveMode::ForwardMoving :
+		MainMovingState = EMovingState::Forward;
+		break;
+	case EEnermyMoveMode::LeftMoving :
+		MainMovingState = EMovingState::Left;
+		break;
+	case EEnermyMoveMode::RightMoving :
+		MainMovingState = EMovingState::Right;
+		break;
+	case EEnermyMoveMode::BackMoving :
+		MainMovingState = EMovingState::Back;
+		break;
+	}
+}
 
 
 void AARPGEnermy::SetBattleMode(bool bFlag)
 {
-	if (!EnermyAnimInstance)
-		return;
-
 	if (bBattleMode == bFlag)
 		return;
 

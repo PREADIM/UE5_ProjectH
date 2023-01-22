@@ -106,18 +106,20 @@ void AARPGUnitBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 
 }
 
-float AARPGUnitBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+float AARPGUnitBase::TakeDamageCalculator(float APDamage, float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-	OnDamage.Broadcast(DamageAmount);
-
-	if (BattleHP->GetRenderOpacity() == 0.f)
+	if (DamageAmount > 0.f)
 	{
-		BattleHP->SetRenderOpacity(1.f);
+		OnDamage.Broadcast(DamageAmount);
+		if (BattleHP->GetRenderOpacity() == 0.f)
+		{
+			BattleHP->SetRenderOpacity(1.f);
+		}
 	}
 
 	return DamageAmount;
 }
+
 
 float AARPGUnitBase::CalculDamage(float Damage)
 {

@@ -62,10 +62,13 @@ void AARPGWeapon_Sword::SetOwnerNoSee(bool bFlag)
 	if (bFlag)
 	{
 		SwordMesh->SetOwnerNoSee(true);
+		SwordMesh->SetCastShadow(true);
+		SwordMesh->SetCastHiddenShadow(true);
 	}
 	else
 	{
 		SwordMesh->SetOnlyOwnerSee(true);
+		SwordMesh->SetCastShadow(false);
 		SetWeaponCollision(false);
 	}
 
@@ -81,12 +84,20 @@ float AARPGWeapon_Sword::ChargeAttack(float DeltaSeconds)
 	ChargeTime += DeltaSeconds;
 	float ChargeDMG = ChargeTime / MaxChargeTime;
 	
-	Charge += ChargeDMG; // 해당 Charge로 WeaponDamage에 곱연산하여 딜 증가
+	if (ChargeDMG >= 0.5)
+	{
+		Charge = ChargeDMG + 1.7f;
+	}
+	else
+	{
+		Charge = ChargeDMG + 1.f; // 해당 Charge로 WeaponDamage에 곱연산하여 딜 증가
+	}
+
 
 	return ChargeDMG;
 }
 
-void AARPGWeapon_Sword::EndAttack()
+void AARPGWeapon_Sword::End()
 {
 	Charge = 1.f;
 	ChargeTime = 0.f;
@@ -127,26 +138,22 @@ void AARPGWeapon_Sword::SwordBeginOverlap(UPrimitiveComponent* OverlappedComp, A
 			if (Unit)
 			{
 				FDamageEvent DamageEvent;
-				if (Unit->CanThisDamage()) // 공격 할 수 있는지 판단
+			if (Unit->bDeath != true) // 공격 할 수 있는지 판단
+			{
+				if (Unit->bParring == true && OwnerUnit->bDontParringAttack == false)
 				{
+					_DEBUG("Parring");
+					OwnerUnit->ParringHit();
+					Unit->bCanParringAttack = true;
+				}
+				else
+				{
+					// 일단 공격을 하고 블럭킹인지 죽었는지는 알아서 판단
 					float TotalDamage = OwnerUnit->CalculDamage(WeaponDamage * Charge);
-					Unit->TakeDamage(TotalDamage, DamageEvent, OwnerController, this);
-
+					float APDMG = OwnerUnit->CalculAPDamage(WeaponAP_DMG);
+					Unit->TakeDamageCalculator(APDMG, TotalDamage, DamageEvent, OwnerController, this);
 				}
-				else if (Unit->bDeath != true)
-				{
-					if (Unit->bParring == true)
-					{
-						_DEBUG("Parring");
-						OwnerUnit->ParringHit();
-						Unit->bCanParringAttack = true;
-					}
-					else
-					{
-						float APDMG = OwnerUnit->CalculAPDamage(WeaponAP_DMG);
-						Unit->TakeDamageAP(WeaponAP_DMG);
-					}
-				}
+			}
 
 				HitEndActor.AddUnique(OtherActor);
 				//_DEBUG("Overlap Enermy Actor : %s", *OtherActor->GetName());

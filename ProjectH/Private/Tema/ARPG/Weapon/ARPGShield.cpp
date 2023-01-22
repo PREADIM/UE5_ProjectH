@@ -14,6 +14,8 @@ AARPGShield::AARPGShield()
 	ShieldCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("ShieldCollision"));
 	ShieldCollision->SetupAttachment(ShieldMesh);
 
+
+	BlockingDEF = 1.f;
 }
 
 // Called when the game starts or when spawned
@@ -55,10 +57,13 @@ void AARPGShield::SetOwnerNoSee(bool bFlag)
 	if (bFlag)
 	{
 		ShieldMesh->SetOwnerNoSee(true);
+		ShieldMesh->SetCastShadow(true);
+		ShieldMesh->SetCastHiddenShadow(true);
 	}
 	else
 	{
 		ShieldMesh->SetOnlyOwnerSee(true);
+		ShieldMesh->SetCastShadow(false);
 		SetWeaponCollision(false);
 	}
 	

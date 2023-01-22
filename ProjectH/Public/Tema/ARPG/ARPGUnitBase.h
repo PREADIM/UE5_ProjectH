@@ -51,8 +51,13 @@ public:
 	// 죽음
 	virtual void Death();
 
+	//공격이 끝났을때 반드시 호출되어야할 함수들을 모아둔 것.
+	virtual void EndAttack() {}
+
 public:
-	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
+	//virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
+	// TakeDamage 대신 이 함수에서 데미지 처리를 알아서 하게한다.
+	virtual float TakeDamageCalculator (float APDamage, float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
 	float CalculDamage(float Damage);
 	float CalculAPDamage(float APDamage);
 	bool CanUseAP(); // AP가 쓸수있나?
@@ -85,7 +90,16 @@ public:
 	//-------------------------------------------
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		bool bSpecialAttackMode; // 해당 변수가 true면 무적이여야함.
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		bool bSpecialAttackPlaying; // 해당 변수가 true면 움직이면 안된다.
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		bool bAttacking;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		bool bDontParringAttack; // 패링이 안되는 공격중인가? (패링 불가 어택)
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		bool bParring;
@@ -113,6 +127,9 @@ public:
 
 	//------------------------------------------
 	// Use AP 관련
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float BlockingDEF; // 해당 무기의 블록킹 할수 있는 계수. (방패는 100, 어떤무기는 80같은 느낌.)
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float APSpeed; // AP가 차는 속도

@@ -37,6 +37,7 @@ void UBTService_ARPGCoolTime::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 		AttackCoolTime = OwnerPawn->GetAttackCoolTime();
 		CoolTime += DeltaSeconds;
 		OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("CanAttack"), false);
+
 		// 쿨타임이므로 당연히 때릴 수 없음.
 		if (AttackCoolTime <= CoolTime)
 		{
@@ -82,7 +83,15 @@ void UBTService_ARPGCoolTime::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 						AttackIndex = i;
 						CurrentAttackDistance = Dist;
 						bCanAttack = true;
-						//_DEBUG("%d Attack true", i);
+					}
+					else if (CurrentAttackDistance == Dist)
+					{
+						if (FMath::RandRange(1, 10) % 2 == 0)
+						{
+							AttackIndex = i;
+							CurrentAttackDistance = Dist;
+							bCanAttack = true;
+						}
 					}
 				}
 				//이 스킬의 범위는 현재 거리보다 작거나 같다.

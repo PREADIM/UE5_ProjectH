@@ -10,7 +10,8 @@ void UARPGWidget_BattleHP::Init(AARPGUnitBase* Unit)
 {
 	Super::Init(Unit);
 
-	MaxRenderDelay = 5.f;	
+	MaxDamageRenderDelay = 5.f;
+	MaxRenderDelay = 15.f; // 체력바 딜레이
 	Delay = 0.f;
 }
 
@@ -61,13 +62,16 @@ void UARPGWidget_BattleHP::RenderDamageText()
 {
 	if (Delay >= MaxRenderDelay)
 	{
+		SetRenderOpacity(0.f);
+		GetWorld()->GetTimerManager().ClearTimer(DmgRenderTimer);		
+	}
+	else if (Delay >= MaxDamageRenderDelay)
+	{
 		Damage->SetRenderOpacity(0.0f);
 		PrevDamage = 0.f;
-		GetWorld()->GetTimerManager().ClearTimer(DmgRenderTimer);
 	}
 	else
 	{
-		_DEBUG("Delay");
 		Delay += 1.f;
 	}
 }

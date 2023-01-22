@@ -62,16 +62,27 @@ bool UBTDecorator_CalculAttack::CalculateRawConditionValue(UBehaviorTreeComponen
 		//스킬 사용가능한지.
 		if (Attacks[i]->AttackStruct.bCanThisAttack)
 		{
-			// 현재 거리보다 이 스킬을 사용가능한 거리가 더 작은경우 이 스킬을 최우선으로 사용
+			// 현재 거리보다 이 스킬의 유효범위가 크거나 같다면 이 스킬을 최우선으로 사용
 			if (AttackDistance <= Attacks[i]->AttackStruct.AttackDistance)
 			{
 				float Dist = Attacks[i]->AttackStruct.AttackDistance;
 				if (CurrentAttackDistance > Dist)
 				{
+					_DEBUG("Not Rand");
 					AttackIndex = i;
 					CurrentAttackDistance = Dist;
 					bCanAttack = true;
-					//_DEBUG("%d Attack true", i);
+				}
+				else if(CurrentAttackDistance == Dist)
+				{
+					_DEBUG("Rand");
+					if (FMath::RandRange(1, 2) % 2 == 0)
+					{
+						
+						AttackIndex = i;
+						CurrentAttackDistance = Dist;
+						bCanAttack = true;
+					}
 				}
 			}
 			//이 스킬의 범위는 현재 거리보다 작거나 같다.

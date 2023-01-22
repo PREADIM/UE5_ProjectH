@@ -27,7 +27,7 @@ public:
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void PostInitializeComponents() override;;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+	virtual float TakeDamageCalculator(float APDamage, float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
 	// 공격을 막아내 AP를 깎아야할때 사용하는 함수.
 	virtual void TakeDamageAP(float Damage) override;
@@ -43,6 +43,8 @@ public:
 	// 죽음
 	virtual void Death() override;
 	
+	//공격이 끝났을때 반드시 호출되어야할 함수들을 모아둔 것.
+	virtual void EndAttack() override;
 
 	void ChargeAttackStart();
 	void ChargeAttackEnd();
@@ -107,12 +109,6 @@ public:
 	//---------------------------------------------------------------------
 
 	void ResetMode(); // 변수들을 끄기
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		bool bSpecialAttackMode; // 해당 변수가 true면 무적이여야함.
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		bool bSpecialAttackPlaying; // 해당 변수가 true면 움직이면 안된다.
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		bool bNormalMode;

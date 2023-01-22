@@ -26,12 +26,11 @@ void UARPG_EnermyAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		if (!bDeath)
 		{
 			Speed = OwnerUnit->GetVelocity().Size();
-			Direction = SetDircection();
-
+			Direction = SetDirection();
+			bSupArmor = OwnerUnit->bSupArmor;
 			bBattleMode = OwnerUnit->bBattleMode;
 			bBlocking = OwnerUnit->bBlockMode;
 			bParring = OwnerUnit->bParring;
-			//bHitting = OwnerUnit->bHitting;
 			bAttacking = OwnerUnit->bAttacking;
 			bInAir = OwnerUnit->GetCharacterMovement()->IsFalling();
 			bAccelerating = OwnerUnit->GetCharacterMovement()->GetCurrentAcceleration().Length() > 0.0f;
@@ -80,7 +79,7 @@ void UARPG_EnermyAnimInstance::ZeroAP()
 	Montage_Play(BlockingZeroAPMontage);
 }
 
-float UARPG_EnermyAnimInstance::SetDircection()
+float UARPG_EnermyAnimInstance::SetDirection()
 {
 	FRotator Temp;
 	Temp = UKismetMathLibrary::NormalizedDeltaRotator(OwnerUnit->GetActorRotation(), OwnerUnit->GetVelocity().Rotation());
