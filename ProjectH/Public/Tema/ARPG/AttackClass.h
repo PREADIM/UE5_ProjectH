@@ -21,6 +21,9 @@ class PROJECTH_API UAttackClass : public UObject
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		int32 SkillNumber; // 해당 스킬 넘버로 애니메이션 이펙트를 실행
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FARPGAttackStruct AttackStruct;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

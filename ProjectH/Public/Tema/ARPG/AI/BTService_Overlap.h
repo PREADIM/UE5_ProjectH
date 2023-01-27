@@ -17,6 +17,9 @@ class PROJECTH_API UBTService_Overlap : public UBTService
 public:
 	UBTService_Overlap();
 
+	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
+	TArray<AActor*> IgnoreActors;
+
 protected:
 	virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 	

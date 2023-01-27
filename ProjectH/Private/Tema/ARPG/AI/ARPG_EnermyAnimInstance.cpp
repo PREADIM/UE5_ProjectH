@@ -70,8 +70,6 @@ void UARPG_EnermyAnimInstance::PlayDeadMontage()
 void UARPG_EnermyAnimInstance::PlayParringHitMontage()
 {
 	Montage_Play(ParringHitMontage);
-	OwnerUnit->WeaponOverlapEnd();
-	OwnerUnit->AttackEnd();	
 }
 
 void UARPG_EnermyAnimInstance::ZeroAP()

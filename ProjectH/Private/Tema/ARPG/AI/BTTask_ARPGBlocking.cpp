@@ -23,6 +23,7 @@ EBTNodeResult::Type UBTTask_ARPGBlocking::ExecuteTask(UBehaviorTreeComponent& Ow
 		return EBTNodeResult::Failed;
 	}
 
+
 	switch (FMath::RandRange(0, 1))
 	{
 	case 0:

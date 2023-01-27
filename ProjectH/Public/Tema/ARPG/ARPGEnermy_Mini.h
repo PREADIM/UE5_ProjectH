@@ -30,9 +30,7 @@ public:
 	virtual float TakeDamageCalculator(float APDamage, float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	
 	virtual void TakeDamageAP(float Damage) override;
-	virtual void Hit() override;
-	//공격 당했는지 판단 하는 함수.	
-	virtual bool CanThisDamage() override;
+	virtual void Hit(bool bBlockingHit) override;
 	// 공격 할수 있는지 판단 하는 함수.
 	virtual void ChangeBattleMode(bool bFlag) override;
 	virtual void HitEnd() override;
@@ -41,7 +39,7 @@ public:
 	virtual void Guard(bool bFlag) override;
 	virtual void Parring(bool bFlag) override;
 	virtual void Death() override; 	// 죽음 함수
-	virtual void ParringHit() override;
+	virtual void ParringHit(class AARPGUnitBase* InstigatorActor) override;
 
 	//적마다 콜리전이 다를 수도 있으므로 죽었을때 콜리전 해제하는 가상 함수.
 	virtual void DeathCollsionEnabled() override;

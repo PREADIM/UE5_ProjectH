@@ -33,7 +33,6 @@ public:
 	void PlayHitMontage(EEnermy_Mini_Mode UnitMode);
 	void PlayDeadMontage();
 	void PlayParringHitMontage();
-
 	void ZeroAP();
 
 public:

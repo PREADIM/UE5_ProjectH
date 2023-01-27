@@ -500,7 +500,7 @@ void AARPGUnit::ChargeAttackEnd()
 	OwnerController->ChargeAttackInViewport(false);
 }
 
-void AARPGUnit::Hit()
+void AARPGUnit::Hit(bool bBlockingHit)
 {
 	if (!FPSMeshAnimInstance && !TPSMeshAnimInstance)
 		return;
@@ -512,7 +512,7 @@ void AARPGUnit::Hit()
 	bParringPlaying = false;
 	bParring = false;
 	bParringHit = false;
-	if (bBlocking)
+	if (bBlockingHit)
 	{
 		FPSMeshAnimInstance->Hit(EUnitMode::BlockingMode);
 		TPSMeshAnimInstance->Hit(EUnitMode::BlockingMode);
@@ -526,30 +526,16 @@ void AARPGUnit::Hit()
 	}
 }
 
-bool AARPGUnit::CanThisDamage()
-{
-	// 따로 이런 함수를 만든 이유는, 쉴드 뿐만아니라 특정 상황에서 못때리는 상태 일 수도 있으므로,
-	if (bBlocking)
-		return false;
 
-	if (bDeath)
-		return false;
-
-	if (bParring)
-		return false;
-
-	if (bSpecialAttackMode)
-		return false;
-
-	return true;
-}
-
-void AARPGUnit::ParringHit()
+void AARPGUnit::ParringHit(AARPGUnitBase* InstigatorActor)
 {
 	bParringHit = true;
 	bHitting = true;
 	bBlocking = false;
 	bBlockMode = false;
+
+	//현재 적은 패링이 없다.
+	//AnimInstance->ParringInstigatorUnit = InstigatorActor;
 }
 
 
@@ -578,11 +564,16 @@ float AARPGUnit::TakeDamageCalculator(float APDamage, float DamageAmount, FDamag
 
 	float Damaged = DamageAmount;
 	float CurrentHP = UnitState.HP;
+	bool bBlockingHit = false;
 
 	if (bBlocking)
 	{
-		Damaged = DamageAmount - (DamageAmount * BlockingDEF); // BlockingDEF는 0.0~1.0으로 되어있다.
-		TakeDamageAP(APDamage);
+		if (TargetDotProduct(DamageCauser->GetActorLocation(), 0.7)) // 45도 가량
+		{
+			Damaged = DamageAmount - (DamageAmount * BlockingDEF); // BlockingDEF는 0.0~1.0으로 되어있다.
+			TakeDamageAP(APDamage);		
+			bBlockingHit = true;
+		}
 	}
 	
 	if (CurrentHP <= Damaged)
@@ -594,7 +585,7 @@ float AARPGUnit::TakeDamageCalculator(float APDamage, float DamageAmount, FDamag
 	}
 	else
 	{
-		Hit();
+		Hit(bBlockingHit);
 		if (Damaged > 0.f)
 		{
 			CurrentHP -= Damaged;
@@ -625,7 +616,6 @@ void AARPGUnit::TakeDamageAP(float Damage)
 	else
 	{
 		CurrentAP -= Damage;
-		Hit();
 		UnitState.SetAP(CurrentAP);
 	}
 

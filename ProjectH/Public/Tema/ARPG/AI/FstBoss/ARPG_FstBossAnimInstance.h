@@ -22,11 +22,60 @@ public:
 public:
 	float SetDirection();
 
+	// 몽타주 실행 함수.
+	void PlayAttackMontage(class UAnimMontage* AttackMontage);
+	void PlayHitMontage();
+	void PlayDeadMontage();
+	void PlayParringHitMontage();
+	void ZeroAP();
+
+
+	//-----------------------------------------------------------
+
+
+	// PlayEffect와 PlaySound는 AttakClass의 SkillNumber를 통해 결정된다.
+	UFUNCTION()
+		void AnimNotify_PlayEffect();
+
+	UFUNCTION()
+		void AnimNotify_PlaySound();
+
+	
+
+	UFUNCTION()
+		void AnimNotify_AttackStart();
+
+	UFUNCTION()
+		void AnimNotify_ComboSection_End();
+
+	UFUNCTION()
+		void AnimNotify_Attack_End();
+
+	UFUNCTION()
+		void AnimNotify_ParringHit();
+
+	UFUNCTION()
+		void AnimNotify_HitEnd();
+
+	UFUNCTION()
+		void AnimNotify_Death();
 
 public:
-	class AARPGEnermy_FstBoss* FstBoss;
+	UPROPERTY()
+		class AARPGEnermy_FstBoss* FstBoss; // Owner
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UAnimMontage* HitMontage;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UAnimMontage* ZeroAPMontage; // 그로기
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UAnimMontage* ParringHitMontage;
+
+	// 패링을 실시한 유닛을 일시적으로 가져온다.
+	UPROPERTY(BlueprintReadWrite)
+		class AARPGUnitBase* ParringInstigatorUnit;
 	//-----------------------------------------------------------
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -49,4 +98,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool bAccelerating;	
+
+
 };

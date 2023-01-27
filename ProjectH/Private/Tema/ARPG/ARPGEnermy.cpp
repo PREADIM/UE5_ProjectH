@@ -14,8 +14,6 @@ AARPGEnermy::AARPGEnermy()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	AttackComponent = CreateDefaultSubobject<class UARPGAttackComponent>(TEXT("AttackComponent"));
-
 	GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
 	Tags.Add(FName("Enermy"));
 }
@@ -25,7 +23,11 @@ void AARPGEnermy::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if(AttackComponent)
+	//★★ CreateDefaultSubobject를 하면 해당 클래스를 가진 액터들이 CDO를 공유하게 되므로 NewObject로 따로 할당.
+	AttackComponent = NewObject<UARPGAttackComponent>(this, UARPGAttackComponent::StaticClass());
+	AttackComponent->RegisterComponent();
+
+	if (AttackComponent)
 		AttackComponent->Init(BP_Attacks);
 }
 
@@ -51,6 +53,15 @@ void AARPGEnermy::PostInitializeComponents()
 float AARPGEnermy::TakeDamageCalculator(float APDamage, float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	Super::TakeDamageCalculator(APDamage, DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	if (PlayerUnit == nullptr)
+	{
+		AARPGUnit* Temp = Cast<AARPGUnit>(EventInstigator->GetPawn());
+		if (Temp)
+		{
+			PlayerUnit = Temp;
+		}
+	}
+
 
 	return DamageAmount;
 }
@@ -66,6 +77,7 @@ void AARPGEnermy::Death()
 void AARPGEnermy::ZeroAP()
 {
 	// 적은 AP가 곧 그로기 이기때문에 다르게 생성.
+
 
 }
 

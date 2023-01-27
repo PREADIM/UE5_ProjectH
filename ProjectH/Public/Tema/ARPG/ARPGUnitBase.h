@@ -39,21 +39,17 @@ public:
 	// 해당 함수는 모든 클래스들이 따로 제작해야한다.
 	// 맞았을때 이 함수를 공통적으로 실행하고 각 유닛의 모드별로 알아서 애님인스턴스에 해당하는 모드 히트를
 	// 알려주는 형식
-	virtual void Hit() {}
-	// 지금 이 유닛에 데미지를 줄수 있는가?
-	virtual bool CanThisDamage() { return false; }
+	virtual void Hit(bool bBlockingHit) {}
 
 	// 패링에 당함.
-	virtual void ParringHit() {}
+	virtual void ParringHit(class AARPGUnitBase* InstigatorActor) {}
 	virtual void ZeroAP(); // 공격을 사용해서 AP가 제로이다
 	
 	virtual void DeathWeaponSimulate() {}
 	// 죽음
 	virtual void Death();
-
 	//공격이 끝났을때 반드시 호출되어야할 함수들을 모아둔 것.
 	virtual void EndAttack() {}
-
 public:
 	//virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
 	// TakeDamage 대신 이 함수에서 데미지 처리를 알아서 하게한다.
@@ -61,6 +57,12 @@ public:
 	float CalculDamage(float Damage);
 	float CalculAPDamage(float APDamage);
 	bool CanUseAP(); // AP가 쓸수있나?
+
+	// 패링당할수 있는지 판단하는 함수. (내적으로 각도 계산 함수 필요).
+	bool ParringHitFunc(FVector TargetLocation);
+	//TargetCharacter와 this 캐릭터의 내적 연산. 위치 값과, 원하는 각도를 대입해서 bool로 받아옴.
+	bool TargetDotProduct(FVector TargetLocation, float CompareCos);
+
 
 	void BattleHPWidgetHide();
 	
@@ -147,7 +149,7 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		bool bZeroAP; // AP가 제로를 찍은경우엔 무조건 스태미나가 바로차지않고 텀을 가진다.
 
-	const float ZeroAPWaitTime = 1.0f; // 2초간 대기
+	const float ZeroAPWaitTime = 1.0f; // 1초간 대기
 	float CurrentWaitTime = 0.0f;
 
 	//-------------------------------------------

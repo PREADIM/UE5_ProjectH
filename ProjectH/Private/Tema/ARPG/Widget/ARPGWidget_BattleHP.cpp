@@ -11,7 +11,7 @@ void UARPGWidget_BattleHP::Init(AARPGUnitBase* Unit)
 	Super::Init(Unit);
 
 	MaxDamageRenderDelay = 5.f;
-	MaxRenderDelay = 15.f; // 체력바 딜레이
+	MaxRenderDelay = 10.f; // 체력바 딜레이
 	Delay = 0.f;
 }
 
@@ -50,8 +50,14 @@ void UARPGWidget_BattleHP::SetTextDamage(float TakeDamage)
 
 	if (!GetWorld()->GetTimerManager().IsTimerActive(DmgRenderTimer))
 	{
+		SetRenderOpacity(1.0f);
 		Damage->SetRenderOpacity(1.0f);
 		GetWorld()->GetTimerManager().SetTimer(DmgRenderTimer, this, &UARPGWidget_BattleHP::RenderDamageText, 1.0f, true);	
+	}
+	else
+	{
+		if(Damage->GetRenderOpacity() == 0.f)
+			Damage->SetRenderOpacity(1.0f);
 	}
 
 	PrevDamage = IntDamage;
@@ -63,15 +69,14 @@ void UARPGWidget_BattleHP::RenderDamageText()
 	if (Delay >= MaxRenderDelay)
 	{
 		SetRenderOpacity(0.f);
+		_DEBUG("SetRenderOpacity");
 		GetWorld()->GetTimerManager().ClearTimer(DmgRenderTimer);		
 	}
-	else if (Delay >= MaxDamageRenderDelay)
+	else if (Damage->GetRenderOpacity() == 1.f && Delay >= MaxDamageRenderDelay)
 	{
 		Damage->SetRenderOpacity(0.0f);
 		PrevDamage = 0.f;
 	}
-	else
-	{
-		Delay += 1.f;
-	}
+	
+	Delay += 1.f;
 }

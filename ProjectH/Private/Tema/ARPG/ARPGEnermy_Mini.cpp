@@ -71,11 +71,16 @@ float AARPGEnermy_Mini::TakeDamageCalculator(float APDamage, float DamageAmount,
 
 	float Damaged = DamageAmount;
 	float CurrentHP = UnitState.HP;
+	bool bBlockingHit = false;
 
 	if (bBlocking)
 	{
-		Damaged = DamageAmount - (DamageAmount * BlockingDEF); // BlockingDEF는 0.0~1.0으로 되어있다.
-		TakeDamageAP(APDamage);
+		if (TargetDotProduct(DamageCauser->GetActorLocation(), 0.7)) // 45도 가량
+		{
+			Damaged = DamageAmount - (DamageAmount * BlockingDEF); // BlockingDEF는 0.0~1.0으로 되어있다.
+			TakeDamageAP(APDamage);
+			bBlockingHit = true;
+		}
 	}
 
 	if (CurrentHP <= Damaged)
@@ -87,7 +92,7 @@ float AARPGEnermy_Mini::TakeDamageCalculator(float APDamage, float DamageAmount,
 	}
 	else
 	{
-		Hit();
+		Hit(bBlockingHit);
 		if (Damaged > 0.f)
 		{
 			CurrentHP -= Damaged;
@@ -113,16 +118,18 @@ void AARPGEnermy_Mini::TakeDamageAP(float Damage)
 	else
 	{
 		CurrentAP -= Damage;
-		Hit();
 		UnitState.SetAP(CurrentAP);
 	}
 }
 
-void AARPGEnermy_Mini::Hit()
+void AARPGEnermy_Mini::Hit(bool bBlockingHit)
 {
+	WeaponOverlapEnd();
+	AttackEnd();
+
 	bHitting = true;
 	bParringHit = false;
-	if (bBlocking)
+	if (bBlockingHit)
 	{
 		EnermyAnimInstance->PlayHitMontage(EEnermy_Mini_Mode::BlockingMode);
 	}
@@ -132,23 +139,8 @@ void AARPGEnermy_Mini::Hit()
 	}
 	
 	bMoving = false;
-	AttackEnd();
 }
 
-bool AARPGEnermy_Mini::CanThisDamage()
-{	
-	// 따로 이런 함수를 만든 이유는, 쉴드 뿐만아니라 특정 상황에서 못때리는 상태 일 수도 있으므로,
-	if (bBlocking)
-		return false;
-
-	if (bDeath)
-		return false;
-
-	if (bParring)
-		return false;
-
-	return true;
-}
 
 // 배틀모드가 실행 되었을때 실행되는 함수. true면 배틀 시작시 버프라던가 무언가 실행 가능.
 // 해당 클래스는 그런거 없는 기본 적이므로 그냥 배틀모드끝나면 가드중인거 풀기 정도.
@@ -281,7 +273,7 @@ void AARPGEnermy_Mini::Death()
 	EnermyAnimInstance->PlayDeadMontage();	
 }
 
-void AARPGEnermy_Mini::ParringHit()
+void AARPGEnermy_Mini::ParringHit(AARPGUnitBase* InstigatorActor)
 {
 	bMoving = false;
 	bParringHit = true;
@@ -289,6 +281,9 @@ void AARPGEnermy_Mini::ParringHit()
 	bBlocking = false;
 	bBlockMode = false;
 	OnAttack.Broadcast();
+	WeaponOverlapEnd();
+	AttackEnd();
+	EnermyAnimInstance->ParringInstigatorUnit = InstigatorActor;
 	EnermyAnimInstance->PlayParringHitMontage();
 }
 

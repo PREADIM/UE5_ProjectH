@@ -62,7 +62,7 @@ public:
 	virtual float TakeDamageCalculator(float APDamage, float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
 
 	virtual void TakeDamageAP(float Damage) {}
-	virtual void Hit() {} // 맞았을때 함수
+	virtual void Hit(bool bBlockingHit) {} // 맞았을때 함수
 	virtual bool CanThisDamage() { return false; }
 	virtual void ChangeBattleMode(bool bFlag) {}
 	virtual void HitEnd() {}
@@ -71,7 +71,7 @@ public:
 	virtual void Guard(bool bFlag) {} // 막는 함수
 	virtual void Parring(bool bFlag) {} // 패링 함수
 	virtual void Death(); // 죽음 함수
-	virtual void ParringHit() {} // 패링당함
+	virtual void ParringHit(class AARPGUnitBase* InstigatorActor) {} // 패링당함
 	virtual void DeathCollsionEnabled() {} 
 	virtual void DeathWeaponSimulate() {} // 죽어서 무기 물리 시뮬레이트
 	virtual void ZeroAP(); // AP가 제로이다
@@ -179,10 +179,10 @@ public:
 
 	//--------------------------------------------------
 
-	// 사용하는 몹이 있고 사용하지않는 몹이 있다.
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		bool bSupArmor; // 히트 모션을 취할 것인지. 보스의 경우 슈퍼 아머가 있기때문
+
+	// 사용하는 몹이 있고 사용하지않는 몹이 있다.
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		bool bBlockMode; // 이건 애니메이션을 위한 변수.

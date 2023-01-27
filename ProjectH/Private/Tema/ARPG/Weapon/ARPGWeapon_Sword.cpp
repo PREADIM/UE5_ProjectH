@@ -142,9 +142,18 @@ void AARPGWeapon_Sword::SwordBeginOverlap(UPrimitiveComponent* OverlappedComp, A
 			{
 				if (Unit->bParring == true && OwnerUnit->bDontParringAttack == false)
 				{
-					_DEBUG("Parring");
-					OwnerUnit->ParringHit();
-					Unit->bCanParringAttack = true;
+					if (Unit->ParringHitFunc(OwnerUnit->GetActorLocation()))
+					{
+						OwnerUnit->ParringHit(Unit);
+						Unit->bCanParringAttack = true;
+					}
+					else // 패링 실패
+					{
+						// 일단 공격을 하고 블럭킹인지 죽었는지는 알아서 판단
+						float TotalDamage = OwnerUnit->CalculDamage(WeaponDamage * Charge);
+						float APDMG = OwnerUnit->CalculAPDamage(WeaponAP_DMG);
+						Unit->TakeDamageCalculator(APDMG, TotalDamage, DamageEvent, OwnerController, this);
+					}
 				}
 				else
 				{

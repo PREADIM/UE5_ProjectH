@@ -111,10 +111,6 @@ float AARPGUnitBase::TakeDamageCalculator(float APDamage, float DamageAmount, FD
 	if (DamageAmount > 0.f)
 	{
 		OnDamage.Broadcast(DamageAmount);
-		if (BattleHP->GetRenderOpacity() == 0.f)
-		{
-			BattleHP->SetRenderOpacity(1.f);
-		}
 	}
 
 	return DamageAmount;
@@ -142,3 +138,22 @@ bool AARPGUnitBase::CanUseAP()
 	return UnitState.AP >= 10.f ? true : false;
 }
 
+bool AARPGUnitBase::ParringHitFunc(FVector TargetLocation)
+{
+	return TargetDotProduct(TargetLocation, 0.76); // 약 40도
+}
+
+
+bool AARPGUnitBase::TargetDotProduct(FVector TargetLocation, float CompareCos)
+{
+	FVector NormalTargetV = TargetLocation - GetActorLocation();
+	NormalTargetV.Z *= 0.f; // Z축 소거
+	NormalTargetV.Normalize();
+
+	float Dot = FVector::DotProduct(GetActorForwardVector(), NormalTargetV);
+
+	if (CompareCos <= Dot)
+		return true;
+	else
+		return false;
+}

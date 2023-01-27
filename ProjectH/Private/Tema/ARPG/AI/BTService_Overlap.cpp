@@ -6,10 +6,13 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Tema/ARPG/ARPGUnit.h"
 #include "Tema/ARPG/ARPGEnermy.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 UBTService_Overlap::UBTService_Overlap()
 {
 	NodeName = TEXT("ARPGOverlap");
+	ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_WorldStatic));
+	ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_WorldDynamic));
 }
 
 void UBTService_Overlap::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
@@ -31,9 +34,7 @@ void UBTService_Overlap::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* Node
 	FCollisionQueryParams CollisionParam(NAME_None, false, OwnerPawn); // 콜리전 태그 , bool bTraceComplex  (복잡성 여부 : 디테일한 판정이 아니면 false 추천) , 무시할 폰
 
 	bool bResult = World->OverlapMultiByChannel(OverlapResults, Center, FQuat::Identity, ECollisionChannel::ECC_GameTraceChannel12, FCollisionShape::MakeSphere(CollisionRadius), CollisionParam);
-
-	// 지금은 원형으로 오버랩해서 테스트하지만, 내적값을하여 시선 각도를 설정하여 그 값인경우 적이 타겟팅하는 방식을 취한다.
-
+	
 	if (bResult)
 	{
 		for (auto Overlap : OverlapResults)
@@ -41,22 +42,56 @@ void UBTService_Overlap::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* Node
 			// 여기서 멀티플레이 게임이라면 각 Distance를 구해서 가까운 플레이어를 
 			// 지정해서 해당 액터를 가져온 뒤에 for 밖에서 타겟팅하면 될듯.
 			// 지금은 싱글 플레이 게임이니 하지않음.
-			
+
+			//이 게임은 캐릭터가 하나라서 그냥 AARPGUnit으로 했지만 캐릭터가 많은 경우라면 캐릭터 기초 클래스를 하나 더 만들어두면 편할듯 하다.
 			AARPGUnit* Unit = Cast<AARPGUnit>(Overlap.GetActor());
 			if (Unit)
 			{
-				OwnerComp.GetBlackboardComponent()->SetValueAsObject(FName("TargetUnit"), Unit);
-				DrawDebugSphere(World, Center, CollisionRadius, 16, FColor::Green, false, 0.2f);
-				DrawDebugPoint(World, Unit->GetActorLocation(), 10.f, FColor::Blue, false, 0.2f);
-				//_DEBUG("%s", *OwnerComp.GetBlackboardComponent()->GetValueAsObject(FName("TargetUnit"))->GetName());
+				// 트레이스로 벽 탐지하기 ★★
+				FVector StartLocation = OwnerPawn->GetPawnViewLocation();
+				FVector EndLocation = Unit->GetActorLocation();
+				FHitResult HitResult;
 
-				OwnerPawn->PlayerUnit = Unit; // 타겟 플레이어 설정.
-				OwnerPawn->bMoving = true; // 무빙 실행★
-				OwnerPawn->SetBattleMode(true); // 배틀모드
-				OwnerPawn->SetCollisionRadius(true);
-				return;
+				bool bTrace = UKismetSystemLibrary::LineTraceSingleForObjects(GetWorld(), StartLocation, EndLocation, ObjectTypes, false, IgnoreActors, EDrawDebugTrace::None, HitResult, true);
+
+				if (!bTrace)
+				{
+					if (!OwnerPawn->PlayerUnit) // 아직 공격당하지않았으므로 탐지.
+					{
+						if (OwnerPawn->TargetDotProduct(Unit->GetActorLocation(), 0.34)) // 70도 가량
+						{
+
+							_DEBUG("Find");
+							OwnerComp.GetBlackboardComponent()->SetValueAsObject(FName("TargetUnit"), Unit);
+							DrawDebugSphere(World, Center, CollisionRadius, 16, FColor::Green, false, 0.2f);
+
+							OwnerPawn->PlayerUnit = Unit; // 타겟 플레이어 설정.
+							OwnerPawn->bMoving = true; // 무빙 실행★
+							OwnerPawn->SetBattleMode(true); // 배틀모드
+							OwnerPawn->SetCollisionRadius(true);
+							return;
+						}
+					}
+					else // 공격당해서 탐지
+					{
+						_DEBUG("Find");
+						OwnerComp.GetBlackboardComponent()->SetValueAsObject(FName("TargetUnit"), Unit);
+						DrawDebugSphere(World, Center, CollisionRadius, 16, FColor::Green, false, 0.2f);
+
+						OwnerPawn->PlayerUnit = Unit; // 타겟 플레이어 설정.
+						OwnerPawn->bMoving = true; // 무빙 실행★
+						OwnerPawn->SetBattleMode(true); // 배틀모드
+						OwnerPawn->SetCollisionRadius(true);
+						return;
+					}
+				}
+				
 			}
 		}	
+	}
+	else
+	{
+		OwnerPawn->PlayerUnit = nullptr;
 	}
 
 	OwnerComp.GetBlackboardComponent()->SetValueAsObject(FName("TargetUnit"), nullptr);

@@ -34,8 +34,8 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay();
 
-
-
+	UPROPERTY()
+		TArray<AActor*> HitEndActor;
 public:
 	UPROPERTY()
 		class AARPGUnitBase* OwnerUnit;

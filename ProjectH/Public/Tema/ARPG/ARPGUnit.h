@@ -32,9 +32,8 @@ public:
 	// 공격을 막아내 AP를 깎아야할때 사용하는 함수.
 	virtual void TakeDamageAP(float Damage) override;
 	//공격 당했는지 판단 하는 함수.
-	virtual void Hit() override;
-	virtual bool CanThisDamage() override;
-	virtual void ParringHit() override;
+	virtual void Hit(bool bBlockingHit) override;
+	virtual void ParringHit(class AARPGUnitBase* InstigatorActor) override;
 
 	virtual void ZeroAP() override; // AP가 제로이다. AP 회복이 잠시 멈춰야됨
 
@@ -160,7 +159,6 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		bool bChargeAttacking = false;
-
 
 
 	//이 변수들은 내가 여전히 누르고 있는지 판단하는 함수.
