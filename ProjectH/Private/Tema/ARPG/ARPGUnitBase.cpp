@@ -134,7 +134,7 @@ float AARPGUnitBase::TakeDamageCalculator(AARPGWeapon* DamageWeapon, FDamageEven
 	AARPGUnitBase* Causer = Cast<AARPGUnitBase>(DamageCauser);
 	if (Causer)
 	{
-		UnitState.Poise -= Causer->UnitState.Poise;
+		UnitState.Poise -= Causer->UnitState.NormallyPoise;
 	}
 
 	return 0.f;

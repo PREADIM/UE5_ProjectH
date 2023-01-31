@@ -32,7 +32,6 @@ bool UBTDecorator_FindUnit::CalculateRawConditionValue(UBehaviorTreeComponent& O
 	}
 
 	bResult = OwnerPawn->GetDistanceTo(Target) <= OwnerPawn->GetBattleDistance();
-	// 일촉즉발의 상황인가?
 
 	if (bResult)
 	{
