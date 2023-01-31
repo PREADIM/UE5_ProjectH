@@ -59,10 +59,11 @@ public:
 
 	virtual void Tick(float DeltaSeconds);
 	virtual void PostInitializeComponents();
-	virtual float TakeDamageCalculator(float APDamage, float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
-
+	//virtual float TakeDamageCalculator(float APDamage, float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
+	virtual float TakeDamageCalculator(class AARPGWeapon* DamageWeapon, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
 	virtual void TakeDamageAP(float Damage) {}
-	virtual void Hit(bool bBlockingHit) {} // 맞았을때 함수
+	// 맞았을때 함수. UnitBase에서 먼저 강인도를 따져서 히트 모션이 나올것인지 판별한다.
+	virtual bool Hit(bool bBlockingHit) { return Super::Hit(bBlocking); } 
 	virtual bool CanThisDamage() { return false; }
 	virtual void ChangeBattleMode(bool bFlag) {}
 	virtual void HitEnd() {}
@@ -125,11 +126,11 @@ public:
 
 	// 이 유닛의 전투 태세에 들어가는 범위. 적마다 다르기때문에 이 값을 실시간으로 가져와서 바꾼다.
 	// 보스의 경우에는 무조건 락온 -> 공격 이므로 필요하지 않을수도 있음.
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float BattleDistance; 
+	/*UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float BattleDistance;*/
 
-	float GetBattleDistance() { return BattleDistance; }
-	void SetBattleDistance(float Distance) { BattleDistance = Distance; }
+	float GetBattleDistance();
+	//void SetBattleDistance(float Distance) { BattleDistance = Distance; }
 
 
 	//--------------------------------
@@ -178,11 +179,6 @@ public:
 
 
 	//--------------------------------------------------
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		bool bSupArmor; // 히트 모션을 취할 것인지. 보스의 경우 슈퍼 아머가 있기때문
-
-	// 사용하는 몹이 있고 사용하지않는 몹이 있다.
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		bool bBlockMode; // 이건 애니메이션을 위한 변수.

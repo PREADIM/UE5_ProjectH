@@ -4,6 +4,7 @@
 
 #include "ProjectH.h"
 #include "Animation/AnimInstance.h"
+#include "Tema/ARPG/AttackClass.h"
 #include "ARPG_TPSAnimInstance.generated.h"
 
 /**

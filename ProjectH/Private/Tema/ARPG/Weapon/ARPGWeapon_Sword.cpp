@@ -14,7 +14,7 @@ AARPGWeapon_Sword::AARPGWeapon_Sword()
 	WeaponCollision->SetupAttachment(SwordMesh);
 
 	WeaponCollision->OnComponentBeginOverlap.AddDynamic(this, &AARPGWeapon_Sword::SwordBeginOverlap);
-	ARPGUnitChannel = ECollisionChannel::ECC_GameTraceChannel12;
+	//ARPGUnitChannel = ECollisionChannel::ECC_GameTraceChannel12;
 
 	UseAP = 40.f;
 }
@@ -150,17 +150,19 @@ void AARPGWeapon_Sword::SwordBeginOverlap(UPrimitiveComponent* OverlappedComp, A
 					else // 패링 실패
 					{
 						// 일단 공격을 하고 블럭킹인지 죽었는지는 알아서 판단
-						float TotalDamage = OwnerUnit->CalculDamage(WeaponDamage * Charge);
+						/*float TotalDamage = OwnerUnit->CalculDamage(WeaponDamage * Charge);
 						float APDMG = OwnerUnit->CalculAPDamage(WeaponAP_DMG);
-						Unit->TakeDamageCalculator(APDMG, TotalDamage, DamageEvent, OwnerController, this);
+						Unit->TakeDamageCalculator(APDMG, TotalDamage, DamageEvent, OwnerController, this);*/
+						Unit->TakeDamageCalculator(this, DamageEvent, OwnerController, OwnerUnit);
 					}
 				}
 				else
 				{
 					// 일단 공격을 하고 블럭킹인지 죽었는지는 알아서 판단
-					float TotalDamage = OwnerUnit->CalculDamage(WeaponDamage * Charge);
+					/*float TotalDamage = OwnerUnit->CalculDamage(WeaponDamage * Charge);
 					float APDMG = OwnerUnit->CalculAPDamage(WeaponAP_DMG);
-					Unit->TakeDamageCalculator(APDMG, TotalDamage, DamageEvent, OwnerController, this);
+					Unit->TakeDamageCalculator(APDMG, TotalDamage, DamageEvent, OwnerController, this);*/
+					Unit->TakeDamageCalculator(this, DamageEvent, OwnerController, OwnerUnit);
 				}
 			}
 

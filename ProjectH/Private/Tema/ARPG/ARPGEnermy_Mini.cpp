@@ -62,23 +62,73 @@ void AARPGEnermy_Mini::PostInitializeComponents()
 	}
 }
 
-float AARPGEnermy_Mini::TakeDamageCalculator(float APDamage, float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+//float AARPGEnermy_Mini::TakeDamageCalculator(float APDamage, float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+//{
+//	if (bDeath || bSpecialAttackMode)
+//	{
+//		return 0.0f;
+//	}
+//
+//	float Damaged = DamageAmount;
+//	float CurrentHP = UnitState.HP;
+//	bool bBlockingHit = false;
+//
+//	if (bBlocking)
+//	{
+//		if (TargetDotProduct(DamageCauser->GetActorLocation(), 0.7)) // 45도 가량
+//		{
+//			Damaged = DamageAmount - (DamageAmount * BlockingDEF); // BlockingDEF는 0.0~1.0으로 되어있다.
+//			TakeDamageAP(APDamage);
+//			bBlockingHit = true;
+//		}
+//	}
+//
+//	if (CurrentHP <= Damaged)
+//	{
+//		Damaged = CurrentHP; // 남은 체력이 곧 라스트 데미지
+//		CurrentHP = 0.f;
+//		UnitState.SetTakeDamageHP(CurrentHP);
+//		Death();
+//	}
+//	else
+//	{
+//		Hit(bBlockingHit);
+//		if (Damaged > 0.f)
+//		{
+//			CurrentHP -= Damaged;
+//			UnitState.SetTakeDamageHP(CurrentHP);
+//		}
+//	}
+//
+//	Super::TakeDamageCalculator(APDamage, Damaged, DamageEvent, EventInstigator, DamageCauser);
+//
+//	return Damaged;
+//}
+
+
+float AARPGEnermy_Mini::TakeDamageCalculator(AARPGWeapon* DamageWeapon, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	if (bDeath || bSpecialAttackMode)
 	{
 		return 0.0f;
 	}
 
-	float Damaged = DamageAmount;
+	float TotalDamage = CalculDamage(DamageWeapon->WeaponDamage * DamageWeapon->Charge);
+
+	float Damaged = TotalDamage;
 	float CurrentHP = UnitState.HP;
 	bool bBlockingHit = false;
+
+	//무기 강인도를 이용해서 맞은 액터의 강인도를 깎는다.
+	Super::TakeDamageCalculator(DamageWeapon, DamageEvent, EventInstigator, DamageCauser);
 
 	if (bBlocking)
 	{
 		if (TargetDotProduct(DamageCauser->GetActorLocation(), 0.7)) // 45도 가량
 		{
-			Damaged = DamageAmount - (DamageAmount * BlockingDEF); // BlockingDEF는 0.0~1.0으로 되어있다.
-			TakeDamageAP(APDamage);
+			float APDMG = CalculAPDamage(DamageWeapon->WeaponAP_DMG);
+			Damaged = TotalDamage - (TotalDamage * BlockingDEF); // BlockingDEF는 0.0~1.0으로 되어있다.
+			TakeDamageAP(APDMG);
 			bBlockingHit = true;
 		}
 	}
@@ -100,10 +150,14 @@ float AARPGEnermy_Mini::TakeDamageCalculator(float APDamage, float DamageAmount,
 		}
 	}
 
-	Super::TakeDamageCalculator(APDamage, Damaged, DamageEvent, EventInstigator, DamageCauser);
+	if (Damaged > 0.f)
+	{
+		OnDamage.Broadcast(Damaged);
+	}
 
 	return Damaged;
 }
+
 
 
 void AARPGEnermy_Mini::TakeDamageAP(float Damage)
@@ -122,23 +176,35 @@ void AARPGEnermy_Mini::TakeDamageAP(float Damage)
 	}
 }
 
-void AARPGEnermy_Mini::Hit(bool bBlockingHit)
+bool AARPGEnermy_Mini::Hit(bool bBlockingHit)
 {
+	if (!EnermyAnimInstance)
+		return false;
+
 	WeaponOverlapEnd();
 	AttackEnd();
 
 	bHitting = true;
 	bParringHit = false;
-	if (bBlockingHit)
+
+	if (!bBlockingHit)
 	{
-		EnermyAnimInstance->PlayHitMontage(EEnermy_Mini_Mode::BlockingMode);
+		bool bHitMontagePlay = Super::Hit(bBlockingHit); // 강인도 검사
+		// 적의 경우 AP는 그로기 여부이고, 강인도는 슈퍼아머냐 아니냐의 차이이다.
+
+		if (bHitMontagePlay)
+		{
+			EnermyAnimInstance->PlayHitMontage(EEnermy_Mini_Mode::BattleMode);
+		}
 	}
 	else
 	{
-		EnermyAnimInstance->PlayHitMontage(EEnermy_Mini_Mode::BattleMode);
+		EnermyAnimInstance->PlayHitMontage(EEnermy_Mini_Mode::BlockingMode);
 	}
-	
+
 	bMoving = false;
+
+	return true;
 }
 
 

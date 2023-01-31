@@ -34,6 +34,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float NormallyDEF;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float NormallyPoise; // 강인도
+
 
 	/* 실시간 변경하는 스텟 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
@@ -50,6 +53,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		float DEF;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float Poise; // 강인도
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		class AARPGUnitBase* OwnerUnit; 

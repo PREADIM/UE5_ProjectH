@@ -27,12 +27,13 @@ public:
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void PostInitializeComponents() override;;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	virtual float TakeDamageCalculator(float APDamage, float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+	//virtual float TakeDamageCalculator(float APDamage, float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+	virtual float TakeDamageCalculator(class AARPGWeapon* Weapon, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
 	// 공격을 막아내 AP를 깎아야할때 사용하는 함수.
 	virtual void TakeDamageAP(float Damage) override;
 	//공격 당했는지 판단 하는 함수.
-	virtual void Hit(bool bBlockingHit) override;
+	virtual bool Hit(bool bBlockingHit) override;
 	virtual void ParringHit(class AARPGUnitBase* InstigatorActor) override;
 
 	virtual void ZeroAP() override; // AP가 제로이다. AP 회복이 잠시 멈춰야됨

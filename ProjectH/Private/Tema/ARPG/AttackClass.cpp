@@ -11,6 +11,9 @@ void UAttackClass::Init()
 	OwnerUnit = nullptr;
 	AttackStruct.CurrentCnt = 0;
 	AttackStruct.bCanThisAttack = true;
+	EffectCnt = Effects.Num();
+	SoundCnt = Sounds.Num();
+
 }
 
 void UAttackClass::PlayAttack(UWorld* UnitWorld)

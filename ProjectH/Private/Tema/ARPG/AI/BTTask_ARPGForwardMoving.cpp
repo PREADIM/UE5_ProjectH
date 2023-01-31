@@ -14,7 +14,7 @@ EBTNodeResult::Type UBTTask_ARPGForwardMoving::ExecuteTask(UBehaviorTreeComponen
 {
 	Super::ExecuteTask(OwnerComp, NodeMemory);
 
-	AARPGEnermy* OwnerPawn = Cast<AARPGEnermy>(OwnerComp.GetAIOwner()->GetPawn());
+	AARPGEnermy* OwnerPawn = Cast<AARPGEnermy>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(FName("CurrentUnit")));
 	if (!OwnerPawn)
 	{
 		_DEBUG("OwnerPawn Fail");

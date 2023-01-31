@@ -27,10 +27,11 @@ protected:
 public:
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void PostInitializeComponents() override;
-	virtual float TakeDamageCalculator(float APDamage, float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
-	
+	//virtual float TakeDamageCalculator(float APDamage, float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+	virtual float TakeDamageCalculator(class AARPGWeapon* DamageWeapon, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
+
 	virtual void TakeDamageAP(float Damage) override;
-	virtual void Hit(bool bBlockingHit) override;
+	virtual bool Hit(bool bBlockingHit) override;
 	// 공격 할수 있는지 판단 하는 함수.
 	virtual void ChangeBattleMode(bool bFlag) override;
 	virtual void HitEnd() override;

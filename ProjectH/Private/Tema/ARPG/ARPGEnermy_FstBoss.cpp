@@ -17,24 +17,27 @@ void AARPGEnermy_FstBoss::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (BP_LeftWeapon && BP_RightWeapon)
+	if (BP_LeftWeapon && BP_RightWeapon && BP_TwinWeapon)
 	{
 		LeftWeapon = GetWorld()->SpawnActorDeferred<AARPGWeapon>(BP_LeftWeapon, FTransform(), this, nullptr, ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding);
-		RightWeapon = GetWorld()->SpawnActorDeferred<AARPGWeapon>(BP_LeftWeapon, FTransform(), this, nullptr, ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding);
+		RightWeapon = GetWorld()->SpawnActorDeferred<AARPGWeapon>(BP_RightWeapon, FTransform(), this, nullptr, ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding);
+		TwinWeapon = GetWorld()->SpawnActorDeferred<AARPGWeapon>(BP_TwinWeapon, FTransform(), this, nullptr, ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding);
 
-		if (LeftWeapon && RightWeapon)
+		if (LeftWeapon && RightWeapon && TwinWeapon)
 		{
 			LeftWeapon->OwnerUnit = this;
 			RightWeapon->OwnerUnit = this;
+			TwinWeapon->OwnerUnit = this;
 
 			LeftWeapon->FinishSpawning(FTransform());
 			RightWeapon->FinishSpawning(FTransform());
+			TwinWeapon->FinishSpawning(FTransform());
 
 			LeftWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName("weapon_l_Collision"));
 			RightWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName("weapon_r_Collision"));
+			TwinWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName("TwinWeaponSocket"));
 		}
 	}
-
 }
 
 void AARPGEnermy_FstBoss::Tick(float DeltaSeconds)
@@ -51,20 +54,62 @@ void AARPGEnermy_FstBoss::PostInitializeComponents()
 		FstBossAnimInstance = Cast<UARPG_FstBossAnimInstance>(GetMesh()->GetAnimInstance());
 		if (FstBossAnimInstance == nullptr)
 		{
-			_DEBUG("Not AI Has AnimInstance");
+			_DEBUG("FstBoss Not AnimInstance");
 		}
 	}
 }
 
-float AARPGEnermy_FstBoss::TakeDamageCalculator(float APDamage, float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+//float AARPGEnermy_FstBoss::TakeDamageCalculator(float APDamage, float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+//{
+//	if (bDeath || bSpecialAttackMode)
+//	{
+//		return 0.0f;
+//	}
+//
+//	float Damaged = DamageAmount;
+//	float CurrentHP = UnitState.HP;
+//
+//	if (CurrentHP <= Damaged)
+//	{
+//		Damaged = CurrentHP; // 남은 체력이 곧 라스트 데미지
+//		CurrentHP = 0.f;
+//		UnitState.SetTakeDamageHP(CurrentHP);
+//		Death();
+//	}
+//	else
+//	{
+//		Hit(false); // 이 보스는 가드가 없다.
+//		if (Damaged > 0.f)
+//		{
+//			CurrentHP -= Damaged;
+//			UnitState.SetTakeDamageHP(CurrentHP);
+//			TakeDamageAP(APDamage);
+//			// 보스의 ZeroAP는 그로기를 뜻한다.
+//		}
+//	}
+//
+//	Super::TakeDamageCalculator(APDamage, Damaged, DamageEvent, EventInstigator, DamageCauser);
+//
+//	return Damaged;
+//}
+
+
+float AARPGEnermy_FstBoss::TakeDamageCalculator(AARPGWeapon* DamageWeapon, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	if (bDeath || bSpecialAttackMode)
 	{
 		return 0.0f;
 	}
 
-	float Damaged = DamageAmount;
+	float TotalDamage = CalculDamage(DamageWeapon->WeaponDamage * DamageWeapon->Charge);
+	float APDMG = CalculAPDamage(DamageWeapon->WeaponAP_DMG);
+
+	float Damaged = TotalDamage;
 	float CurrentHP = UnitState.HP;
+	bool bBlockingHit = false;
+
+	//무기 강인도를 이용해서 맞은 액터의 강인도를 깎는다.
+	Super::TakeDamageCalculator(DamageWeapon, DamageEvent, EventInstigator, DamageCauser);
 
 	if (CurrentHP <= Damaged)
 	{
@@ -75,20 +120,24 @@ float AARPGEnermy_FstBoss::TakeDamageCalculator(float APDamage, float DamageAmou
 	}
 	else
 	{
-		Hit(false); // 이 보스는 가드가 없다.
+		Hit(false); // 가드가 없다.
 		if (Damaged > 0.f)
 		{
 			CurrentHP -= Damaged;
 			UnitState.SetTakeDamageHP(CurrentHP);
-			TakeDamageAP(APDamage);
+			TakeDamageAP(APDMG);
 			// 보스의 ZeroAP는 그로기를 뜻한다.
 		}
 	}
 
-	Super::TakeDamageCalculator(APDamage, Damaged, DamageEvent, EventInstigator, DamageCauser);
+	if (Damaged > 0.f)
+	{
+		OnDamage.Broadcast(Damaged);
+	}
 
 	return Damaged;
 }
+
 
 void AARPGEnermy_FstBoss::TakeDamageAP(float Damage)
 {
@@ -106,16 +155,27 @@ void AARPGEnermy_FstBoss::TakeDamageAP(float Damage)
 	}
 }
 
-void AARPGEnermy_FstBoss::Hit(bool bBlockingHit)
+bool AARPGEnermy_FstBoss::Hit(bool bBlockingHit)
 {
+	if (!FstBossAnimInstance)
+		return false;
+
 	WeaponOverlapEnd();
 	AttackEnd();
 
 	bHitting = true;
 	bParringHit = false;
 
-	FstBossAnimInstance->PlayHitMontage();	
-	bMoving = false;
+	bool bHitMontagePlay = Super::Hit(bBlockingHit); // 강인도 검사
+	// 적의 경우 AP는 그로기 여부이고, 강인도는 슈퍼아머냐 아니냐의 차이이다.
+
+	if (bHitMontagePlay)
+	{
+		FstBossAnimInstance->PlayHitMontage();
+		bMoving = false;
+	}
+
+	return true;
 }
 
 void AARPGEnermy_FstBoss::ChangeBattleMode(bool bFlag)
@@ -147,6 +207,8 @@ void AARPGEnermy_FstBoss::PlayAttack(int32 index)
 
 	bAttacking = true;
 	Attacks[index]->PlayAttack(GetWorld());
+	FstBossAnimInstance->CurrentEffects = Attacks[index]->Effects;
+	FstBossAnimInstance->CurrentSounds = Attacks[index]->Sounds;
 	FstBossAnimInstance->PlayAttackMontage(Attacks[index]->AttackMontage);
 }
 
@@ -205,20 +267,39 @@ void AARPGEnermy_FstBoss::AttackEnd()
 
 void AARPGEnermy_FstBoss::WeaponOverlapEnd()
 {
-	SetWeaponCollision(false);
+	SetWeaponEndCollision();
+	TwinWeapon->AttackEnd();
 	LeftWeapon->AttackEnd();
 	RightWeapon->AttackEnd();
 }
 
-void AARPGEnermy_FstBoss::SetWeaponCollision(bool bFlag)
+void AARPGEnermy_FstBoss::SetWeaponEndCollision()
 {
-	if (!LeftWeapon || !RightWeapon)
+	SetWeaponCollision(false, 0);
+	SetWeaponCollision(false, 1);
+	SetWeaponCollision(false, 2);
+}
+
+void AARPGEnermy_FstBoss::SetWeaponCollision(bool bFlag, int32 index)
+{
+	if (!LeftWeapon || !RightWeapon || !TwinWeapon)
 	{
 		return;
 	}
 
 
-	LeftWeapon->SetWeaponCollision(bFlag);
-	RightWeapon->SetWeaponCollision(bFlag);
+	//bHand false 왼손 true 오른손
+	switch (index)
+	{
+	case 0:
+		TwinWeapon->SetWeaponCollision(bFlag);
+		break;
+	case 1:
+		LeftWeapon->SetWeaponCollision(bFlag);
+		break;
+	case 2:
+		RightWeapon->SetWeaponCollision(bFlag);
+		break;
+	}
 }
 

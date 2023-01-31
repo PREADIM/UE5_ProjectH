@@ -39,7 +39,7 @@ public:
 	// 해당 함수는 모든 클래스들이 따로 제작해야한다.
 	// 맞았을때 이 함수를 공통적으로 실행하고 각 유닛의 모드별로 알아서 애님인스턴스에 해당하는 모드 히트를
 	// 알려주는 형식
-	virtual void Hit(bool bBlockingHit) {}
+	virtual bool Hit(bool bBlockingHit);
 
 	// 패링에 당함.
 	virtual void ParringHit(class AARPGUnitBase* InstigatorActor) {}
@@ -51,9 +51,9 @@ public:
 	//공격이 끝났을때 반드시 호출되어야할 함수들을 모아둔 것.
 	virtual void EndAttack() {}
 public:
-	//virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
 	// TakeDamage 대신 이 함수에서 데미지 처리를 알아서 하게한다.
-	virtual float TakeDamageCalculator (float APDamage, float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
+	//virtual float TakeDamageCalculator (float APDamage, float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
+	virtual float TakeDamageCalculator(class AARPGWeapon* DamageWeapon, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
 	float CalculDamage(float Damage);
 	float CalculAPDamage(float APDamage);
 	bool CanUseAP(); // AP가 쓸수있나?

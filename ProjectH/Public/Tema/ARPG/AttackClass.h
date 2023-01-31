@@ -10,9 +10,22 @@
 /**
  * 
  */
-
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAttackFunc)
 DECLARE_MULTICAST_DELEGATE(FOnCppAttackFunc)
+
+USTRUCT(BlueprintType)
+struct FAttackEffect
+{
+	GENERATED_USTRUCT_BODY()
+
+public:
+	UPROPERTY(EditAnywhere)
+		class UParticleSystem* Effect;
+
+	UPROPERTY(EditAnywhere)
+		FName SocketName;
+};
+
 
 UCLASS(Blueprintable, BlueprintType)
 class PROJECTH_API UAttackClass : public UObject
@@ -21,7 +34,14 @@ class PROJECTH_API UAttackClass : public UObject
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int32 SkillNumber; // 해당 스킬 넘버로 애니메이션 이펙트를 실행
+		TArray<FAttackEffect> Effects;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		int32 EffectCnt;
+
+	UPROPERTY(VisibleAnywhere)
+		TArray<class USoundBase*> Sounds;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		int32 SoundCnt;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FARPGAttackStruct AttackStruct;

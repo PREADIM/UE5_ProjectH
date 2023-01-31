@@ -5,6 +5,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Tema/ARPG/ARPGUnitBase.h"
 #include "Tema/ARPG/ARPGEnermy_Mini.h"
+#include "Kismet/GameplayStatics.h"
 
 UARPG_EnermyAnimInstance::UARPG_EnermyAnimInstance()
 {
@@ -27,7 +28,6 @@ void UARPG_EnermyAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		{
 			Speed = OwnerUnit->GetVelocity().Size();
 			Direction = SetDirection();
-			bSupArmor = OwnerUnit->bSupArmor;
 			bBattleMode = OwnerUnit->bBattleMode;
 			bBlocking = OwnerUnit->bBlockMode;
 			bParring = OwnerUnit->bParring;
@@ -41,6 +41,8 @@ void UARPG_EnermyAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 void UARPG_EnermyAnimInstance::PlayAttackMontage(UAnimMontage* AttackMontage)
 {
+	CurrentEffectIndex = 0;
+	CurrentSoundIndex = 0;
 	Montage_Play(AttackMontage);
 }
 
@@ -87,6 +89,14 @@ float UARPG_EnermyAnimInstance::SetDirection()
 
 
 //-----------------------------------------------------------
+
+void UARPG_EnermyAnimInstance::AnimNotify_PlayEffect()
+{
+}
+
+void UARPG_EnermyAnimInstance::AnimNotify_PlaySound()
+{
+}
 
 void UARPG_EnermyAnimInstance::AnimNotify_AttackStart()
 {

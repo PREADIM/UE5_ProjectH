@@ -5,6 +5,7 @@
 #include "Tema/ARPG/AI/ARPG_EnermyAnimInstance.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Tema/ARPG/ARPGUnit.h"
+#include "Tema/ARPG/Weapon/ARPGWeapon.h"
 #include "Tema/ARPG/ARPGAIController.h"
 #include "Tema/ARPG/ARPGAttackComponent.h"
 
@@ -29,6 +30,8 @@ void AARPGEnermy::BeginPlay()
 
 	if (AttackComponent)
 		AttackComponent->Init(BP_Attacks);
+
+	UnitState.Init(this); // 스탯 초기화.
 }
 
 // Called every frame
@@ -38,10 +41,7 @@ void AARPGEnermy::Tick(float DeltaSeconds)
 
 	if (!bDeath && bMoving) // 이 변수는 Task에서 켜준다.
 	{
-		EnermyMoving(); // 각 에너미마다 다르므로 일단 해당 함수의 조립은 블프에서 제작.
-
-		// 적이 플레이어가 시야에 들어왔을때 어떻게 움직일 것인지.
-		// 다크소울이나 엘더스크롤 느낌으로 제작해야함. 원신이나 RPG류는 해당 방식이 어울리지 않음
+		EnermyMoving();
 	}
 }
 
@@ -50,9 +50,27 @@ void AARPGEnermy::PostInitializeComponents()
 	Super::PostInitializeComponents();
 }
 
-float AARPGEnermy::TakeDamageCalculator(float APDamage, float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+//float AARPGEnermy::TakeDamageCalculator(float APDamage, float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+//{
+//	Super::TakeDamageCalculator(APDamage, DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+//	if (PlayerUnit == nullptr)
+//	{
+//		AARPGUnit* Temp = Cast<AARPGUnit>(EventInstigator->GetPawn());
+//		if (Temp)
+//		{
+//			PlayerUnit = Temp;
+//		}
+//	}
+//
+//
+//	return DamageAmount;
+//}
+
+
+float AARPGEnermy::TakeDamageCalculator(AARPGWeapon* DamageWeapon, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	Super::TakeDamageCalculator(APDamage, DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	Super::TakeDamageCalculator(DamageWeapon, DamageEvent, EventInstigator, DamageCauser);
+
 	if (PlayerUnit == nullptr)
 	{
 		AARPGUnit* Temp = Cast<AARPGUnit>(EventInstigator->GetPawn());
@@ -63,8 +81,11 @@ float AARPGEnermy::TakeDamageCalculator(float APDamage, float DamageAmount, FDam
 	}
 
 
-	return DamageAmount;
+	return 0.f;
 }
+
+
+
 
 void AARPGEnermy::Death()
 {
@@ -112,7 +133,6 @@ FVector AARPGEnermy::GetMovingValue()
 	}
 
 	AddMovementInput(Direction, 1.0f);
-
 	return Direction;
 }
 
@@ -176,4 +196,9 @@ float AARPGEnermy::GetDirection(FVector MoveDirection)
 void AARPGEnermy::SetCollisionRadius(bool bFlag)
 {
 	CurrentCollisionRadius = bFlag ? BattleCollisionRadius : NormalCollisionRadius;
+}
+
+float AARPGEnermy::GetBattleDistance()
+{
+	return GetAttackComponent()->MaxAttackDistance;
 }

@@ -4,6 +4,7 @@
 #include "Tema/ARPG/ARPG_UnitAnimInstance.h"
 #include "Tema/ARPG/ARPGUnit.h"
 #include "Tema/ARPG/Weapon/ARPGWeapon.h"
+#include "Kismet/GameplayStatics.h"
 
 UARPG_UnitAnimInstance::UARPG_UnitAnimInstance()
 {
@@ -92,6 +93,14 @@ void UARPG_UnitAnimInstance::ShieldZeroAP()
 void UARPG_UnitAnimInstance::ParringAttack()
 {
 	Montage_Play(ParringAttackMontage);
+}
+
+void UARPG_UnitAnimInstance::AnimNotify_PlayEffect()
+{
+}
+
+void UARPG_UnitAnimInstance::AnimNotify_PlaySound()
+{
 }
 
 

@@ -3,6 +3,7 @@
 
 #include "Tema/ARPG/ARPGUnitBase.h"
 #include "Components/WidgetComponent.h"
+#include "Tema/ARPG/Weapon/ARPGWeapon.h"
 #include "Tema/ARPG/Widget/ARPGWidget_BattleHP.h"
 
 // Sets default values
@@ -26,8 +27,6 @@ AARPGUnitBase::AARPGUnitBase()
 void AARPGUnitBase::BeginPlay()
 {
 	Super::BeginPlay();
-
-	UnitState.Init(this);
 	BattleHP = Cast<UARPGWidget_BattleHP>(BattleHPComponent->GetUserWidgetObject());
 	if (BattleHP)
 	{
@@ -79,6 +78,13 @@ void AARPGUnitBase::Tick(float DeltaSeconds)
 
 }
 
+
+bool AARPGUnitBase::Hit(bool bBlockingHit)
+{
+	// 강인도가 0이하면 히트 모션
+	return UnitState.Poise <= 0;
+}
+
 void AARPGUnitBase::ZeroAP()
 {
 	bUseAP = false;
@@ -106,14 +112,32 @@ void AARPGUnitBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 
 }
 
-float AARPGUnitBase::TakeDamageCalculator(float APDamage, float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+//float AARPGUnitBase::TakeDamageCalculator(float APDamage, float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+//{
+//	if (DamageAmount > 0.f)
+//	{
+//		OnDamage.Broadcast(DamageAmount);
+//	}
+//
+//	return DamageAmount;
+//}
+
+float AARPGUnitBase::TakeDamageCalculator(AARPGWeapon* DamageWeapon, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	if (DamageAmount > 0.f)
+	// 강인도 계산
+	// 강인도 를 시간이 지나면 차는 것과 특정 행동을 하면 다시 차게 할 순있지만 하지않음.
+
+	// 강인도가 0 아래라는 것은 경직 먹었다는 뜻 때문에 다시 초기화.
+	if(UnitState.Poise <= 0)
+		UnitState.Poise = UnitState.NormallyPoise;
+
+	AARPGUnitBase* Causer = Cast<AARPGUnitBase>(DamageCauser);
+	if (Causer)
 	{
-		OnDamage.Broadcast(DamageAmount);
+		UnitState.Poise -= UnitState.Poise;
 	}
 
-	return DamageAmount;
+	return 0.f;
 }
 
 

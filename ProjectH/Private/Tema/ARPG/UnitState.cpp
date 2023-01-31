@@ -16,6 +16,7 @@ void FUnitState::Init(AARPGUnitBase* Unit)
 	AP = NormallyAP;
 	ATK = NormallyATK;
 	DEF = NormallyDEF;
+	Poise = NormallyPoise;
 }
 
 void FUnitState::SetTakeDamageHP(float TakeHP)

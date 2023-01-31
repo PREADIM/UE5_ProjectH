@@ -4,6 +4,7 @@
 
 #include "ProjectH.h"
 #include "Animation/AnimInstance.h"
+#include "Tema/ARPG/AttackClass.h"
 #include "ARPG_EnermyAnimInstance.generated.h"
 
 /**
@@ -42,6 +43,16 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 		class AARPGEnermy_Mini* OwnerUnit;
 
+	// 이펙트와 사운드는 AttackClass에 해당 공격마다 가지고있는것을 공격시에 가져옴.
+	UPROPERTY(VisibleAnywhere)
+		int32 CurrentEffectIndex;
+	UPROPERTY(VisibleAnywhere)
+		int32 CurrentSoundIndex;
+	UPROPERTY(VisibleAnywhere)
+		TArray<FAttackEffect> CurrentEffects;
+	UPROPERTY(VisibleAnywhere)
+		TArray<class USoundBase*> CurrentSounds;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UAnimMontage* HitMontage;
 
@@ -63,6 +74,13 @@ public:
 
 
 	//-----------------------------------------------------------
+
+	UFUNCTION()
+		void AnimNotify_PlayEffect();
+
+	UFUNCTION()
+		void AnimNotify_PlaySound();
+
 
 	UFUNCTION()
 		void AnimNotify_AttackStart();

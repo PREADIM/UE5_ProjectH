@@ -53,4 +53,26 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float BlockingDEF;
 
+	//----------------------------------------
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponDamage")
+		float WeaponDamage;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "ChargeAttack")
+		float Charge = 1.f; // 차지 데미지
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ChargeAttack")
+		float MaxChargeTime;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ChargeAttack")
+		float ChargeTime;
+
+	// 무기 강인도. 장착하면 사용자의 강인도를 올리는 형식. 적은 그냥 적 자체에서 정한다.
+	// 이 게임의 경우 무기 교체가 없지만 추후 무기 추가를 위해 일단 형식상 만들어 두는 것.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Poise")
+		float WeaponPoise;
+	
+
+	//-------------------------------------------
+	ECollisionChannel ARPGUnitChannel;
 };

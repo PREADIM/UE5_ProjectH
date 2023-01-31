@@ -7,16 +7,6 @@
 #include "Tema/ARPG/ARPG_TPSAnimInstance.h"
 #include "ARPG_UnitAnimInstance.generated.h"
 
-/**
- * 
- */
-//UENUM(BlueprintType)
-//enum class EUnitMode : uint8
-//{
-//	BattleMode UMETA(DisplayName="BattleMode"),
-//	BlockingMode UMETA(DisplayName="BlockingMode")
-//};
-
 
 UCLASS()
 class PROJECTH_API UARPG_UnitAnimInstance : public UAnimInstance
@@ -39,6 +29,13 @@ public:
 
 	//----------------------------------
 	// 노티파이
+
+	UFUNCTION()
+		void AnimNotify_PlayEffect();
+
+	UFUNCTION()
+		void AnimNotify_PlaySound();
+
 
 	UFUNCTION()
 		void AnimNotify_BattleMode();
@@ -83,6 +80,18 @@ public:
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		class AARPGUnit* OwnerUnit;
+
+	//----------------------------------
+	// 이펙트 사운드 AttackClass에서 가져와서 노티파이에서 실행
+
+	UPROPERTY(VisibleAnywhere)
+		int32 CurrentEffectIndex;
+	UPROPERTY(VisibleAnywhere)
+		int32 CurrentSoundIndex;
+	UPROPERTY(VisibleAnywhere)
+		TArray<FAttackEffect> CurrentEffects;
+	UPROPERTY(VisibleAnywhere)
+		TArray<class USoundBase*> CurrentSounds;
 
 	//----------------------------------
 	// 몽타주

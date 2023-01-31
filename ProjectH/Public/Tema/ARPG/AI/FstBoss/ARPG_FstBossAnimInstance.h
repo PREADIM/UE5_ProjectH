@@ -4,6 +4,7 @@
 
 #include "ProjectH.h"
 #include "Animation/AnimInstance.h"
+#include "Tema/ARPG/AttackClass.h"
 #include "ARPG_FstBossAnimInstance.generated.h"
 
 /**
@@ -30,20 +31,33 @@ public:
 	void ZeroAP();
 
 
+	void HittedReset(); // 공격도중 맞아서 초기화 해야하는 변수들을 초기화
+
 	//-----------------------------------------------------------
 
+	/*Attack Class마다 추가로 필요한 노티파이*/
+	//ComboAttack에서 날라갈 투사체
+	UFUNCTION()
+		void AnimNotify_ComboProjectile();
 
-	// PlayEffect와 PlaySound는 AttakClass의 SkillNumber를 통해 결정된다.
+
+	//--------------------------------------------------------------
+
+
 	UFUNCTION()
 		void AnimNotify_PlayEffect();
 
 	UFUNCTION()
 		void AnimNotify_PlaySound();
 
-	
+	UFUNCTION()
+		void AnimNotify_TwinAttackStart();
 
 	UFUNCTION()
-		void AnimNotify_AttackStart();
+		void AnimNotify_LeftAttackStart();
+
+	UFUNCTION()
+		void AnimNotify_RightAttackStart();
 
 	UFUNCTION()
 		void AnimNotify_ComboSection_End();
@@ -63,6 +77,17 @@ public:
 public:
 	UPROPERTY()
 		class AARPGEnermy_FstBoss* FstBoss; // Owner
+
+	UPROPERTY(VisibleAnywhere)
+		int32 CurrentEffectIndex;
+	UPROPERTY(VisibleAnywhere)
+		int32 CurrentSoundIndex;
+
+	UPROPERTY(VisibleAnywhere)
+		TArray<FAttackEffect> CurrentEffects;
+	UPROPERTY(VisibleAnywhere)
+		TArray<class USoundBase*> CurrentSounds;
+
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UAnimMontage* HitMontage;
@@ -99,5 +124,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool bAccelerating;	
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		int32 ProjectileCnt = 0; // 투사체 변수
 
 };

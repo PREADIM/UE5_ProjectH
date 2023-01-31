@@ -4,34 +4,26 @@
 
 #include "ProjectH.h"
 #include "Tema/ARPG/Weapon/ARPGWeapon.h"
-#include "ARPGWeapon_Sword.generated.h"
+#include "ARPG_FstBossWeapon.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECTH_API AARPGWeapon_Sword : public AARPGWeapon
+class PROJECTH_API AARPG_FstBossWeapon : public AARPGWeapon
 {
 	GENERATED_BODY()
 
 public:
-	AARPGWeapon_Sword();
+	AARPG_FstBossWeapon();
 
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
 	virtual void AttackEnd() override;
 	virtual void SetWeaponCollision(bool bFlag) override;
-	virtual void SetPhysics() override;
-	virtual void SetOwnerNoSee(bool bFlag) override;
-
-	virtual bool IsChargeAttack() override;
-	virtual float ChargeAttack(float DeltaSeconds) override;
-
 	virtual void End() override;
 
 	UFUNCTION()
-		void SwordBeginOverlap(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-	
+		void WeaponBeginOverlap(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
 	UFUNCTION(BlueprintCallable)
 		void SetHitEndActor() { HitEndActor.Empty(); } // 때린것들 초기화.
 
@@ -41,9 +33,6 @@ protected:
 
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh")
-		class UStaticMeshComponent* SwordMesh;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Collision")
 		class UCapsuleComponent* WeaponCollision;
 
