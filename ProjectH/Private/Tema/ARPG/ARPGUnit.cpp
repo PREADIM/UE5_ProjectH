@@ -64,6 +64,8 @@ void AARPGUnit::BeginPlay()
 		{
 			TPSWeapon->OwnerUnit = this;		
 			FPSWeapon->OwnerUnit = this;
+			TPSWeapon->SetOwner(this);
+			FPSWeapon->SetOwner(this);
 
 			TPSWeapon->SetOwnerNoSee(true);
 			FPSWeapon->SetOwnerNoSee(false);
@@ -90,6 +92,8 @@ void AARPGUnit::BeginPlay()
 		{
 			TPSShield->OwnerUnit = this;
 			FPSShield->OwnerUnit = this;
+			TPSShield->SetOwner(this);
+			FPSShield->SetOwner(this);
 
 			TPSShield->SetOwnerNoSee(true);
 			FPSShield->SetOwnerNoSee(false);
