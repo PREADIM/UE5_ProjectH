@@ -153,9 +153,10 @@ void AARPGEnermy_FstBoss::SetBattleMode(bool bFlag)
 	Super::SetBattleMode(bFlag);
 
 	// 보스전용 아래에 보스 체력을 나타내는 UI 생성
-	if (!PlayerUnit->IsBossHPWidget())
+	if (PlayerUnit)
 	{
-		PlayerUnit->SetBossHPWidget(bFlag, this);
+		if(!PlayerUnit->IsBossHPWidget())
+			PlayerUnit->SetBossHPWidget(bFlag, this);
 	}
 
 }
