@@ -28,6 +28,9 @@ public:
 	void SetChargeAttacking(float Ratio);
 	void ChargeAttackInViewport(bool bFlag);
 
+	void SetBossHPWidget(bool bFlag, class AARPGEnermy* Boss);
+	bool IsBossHPWidget();
+
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		class AARPGGameMode* GM;
@@ -47,4 +50,12 @@ public:
 		TSubclassOf<class UARPGWidgetMain> BP_WidgetMain;
 	UPROPERTY()
 		class UARPGWidgetMain* WidgetMain;
+
+	// 보스 전용 HP 바 생성
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<class UARPGWidget_BossHPView> BP_WidgetBossHP;
+	UPROPERTY()
+		class UARPGWidget_BossHPView* WidgetBossHP;
+
+
 };

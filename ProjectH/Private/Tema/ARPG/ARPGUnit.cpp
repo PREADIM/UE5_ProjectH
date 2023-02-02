@@ -266,7 +266,7 @@ void AARPGUnit::DeathWeaponSimulate()
 
 void AARPGUnit::SetDeathCamera()
 {
-
+	// 죽음 처리 카메라
 }
 
 void AARPGUnit::LMB()
@@ -505,6 +505,20 @@ void AARPGUnit::ChargeAttackEnd()
 	OwnerController->ChargeAttackInViewport(false);
 }
 
+void AARPGUnit::SetBossHPWidget(bool bFlag, AARPGEnermy* Boss)
+{
+	OwnerController->SetBossHPWidget(bFlag, Boss);
+}
+
+bool AARPGUnit::IsBossHPWidget()
+{
+	if (OwnerController->WidgetBossHP)
+	{
+		return OwnerController->IsBossHPWidget();
+	}
+	return false;
+}
+
 bool AARPGUnit::Hit(bool bBlockingHit)
 {
 	if (!FPSMeshAnimInstance && !TPSMeshAnimInstance)
@@ -528,6 +542,10 @@ bool AARPGUnit::Hit(bool bBlockingHit)
 			FPSMeshAnimInstance->Hit(EUnitMode::BattleMode);
 			TPSMeshAnimInstance->Hit(EUnitMode::BattleMode);
 			PlayCameraShake(BP_BattleMode_CS);
+		}
+		else
+		{
+			PlayCameraShake(BP_PoiseHitMode_CS);
 		}
 	}
 	else
@@ -569,61 +587,14 @@ void AARPGUnit::ResetMode()
 	EndAttack();
 }
 
-//float AARPGUnit::TakeDamageCalculator(float APDamage, float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
-//{
-//	if (bDeath || bSpecialAttackMode)
-//	{
-//		return 0.0f;
-//	}
-//
-//
-//	float Damaged = DamageAmount;
-//	float CurrentHP = UnitState.HP;
-//	bool bBlockingHit = false;
-//
-//	if (bBlocking)
-//	{
-//		if (TargetDotProduct(DamageCauser->GetActorLocation(), 0.7)) // 45도 가량
-//		{
-//			Damaged = DamageAmount - (DamageAmount * BlockingDEF); // BlockingDEF는 0.0~1.0으로 되어있다.
-//			TakeDamageAP(APDamage);		
-//			bBlockingHit = true;
-//		}
-//	}
-//	
-//	if (CurrentHP <= Damaged)
-//	{
-//		Damaged = CurrentHP; // 남은 체력이 곧 라스트 데미지
-//		CurrentHP = 0.f;
-//		UnitState.SetTakeDamageHP(CurrentHP);
-//		Death();
-//	}
-//	else
-//	{
-//		Hit(bBlockingHit);
-//		if (Damaged > 0.f)
-//		{
-//			CurrentHP -= Damaged;
-//			UnitState.SetTakeDamageHP(CurrentHP);
-//		}
-//	}
-//
-//	Super::TakeDamageCalculator(APDamage, Damaged, DamageEvent, EventInstigator, DamageCauser);
-//
-//	return Damaged;
-//}
-
-
-float AARPGUnit::TakeDamageCalculator(AARPGWeapon* DamageWeapon, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+float AARPGUnit::TakeDamageCalculator(AARPGWeapon* DamageWeapon, FDamageEvent const& DamageEvent, AController* EventInstigator, AARPGUnitBase* DamageCauser)
 {
 	if (bDeath || bSpecialAttackMode)
 	{
 		return 0.0f;
 	}
 
-	float TotalDamage = CalculDamage(DamageWeapon->WeaponDamage * DamageWeapon->Charge);
-
-	float Damaged = TotalDamage;
+	float Damaged = DamageCauser->CalculDamage(DamageWeapon->WeaponDamage * DamageWeapon->Charge);
 	float CurrentHP = UnitState.HP;
 	bool bBlockingHit = false;
 
@@ -634,8 +605,8 @@ float AARPGUnit::TakeDamageCalculator(AARPGWeapon* DamageWeapon, FDamageEvent co
 	{
 		if (TargetDotProduct(DamageCauser->GetActorLocation(), 0.7)) // 45도 가량
 		{
-			float APDMG = CalculAPDamage(DamageWeapon->WeaponAP_DMG);
-			Damaged = TotalDamage - (TotalDamage * BlockingDEF); // BlockingDEF는 0.0~1.0으로 되어있다.
+			float APDMG = DamageCauser->CalculAPDamage(DamageWeapon->WeaponAP_DMG);
+			Damaged = Damaged - (Damaged * BlockingDEF); // BlockingDEF는 0.0~1.0으로 되어있다.
 			TakeDamageAP(APDMG);
 			bBlockingHit = true;
 		}

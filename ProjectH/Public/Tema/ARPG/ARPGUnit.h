@@ -28,7 +28,7 @@ public:
 	virtual void PostInitializeComponents() override;;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	//virtual float TakeDamageCalculator(float APDamage, float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
-	virtual float TakeDamageCalculator(class AARPGWeapon* Weapon, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+	virtual float TakeDamageCalculator(class AARPGWeapon* DamageWeapon, FDamageEvent const& DamageEvent, AController* EventInstigator, AARPGUnitBase* DamageCauser) override;
 
 	// 공격을 막아내 AP를 깎아야할때 사용하는 함수.
 	virtual void TakeDamageAP(float Damage) override;
@@ -48,6 +48,8 @@ public:
 
 	void ChargeAttackStart();
 	void ChargeAttackEnd();
+	void SetBossHPWidget(bool bFlag, class AARPGEnermy* Boss);
+	bool IsBossHPWidget();
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
@@ -76,6 +78,8 @@ public:
 		TSubclassOf<class UCameraShakeBase> BP_BlockingMode_CS;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TSubclassOf<class UCameraShakeBase> BP_BlockingZeroAPMode_CS;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<class UCameraShakeBase> BP_PoiseHitMode_CS;
 
 	// 카메라 쉐이크 실행 함수
 	void PlayCameraShake(TSubclassOf<class UCameraShakeBase> CS);

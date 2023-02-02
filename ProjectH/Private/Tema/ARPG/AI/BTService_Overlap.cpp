@@ -63,12 +63,11 @@ void UBTService_Overlap::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* Node
 
 				if (!bTrace)
 				{
+					// 보스는 무조건 추적 이다.
 					if (!OwnerPawn->PlayerUnit) // 아직 공격당하지않았으므로 탐지.
 					{
 						if (OwnerPawn->TargetDotProduct(Unit->GetActorLocation(), 0.34)) // 70도 가량
 						{
-
-							_DEBUG("Find");
 							OwnerComp.GetBlackboardComponent()->SetValueAsObject(FName("TargetUnit"), Unit);
 							DrawDebugSphere(World, Center, CollisionRadius, 16, FColor::Green, false, 0.2f);
 
@@ -81,7 +80,6 @@ void UBTService_Overlap::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* Node
 					}
 					else // 공격당해서 탐지
 					{
-						_DEBUG("Find");
 						OwnerComp.GetBlackboardComponent()->SetValueAsObject(FName("TargetUnit"), Unit);
 						DrawDebugSphere(World, Center, CollisionRadius, 16, FColor::Green, false, 0.2f);
 
@@ -99,6 +97,7 @@ void UBTService_Overlap::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* Node
 	else
 	{
 		OwnerPawn->PlayerUnit = nullptr;
+		OwnerPawn->SetBattleMode(false); // 배틀모드
 	}
 
 	OwnerComp.GetBlackboardComponent()->SetValueAsObject(FName("TargetUnit"), nullptr);

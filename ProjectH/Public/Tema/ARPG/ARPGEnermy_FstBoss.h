@@ -34,13 +34,11 @@ public:
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void PostInitializeComponents() override;
 	//virtual float TakeDamageCalculator(float APDamage, float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
-	virtual float TakeDamageCalculator(class AARPGWeapon* DamageWeapon, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
-
+	virtual float TakeDamageCalculator(class AARPGWeapon* DamageWeapon, FDamageEvent const& DamageEvent, AController* EventInstigator, AARPGUnitBase* DamageCauser) override;
 	virtual void TakeDamageAP(float Damage) override;
 	virtual bool Hit(bool bBlockingHit) override;
+	virtual void SetBattleMode(bool bFlag) override;
 
-	// 공격 할수 있는지 판단 하는 함수.
-	virtual void ChangeBattleMode(bool bFlag) override;
 	virtual void HitEnd() override;
 
 	virtual void Attack(int32 index) override; // 공격 함수

@@ -15,6 +15,14 @@ DECLARE_MULTICAST_DELEGATE(FOnAttack)
 DECLARE_MULTICAST_DELEGATE(FOnMoving)
 
 UENUM(BlueprintType)
+enum class EEnermyType : uint8
+{
+	Unit UMETA(DisplayName = "Unit"),
+	Boss UMETA(DisplayName = "Boss")
+};
+
+
+UENUM(BlueprintType)
 enum class EMovingState : uint8
 {
 	Stop UMETA(DisplayName = "Stop"),
@@ -60,13 +68,14 @@ public:
 	virtual void Tick(float DeltaSeconds);
 	virtual void PostInitializeComponents();
 	//virtual float TakeDamageCalculator(float APDamage, float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
-	virtual float TakeDamageCalculator(class AARPGWeapon* DamageWeapon, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
+	virtual float TakeDamageCalculator(class AARPGWeapon* DamageWeapon, FDamageEvent const& DamageEvent, AController* EventInstigator, AARPGUnitBase* DamageCauser);
 	virtual void TakeDamageAP(float Damage) {}
 	// 맞았을때 함수. UnitBase에서 먼저 강인도를 따져서 히트 모션이 나올것인지 판별한다.
 	virtual bool Hit(bool bBlockingHit) { return Super::Hit(bBlocking); } 
 	virtual bool CanThisDamage() { return false; }
-	virtual void ChangeBattleMode(bool bFlag) {}
 	virtual void HitEnd() {}
+	virtual void SetBattleMode(bool bFlag);
+
 
 	virtual void Attack(int32 index) {} // 공격 함수
 	virtual void Guard(bool bFlag) {} // 막는 함수
@@ -98,7 +107,8 @@ public:
 	const float& GetAttackCoolTime() { return AttackCoolTime; }
 
 	//-----------------------------------
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		EEnermyType EnermyType;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		EMovingState MainMovingState; // 어디로 입력 되는지.
@@ -172,10 +182,6 @@ public:
 		float GetDirection(FVector MoveDirection); // 현재 어떤 방향인지 애님블프에 전달하는 함수.
 
 	void SetEnermyMoveMode(EEnermyMoveMode Mode); // 움직일 모드 설정
-
-	//-----------------------------------------
-
-	void SetBattleMode(bool bFlag); 
 
 
 	//--------------------------------------------------

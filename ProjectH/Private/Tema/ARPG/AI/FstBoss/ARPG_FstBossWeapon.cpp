@@ -86,24 +86,17 @@ void AARPG_FstBossWeapon::WeaponBeginOverlap(UPrimitiveComponent* OverlappedComp
 						else // 패링 실패
 						{
 							// 일단 공격을 하고 블럭킹인지 죽었는지는 알아서 판단
-							/*float TotalDamage = OwnerUnit->CalculDamage(WeaponDamage);
-							float APDMG = OwnerUnit->CalculAPDamage(WeaponAP_DMG);
-							Unit->TakeDamageCalculator(APDMG, TotalDamage, DamageEvent, OwnerController, this);*/
 							Unit->TakeDamageCalculator(this, DamageEvent, OwnerController, OwnerUnit);
 						}
 					}
 					else
 					{
 						// 일단 공격을 하고 블럭킹인지 죽었는지는 알아서 판단
-						/*float TotalDamage = OwnerUnit->CalculDamage(WeaponDamage);
-						float APDMG = OwnerUnit->CalculAPDamage(WeaponAP_DMG);
-						Unit->TakeDamageCalculator(APDMG, TotalDamage, DamageEvent, OwnerController, this);*/
 						Unit->TakeDamageCalculator(this, DamageEvent, OwnerController, OwnerUnit);
 					}
 				}
 
 				HitEndActor.AddUnique(OtherActor);
-				//_DEBUG("Overlap Enermy Actor : %s", *OtherActor->GetName());
 				return;
 			}
 		}

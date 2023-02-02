@@ -30,7 +30,6 @@ void UARPGWidget_BattleHP::NativeConstruct()
 
 	OwnerUnit->OnDamage.AddUFunction(this, FName("SetTextDamage"));
 	Damage->SetRenderOpacity(0.f);
-
 }
 
 float UARPGWidget_BattleHP::RetHP()
@@ -69,7 +68,6 @@ void UARPGWidget_BattleHP::RenderDamageText()
 	if (Delay >= MaxRenderDelay)
 	{
 		SetRenderOpacity(0.f);
-		_DEBUG("SetRenderOpacity");
 		GetWorld()->GetTimerManager().ClearTimer(DmgRenderTimer);		
 	}
 	else if (Damage->GetRenderOpacity() == 1.f && Delay >= MaxDamageRenderDelay)

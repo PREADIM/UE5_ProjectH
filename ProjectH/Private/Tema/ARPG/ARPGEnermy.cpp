@@ -67,13 +67,13 @@ void AARPGEnermy::PostInitializeComponents()
 //}
 
 
-float AARPGEnermy::TakeDamageCalculator(AARPGWeapon* DamageWeapon, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+float AARPGEnermy::TakeDamageCalculator(AARPGWeapon* DamageWeapon, FDamageEvent const& DamageEvent, AController* EventInstigator, AARPGUnitBase* DamageCauser)
 {
 	Super::TakeDamageCalculator(DamageWeapon, DamageEvent, EventInstigator, DamageCauser);
 
 	if (PlayerUnit == nullptr)
 	{
-		AARPGUnit* Temp = Cast<AARPGUnit>(EventInstigator->GetPawn());
+		AARPGUnit* Temp = Cast<AARPGUnit>(DamageCauser);
 		if (Temp)
 		{
 			PlayerUnit = Temp;
@@ -175,8 +175,8 @@ void AARPGEnermy::SetBattleMode(bool bFlag)
 	if (bBattleMode == bFlag)
 		return;
 
+	UnitState.ResetPoise();
 	bBattleMode = bFlag;
-	ChangeBattleMode(bFlag);
 }
 
 void AARPGEnermy::SetEnermyMoveMode(EEnermyMoveMode Mode)

@@ -78,6 +78,11 @@ void UARPG_FstBossAnimInstance::HittedReset()
 	CurrentEffectIndex = 0;
 	CurrentSoundIndex = 0;
 	ProjectileCnt = 0;
+	if (!FstBoss->GetCharacterMovement()->MovementMode == EMovementMode::MOVE_Walking)
+	{
+		_DEBUG("Set Walking");
+		FstBoss->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+	}
 }
 
 
@@ -90,6 +95,7 @@ void UARPG_FstBossAnimInstance::AnimNotify_ComboProjectile()
 
 	FTransform TF;
 	FActorSpawnParameters Param;
+	Param.Owner = FstBoss;
 	Param.Instigator = FstBoss;
 	Param.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 	AARPGFstBoss_Projectile* Projectile = nullptr;
@@ -113,8 +119,8 @@ void UARPG_FstBossAnimInstance::AnimNotify_ComboProjectile()
 
 	if (Projectile)
 	{
-		_DEBUG("Projectile");
-		//Projectile->OwnerUnit = FstBoss;
+		/*Projectile->OwnerUnit = FstBoss;
+		Projectile->SetOwner(FstBoss);*/
 	}
 
 

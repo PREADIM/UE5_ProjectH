@@ -11,6 +11,7 @@
 AARPGEnermy_Mini::AARPGEnermy_Mini()
 {
 	PrimaryActorTick.bCanEverTick = true;
+	EnermyType = EEnermyType::Unit;
 }
 
 void AARPGEnermy_Mini::BeginPlay()
@@ -62,60 +63,15 @@ void AARPGEnermy_Mini::PostInitializeComponents()
 	}
 }
 
-//float AARPGEnermy_Mini::TakeDamageCalculator(float APDamage, float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
-//{
-//	if (bDeath || bSpecialAttackMode)
-//	{
-//		return 0.0f;
-//	}
-//
-//	float Damaged = DamageAmount;
-//	float CurrentHP = UnitState.HP;
-//	bool bBlockingHit = false;
-//
-//	if (bBlocking)
-//	{
-//		if (TargetDotProduct(DamageCauser->GetActorLocation(), 0.7)) // 45도 가량
-//		{
-//			Damaged = DamageAmount - (DamageAmount * BlockingDEF); // BlockingDEF는 0.0~1.0으로 되어있다.
-//			TakeDamageAP(APDamage);
-//			bBlockingHit = true;
-//		}
-//	}
-//
-//	if (CurrentHP <= Damaged)
-//	{
-//		Damaged = CurrentHP; // 남은 체력이 곧 라스트 데미지
-//		CurrentHP = 0.f;
-//		UnitState.SetTakeDamageHP(CurrentHP);
-//		Death();
-//	}
-//	else
-//	{
-//		Hit(bBlockingHit);
-//		if (Damaged > 0.f)
-//		{
-//			CurrentHP -= Damaged;
-//			UnitState.SetTakeDamageHP(CurrentHP);
-//		}
-//	}
-//
-//	Super::TakeDamageCalculator(APDamage, Damaged, DamageEvent, EventInstigator, DamageCauser);
-//
-//	return Damaged;
-//}
 
-
-float AARPGEnermy_Mini::TakeDamageCalculator(AARPGWeapon* DamageWeapon, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+float AARPGEnermy_Mini::TakeDamageCalculator(AARPGWeapon* DamageWeapon, FDamageEvent const& DamageEvent, AController* EventInstigator, AARPGUnitBase* DamageCauser)
 {
 	if (bDeath || bSpecialAttackMode)
 	{
 		return 0.0f;
 	}
 
-	float TotalDamage = CalculDamage(DamageWeapon->WeaponDamage * DamageWeapon->Charge);
-
-	float Damaged = TotalDamage;
+	float Damaged = DamageCauser->CalculDamage(DamageWeapon->WeaponDamage * DamageWeapon->Charge);
 	float CurrentHP = UnitState.HP;
 	bool bBlockingHit = false;
 
@@ -126,8 +82,8 @@ float AARPGEnermy_Mini::TakeDamageCalculator(AARPGWeapon* DamageWeapon, FDamageE
 	{
 		if (TargetDotProduct(DamageCauser->GetActorLocation(), 0.7)) // 45도 가량
 		{
-			float APDMG = CalculAPDamage(DamageWeapon->WeaponAP_DMG);
-			Damaged = TotalDamage - (TotalDamage * BlockingDEF); // BlockingDEF는 0.0~1.0으로 되어있다.
+			float APDMG = DamageCauser->CalculAPDamage(DamageWeapon->WeaponAP_DMG);
+			Damaged = Damaged - (Damaged * BlockingDEF); // BlockingDEF는 0.0~1.0으로 되어있다.
 			TakeDamageAP(APDMG);
 			bBlockingHit = true;
 		}
@@ -210,8 +166,10 @@ bool AARPGEnermy_Mini::Hit(bool bBlockingHit)
 
 // 배틀모드가 실행 되었을때 실행되는 함수. true면 배틀 시작시 버프라던가 무언가 실행 가능.
 // 해당 클래스는 그런거 없는 기본 적이므로 그냥 배틀모드끝나면 가드중인거 풀기 정도.
-void AARPGEnermy_Mini::ChangeBattleMode(bool bFlag)
+void AARPGEnermy_Mini::SetBattleMode(bool bFlag)
 {
+	Super::SetBattleMode(bFlag);
+
 	if (!bFlag)
 	{
 		Guard(false);
@@ -223,6 +181,7 @@ void AARPGEnermy_Mini::HitEnd()
 	bHitting = false;
 	bParringHit = false;
 }
+
 
 // 가드를 할것인지 안할 것인지 실행. 기본적으로 Guard에서 해당 함수를 실행하는 방식.
 void AARPGEnermy_Mini::SetBlocking(bool bFlag)

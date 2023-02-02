@@ -53,7 +53,7 @@ public:
 public:
 	// TakeDamage 대신 이 함수에서 데미지 처리를 알아서 하게한다.
 	//virtual float TakeDamageCalculator (float APDamage, float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
-	virtual float TakeDamageCalculator(class AARPGWeapon* DamageWeapon, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
+	virtual float TakeDamageCalculator(class AARPGWeapon* DamageWeapon, FDamageEvent const& DamageEvent, AController* EventInstigator, AARPGUnitBase* DamageCauser);
 	float CalculDamage(float Damage);
 	float CalculAPDamage(float APDamage);
 	bool CanUseAP(); // AP가 쓸수있나?

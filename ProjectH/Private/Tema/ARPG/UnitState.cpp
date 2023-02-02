@@ -16,7 +16,8 @@ void FUnitState::Init(AARPGUnitBase* Unit)
 	AP = NormallyAP;
 	ATK = NormallyATK;
 	DEF = NormallyDEF;
-	Poise = NormallyPoise;
+	//Poise = NormallyPoise;
+	//Poise는 노멀 모드 배틀모드에 강인도가 다르므로 배틀시작시에 적용
 }
 
 void FUnitState::SetTakeDamageHP(float TakeHP)
@@ -35,4 +36,10 @@ void FUnitState::SetAP(float TakeAP)
 			OwnerUnit->ZeroAP();
 		}
 	}
+}
+
+
+void FUnitState::ResetPoise()
+{
+	Poise = NormallyPoise;
 }

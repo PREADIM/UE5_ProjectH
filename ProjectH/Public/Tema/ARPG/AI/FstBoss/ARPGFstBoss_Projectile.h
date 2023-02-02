@@ -28,18 +28,6 @@ public:
 	// 이 액터는 2초간 진행되고 이펙트는 1.5초 간 진행되기때문에 이펙트사라질때 콜리전 오프
 
 public:
-
-	/*ECollisionChannel ARPGUnitChannel;
-
-	UPROPERTY()
-		TArray<AActor*> HitEndActor;
-
-	float WeaponDamage;
-	float WeaponAP_DMG;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		class AARPGUnitBase* OwnerUnit;*/
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UNiagaraComponent* Effect;
 

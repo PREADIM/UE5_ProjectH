@@ -27,11 +27,8 @@ AARPGFstBoss_Projectile::AARPGFstBoss_Projectile()
 	Projectile->Friction = 0.f;
 	Projectile->BounceVelocityStopSimulatingThreshold = 0.f;
 
-	InitialLifeSpan = 1.f;
-	EndCollisionTime = 1.5f;
-
-	Collision->OnComponentBeginOverlap.AddDynamic(this, &AARPGFstBoss_Projectile::OverlapProjectile);
-	//ARPGUnitChannel = ECollisionChannel::ECC_GameTraceChannel12;
+	InitialLifeSpan = 2.f;
+	EndCollisionTime = 1.0f;	
 }
 
 // Called when the game starts or when spawned
@@ -39,8 +36,10 @@ void AARPGFstBoss_Projectile::BeginPlay()
 {
 	Super::BeginPlay();
 
-	OwnerUnit = Cast<AARPGUnitBase>(GetInstigator());
+	OwnerUnit = Cast<AARPGUnitBase>(GetOwner());
+	Collision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 
+	Collision->OnComponentBeginOverlap.AddDynamic(this, &AARPGFstBoss_Projectile::OverlapProjectile);
 	FTimerHandle CollisionOffHandle;
 	GetWorld()->GetTimerManager().SetTimer(CollisionOffHandle, this, &AARPGFstBoss_Projectile::CollisionOff, EndCollisionTime, false);
 }
@@ -60,7 +59,13 @@ void AARPGFstBoss_Projectile::OverlapProjectile(UPrimitiveComponent* OverlappedC
 	}
 
 	if (!OwnerUnit)
+	{
+		_DEBUG("Projectile Not OwnerUnit");
 		return;
+	}
+
+
+	_DEBUG("Projectile");
 
 	if (OtherActor != OwnerUnit && OtherActor->GetOwner() != OwnerUnit->GetOwner())
 	{
@@ -74,12 +79,9 @@ void AARPGFstBoss_Projectile::OverlapProjectile(UPrimitiveComponent* OverlappedC
 			{
 				FDamageEvent DamageEvent;
 				if (Unit->bDeath != true) // 공격 할 수 있는지 판단
-				{
-				
+				{		
+					_DEBUG("Projectile Hit");
 					// 일단 공격을 하고 블럭킹인지 죽었는지는 알아서 판단
-					/*float TotalDamage = OwnerUnit->CalculDamage(WeaponDamage);
-					float APDMG = OwnerUnit->CalculAPDamage(WeaponAP_DMG);
-					Unit->TakeDamageCalculator(APDMG, TotalDamage, DamageEvent, OwnerUnit->GetController(), this);*/
 					Unit->TakeDamageCalculator(this, DamageEvent, OwnerUnit->GetController(), OwnerUnit);
 				}
 

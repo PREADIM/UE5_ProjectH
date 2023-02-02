@@ -13,9 +13,6 @@ AARPGWeapon_Sword::AARPGWeapon_Sword()
 	WeaponCollision = CreateDefaultSubobject<UCapsuleComponent>(TEXT("SwordCollision"));
 	WeaponCollision->SetupAttachment(SwordMesh);
 
-	WeaponCollision->OnComponentBeginOverlap.AddDynamic(this, &AARPGWeapon_Sword::SwordBeginOverlap);
-	//ARPGUnitChannel = ECollisionChannel::ECC_GameTraceChannel12;
-
 	UseAP = 40.f;
 }
 
@@ -29,6 +26,7 @@ void AARPGWeapon_Sword::BeginPlay()
 	Super::BeginPlay();
 
 	OwnerController = GetOwnerController();
+	WeaponCollision->OnComponentBeginOverlap.AddDynamic(this, &AARPGWeapon_Sword::SwordBeginOverlap);
 }
 
 
@@ -82,7 +80,7 @@ bool AARPGWeapon_Sword::IsChargeAttack()
 float AARPGWeapon_Sword::ChargeAttack(float DeltaSeconds)
 {
 	ChargeTime += DeltaSeconds;
-	float ChargeDMG = ChargeTime / MaxChargeTime;
+	float ChargeDMG = FMath::Clamp(ChargeTime / MaxChargeTime, 0.f, 1.0f);
 	
 	if (ChargeDMG >= 0.5)
 	{
@@ -138,16 +136,25 @@ void AARPGWeapon_Sword::SwordBeginOverlap(UPrimitiveComponent* OverlappedComp, A
 			if (Unit)
 			{
 				FDamageEvent DamageEvent;
-			if (Unit->bDeath != true) // 공격 할 수 있는지 판단
-			{
-				if (Unit->bParring == true && OwnerUnit->bDontParringAttack == false)
+				if (Unit->bDeath != true) // 공격 할 수 있는지 판단
 				{
-					if (Unit->ParringHitFunc(OwnerUnit->GetActorLocation()))
+					if (Unit->bParring == true && OwnerUnit->bDontParringAttack == false)
 					{
-						OwnerUnit->ParringHit(Unit);
-						Unit->bCanParringAttack = true;
+						if (Unit->ParringHitFunc(OwnerUnit->GetActorLocation()))
+						{
+							OwnerUnit->ParringHit(Unit);
+							Unit->bCanParringAttack = true;
+						}
+						else // 패링 실패
+						{
+							// 일단 공격을 하고 블럭킹인지 죽었는지는 알아서 판단
+							/*float TotalDamage = OwnerUnit->CalculDamage(WeaponDamage * Charge);
+							float APDMG = OwnerUnit->CalculAPDamage(WeaponAP_DMG);
+							Unit->TakeDamageCalculator(APDMG, TotalDamage, DamageEvent, OwnerController, this);*/
+							Unit->TakeDamageCalculator(this, DamageEvent, OwnerController, OwnerUnit);
+						}
 					}
-					else // 패링 실패
+					else
 					{
 						// 일단 공격을 하고 블럭킹인지 죽었는지는 알아서 판단
 						/*float TotalDamage = OwnerUnit->CalculDamage(WeaponDamage * Charge);
@@ -156,15 +163,6 @@ void AARPGWeapon_Sword::SwordBeginOverlap(UPrimitiveComponent* OverlappedComp, A
 						Unit->TakeDamageCalculator(this, DamageEvent, OwnerController, OwnerUnit);
 					}
 				}
-				else
-				{
-					// 일단 공격을 하고 블럭킹인지 죽었는지는 알아서 판단
-					/*float TotalDamage = OwnerUnit->CalculDamage(WeaponDamage * Charge);
-					float APDMG = OwnerUnit->CalculAPDamage(WeaponAP_DMG);
-					Unit->TakeDamageCalculator(APDMG, TotalDamage, DamageEvent, OwnerController, this);*/
-					Unit->TakeDamageCalculator(this, DamageEvent, OwnerController, OwnerUnit);
-				}
-			}
 
 				HitEndActor.AddUnique(OtherActor);
 				//_DEBUG("Overlap Enermy Actor : %s", *OtherActor->GetName());

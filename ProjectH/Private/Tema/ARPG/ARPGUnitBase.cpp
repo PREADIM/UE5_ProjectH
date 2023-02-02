@@ -122,19 +122,19 @@ void AARPGUnitBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 //	return DamageAmount;
 //}
 
-float AARPGUnitBase::TakeDamageCalculator(AARPGWeapon* DamageWeapon, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+float AARPGUnitBase::TakeDamageCalculator(AARPGWeapon* DamageWeapon, FDamageEvent const& DamageEvent, AController* EventInstigator, AARPGUnitBase* DamageCauser)
 {
 	// 강인도 계산
 	// 강인도 를 시간이 지나면 차는 것과 특정 행동을 하면 다시 차게 할 순있지만 하지않음.
 
 	// 강인도가 0 아래라는 것은 경직 먹었다는 뜻 때문에 다시 초기화.
-	if(UnitState.Poise <= 0)
-		UnitState.Poise = UnitState.NormallyPoise;
+	if (UnitState.Poise <= 0)
+		UnitState.ResetPoise();
 
-	AARPGUnitBase* Causer = Cast<AARPGUnitBase>(DamageCauser);
-	if (Causer)
+	if (DamageCauser)
 	{
-		UnitState.Poise -= Causer->UnitState.NormallyPoise;
+		// 기본 값인 NoramllPoise를 빼야한다. Poise는 계속변하는 변수이기때문.
+		UnitState.Poise -= DamageCauser->UnitState.NormallyPoise;
 	}
 
 	return 0.f;

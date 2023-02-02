@@ -18,6 +18,8 @@ public:
 	//새로운 AP로 Set
 	void SetAP(float TakeAP);
 
+	void ResetPoise();
+
 	/* 평상시 기본 스텟 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float NormallyHP;

@@ -6,11 +6,13 @@
 #include "Tema/ARPG/AttackClass.h"
 #include "Tema/ARPG/ARPGAttackComponent.h"
 #include "Tema/ARPG/AI/FstBoss/ARPG_FstBossAnimInstance.h"
+#include "Tema/ARPG/ARPGUnit.h"
 
 AARPGEnermy_FstBoss::AARPGEnermy_FstBoss()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	UnitState.NormallyAP = 500.f;
+	EnermyType = EEnermyType::Boss;
 }
 
 void AARPGEnermy_FstBoss::BeginPlay()
@@ -28,6 +30,10 @@ void AARPGEnermy_FstBoss::BeginPlay()
 			LeftWeapon->OwnerUnit = this;
 			RightWeapon->OwnerUnit = this;
 			TwinWeapon->OwnerUnit = this;
+
+			LeftWeapon->SetOwner(this);
+			RightWeapon->SetOwner(this);
+			TwinWeapon->SetOwner(this);
 
 			LeftWeapon->FinishSpawning(FTransform());
 			RightWeapon->FinishSpawning(FTransform());
@@ -59,54 +65,17 @@ void AARPGEnermy_FstBoss::PostInitializeComponents()
 	}
 }
 
-//float AARPGEnermy_FstBoss::TakeDamageCalculator(float APDamage, float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
-//{
-//	if (bDeath || bSpecialAttackMode)
-//	{
-//		return 0.0f;
-//	}
-//
-//	float Damaged = DamageAmount;
-//	float CurrentHP = UnitState.HP;
-//
-//	if (CurrentHP <= Damaged)
-//	{
-//		Damaged = CurrentHP; // 남은 체력이 곧 라스트 데미지
-//		CurrentHP = 0.f;
-//		UnitState.SetTakeDamageHP(CurrentHP);
-//		Death();
-//	}
-//	else
-//	{
-//		Hit(false); // 이 보스는 가드가 없다.
-//		if (Damaged > 0.f)
-//		{
-//			CurrentHP -= Damaged;
-//			UnitState.SetTakeDamageHP(CurrentHP);
-//			TakeDamageAP(APDamage);
-//			// 보스의 ZeroAP는 그로기를 뜻한다.
-//		}
-//	}
-//
-//	Super::TakeDamageCalculator(APDamage, Damaged, DamageEvent, EventInstigator, DamageCauser);
-//
-//	return Damaged;
-//}
-
-
-float AARPGEnermy_FstBoss::TakeDamageCalculator(AARPGWeapon* DamageWeapon, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+float AARPGEnermy_FstBoss::TakeDamageCalculator(AARPGWeapon* DamageWeapon, FDamageEvent const& DamageEvent, AController* EventInstigator, AARPGUnitBase* DamageCauser)
 {
 	if (bDeath || bSpecialAttackMode)
 	{
 		return 0.0f;
 	}
 
-	float TotalDamage = CalculDamage(DamageWeapon->WeaponDamage * DamageWeapon->Charge);
-	float APDMG = CalculAPDamage(DamageWeapon->WeaponAP_DMG);
-
-	float Damaged = TotalDamage;
+	
+	float APDMG = DamageCauser->CalculAPDamage(DamageWeapon->WeaponAP_DMG);
+	float Damaged = DamageCauser->CalculDamage(DamageWeapon->WeaponDamage * DamageWeapon->Charge);
 	float CurrentHP = UnitState.HP;
-	bool bBlockingHit = false;
 
 	//무기 강인도를 이용해서 맞은 액터의 강인도를 깎는다.
 	Super::TakeDamageCalculator(DamageWeapon, DamageEvent, EventInstigator, DamageCauser);
@@ -178,8 +147,16 @@ bool AARPGEnermy_FstBoss::Hit(bool bBlockingHit)
 	return true;
 }
 
-void AARPGEnermy_FstBoss::ChangeBattleMode(bool bFlag)
+// 배틀모드가 실행 되었을때 실행되는 함수. true면 배틀 시작시 버프라던가 무언가 실행 가능.
+void AARPGEnermy_FstBoss::SetBattleMode(bool bFlag)
 {
+	Super::SetBattleMode(bFlag);
+
+	// 보스전용 아래에 보스 체력을 나타내는 UI 생성
+	if (!PlayerUnit->IsBossHPWidget())
+	{
+		PlayerUnit->SetBossHPWidget(bFlag, this);
+	}
 
 }
 
@@ -233,7 +210,7 @@ void AARPGEnermy_FstBoss::ParringHit(AARPGUnitBase* InstigatorActor)
 
 void AARPGEnermy_FstBoss::DeathCollsionEnabled()
 {
-
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void AARPGEnermy_FstBoss::DeathWeaponSimulate()
@@ -255,6 +232,10 @@ void AARPGEnermy_FstBoss::DeathReset()
 	bMoving = false;
 	WeaponOverlapEnd();
 	AttackEnd();
+	if (PlayerUnit)
+	{
+		PlayerUnit->SetBossHPWidget(false, this);
+	}
 }
 
 void AARPGEnermy_FstBoss::AttackEnd()
@@ -263,6 +244,11 @@ void AARPGEnermy_FstBoss::AttackEnd()
 	bDontParringAttack = false;
 	OnAttack.Broadcast();
 	OnAttack.Clear();
+	if (GetCharacterMovement()->MovementMode == EMovementMode::MOVE_Flying)
+	{
+		_DEBUG("Set Walking");
+		GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Falling);
+	}
 }
 
 void AARPGEnermy_FstBoss::WeaponOverlapEnd()
