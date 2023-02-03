@@ -63,9 +63,6 @@ public:
 		float CoolTime;
 	float CurrentCoolTime = 0.f;
 	FTimerHandle CoolTimeHandle;
-
-	FOnCppAttackFunc CppAttackFunc;
-	//Cpp용 델리게이트
 	
 public:
 	void Init();

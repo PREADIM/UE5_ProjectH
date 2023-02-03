@@ -24,6 +24,7 @@ EBTNodeResult::Type UBTTask_ARPGAttack::ExecuteTask(UBehaviorTreeComponent& Owne
 		return EBTNodeResult::Failed;
 	}
 
+	BTComp = &OwnerComp;
 
 	if (OwnerPawn->bBlocking)
 	{
@@ -35,12 +36,14 @@ EBTNodeResult::Type UBTTask_ARPGAttack::ExecuteTask(UBehaviorTreeComponent& Owne
 
 	OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("CanAttack"), false);
 
-	OwnerPawn->OnAttack.AddLambda([this, &OwnerComp]()->void
+	OwnerPawn->OnAttack.AddDynamic(this, &UBTTask_ARPGAttack::AttackEnd);
+
+	/*OwnerPawn->OnAttack.AddLambda([this, &OwnerComp]()->void
 	{
 			OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("CoolTime"), true);
 			bAttack = false;
 			_DEBUG("Attack End");
-	});
+	});*/
 
 	if (!bAttack)
 	{
@@ -63,4 +66,13 @@ void UBTTask_ARPGAttack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Node
 	{
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	}
+}
+
+
+
+void UBTTask_ARPGAttack::AttackEnd()
+{
+	BTComp->GetBlackboardComponent()->SetValueAsBool(TEXT("CoolTime"), true);
+	bAttack = false;
+	_DEBUG("Attack End");
 }

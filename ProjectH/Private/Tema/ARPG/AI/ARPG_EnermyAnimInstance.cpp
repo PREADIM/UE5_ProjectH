@@ -139,3 +139,20 @@ void UARPG_EnermyAnimInstance::AnimNotify_Death()
 	OwnerUnit->DeathWeaponSimulate();
 }
 
+void UARPG_EnermyAnimInstance::AnimNotify_DontMoving()
+{
+	OwnerUnit->bDontMoving = true;
+}
+
+
+void UARPG_EnermyAnimInstance::AnimNotify_DontLockOn()
+{
+	OwnerUnit->bDontLockOn = true;
+}
+
+
+
+void UARPG_EnermyAnimInstance::AnimNotify_CanLockOn()
+{
+	OwnerUnit->bDontLockOn = false;
+}

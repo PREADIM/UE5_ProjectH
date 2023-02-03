@@ -103,6 +103,15 @@ public:
 	UFUNCTION()
 		void AnimNotify_Death();
 
+	UFUNCTION()
+		void AnimNotify_DontMoving();
+
+	UFUNCTION()
+		void AnimNotify_DontLockOn();
+
+	UFUNCTION()
+		void AnimNotify_CanLockOn();
+
 	//-----------------------------------------------------------
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

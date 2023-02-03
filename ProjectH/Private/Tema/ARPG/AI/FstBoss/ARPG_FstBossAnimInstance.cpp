@@ -155,23 +155,38 @@ void UARPG_FstBossAnimInstance::AnimNotify_PlaySound()
 
 void UARPG_FstBossAnimInstance::AnimNotify_TwinAttackStart()
 {
+	FstBoss->bAttacking = true;
 	FstBoss->SetWeaponCollision(true, 0);
 }
 
 void UARPG_FstBossAnimInstance::AnimNotify_LeftAttackStart()
 {
+	FstBoss->bAttacking = true;
 	FstBoss->SetWeaponCollision(true, 1);
 }
 
 void UARPG_FstBossAnimInstance::AnimNotify_RightAttackStart()
 {
+	FstBoss->bAttacking = true;
 	FstBoss->SetWeaponCollision(true, 2);
 }
 
-void UARPG_FstBossAnimInstance::AnimNotify_ComboSection_End()
+
+void UARPG_FstBossAnimInstance::AnimNotify_TwinAttackEnd()
 {
-	FstBoss->WeaponOverlapEnd();
+	FstBoss->SetWeaponCollision(false, 0);
 }
+
+void UARPG_FstBossAnimInstance::AnimNotify_LeftAttackEnd()
+{
+	FstBoss->SetWeaponCollision(false, 1);
+}
+
+void UARPG_FstBossAnimInstance::AnimNotify_RightAttackEnd()
+{
+	FstBoss->SetWeaponCollision(false, 2);
+}
+
 
 void UARPG_FstBossAnimInstance::AnimNotify_Attack_End()
 {
@@ -198,4 +213,21 @@ void UARPG_FstBossAnimInstance::AnimNotify_Death()
 	// 보통 여기서 무기 피직스를 끄는 시뮬레이션을 진행하지만 이 보스는 없다.
 }
 
+
+void UARPG_FstBossAnimInstance::AnimNotify_DontMoving()
+{
+	FstBoss->bDontMoving = true;
+}
+
+
+void UARPG_FstBossAnimInstance::AnimNotify_DontLockOn()
+{
+	FstBoss->bDontLockOn = true;
+}
+
+
+void UARPG_FstBossAnimInstance::AnimNotify_CanLockOn()
+{
+	FstBoss->bDontLockOn = false;
+}
 

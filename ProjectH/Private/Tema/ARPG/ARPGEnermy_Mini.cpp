@@ -137,11 +137,15 @@ bool AARPGEnermy_Mini::Hit(bool bBlockingHit)
 	if (!EnermyAnimInstance)
 		return false;
 
-	WeaponOverlapEnd();
-	AttackEnd();
-
+	bDontMoving = true;
 	bHitting = true;
 	bParringHit = false;
+
+	if (bAttacking)
+	{
+		WeaponOverlapEnd();
+		AttackEnd();
+	}
 
 	if (!bBlockingHit)
 	{
@@ -178,6 +182,7 @@ void AARPGEnermy_Mini::SetBattleMode(bool bFlag)
 
 void AARPGEnermy_Mini::HitEnd()
 {
+	bDontMoving = false;
 	bHitting = false;
 	bParringHit = false;
 }
@@ -306,6 +311,7 @@ void AARPGEnermy_Mini::ParringHit(AARPGUnitBase* InstigatorActor)
 	bBlocking = false;
 	bBlockMode = false;
 	OnAttack.Broadcast();
+	OnAttack.Clear();
 	WeaponOverlapEnd();
 	AttackEnd();
 	EnermyAnimInstance->ParringInstigatorUnit = InstigatorActor;
@@ -321,6 +327,11 @@ void AARPGEnermy_Mini::DeathCollsionEnabled()
 void AARPGEnermy_Mini::AttackEnd()
 {
 	bAttacking = false;
+	bDontLockOn = false;
+
+	if (!bHitting) // bHitting이 true면 HitEnd에서 맞은 애니메이션이 끝난후 false.
+		bDontMoving = false;
+
 	OnAttack.Broadcast();
 	OnAttack.Clear();
 }

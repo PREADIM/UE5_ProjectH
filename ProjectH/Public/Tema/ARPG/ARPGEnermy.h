@@ -11,7 +11,7 @@
 // (ex. 수색 범위, 속도, 공격중, 패링중 , 블록킹 등 상태 같은 것들)
 
 
-DECLARE_MULTICAST_DELEGATE(FOnAttack)
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAttack)
 DECLARE_MULTICAST_DELEGATE(FOnMoving)
 
 UENUM(BlueprintType)
@@ -93,13 +93,17 @@ public:
 	class UARPGAttackComponent* GetAttackComponent() { return AttackComponent; }
 
 public:
-	FOnAttack OnAttack;
+	UPROPERTY(BlueprintAssignable)
+		FOnAttack OnAttack;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		bool bBattleMode;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		bool bMoving; // 양 옆으로 움직이거나 백스텝을 함.
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		bool bDontLockOn; // 플레이어에게 화면 돌리기
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float AttackCoolTime; // 공격 딜레이
@@ -173,7 +177,7 @@ public:
 		FVector GetMovingValue(); // 움직이는지 Value값 구해내기
 
 	UFUNCTION(BlueprintCallable)
-		void LockOnPlayer(); // SetActorRotation으로 플레이어 락온하는 함수.
+		void LockOnPlayer(float DeltaSeconds); // SetActorRotation으로 플레이어 락온하는 함수.
 
 	UFUNCTION(BlueprintCallable)
 		void SetState();

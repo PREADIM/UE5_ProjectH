@@ -57,7 +57,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void AttackEnd();
 	UFUNCTION(BlueprintCallable)
-		void WeaponOverlapEnd();
+		void WeaponOverlapEnd(int32 Num); // 0양손, 1왼손, 2오른손, 3모두
 
 	UFUNCTION(BlueprintCallable)
 		void SetWeaponCollision(bool bFlag, int32 index); // 0양손, 1왼손, 2오른손

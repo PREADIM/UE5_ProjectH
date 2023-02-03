@@ -321,9 +321,6 @@ void AARPGUnit::LMBReleased()
 	bAttackLeft = false;
 	bAttackRight = false;
 	AttackCharge = 0.f;
-
-	//EndAttack();
-	//ResetMode();
 }
 
 void AARPGUnit::RMB()

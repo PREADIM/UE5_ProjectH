@@ -252,3 +252,5 @@ void UARPG_UnitAnimInstance::AnimNotify_Death()
 {
 	OwnerUnit->DeathWeaponSimulate();
 }
+
+

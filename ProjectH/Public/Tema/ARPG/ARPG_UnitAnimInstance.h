@@ -74,6 +74,8 @@ public:
 
 	UFUNCTION()
 		void AnimNotify_Death();
+
+
 	//----------------------------------
 
 

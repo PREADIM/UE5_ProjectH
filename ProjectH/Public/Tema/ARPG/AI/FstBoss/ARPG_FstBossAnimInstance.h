@@ -60,7 +60,13 @@ public:
 		void AnimNotify_RightAttackStart();
 
 	UFUNCTION()
-		void AnimNotify_ComboSection_End();
+		void AnimNotify_TwinAttackEnd();
+
+	UFUNCTION()
+		void AnimNotify_LeftAttackEnd();
+
+	UFUNCTION()
+		void AnimNotify_RightAttackEnd();
 
 	UFUNCTION()
 		void AnimNotify_Attack_End();
@@ -73,6 +79,15 @@ public:
 
 	UFUNCTION()
 		void AnimNotify_Death();
+
+	UFUNCTION()
+		void AnimNotify_DontMoving();
+
+	UFUNCTION()
+		void AnimNotify_DontLockOn();
+
+	UFUNCTION()
+		void AnimNotify_CanLockOn();
 
 public:
 	UPROPERTY()

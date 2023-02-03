@@ -34,13 +34,7 @@ void UAttackClass::PlayAttack(UWorld* UnitWorld)
 	// 공격 클래스 마다 따로 설정해둔 함수 실행
 	BindFunction();
 	CoolTimeStart();
-	
-	// 델리게이트의 경우. 현재 사용하지 않음.
-	/*if (CppAttackFunc.IsBound())
-	{
-		CppAttackFunc.Broadcast();
-		_DEBUG("Cpp Broadcast");
-	}*/
+
 }
 
 void UAttackClass::CoolTimeStart()

@@ -129,11 +129,15 @@ bool AARPGEnermy_FstBoss::Hit(bool bBlockingHit)
 	if (!FstBossAnimInstance)
 		return false;
 
-	WeaponOverlapEnd();
-	AttackEnd();
-
+	bDontMoving = true;
 	bHitting = true;
 	bParringHit = false;
+
+	if (bAttacking)
+	{
+		WeaponOverlapEnd(3);
+		AttackEnd();
+	}
 
 	bool bHitMontagePlay = Super::Hit(bBlockingHit); // 강인도 검사
 	// 적의 경우 AP는 그로기 여부이고, 강인도는 슈퍼아머냐 아니냐의 차이이다.
@@ -163,6 +167,7 @@ void AARPGEnermy_FstBoss::SetBattleMode(bool bFlag)
 
 void AARPGEnermy_FstBoss::HitEnd()
 {
+	bDontMoving = false;
 	bHitting = false;
 	bParringHit = false;
 }
@@ -184,6 +189,7 @@ void AARPGEnermy_FstBoss::PlayAttack(int32 index)
 		return;
 
 	bAttacking = true;
+
 	Attacks[index]->PlayAttack(GetWorld());
 	FstBossAnimInstance->CurrentEffects = Attacks[index]->Effects;
 	FstBossAnimInstance->CurrentSounds = Attacks[index]->Sounds;
@@ -202,8 +208,7 @@ void AARPGEnermy_FstBoss::ParringHit(AARPGUnitBase* InstigatorActor)
 	bMoving = false;
 	bParringHit = true;
 	bHitting = true;
-	OnAttack.Broadcast();
-	WeaponOverlapEnd();
+	WeaponOverlapEnd(3);
 	AttackEnd();
 	FstBossAnimInstance->ParringInstigatorUnit = InstigatorActor;
 	FstBossAnimInstance->PlayParringHitMontage();
@@ -231,7 +236,7 @@ void AARPGEnermy_FstBoss::ZeroAP()
 void AARPGEnermy_FstBoss::DeathReset()
 {
 	bMoving = false;
-	WeaponOverlapEnd();
+	WeaponOverlapEnd(3);
 	AttackEnd();
 	if (PlayerUnit)
 	{
@@ -242,22 +247,35 @@ void AARPGEnermy_FstBoss::DeathReset()
 void AARPGEnermy_FstBoss::AttackEnd()
 {
 	bAttacking = false;
-	bDontParringAttack = false;
+	bDontLockOn = false;
+
+	if(!bHitting) // bHitting이 true면 HitEnd에서 맞은 애니메이션이 끝난후 false.
+		bDontMoving = false;
+
 	OnAttack.Broadcast();
 	OnAttack.Clear();
-	if (GetCharacterMovement()->MovementMode == EMovementMode::MOVE_Flying)
-	{
-		_DEBUG("Set Walking");
-		GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Falling);
-	}
 }
 
-void AARPGEnermy_FstBoss::WeaponOverlapEnd()
+void AARPGEnermy_FstBoss::WeaponOverlapEnd(int32 Num)
 {
-	SetWeaponEndCollision();
-	TwinWeapon->AttackEnd();
-	LeftWeapon->AttackEnd();
-	RightWeapon->AttackEnd();
+	switch (Num)
+	{
+	case 0:
+		SetWeaponCollision(false, 0);
+		TwinWeapon->AttackEnd();
+		break;
+	case 1:
+		SetWeaponCollision(false, 1);
+		LeftWeapon->AttackEnd();
+		break;
+	case 2:
+		SetWeaponCollision(false, 2);
+		RightWeapon->AttackEnd();
+		break;
+	case 3:
+		SetWeaponEndCollision();
+		break;
+	}
 }
 
 void AARPGEnermy_FstBoss::SetWeaponEndCollision()
@@ -265,6 +283,9 @@ void AARPGEnermy_FstBoss::SetWeaponEndCollision()
 	SetWeaponCollision(false, 0);
 	SetWeaponCollision(false, 1);
 	SetWeaponCollision(false, 2);
+	TwinWeapon->AttackEnd();
+	LeftWeapon->AttackEnd();
+	RightWeapon->AttackEnd();
 }
 
 void AARPGEnermy_FstBoss::SetWeaponCollision(bool bFlag, int32 index)

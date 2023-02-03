@@ -45,19 +45,6 @@ void UARPGAttackComponent::Init(TArray<TSubclassOf<UAttackClass>> BP_Attacks)
 	}
 }
 
-// 어택클래스 안에 있는 델리게이트에 함수를 바인드하는 함수.
-void UARPGAttackComponent::SetAttackDelegate(int32 index, FName FuncName)
-{
-	if (Attacks.IsValidIndex(index))
-	{
-		if (OwnerUnit)
-		{
-			Attacks[index]->CppAttackFunc.AddUFunction(OwnerUnit, FuncName);
-			_DEBUG("Cpp AddUFunction %s", *FuncName.ToString());
-		}
-	}
-}
-
 UAttackClass* UARPGAttackComponent::GetAttackClass(int32 index)
 {
 	if (Attacks.IsValidIndex(index))

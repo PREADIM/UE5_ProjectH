@@ -25,9 +25,6 @@ protected:
 
 public:
 	UFUNCTION(BlueprintCallable)
-		void SetAttackDelegate(int32 index, FName FuncName);
-
-	UFUNCTION(BlueprintCallable)
 		const TArray<class UAttackClass*>& GetAttacks() { return Attacks; }
 
 	UFUNCTION(BlueprintCallable)

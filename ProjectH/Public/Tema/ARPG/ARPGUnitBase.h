@@ -65,7 +65,6 @@ public:
 
 
 	void BattleHPWidgetHide();
-	
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		class UProjectHGameInstance* GI;
@@ -95,10 +94,13 @@ public:
 		bool bSpecialAttackMode; // 해당 변수가 true면 무적이여야함.
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		bool bSpecialAttackPlaying; // 해당 변수가 true면 움직이면 안된다.
+		bool bSpecialAttackPlaying; // 해당 변수는 스페셜 어택중 스페셜 어택을 다시 한번 하는 것을 방지 하기 위함.
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		bool bAttacking;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		bool bDontMoving; // 공격중이거나 히트중일때 움직이는 것 방지.
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		bool bDontParringAttack; // 패링이 안되는 공격중인가? (패링 불가 어택)
@@ -126,6 +128,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float BattleSpeed;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float BackSpeed;
 
 	//------------------------------------------
 	// Use AP 관련

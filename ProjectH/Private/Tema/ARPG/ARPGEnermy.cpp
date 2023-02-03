@@ -38,10 +38,16 @@ void AARPGEnermy::BeginPlay()
 void AARPGEnermy::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
+	if (bDeath)
+		return;
 
-	if (!bDeath && bMoving) // 이 변수는 Task에서 켜준다.
+	if (!bDontLockOn)
+		LockOnPlayer(DeltaSeconds);
+
+	if (!bDontMoving && !bHitting && bMoving) // 이 변수는 Task에서 켜준다.
 	{
-		EnermyMoving();
+		SetState();
+		GetMovingValue();
 	}
 }
 
@@ -49,22 +55,6 @@ void AARPGEnermy::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 }
-
-//float AARPGEnermy::TakeDamageCalculator(float APDamage, float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
-//{
-//	Super::TakeDamageCalculator(APDamage, DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-//	if (PlayerUnit == nullptr)
-//	{
-//		AARPGUnit* Temp = Cast<AARPGUnit>(EventInstigator->GetPawn());
-//		if (Temp)
-//		{
-//			PlayerUnit = Temp;
-//		}
-//	}
-//
-//
-//	return DamageAmount;
-//}
 
 
 float AARPGEnermy::TakeDamageCalculator(AARPGWeapon* DamageWeapon, FDamageEvent const& DamageEvent, AController* EventInstigator, AARPGUnitBase* DamageCauser)
@@ -119,7 +109,7 @@ FVector AARPGEnermy::GetMovingValue()
 		Direction = GetActorForwardVector();
 		break;
 	case EMovingState::Back:
-		GetCharacterMovement()->MaxWalkSpeed = BattleSpeed - 50.f;
+		GetCharacterMovement()->MaxWalkSpeed = BackSpeed;
 		Direction = GetActorForwardVector() * -1.f;
 		break;
 	case EMovingState::Right:
@@ -138,12 +128,17 @@ FVector AARPGEnermy::GetMovingValue()
 
 
 // 플레이어 시선 고정
-void AARPGEnermy::LockOnPlayer()
+void AARPGEnermy::LockOnPlayer(float DeltaSeconds)
 {
 	if (PlayerUnit)
 	{
 		FRotator LookRot = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), PlayerUnit->GetActorLocation());
 		SetActorRotation(FRotator(0.f, LookRot.Yaw, 0.f));
+
+		/*FRotator CurrentRot = GetActorRotation();
+	
+		FRotator Temp = FMath::RInterpTo(CurrentRot, LookRot, DeltaSeconds, 10.0f);
+		SetActorRotation(FRotator(0.f, Temp.Yaw, 0.f));*/
 	}
 }
 

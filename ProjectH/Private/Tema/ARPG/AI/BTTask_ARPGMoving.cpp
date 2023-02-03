@@ -64,7 +64,7 @@ EEnermyMoveMode UBTTask_ARPGMoving::RandomMoving()
 		StartRange = 2;
 	}
 
-	switch (FMath::RandRange(StartRange, 8))
+	switch (FMath::RandRange(StartRange, 6))
 	{
 	case 0:
 	case 1:
@@ -72,20 +72,41 @@ EEnermyMoveMode UBTTask_ARPGMoving::RandomMoving()
 		return EEnermyMoveMode::ForwardMoving;
 	case 2:
 	case 3:
-		//_DEBUG("N");
-		return EEnermyMoveMode::None;	
-	case 4:
-	case 5:
 		//_DEBUG("L");
 		return EEnermyMoveMode::LeftMoving;	
-	case 6:
-	case 7:
+	case 4:
+	case 5:
 		//_DEBUG("R");
 		return EEnermyMoveMode::RightMoving;
-	case 8:
+	case 6:
 		//_DEBUG("B");
 		return EEnermyMoveMode::BackMoving;
 	}
+
+
+	//switch (FMath::RandRange(StartRange, 8))
+	//{
+	//case 0:
+	//case 1:
+	//	//_DEBUG("F");		
+	//	return EEnermyMoveMode::ForwardMoving;
+	//case 2:
+	//case 3:
+	//	//_DEBUG("N");
+	//	return EEnermyMoveMode::None;
+	//case 4:
+	//case 5:
+	//	//_DEBUG("L");
+	//	return EEnermyMoveMode::LeftMoving;
+	//case 6:
+	//case 7:
+	//	//_DEBUG("R");
+	//	return EEnermyMoveMode::RightMoving;
+	//case 8:
+	//	//_DEBUG("B");
+	//	return EEnermyMoveMode::BackMoving;
+	//}
+
 	return EEnermyMoveMode::None;
 }
 
