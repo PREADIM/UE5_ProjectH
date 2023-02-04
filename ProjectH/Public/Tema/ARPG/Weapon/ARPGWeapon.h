@@ -34,8 +34,11 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay();
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere)
 		TArray<AActor*> HitEndActor;
+
+	UFUNCTION()
+		void SetHitEndActor() { HitEndActor.Empty(); } // 때린것들 초기화.
 public:
 	UPROPERTY()
 		class AARPGUnitBase* OwnerUnit;

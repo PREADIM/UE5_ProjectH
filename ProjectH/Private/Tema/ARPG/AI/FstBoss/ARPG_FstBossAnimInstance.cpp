@@ -6,6 +6,8 @@
 #include "Tema/ARPG/ARPGEnermy_FstBoss.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/GameplayStatics.h"
+//#include "NavigationSystem.h"
+#include "Tema/ARPG/ARPGUnit.h"
 
 UARPG_FstBossAnimInstance::UARPG_FstBossAnimInstance()
 {
@@ -174,17 +176,17 @@ void UARPG_FstBossAnimInstance::AnimNotify_RightAttackStart()
 
 void UARPG_FstBossAnimInstance::AnimNotify_TwinAttackEnd()
 {
-	FstBoss->SetWeaponCollision(false, 0);
+	FstBoss->WeaponOverlapEnd(0);
 }
 
 void UARPG_FstBossAnimInstance::AnimNotify_LeftAttackEnd()
 {
-	FstBoss->SetWeaponCollision(false, 1);
+	FstBoss->WeaponOverlapEnd(1);
 }
 
 void UARPG_FstBossAnimInstance::AnimNotify_RightAttackEnd()
 {
-	FstBoss->SetWeaponCollision(false, 2);
+	FstBoss->WeaponOverlapEnd(2);
 }
 
 
@@ -231,3 +233,31 @@ void UARPG_FstBossAnimInstance::AnimNotify_CanLockOn()
 	FstBoss->bDontLockOn = false;
 }
 
+
+void UARPG_FstBossAnimInstance::AnimNotify_FstBoss_Teleport()
+{
+	/*UNavigationSystemV1* NavSystem = UNavigationSystemV1::GetNavigationSystem(FstBoss->GetWorld());
+	if (NavSystem)
+	{
+	}*/
+
+	FstBoss->GetMesh()->SetOnlyOwnerSee(true);	
+}
+
+
+void UARPG_FstBossAnimInstance::AnimNotify_FstBoss_TeleportEnd()
+{
+
+	FstBoss->GetMesh()->SetOnlyOwnerSee(false);
+
+	if (FstBoss->PlayerUnit)
+	{
+		_DEBUG("TeleportPlayerUnit");
+		FVector TargetLocation = FstBoss->PlayerUnit->GetActorLocation();
+		TargetLocation = TargetLocation + ((FstBoss->PlayerUnit->GetActorForwardVector() * 100.f) * -1.f);
+		// 타겟의 뒷쪽으로 위치 잡기.
+
+		FstBoss->SetActorLocation(TargetLocation);
+		FstBoss->SetActorRotation(FRotator(0.f, FstBoss->FindPlayerRotation().Yaw, 0.f));
+	}
+}

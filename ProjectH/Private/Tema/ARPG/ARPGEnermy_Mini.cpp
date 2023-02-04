@@ -156,6 +156,10 @@ bool AARPGEnermy_Mini::Hit(bool bBlockingHit)
 		{
 			EnermyAnimInstance->PlayHitMontage(EEnermy_Mini_Mode::BattleMode);
 		}
+		else
+		{
+			HitEnd();
+		}
 	}
 	else
 	{

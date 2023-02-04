@@ -89,6 +89,12 @@ public:
 	UFUNCTION()
 		void AnimNotify_CanLockOn();
 
+	UFUNCTION()
+		void AnimNotify_FstBoss_Teleport();
+
+	UFUNCTION()
+		void AnimNotify_FstBoss_TeleportEnd();
+
 public:
 	UPROPERTY()
 		class AARPGEnermy_FstBoss* FstBoss; // Owner

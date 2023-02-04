@@ -24,9 +24,6 @@ public:
 	UFUNCTION()
 		void WeaponBeginOverlap(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
-	UFUNCTION(BlueprintCallable)
-		void SetHitEndActor() { HitEndActor.Empty(); } // 때린것들 초기화.
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

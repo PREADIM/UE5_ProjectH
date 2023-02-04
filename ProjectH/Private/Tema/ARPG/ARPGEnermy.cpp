@@ -132,14 +132,22 @@ void AARPGEnermy::LockOnPlayer(float DeltaSeconds)
 {
 	if (PlayerUnit)
 	{
-		FRotator LookRot = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), PlayerUnit->GetActorLocation());
-		SetActorRotation(FRotator(0.f, LookRot.Yaw, 0.f));
+		FRotator LookRot = FindPlayerRotation();
+		//SetActorRotation(FRotator(0.f, LookRot.Yaw, 0.f));
 
-		/*FRotator CurrentRot = GetActorRotation();
+		FRotator CurrentRot = GetActorRotation();
 	
 		FRotator Temp = FMath::RInterpTo(CurrentRot, LookRot, DeltaSeconds, 10.0f);
-		SetActorRotation(FRotator(0.f, Temp.Yaw, 0.f));*/
+		SetActorRotation(FRotator(0.f, Temp.Yaw, 0.f));
 	}
+}
+
+FRotator AARPGEnermy::FindPlayerRotation()
+{
+	if(PlayerUnit)
+		return UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), PlayerUnit->GetActorLocation());
+
+	return FRotator(0.f, 0.f, 0.f);
 }
 
 void AARPGEnermy::SetState()

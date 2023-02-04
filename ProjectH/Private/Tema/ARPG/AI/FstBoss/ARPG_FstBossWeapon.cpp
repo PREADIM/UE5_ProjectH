@@ -25,19 +25,18 @@ void AARPG_FstBossWeapon::BeginPlay()
 void AARPG_FstBossWeapon::AttackEnd()
 {
 	SetHitEndActor();
+	_DEBUG("FstBossWeapon AttackEnd");
 }
 
 void AARPG_FstBossWeapon::SetWeaponCollision(bool bFlag)
 {
 	if (bFlag)
 	{
-		WeaponCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-		//_DEBUG("Collision On");
+		WeaponCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);	
 	}
 	else
 	{
 		WeaponCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		//_DEBUG("Collision Off");
 	}
 }
 
@@ -54,6 +53,7 @@ void AARPG_FstBossWeapon::WeaponBeginOverlap(UPrimitiveComponent* OverlappedComp
 		{
 			if (OtherActor == Hit)
 			{
+				_DEBUG("Return HitEndActor");
 				return;
 				// 이미 닿은 액터라 데미지 중첩 방지.
 			}
@@ -73,6 +73,7 @@ void AARPG_FstBossWeapon::WeaponBeginOverlap(UPrimitiveComponent* OverlappedComp
 			AARPGUnitBase* Unit = Cast<AARPGUnitBase>(OtherActor);
 			if (Unit)
 			{
+				_DEBUG("Boss Overlap");
 				FDamageEvent DamageEvent;
 				if (Unit->bDeath != true) // 공격 할 수 있는지 판단
 				{
@@ -97,7 +98,6 @@ void AARPG_FstBossWeapon::WeaponBeginOverlap(UPrimitiveComponent* OverlappedComp
 				}
 
 				HitEndActor.AddUnique(OtherActor);
-				return;
 			}
 		}
 	}

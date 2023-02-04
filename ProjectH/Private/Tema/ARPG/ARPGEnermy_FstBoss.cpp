@@ -35,13 +35,13 @@ void AARPGEnermy_FstBoss::BeginPlay()
 			RightWeapon->SetOwner(this);
 			TwinWeapon->SetOwner(this);
 
-			LeftWeapon->FinishSpawning(FTransform());
-			RightWeapon->FinishSpawning(FTransform());
-			TwinWeapon->FinishSpawning(FTransform());
-
 			LeftWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName("weapon_l_Collision"));
 			RightWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName("weapon_r_Collision"));
 			TwinWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName("TwinWeaponSocket"));
+
+			LeftWeapon->FinishSpawning(FTransform());
+			RightWeapon->FinishSpawning(FTransform());
+			TwinWeapon->FinishSpawning(FTransform());
 		}
 	}
 }
@@ -146,6 +146,10 @@ bool AARPGEnermy_FstBoss::Hit(bool bBlockingHit)
 	{
 		FstBossAnimInstance->PlayHitMontage();
 		bMoving = false;
+	}
+	else
+	{
+		HitEnd();
 	}
 
 	return true;
@@ -283,9 +287,6 @@ void AARPGEnermy_FstBoss::SetWeaponEndCollision()
 	SetWeaponCollision(false, 0);
 	SetWeaponCollision(false, 1);
 	SetWeaponCollision(false, 2);
-	TwinWeapon->AttackEnd();
-	LeftWeapon->AttackEnd();
-	RightWeapon->AttackEnd();
 }
 
 void AARPGEnermy_FstBoss::SetWeaponCollision(bool bFlag, int32 index)
@@ -296,7 +297,7 @@ void AARPGEnermy_FstBoss::SetWeaponCollision(bool bFlag, int32 index)
 	}
 
 
-	//bHand false 왼손 true 오른손
+	//0양손 1왼손 2오른손
 	switch (index)
 	{
 	case 0:

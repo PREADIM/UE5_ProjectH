@@ -80,7 +80,7 @@ void AARPGFstBoss_Projectile::OverlapProjectile(UPrimitiveComponent* OverlappedC
 				FDamageEvent DamageEvent;
 				if (Unit->bDeath != true) // 공격 할 수 있는지 판단
 				{		
-					_DEBUG("Projectile Hit");
+					//_DEBUG("Projectile Hit");
 					// 일단 공격을 하고 블럭킹인지 죽었는지는 알아서 판단
 					Unit->TakeDamageCalculator(this, DamageEvent, OwnerUnit->GetController(), OwnerUnit);
 				}

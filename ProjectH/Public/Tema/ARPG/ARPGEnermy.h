@@ -176,8 +176,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 		FVector GetMovingValue(); // 움직이는지 Value값 구해내기
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION()
 		void LockOnPlayer(float DeltaSeconds); // SetActorRotation으로 플레이어 락온하는 함수.
+
+	UFUNCTION(BlueprintCallable)
+		FRotator FindPlayerRotation();
 
 	UFUNCTION(BlueprintCallable)
 		void SetState();

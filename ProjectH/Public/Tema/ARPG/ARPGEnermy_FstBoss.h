@@ -10,15 +10,6 @@
  * 
  */
 
-// 패링이 안되는 슈퍼아머 공격일때 상태를 파악하기 위한 열거형 클래스
-// 주로 AttackClass의 바인드 함수에서 변경할듯.
-UENUM(BlueprintType)
-enum class ESuperAttackingState : uint8
-{
-	NONE UMETA(DisplayName = "NONE"),
-	DiveAttacking UMETA(DiplayName = "DiveAttacking")
-};
-
 
 UCLASS()
 class PROJECTH_API AARPGEnermy_FstBoss : public AARPGEnermy
@@ -94,8 +85,4 @@ public:
 		TSubclassOf<class AARPGFstBoss_Projectile> BP_ComboProjectile;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TSubclassOf<class AARPGFstBoss_Projectile> BP_ComboProjectile_Twin;
-
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		ESuperAttackingState SuperAttackingState = ESuperAttackingState::NONE;
 };
