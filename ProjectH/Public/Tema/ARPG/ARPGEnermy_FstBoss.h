@@ -80,9 +80,15 @@ public:
 	UPROPERTY()
 		class AARPGWeapon* TwinWeapon;
 
+	/*------------------------------------------------*/
+
+	// 스킬에 필요한 소환체들
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TSubclassOf<class AARPGFstBoss_Projectile> BP_ComboProjectile;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TSubclassOf<class AARPGFstBoss_Projectile> BP_ComboProjectile_Twin;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<class AARPGFstBoss_Projectile> BP_R_Projectile;
+
 };

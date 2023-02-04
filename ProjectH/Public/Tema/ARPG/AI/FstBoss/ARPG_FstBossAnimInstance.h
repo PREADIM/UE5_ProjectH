@@ -40,6 +40,18 @@ public:
 	UFUNCTION()
 		void AnimNotify_ComboProjectile();
 
+	// 텔레포트 
+	UFUNCTION()
+		void AnimNotify_FstBoss_Teleport();
+
+	UFUNCTION()
+		void AnimNotify_FstBoss_TeleportEnd();
+
+
+	// R 어택 투사체를 빙자한 콜리전 소환
+	UFUNCTION()
+		void AnimNotify_FstBoss_R_Projectile();
+
 
 	//--------------------------------------------------------------
 
@@ -89,11 +101,8 @@ public:
 	UFUNCTION()
 		void AnimNotify_CanLockOn();
 
-	UFUNCTION()
-		void AnimNotify_FstBoss_Teleport();
 
-	UFUNCTION()
-		void AnimNotify_FstBoss_TeleportEnd();
+
 
 public:
 	UPROPERTY()

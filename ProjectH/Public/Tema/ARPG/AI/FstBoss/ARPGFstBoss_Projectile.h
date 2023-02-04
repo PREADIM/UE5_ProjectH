@@ -29,9 +29,6 @@ public:
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UNiagaraComponent* Effect;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UCapsuleComponent* Collision;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

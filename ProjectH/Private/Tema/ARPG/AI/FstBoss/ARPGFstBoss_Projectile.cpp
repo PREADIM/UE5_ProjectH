@@ -12,14 +12,9 @@ AARPGFstBoss_Projectile::AARPGFstBoss_Projectile()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
-	/*DummyRoot = CreateDefaultSubobject<class USceneComponent>(TEXT("Root"));
-	RootComponent = DummyRoot;*/
-
 	Collision = CreateDefaultSubobject<class UCapsuleComponent>(TEXT("Collision"));
 	RootComponent = Collision;
 
-	Effect = CreateDefaultSubobject<class UNiagaraComponent>(TEXT("Effect"));
-	Effect->SetupAttachment(Collision);
 	
 	Projectile = CreateDefaultSubobject<class UProjectileMovementComponent>(TEXT("Projectile"));
 	Projectile->InitialSpeed = 1000.f;

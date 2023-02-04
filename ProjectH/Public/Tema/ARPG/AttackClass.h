@@ -38,7 +38,7 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		int32 EffectCnt;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TArray<class USoundBase*> Sounds;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		int32 SoundCnt;

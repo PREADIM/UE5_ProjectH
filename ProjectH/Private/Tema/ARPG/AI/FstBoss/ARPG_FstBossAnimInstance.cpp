@@ -80,11 +80,7 @@ void UARPG_FstBossAnimInstance::HittedReset()
 	CurrentEffectIndex = 0;
 	CurrentSoundIndex = 0;
 	ProjectileCnt = 0;
-	if (!FstBoss->GetCharacterMovement()->MovementMode == EMovementMode::MOVE_Walking)
-	{
-		_DEBUG("Set Walking");
-		FstBoss->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
-	}
+
 }
 
 
@@ -118,13 +114,6 @@ void UARPG_FstBossAnimInstance::AnimNotify_ComboProjectile()
 		// 여기때문에 스위치문에서 실행. Twin 프로젝타일은 약간 다르게 생김.
 		break;
 	}
-
-	if (Projectile)
-	{
-		/*Projectile->OwnerUnit = FstBoss;
-		Projectile->SetOwner(FstBoss);*/
-	}
-
 
 	++ProjectileCnt;
 	if (ProjectileCnt > 2)
@@ -236,11 +225,6 @@ void UARPG_FstBossAnimInstance::AnimNotify_CanLockOn()
 
 void UARPG_FstBossAnimInstance::AnimNotify_FstBoss_Teleport()
 {
-	/*UNavigationSystemV1* NavSystem = UNavigationSystemV1::GetNavigationSystem(FstBoss->GetWorld());
-	if (NavSystem)
-	{
-	}*/
-
 	FstBoss->GetMesh()->SetOnlyOwnerSee(true);	
 }
 
@@ -260,4 +244,24 @@ void UARPG_FstBossAnimInstance::AnimNotify_FstBoss_TeleportEnd()
 		FstBoss->SetActorLocation(TargetLocation);
 		FstBoss->SetActorRotation(FRotator(0.f, FstBoss->FindPlayerRotation().Yaw, 0.f));
 	}
+}
+
+
+
+void UARPG_FstBossAnimInstance::AnimNotify_FstBoss_R_Projectile()
+{
+	if (!FstBoss && !FstBoss->BP_R_Projectile)
+		return;
+
+	FTransform TF;
+	FActorSpawnParameters Param;
+	Param.Owner = FstBoss;
+	Param.Instigator = FstBoss;
+	Param.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	AARPGFstBoss_Projectile* Projectile = nullptr;
+
+
+	TF = FstBoss->GetMesh()->GetSocketTransform(FName("TwinProjectile"));
+	Projectile = GetWorld()->SpawnActor<AARPGFstBoss_Projectile>(FstBoss->BP_R_Projectile, TF, Param);
+
 }
