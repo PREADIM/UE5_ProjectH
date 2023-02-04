@@ -49,9 +49,14 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		int32 CurrentSoundIndex;
 	UPROPERTY(VisibleAnywhere)
+		int32 CurrentAttackSoundIndex;
+
+	UPROPERTY(VisibleAnywhere)
 		TArray<FAttackEffect> CurrentEffects;
 	UPROPERTY(VisibleAnywhere)
 		TArray<class USoundBase*> CurrentSounds;
+	UPROPERTY(VisibleAnywhere)
+		TArray<class USoundBase*> CurrentAttackSounds;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UAnimMontage* HitMontage;
@@ -81,6 +86,8 @@ public:
 	UFUNCTION()
 		void AnimNotify_PlaySound();
 
+	UFUNCTION()
+		void AnimNotify_PlayAttackSound();
 
 	UFUNCTION()
 		void AnimNotify_AttackStart();

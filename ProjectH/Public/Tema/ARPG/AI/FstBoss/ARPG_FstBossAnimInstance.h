@@ -63,6 +63,9 @@ public:
 		void AnimNotify_PlaySound();
 
 	UFUNCTION()
+		void AnimNotify_PlayAttackSound();
+
+	UFUNCTION()
 		void AnimNotify_TwinAttackStart();
 
 	UFUNCTION()
@@ -112,11 +115,15 @@ public:
 		int32 CurrentEffectIndex;
 	UPROPERTY(VisibleAnywhere)
 		int32 CurrentSoundIndex;
+	UPROPERTY(VisibleAnywhere)
+		int32 CurrentAttackSoundIndex;
 
 	UPROPERTY(VisibleAnywhere)
 		TArray<FAttackEffect> CurrentEffects;
 	UPROPERTY(VisibleAnywhere)
 		TArray<class USoundBase*> CurrentSounds;
+	UPROPERTY(VisibleAnywhere)
+		TArray<class USoundBase*> CurrentAttackSounds;
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

@@ -13,7 +13,7 @@ void UAttackClass::Init()
 	AttackStruct.bCanThisAttack = true;
 	EffectCnt = Effects.Num();
 	SoundCnt = Sounds.Num();
-
+	AttackSoundCnt = AttackSounds.Num();
 }
 
 void UAttackClass::PlayAttack(UWorld* UnitWorld)

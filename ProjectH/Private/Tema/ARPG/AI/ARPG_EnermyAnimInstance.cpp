@@ -92,10 +92,32 @@ float UARPG_EnermyAnimInstance::SetDirection()
 
 void UARPG_EnermyAnimInstance::AnimNotify_PlayEffect()
 {
+	if (!CurrentEffects.IsValidIndex(CurrentEffectIndex))
+		return;
+
+	// 이펙트 실행
+	UGameplayStatics::SpawnEmitterAttached(CurrentEffects[CurrentEffectIndex].Effect, OwnerUnit->GetMesh(), CurrentEffects[CurrentEffectIndex].SocketName);
+	++CurrentEffectIndex;
 }
 
 void UARPG_EnermyAnimInstance::AnimNotify_PlaySound()
 {
+	if (!CurrentSounds.IsValidIndex(CurrentSoundIndex))
+		return;
+
+	// 사운드 실행
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), CurrentSounds[CurrentSoundIndex], OwnerUnit->GetActorLocation(), OwnerUnit->GetActorRotation());
+	++CurrentSoundIndex;
+}
+
+void UARPG_EnermyAnimInstance::AnimNotify_PlayAttackSound()
+{
+	if (!CurrentAttackSounds.IsValidIndex(CurrentAttackSoundIndex))
+		return;
+
+	// 사운드 실행
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), CurrentAttackSounds[CurrentAttackSoundIndex], OwnerUnit->GetActorLocation(), OwnerUnit->GetActorRotation());
+	++CurrentAttackSoundIndex;
 }
 
 void UARPG_EnermyAnimInstance::AnimNotify_AttackStart()

@@ -38,10 +38,17 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		int32 EffectCnt;
 
+	// 캐릭터 목소리
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TArray<class USoundBase*> Sounds;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		int32 SoundCnt;
+
+	// 공격 사운드 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TArray<class USoundBase*> AttackSounds;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		int32 AttackSoundCnt;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FARPGAttackStruct AttackStruct;

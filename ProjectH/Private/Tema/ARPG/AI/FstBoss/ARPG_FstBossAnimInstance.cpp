@@ -144,6 +144,17 @@ void UARPG_FstBossAnimInstance::AnimNotify_PlaySound()
 }
 
 
+void UARPG_FstBossAnimInstance::AnimNotify_PlayAttackSound()
+{
+	if (!CurrentAttackSounds.IsValidIndex(CurrentAttackSoundIndex))
+		return;
+
+	// 사운드 실행
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), CurrentAttackSounds[CurrentAttackSoundIndex], FstBoss->GetActorLocation(), FstBoss->GetActorRotation());
+	++CurrentAttackSoundIndex;
+}
+
+
 void UARPG_FstBossAnimInstance::AnimNotify_TwinAttackStart()
 {
 	FstBoss->bAttacking = true;
