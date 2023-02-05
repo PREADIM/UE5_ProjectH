@@ -62,6 +62,8 @@ void UARPG_FstBossAnimInstance::PlayHitMontage()
 void UARPG_FstBossAnimInstance::PlayDeadMontage()
 {
 	bDeath = true;
+	bPlayedSound = false;
+	HittedReset();
 }
 
 void UARPG_FstBossAnimInstance::PlayParringHitMontage()
@@ -80,7 +82,6 @@ void UARPG_FstBossAnimInstance::HittedReset()
 	CurrentEffectIndex = 0;
 	CurrentSoundIndex = 0;
 	ProjectileCnt = 0;
-
 }
 
 
@@ -138,9 +139,26 @@ void UARPG_FstBossAnimInstance::AnimNotify_PlaySound()
 	if (!CurrentSounds.IsValidIndex(CurrentSoundIndex))
 		return;
 
-	// 사운드 실행
+	if (bPlayedSound)
+	{
+		++CurrentSoundIndex; // 다음 사운드때에는 실행 될 수도 있으므로 한칸 증가.
+		return;
+	}
+
+	// 사운드 실행 이미 실행되고있는 사운드가 있으면 실행하지 않도록 하자.
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), CurrentSounds[CurrentSoundIndex], FstBoss->GetActorLocation(), FstBoss->GetActorRotation());
+
+	bPlayedSound = true;
+	GetWorld()->GetTimerManager().SetTimer(SoundHandle, this, &UARPG_FstBossAnimInstance::PlayedSoundFunc, 5.f, false);
+
 	++CurrentSoundIndex;
+}
+
+
+void UARPG_FstBossAnimInstance::PlayedSoundFunc()
+{
+	GetWorld()->GetTimerManager().ClearTimer(SoundHandle);
+	bPlayedSound = false;
 }
 
 
@@ -274,5 +292,24 @@ void UARPG_FstBossAnimInstance::AnimNotify_FstBoss_R_Projectile()
 
 	TF = FstBoss->GetMesh()->GetSocketTransform(FName("TwinProjectile"));
 	Projectile = GetWorld()->SpawnActor<AARPGFstBoss_Projectile>(FstBoss->BP_R_Projectile, TF, Param);
+
+}
+
+
+
+void UARPG_FstBossAnimInstance::AnimNotify_FstBoss_E_Projectile()
+{
+	if (!FstBoss && !FstBoss->BP_E_Projectile)
+		return;
+
+	FTransform TF;
+	FActorSpawnParameters Param;
+	Param.Owner = FstBoss;
+	Param.Instigator = FstBoss;
+	Param.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+
+	TF = FstBoss->GetMesh()->GetSocketTransform(FName("TwinProjectile"));
+	AARPGFstBoss_Projectile* Projectile = GetWorld()->SpawnActor<AARPGFstBoss_Projectile>(FstBoss->BP_E_Projectile, TF, Param);
 
 }

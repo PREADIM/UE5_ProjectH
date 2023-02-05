@@ -186,7 +186,7 @@ bool UProjectHGameInstance::SetDefault()
 /* 게임 해상도나 텍스처 품질 안티앨리어싱 같은 세팅을 ini에 저장해두었다.*/
 void UProjectHGameInstance::SetDefaultGameSetting()
 {
-	if (SetDefault())
+	if (SetDefault()) // SetDefault에서 값들 가져오기.
 	{	
 		UKismetSystemLibrary::ExecuteConsoleCommand(GetWorld(), *(RES_COMMAND + R));
 		UKismetSystemLibrary::ExecuteConsoleCommand(GetWorld(), *(AA_COMMAND + FString::FromInt(AA)));

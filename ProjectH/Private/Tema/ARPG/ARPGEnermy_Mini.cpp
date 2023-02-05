@@ -89,6 +89,7 @@ float AARPGEnermy_Mini::TakeDamageCalculator(AARPGWeapon* DamageWeapon, FDamageE
 		}
 	}
 
+
 	if (CurrentHP <= Damaged)
 	{
 		Damaged = CurrentHP; // 남은 체력이 곧 라스트 데미지
@@ -98,13 +99,18 @@ float AARPGEnermy_Mini::TakeDamageCalculator(AARPGWeapon* DamageWeapon, FDamageE
 	}
 	else
 	{
-		Hit(bBlockingHit);
+		Hit(bBlockingHit);		
+		CurrentHP -= Damaged;
+		UnitState.SetTakeDamageHP(CurrentHP);
+
 		if (Damaged > 0.f)
 		{
 			CurrentHP -= Damaged;
 			UnitState.SetTakeDamageHP(CurrentHP);
 		}
 	}
+
+	
 
 	if (Damaged > 0.f)
 	{

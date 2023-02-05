@@ -153,7 +153,7 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		bool bZeroAP; // AP가 제로를 찍은경우엔 무조건 스태미나가 바로차지않고 텀을 가진다.
 
-	const float ZeroAPWaitTime = 1.0f; // 1초간 대기
+	const float ZeroAPWaitTime = 2.0f; // 1초간 대기
 	float CurrentWaitTime = 0.0f;
 
 	//-------------------------------------------

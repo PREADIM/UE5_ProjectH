@@ -609,22 +609,28 @@ float AARPGUnit::TakeDamageCalculator(AARPGWeapon* DamageWeapon, FDamageEvent co
 		}
 	}
 	
+
 	if (CurrentHP <= Damaged)
 	{
 		Damaged = CurrentHP; // 남은 체력이 곧 라스트 데미지
 		CurrentHP = 0.f;
-		UnitState.SetTakeDamageHP(CurrentHP);
+			UnitState.SetTakeDamageHP(CurrentHP);
 		Death();
 	}
 	else
 	{
 		Hit(bBlockingHit);
+		
+		CurrentHP -= Damaged;
+		UnitState.SetTakeDamageHP(CurrentHP);		
 		if (Damaged > 0.f)
 		{
 			CurrentHP -= Damaged;
 			UnitState.SetTakeDamageHP(CurrentHP);
 		}
 	}
+
+	
 
 	// 데미지 출력하는 멀티캐스트.
 	if (Damaged > 0.f)

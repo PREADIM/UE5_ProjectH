@@ -76,6 +76,7 @@ void UARPG_EnermyAnimInstance::PlayParringHitMontage()
 
 void UARPG_EnermyAnimInstance::ZeroAP()
 {
+	//bBlocking을 조사해서 블록킹중이면 블록 Zero 아니면 그로기 몽타주 실행
 	Montage_Play(BlockingZeroAPMontage);
 }
 
@@ -107,7 +108,18 @@ void UARPG_EnermyAnimInstance::AnimNotify_PlaySound()
 
 	// 사운드 실행
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), CurrentSounds[CurrentSoundIndex], OwnerUnit->GetActorLocation(), OwnerUnit->GetActorRotation());
+
+	bPlayedSound = true;
+	GetWorld()->GetTimerManager().SetTimer(SoundHandle, this, &UARPG_EnermyAnimInstance::PlayedSoundFunc, 5.f, false);
+
 	++CurrentSoundIndex;
+}
+
+
+void UARPG_EnermyAnimInstance::PlayedSoundFunc()
+{
+	GetWorld()->GetTimerManager().ClearTimer(SoundHandle);
+	bPlayedSound = false;
 }
 
 void UARPG_EnermyAnimInstance::AnimNotify_PlayAttackSound()

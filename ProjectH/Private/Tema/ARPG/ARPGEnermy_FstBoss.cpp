@@ -80,6 +80,7 @@ float AARPGEnermy_FstBoss::TakeDamageCalculator(AARPGWeapon* DamageWeapon, FDama
 	//무기 강인도를 이용해서 맞은 액터의 강인도를 깎는다.
 	Super::TakeDamageCalculator(DamageWeapon, DamageEvent, EventInstigator, DamageCauser);
 
+
 	if (CurrentHP <= Damaged)
 	{
 		Damaged = CurrentHP; // 남은 체력이 곧 라스트 데미지
@@ -89,7 +90,12 @@ float AARPGEnermy_FstBoss::TakeDamageCalculator(AARPGWeapon* DamageWeapon, FDama
 	}
 	else
 	{
-		Hit(false); // 가드가 없다.
+		Hit(false); // 가드가 없다.		
+		CurrentHP -= Damaged;
+		UnitState.SetTakeDamageHP(CurrentHP);
+		TakeDamageAP(APDMG);
+		// 보스의 ZeroAP는 그로기를 뜻한다.
+	
 		if (Damaged > 0.f)
 		{
 			CurrentHP -= Damaged;

@@ -17,10 +17,10 @@ AARPGFstBoss_Projectile::AARPGFstBoss_Projectile()
 
 	
 	Projectile = CreateDefaultSubobject<class UProjectileMovementComponent>(TEXT("Projectile"));
-	Projectile->InitialSpeed = 1000.f;
 	Projectile->Bounciness = 0.f;
 	Projectile->Friction = 0.f;
 	Projectile->BounceVelocityStopSimulatingThreshold = 0.f;
+	Projectile->ProjectileGravityScale = 0.f;
 
 	InitialLifeSpan = 2.f;
 	EndCollisionTime = 1.0f;	

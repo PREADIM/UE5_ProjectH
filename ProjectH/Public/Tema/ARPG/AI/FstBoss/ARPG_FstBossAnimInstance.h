@@ -53,6 +53,11 @@ public:
 		void AnimNotify_FstBoss_R_Projectile();
 
 
+	// E 어택 투사체를 빙자한 콜리전 소환
+	UFUNCTION()
+		void AnimNotify_FstBoss_E_Projectile();
+
+
 	//--------------------------------------------------------------
 
 
@@ -164,4 +169,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		int32 ProjectileCnt = 0; // 투사체 변수
 
+
+	bool bPlayedSound; // 사운드가 실행중인지 판단하는 변수
+	FTimerHandle SoundHandle;
+	UFUNCTION()
+		void PlayedSoundFunc();
 };

@@ -90,5 +90,7 @@ public:
 		TSubclassOf<class AARPGFstBoss_Projectile> BP_ComboProjectile_Twin;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TSubclassOf<class AARPGFstBoss_Projectile> BP_R_Projectile;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<class AARPGFstBoss_Projectile> BP_E_Projectile;
 
 };

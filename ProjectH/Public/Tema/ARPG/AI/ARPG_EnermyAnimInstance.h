@@ -153,5 +153,12 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool bAccelerating;
+
+
+	bool bPlayedSound; // 사운드가 실행중인지 판단하는 변수
+	FTimerHandle SoundHandle;
+
+	UFUNCTION()
+		void PlayedSoundFunc();
 	
 };
