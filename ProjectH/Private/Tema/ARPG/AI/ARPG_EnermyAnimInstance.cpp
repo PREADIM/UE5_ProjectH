@@ -190,3 +190,34 @@ void UARPG_EnermyAnimInstance::AnimNotify_CanLockOn()
 {
 	OwnerUnit->bDontLockOn = false;
 }
+
+
+void UARPG_EnermyAnimInstance::FootStepPlaySound(int32 SoundNum)
+{
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), OwnerUnit->PhysicalSounds[SoundNum], OwnerUnit->GetMesh()->GetSocketLocation(FName("Root")));
+}
+
+void UARPG_EnermyAnimInstance::AnimNotify_WalkSound()
+{
+	if (!OwnerUnit->PhysicalSounds.IsValidIndex(0))
+		return;
+
+	FootStepPlaySound(0);
+}
+
+void UARPG_EnermyAnimInstance::AnimNotify_SprintSound()
+{
+	if (!OwnerUnit->PhysicalSounds.IsValidIndex(1))
+		return;
+
+	FootStepPlaySound(1);
+}
+
+
+void UARPG_EnermyAnimInstance::AnimNotify_JumpSound()
+{
+	if (!OwnerUnit->PhysicalSounds.IsValidIndex(2))
+		return;
+
+	FootStepPlaySound(2);
+}

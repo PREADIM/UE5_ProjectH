@@ -5,6 +5,7 @@
 #include "ProjectH.h"
 #include "GameFramework/Character.h"
 #include "Tema/ARPG/UnitState.h"
+#include "PhysicalSoundStruct.h"
 #include "ARPGUnitBase.generated.h"
 
 
@@ -77,6 +78,21 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		class UARPGWidget_BattleHP* BattleHP;
+
+
+
+	/* 피지컬 머터리얼 사운드 */
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TMap<TEnumAsByte<EPhysicalSurface>, FPhysicalSoundStruct> PhysicalAllSounds;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		TArray<class USoundBase*> PhysicalSounds;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float SurfaceDistance; // 땅끝의 거리
+
+	// 사운드를 해당 표면에 맞춰서 설정해두고 애님블프에서 플레이 하도록 한다.
+	void SetPhysicalSound();
+
 
 	//-----------공통 분모---------------
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

@@ -84,11 +84,11 @@ float AARPGWeapon_Sword::ChargeAttack(float DeltaSeconds)
 	
 	if (ChargeDMG >= 0.5)
 	{
-		Charge = ChargeDMG + 1.7f;
+		Charge = ChargeDMG + 2.0f;
 	}
 	else
 	{
-		Charge = ChargeDMG + 1.f; // 해당 Charge로 WeaponDamage에 곱연산하여 딜 증가
+		Charge = ChargeDMG + 1.5f; // 해당 Charge로 WeaponDamage에 곱연산하여 딜 증가
 	}
 
 

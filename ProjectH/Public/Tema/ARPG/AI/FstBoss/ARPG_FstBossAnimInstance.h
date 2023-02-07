@@ -109,7 +109,18 @@ public:
 	UFUNCTION()
 		void AnimNotify_CanLockOn();
 
+	//----------------------------------------------------
 
+	void FootStepPlaySound(int32 SoundNum);
+
+	UFUNCTION()
+		void AnimNotify_WalkSound();
+
+	UFUNCTION()
+		void AnimNotify_SprintSound();
+
+	UFUNCTION()
+		void AnimNotify_JumpSound();
 
 
 public:

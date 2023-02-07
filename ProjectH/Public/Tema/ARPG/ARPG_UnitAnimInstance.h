@@ -8,6 +8,18 @@
 #include "ARPG_UnitAnimInstance.generated.h"
 
 
+UENUM(BlueprintType)
+enum class ESFXMode : uint8
+{
+	Default UMETA(DisplayName = "Default"),
+	DrawSword UMETA(DisplayName = "DrawSword"),
+	StowSword UMETA(DisplayName = "StowSword"),
+	AttackSound UMETA (DisplayName = "AttackSound"),
+	HitSound UMETA(DisplayName = "HitSound"),
+	BlockingHitSound UMETA(DisplayName = "BlockingHitSound"),
+	Death UMETA(DisplayName = "Death")
+};
+
 UCLASS()
 class PROJECTH_API UARPG_UnitAnimInstance : public UAnimInstance
 {
@@ -26,6 +38,12 @@ public:
 	void ShieldZeroAP();
 	void ParringAttack();
 
+	UPROPERTY(VisibleAnywhere)
+		bool bMontagePlaying;
+	UFUNCTION()
+		void MontageEnd(UAnimMontage* Montage, bool bInterrupted);
+	UFUNCTION()
+		void MontageStarted(UAnimMontage* Montage);
 
 	//----------------------------------
 	// ³ëÆ¼ÆÄÀÌ
@@ -76,6 +94,19 @@ public:
 		void AnimNotify_Death();
 
 
+	// ¡Ú °È±â ¶Ù±â Á¡ÇÁ »ç¿îµå ÀÌÆåÆ®
+
+	void FootStepPlaySound(int32 SoundNum);	
+
+	UFUNCTION()
+		void AnimNotify_WalkSound();
+
+	UFUNCTION()
+		void AnimNotify_SprintSound();
+
+	UFUNCTION()
+		void AnimNotify_JumpSound();
+
 	//----------------------------------
 
 
@@ -94,6 +125,12 @@ public:
 		TArray<FAttackEffect> CurrentEffects;
 	UPROPERTY(VisibleAnywhere)
 		TArray<class USoundBase*> CurrentSounds;
+
+	//----------------------------------
+	//SFX
+
+	UPROPERTY(EditAnywhere)
+		TMap<ESFXMode, class USoundBase*> SFXSounds;
 
 	//----------------------------------
 	// ¸ùÅ¸ÁÖ
@@ -162,5 +199,4 @@ public:
 
 	/*UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		bool bIsParring;*/
-	
 };

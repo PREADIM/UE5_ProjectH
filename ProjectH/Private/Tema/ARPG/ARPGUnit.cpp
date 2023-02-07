@@ -122,6 +122,17 @@ void AARPGUnit::BeginPlay()
 	OnUsingAP.AddUFunction(this, FName("UsingAPFunction"));
 	OnEndAP.AddUFunction(this, FName("EndAPFunction"));
 
+	OnWeaponDraw.BindLambda([&](){
+		WalkSpeed = BattleSpeed;
+		LMBReleased();
+		bNormalMode = false;
+	});
+
+	OnWeaponStow.BindLambda([&]() {
+		WalkSpeed = NormalSpeed;
+		bNormalMode = true;
+	});
+
 	UnitState.Init(this); // 스탯 초기화.
 }
 
@@ -284,26 +295,28 @@ void AARPGUnit::LMB()
 			FPSMeshAnimInstance->ParringAttack();
 			TPSMeshAnimInstance->ParringAttack();
 		}
-
-		bAttacking = true;
-		if (InputComponent->GetAxisValue(TEXT("MoveRight")) == 0.0f)
+		else if(!FPSMeshAnimInstance->bMontagePlaying) // 몽타주 실행 중이 아닐 경우
 		{
-			if (InputComponent->GetAxisValue(TEXT("Forward")) < 0.0f)
+			bAttacking = true;
+			if (InputComponent->GetAxisValue(TEXT("MoveRight")) == 0.0f)
 			{
-				bAttackBackward = true;
+				if (InputComponent->GetAxisValue(TEXT("Forward")) < 0.0f)
+				{
+					bAttackBackward = true;
+				}
+				else
+				{
+					bAttackForward = true;
+				}
+			}
+			else if (InputComponent->GetAxisValue(TEXT("MoveRight")) < 0.0f)
+			{
+				bAttackLeft = true;
 			}
 			else
 			{
-				bAttackForward = true;
+				bAttackRight = true;
 			}
-		}
-		else if (InputComponent->GetAxisValue(TEXT("MoveRight")) < 0.0f)
-		{
-			bAttackLeft = true;
-		}
-		else
-		{
-			bAttackRight = true;
 		}
 	}
 }
@@ -411,9 +424,9 @@ void AARPGUnit::Sheathed()
 	if(bUseAP)
 		OnEndAP.Broadcast();
 
-	AttackEnd();
+	//AttackEnd();
 
-	bNormalMode = !bNormalMode;
+	/*bNormalMode = !bNormalMode;
 	if (bNormalMode)
 	{
 		WalkSpeed = NormalSpeed;
@@ -422,10 +435,11 @@ void AARPGUnit::Sheathed()
 	else
 	{
 		WalkSpeed = BattleSpeed;
-	}
+	}*/
 
-	FPSMeshAnimInstance->WeaponOnOff(bNormalMode);
-	TPSMeshAnimInstance->WeaponOnOff(bNormalMode);
+
+	FPSMeshAnimInstance->WeaponOnOff(!bNormalMode);
+	TPSMeshAnimInstance->WeaponOnOff(!bNormalMode);
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 }
 
@@ -614,28 +628,19 @@ float AARPGUnit::TakeDamageCalculator(AARPGWeapon* DamageWeapon, FDamageEvent co
 	{
 		Damaged = CurrentHP; // 남은 체력이 곧 라스트 데미지
 		CurrentHP = 0.f;
-			UnitState.SetTakeDamageHP(CurrentHP);
+		UnitState.SetTakeDamageHP(CurrentHP);
 		Death();
+		OnDamage.Broadcast(Damaged); // 데미지 출력하는 멀티캐스트.
 	}
-	else
+	else 
 	{
 		Hit(bBlockingHit);
-		
-		CurrentHP -= Damaged;
-		UnitState.SetTakeDamageHP(CurrentHP);		
 		if (Damaged > 0.f)
 		{
 			CurrentHP -= Damaged;
 			UnitState.SetTakeDamageHP(CurrentHP);
+			OnDamage.Broadcast(Damaged); // 데미지 출력하는 멀티캐스트.
 		}
-	}
-
-	
-
-	// 데미지 출력하는 멀티캐스트.
-	if (Damaged > 0.f)
-	{
-		OnDamage.Broadcast(Damaged);
 	}
 
 	return Damaged;

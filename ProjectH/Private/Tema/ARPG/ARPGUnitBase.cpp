@@ -21,6 +21,7 @@ AARPGUnitBase::AARPGUnitBase()
 	APSpeed = 50.f;
 	APUseSpeed = 30.f;
 	CurrentAttackFactor = 1.0f;
+	SurfaceDistance = 300.f;
 }
 
 // Called when the game starts or when spawned
@@ -32,7 +33,7 @@ void AARPGUnitBase::BeginPlay()
 	{
 		BattleHP->Init(this);
 		BattleHP->SetRenderOpacity(0.f);
-		//BattleHPComponent->SetOwnerNoSee(true);
+		BattleHPComponent->SetOwnerNoSee(true);
 		// 멀티 게임이면 SetOwnerNoSee를 하면되지않을까?
 	}
 }
@@ -42,6 +43,7 @@ void AARPGUnitBase::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
+	SetPhysicalSound();
 
 	if (!bZeroAP)
 	{
@@ -112,15 +114,6 @@ void AARPGUnitBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 
 }
 
-//float AARPGUnitBase::TakeDamageCalculator(float APDamage, float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
-//{
-//	if (DamageAmount > 0.f)
-//	{
-//		OnDamage.Broadcast(DamageAmount);
-//	}
-//
-//	return DamageAmount;
-//}
 
 float AARPGUnitBase::TakeDamageCalculator(AARPGWeapon* DamageWeapon, FDamageEvent const& DamageEvent, AController* EventInstigator, AARPGUnitBase* DamageCauser)
 {
@@ -180,4 +173,14 @@ bool AARPGUnitBase::TargetDotProduct(FVector TargetLocation, float CompareCos)
 		return true;
 	else
 		return false;
+}
+
+void AARPGUnitBase::SetPhysicalSound()
+{
+	TEnumAsByte<EPhysicalSurface> PS = TracePysicalSurface(this, SurfaceDistance);
+
+	if (!PhysicalAllSounds.Find(PS))
+		return;
+
+	PhysicalSounds = PhysicalAllSounds[PS].PhysicalSounds; // 해당하는 표면의 사운드 가져오기
 }

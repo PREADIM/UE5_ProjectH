@@ -27,4 +27,3 @@ enum class EJRPGAttackState : uint8
 	AttackEnd UMETA(DisplayName = "AttackEnd")
 
 };
-

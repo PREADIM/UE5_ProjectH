@@ -6,7 +6,6 @@
 #include "Tema/ARPG/ARPGEnermy_FstBoss.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/GameplayStatics.h"
-//#include "NavigationSystem.h"
 #include "Tema/ARPG/ARPGUnit.h"
 
 UARPG_FstBossAnimInstance::UARPG_FstBossAnimInstance()
@@ -312,4 +311,35 @@ void UARPG_FstBossAnimInstance::AnimNotify_FstBoss_E_Projectile()
 	TF = FstBoss->GetMesh()->GetSocketTransform(FName("TwinProjectile"));
 	AARPGFstBoss_Projectile* Projectile = GetWorld()->SpawnActor<AARPGFstBoss_Projectile>(FstBoss->BP_E_Projectile, TF, Param);
 
+}
+
+
+void UARPG_FstBossAnimInstance::FootStepPlaySound(int32 SoundNum)
+{
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), FstBoss->PhysicalSounds[SoundNum], FstBoss->GetMesh()->GetSocketLocation(FName("Root")));
+}
+
+void UARPG_FstBossAnimInstance::AnimNotify_WalkSound()
+{
+	if (!FstBoss->PhysicalSounds.IsValidIndex(0))
+		return;
+
+	FootStepPlaySound(0);
+}
+
+void UARPG_FstBossAnimInstance::AnimNotify_SprintSound()
+{
+	if (!FstBoss->PhysicalSounds.IsValidIndex(1))
+		return;
+
+	FootStepPlaySound(1);
+}
+
+
+void UARPG_FstBossAnimInstance::AnimNotify_JumpSound()
+{
+	if (!FstBoss->PhysicalSounds.IsValidIndex(2))
+		return;
+
+	FootStepPlaySound(2);
 }

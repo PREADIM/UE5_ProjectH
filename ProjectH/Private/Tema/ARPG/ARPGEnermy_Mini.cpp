@@ -96,25 +96,17 @@ float AARPGEnermy_Mini::TakeDamageCalculator(AARPGWeapon* DamageWeapon, FDamageE
 		CurrentHP = 0.f;
 		UnitState.SetTakeDamageHP(CurrentHP);
 		Death();
+		OnDamage.Broadcast(Damaged);
 	}
-	else
-	{
-		Hit(bBlockingHit);		
-		CurrentHP -= Damaged;
-		UnitState.SetTakeDamageHP(CurrentHP);
-
+	else 
+	{	
+		Hit(bBlockingHit);
 		if (Damaged > 0.f)
 		{
 			CurrentHP -= Damaged;
 			UnitState.SetTakeDamageHP(CurrentHP);
+			OnDamage.Broadcast(Damaged);
 		}
-	}
-
-	
-
-	if (Damaged > 0.f)
-	{
-		OnDamage.Broadcast(Damaged);
 	}
 
 	return Damaged;

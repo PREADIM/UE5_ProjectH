@@ -36,6 +36,7 @@ public:
 	void ShieldZeroAP();
 	void ParringAttack();
 
+	float GetDirection();
 
 	//----------------------------------
 	// 노티파이
@@ -84,7 +85,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool bDeath;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool bIsInAir;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -93,25 +94,28 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool bIsSprint;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool bIsSheathed;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool bIsBlocking;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool bIsAttacking;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool AttackingLeft;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool AttackingRight;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool AttackingForward;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool AttackingBackward;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float Direction;
 
 };

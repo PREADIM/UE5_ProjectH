@@ -87,27 +87,19 @@ float AARPGEnermy_FstBoss::TakeDamageCalculator(AARPGWeapon* DamageWeapon, FDama
 		CurrentHP = 0.f;
 		UnitState.SetTakeDamageHP(CurrentHP);
 		Death();
+		OnDamage.Broadcast(Damaged);
 	}
-	else
+	else 
 	{
 		Hit(false); // 가드가 없다.		
-		CurrentHP -= Damaged;
-		UnitState.SetTakeDamageHP(CurrentHP);
-		TakeDamageAP(APDMG);
-		// 보스의 ZeroAP는 그로기를 뜻한다.
-	
 		if (Damaged > 0.f)
 		{
 			CurrentHP -= Damaged;
 			UnitState.SetTakeDamageHP(CurrentHP);
 			TakeDamageAP(APDMG);
 			// 보스의 ZeroAP는 그로기를 뜻한다.
+			OnDamage.Broadcast(Damaged);
 		}
-	}
-
-	if (Damaged > 0.f)
-	{
-		OnDamage.Broadcast(Damaged);
 	}
 
 	return Damaged;

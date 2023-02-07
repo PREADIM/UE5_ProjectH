@@ -69,7 +69,7 @@ void UBTService_Overlap::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* Node
 						if (OwnerPawn->TargetDotProduct(Unit->GetActorLocation(), 0.34)) // 70도 가량
 						{
 							OwnerComp.GetBlackboardComponent()->SetValueAsObject(FName("TargetUnit"), Unit);
-							DrawDebugSphere(World, Center, CollisionRadius, 16, FColor::Green, false, 0.2f);
+							//DrawDebugSphere(World, Center, CollisionRadius, 16, FColor::Green, false, 0.2f);
 
 							OwnerPawn->PlayerUnit = Unit; // 타겟 플레이어 설정.
 							OwnerPawn->bMoving = true; // 무빙 실행★
@@ -81,7 +81,7 @@ void UBTService_Overlap::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* Node
 					else // 공격당해서 탐지
 					{
 						OwnerComp.GetBlackboardComponent()->SetValueAsObject(FName("TargetUnit"), Unit);
-						DrawDebugSphere(World, Center, CollisionRadius, 16, FColor::Green, false, 0.2f);
+						//DrawDebugSphere(World, Center, CollisionRadius, 16, FColor::Green, false, 0.2f);
 
 						OwnerPawn->PlayerUnit = Unit; // 타겟 플레이어 설정.
 						OwnerPawn->bMoving = true; // 무빙 실행★
@@ -101,7 +101,7 @@ void UBTService_Overlap::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* Node
 	}
 
 	OwnerComp.GetBlackboardComponent()->SetValueAsObject(FName("TargetUnit"), nullptr);
-	DrawDebugSphere(World, Center, CollisionRadius, 16, FColor::Red, false, 0.2f);
+	//DrawDebugSphere(World, Center, CollisionRadius, 16, FColor::Red, false, 0.2f);
 }
 
 

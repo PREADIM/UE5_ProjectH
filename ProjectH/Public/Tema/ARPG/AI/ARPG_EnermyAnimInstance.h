@@ -121,6 +121,19 @@ public:
 
 	//-----------------------------------------------------------
 
+	void FootStepPlaySound(int32 SoundNum);
+
+	UFUNCTION()
+		void AnimNotify_WalkSound();
+
+	UFUNCTION()
+		void AnimNotify_SprintSound();
+
+	UFUNCTION()
+		void AnimNotify_JumpSound();
+
+	//-----------------------------------------------------------
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool bDeath;
 

@@ -6,6 +6,10 @@
 #include "Tema/ARPG/ARPGUnitBase.h"
 #include "ARPGUnit.generated.h"
 
+
+DECLARE_DELEGATE(FOnWeaponDraw)
+DECLARE_DELEGATE(FOnWeaponStow)
+
 UCLASS()
 class PROJECTH_API AARPGUnit : public AARPGUnitBase
 {
@@ -69,6 +73,10 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		class UARPG_TPSAnimInstance* TPSMeshAnimInstance;
+
+
+	FOnWeaponDraw OnWeaponDraw; // 무기를 뽑을때 실행하는 델리게이트.
+	FOnWeaponStow OnWeaponStow; // 무기를 집어넣을때 실행하는 델리게이트.
 
 	//------------------------------------------------------
 		// 카메라 쉐이크

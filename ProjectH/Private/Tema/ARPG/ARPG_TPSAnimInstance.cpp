@@ -4,6 +4,7 @@
 #include "Tema/ARPG/ARPG_TPSAnimInstance.h"
 #include "Tema/ARPG/ARPGUnit.h"
 #include "Tema/ARPG/Weapon/ARPGWeapon.h"
+#include "Kismet/KismetMathLibrary.h"
 
 UARPG_TPSAnimInstance::UARPG_TPSAnimInstance()
 {
@@ -29,6 +30,7 @@ void UARPG_TPSAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 			IsMoving = OwnerUnit->GetVelocity().Length() > 0.f;
 			bIsSprint = OwnerUnit->bSprint;
 			bIsBlocking = OwnerUnit->bBlockMode;
+			Direction = GetDirection();
 
 			bIsAttacking = OwnerUnit->bAttacking;
 			AttackingLeft = OwnerUnit->bAttackLeft;
@@ -76,8 +78,6 @@ void UARPG_TPSAnimInstance::WeaponOnOff(bool bFlag)
 	{
 		Montage_Play(WeaponOpenMontage);
 	}
-
-	bIsSheathed = bFlag;
 }
 
 
@@ -93,6 +93,14 @@ void UARPG_TPSAnimInstance::ParringAttack()
 	Montage_Play(ParringAttackMontage);
 }
 
+float UARPG_TPSAnimInstance::GetDirection()
+{
+	FRotator Temp;
+	Temp = UKismetMathLibrary::NormalizedDeltaRotator(OwnerUnit->GetActorRotation(), OwnerUnit->GetVelocity().Rotation());
+
+	return Temp.Yaw;
+}
+
 
 //----------------------------------
 // 노티파이
@@ -105,6 +113,7 @@ void UARPG_TPSAnimInstance::AnimNotify_BattleMode()
 	if (OwnerUnit->TPSWeapon)
 	{
 		OwnerUnit->TPSWeapon->AttachToComponent(OwnerUnit->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, OwnerUnit->WeaponSocketName);
+		bIsSheathed = false;
 	}
 }
 
@@ -116,5 +125,6 @@ void UARPG_TPSAnimInstance::AnimNotify_NormalMode()
 	if (OwnerUnit->TPSWeapon)
 	{
 		OwnerUnit->TPSWeapon->AttachToComponent(OwnerUnit->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, OwnerUnit->IdleSocketName);
+		bIsSheathed = true;
 	}
 }

@@ -14,9 +14,23 @@ UARPG_UnitAnimInstance::UARPG_UnitAnimInstance()
 void UARPG_UnitAnimInstance::NativeBeginPlay()
 {
 	Super::NativeBeginPlay();
+	OnMontageEnded.AddDynamic(this, &UARPG_UnitAnimInstance::MontageEnd);
+	OnMontageStarted.AddDynamic(this, &UARPG_UnitAnimInstance::MontageStarted);
 
 	OwnerUnit = Cast<AARPGUnit>(TryGetPawnOwner());
 }
+
+
+void UARPG_UnitAnimInstance::MontageEnd(UAnimMontage* Montage, bool bInterrupted)
+{
+	bMontagePlaying = false;
+}
+
+void UARPG_UnitAnimInstance::MontageStarted(UAnimMontage* Montage)
+{
+	bMontagePlaying = true;
+}
+
 
 void UARPG_UnitAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
@@ -38,7 +52,6 @@ void UARPG_UnitAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 			AttackingForward = OwnerUnit->bAttackForward;
 			AttackingBackward = OwnerUnit->bAttackBackward;
 		}
-
 	}
 }
 
@@ -55,17 +68,26 @@ void UARPG_UnitAnimInstance::Hit(EUnitMode UnitMode)
 	switch (UnitMode)
 	{
 	case EUnitMode::BattleMode :
-		Montage_Play(HitMontage);
+		Montage_Play(HitMontage);	
+		if (SFXSounds.Find(ESFXMode::HitSound))
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), SFXSounds[ESFXMode::HitSound], OwnerUnit->GetActorLocation());
+		
 		break;
 	case EUnitMode::BlockingMode :
 		Montage_Play(BlockingHitMontage);
+		if (SFXSounds.Find(ESFXMode::BlockingHitSound))
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), SFXSounds[ESFXMode::BlockingHitSound], OwnerUnit->GetActorLocation());	
 		break;
-	}	
+	}
+
+	
 }
 
 void UARPG_UnitAnimInstance::Death()
 {
 	bDeath = true;
+	if (SFXSounds.Find(ESFXMode::Death))
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), SFXSounds[ESFXMode::Death], OwnerUnit->GetActorLocation());
 }
 
 void UARPG_UnitAnimInstance::WeaponOnOff(bool bFlag)
@@ -76,10 +98,8 @@ void UARPG_UnitAnimInstance::WeaponOnOff(bool bFlag)
 	}
 	else
 	{
-		Montage_Play(WeaponOpenMontage);
+		Montage_Play(WeaponOpenMontage);	
 	}
-
-	bIsSheathed = bFlag;
 }
 
 
@@ -115,6 +135,10 @@ void UARPG_UnitAnimInstance::AnimNotify_BattleMode()
 	if (OwnerUnit->FPSWeapon)
 	{
 		OwnerUnit->FPSWeapon->AttachToComponent(OwnerUnit->FPSMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, OwnerUnit->WeaponSocketName);
+		bIsSheathed = false;
+		OwnerUnit->OnWeaponDraw.Execute();
+		if(SFXSounds.Find(ESFXMode::DrawSword))
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), SFXSounds[ESFXMode::DrawSword], OwnerUnit->GetActorLocation());	
 	}
 }
 
@@ -126,6 +150,11 @@ void UARPG_UnitAnimInstance::AnimNotify_NormalMode()
 	if (OwnerUnit->FPSWeapon)
 	{
 		OwnerUnit->FPSWeapon->AttachToComponent(OwnerUnit->FPSMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, OwnerUnit->IdleSocketName);
+		bIsSheathed = true;
+		OwnerUnit->OnWeaponStow.Execute();
+		if (SFXSounds.Find(ESFXMode::StowSword))
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), SFXSounds[ESFXMode::StowSword], OwnerUnit->GetActorLocation());
+	
 	}
 }
 
@@ -138,6 +167,10 @@ void UARPG_UnitAnimInstance::AnimNotify_AttackStart()
 		OwnerUnit->bUseAP = true;
 		OwnerUnit->bUsingAP = false;
 		OwnerUnit->SetWeaponCollision(true);
+		if (!SFXSounds.Find(ESFXMode::AttackSound))
+			return;
+
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), SFXSounds[ESFXMode::AttackSound], OwnerUnit->GetActorLocation());
 	}
 }
 
@@ -201,9 +234,6 @@ void UARPG_UnitAnimInstance::AnimNotify_ParringPlayingEnd()
 	// 패링 중이니 패링을 다시 못누르게 하는 것.
 	OwnerUnit->bParringPlaying = false;
 
-	// 패링을하고 공격하기엔 너무 빠르다. 
-	// 때문에 적이 패링 히트 몽타주실행이 끝날때 false하기로함.
-	//OwnerUnit->bCanParringAttack = false;
 	
 }
 
@@ -254,3 +284,32 @@ void UARPG_UnitAnimInstance::AnimNotify_Death()
 }
 
 
+void UARPG_UnitAnimInstance::FootStepPlaySound(int32 SoundNum)
+{
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), OwnerUnit->PhysicalSounds[SoundNum], OwnerUnit->GetMesh()->GetSocketLocation(FName("Root")));
+}
+
+void UARPG_UnitAnimInstance::AnimNotify_WalkSound()
+{
+	if (!OwnerUnit->PhysicalSounds.IsValidIndex(0))
+		return;
+
+	FootStepPlaySound(0);
+}
+
+void UARPG_UnitAnimInstance::AnimNotify_SprintSound()
+{
+	if (!OwnerUnit->PhysicalSounds.IsValidIndex(1))
+		return;
+
+	FootStepPlaySound(1);
+}
+
+
+void UARPG_UnitAnimInstance::AnimNotify_JumpSound()
+{
+	if (!OwnerUnit->PhysicalSounds.IsValidIndex(2))
+		return;
+
+	FootStepPlaySound(2);
+}
