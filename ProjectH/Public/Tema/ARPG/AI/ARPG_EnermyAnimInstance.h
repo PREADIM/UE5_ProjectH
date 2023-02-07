@@ -18,6 +18,16 @@ enum class EEnermy_Mini_Mode : uint8
 };
 
 
+UENUM(BlueprintType)
+enum class ESFXMode_Enermy_Mini : uint8
+{
+	Default UMETA(DisplayName = "Default"),
+	HitSound UMETA(DisplayName = "HitSound"),
+	BlockingHitSound UMETA(DisplayName = "BlockingHitSound"),
+	Death UMETA(DisplayName = "Death")
+};
+
+
 UCLASS()
 class PROJECTH_API UARPG_EnermyAnimInstance : public UAnimInstance
 {
@@ -43,7 +53,10 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 		class AARPGEnermy_Mini* OwnerUnit;
 
-	// 이펙트와 사운드는 AttackClass에 해당 공격마다 가지고있는것을 공격시에 가져옴.
+	//----------------------------------
+	// AttackClass에서 받아와서 현재 실행해야할 이펙트와 사운드가 무엇인지 판단하는 변수들
+
+
 	UPROPERTY(VisibleAnywhere)
 		int32 CurrentEffectIndex;
 	UPROPERTY(VisibleAnywhere)
@@ -57,6 +70,15 @@ public:
 		TArray<class USoundBase*> CurrentSounds;
 	UPROPERTY(VisibleAnywhere)
 		TArray<class USoundBase*> CurrentAttackSounds;
+
+
+	//----------------------------------
+	//SFX
+
+	UPROPERTY(EditAnywhere)
+		TMap<ESFXMode_Enermy_Mini, class USoundBase*> SFXSounds;
+
+	//----------------------------------
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UAnimMontage* HitMontage;

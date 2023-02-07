@@ -4,7 +4,6 @@
 #include "Tema/ARPG/ARPGUnit.h"
 #include "GameMode/ProjectHGameInstance.h"
 #include "Tema/ARPG/ARPGPlayerController.h"
-#include "Tema/ARPG/Weapon/ARPGWeapon.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/KismetmathLibrary.h"
 #include "Tema/ARPG/ARPG_UnitAnimInstance.h"
@@ -30,6 +29,7 @@ AARPGUnit::AARPGUnit()
 	DeathCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("DeathCamera"));
 	DeathCamera->SetupAttachment(GetMesh());
 	DeathCamera->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, "HeadSocket");
+	DeathCamera->SetActive(false);
 
 	NormalSpeed = 250.f;
 	BattleSpeed = 150.f;
@@ -126,11 +126,14 @@ void AARPGUnit::BeginPlay()
 		WalkSpeed = BattleSpeed;
 		LMBReleased();
 		bNormalMode = false;
+		GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+
 	});
 
 	OnWeaponStow.BindLambda([&]() {
 		WalkSpeed = NormalSpeed;
 		bNormalMode = true;
+		GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 	});
 
 	UnitState.Init(this); // 스탯 초기화.
@@ -273,6 +276,22 @@ void AARPGUnit::ZeroAP()
 
 void AARPGUnit::DeathWeaponSimulate()
 {
+	// 죽으면 들고있는 무기를 소켓에서 떼어내 피직스 시뮬
+	FDetachmentTransformRules Rule(EDetachmentRule::KeepWorld, false);
+
+	if (TPSWeapon)
+	{
+		TPSWeapon->DetachFromActor(Rule);
+		TPSWeapon->SetPhysics();
+	}
+
+	if (TPSShield)
+	{
+		TPSShield->DetachFromActor(Rule);
+		TPSShield->SetPhysics();
+	}
+
+
 }
 
 void AARPGUnit::SetDeathCamera()
@@ -285,6 +304,9 @@ void AARPGUnit::LMB()
 	if (bDeath)
 		return;
 
+	if (bNormalMode)
+		return;
+
 	if (!bBlockMode && CanUseAP())
 	{
 		bLMBPush = true;
@@ -295,9 +317,10 @@ void AARPGUnit::LMB()
 			FPSMeshAnimInstance->ParringAttack();
 			TPSMeshAnimInstance->ParringAttack();
 		}
-		else if(!FPSMeshAnimInstance->bMontagePlaying) // 몽타주 실행 중이 아닐 경우
+		else if(!FPSMeshAnimInstance->bMontagePlaying && !bAttacking) // 몽타주 실행 중이 아닐 경우
 		{
 			bAttacking = true;
+			FPSWeapon->ChargeAttackInit();
 			if (InputComponent->GetAxisValue(TEXT("MoveRight")) == 0.0f)
 			{
 				if (InputComponent->GetAxisValue(TEXT("Forward")) < 0.0f)
@@ -328,12 +351,10 @@ void AARPGUnit::LMBReleased()
 
 	bLMBPush = false;
 	bAttacking = false;
-	AttackCharge = false;
 	bAttackBackward = false;
 	bAttackForward = false;
 	bAttackLeft = false;
 	bAttackRight = false;
-	AttackCharge = 0.f;
 }
 
 void AARPGUnit::RMB()
@@ -424,23 +445,10 @@ void AARPGUnit::Sheathed()
 	if(bUseAP)
 		OnEndAP.Broadcast();
 
-	//AttackEnd();
-
-	/*bNormalMode = !bNormalMode;
-	if (bNormalMode)
-	{
-		WalkSpeed = NormalSpeed;
-		LMBReleased();
-	}
-	else
-	{
-		WalkSpeed = BattleSpeed;
-	}*/
-
+	AttackEnd();
 
 	FPSMeshAnimInstance->WeaponOnOff(!bNormalMode);
 	TPSMeshAnimInstance->WeaponOnOff(!bNormalMode);
-	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 }
 
 void AARPGUnit::Parring()
@@ -488,19 +496,24 @@ void AARPGUnit::Death()
 
 	FPSMeshAnimInstance->Death();
 	TPSMeshAnimInstance->Death();
+	
+	if (DeathCamera)
+	{
+		FPSCamera->SetActive(false);
+		DeathCamera->SetActive(true);
+	}
+
+
 }
 
 void AARPGUnit::EndAttack()
 {
 	bLMBPush = false;
 	bAttacking = false;
-	AttackCharge = false;
 	bAttackBackward = false;
 	bAttackForward = false;
 	bAttackLeft = false;
 	bAttackRight = false;
-	AttackCharge = 0.f;
-	FPSWeapon->End();
 	ChargeAttackEnd();
 }
 
@@ -535,8 +548,12 @@ bool AARPGUnit::Hit(bool bBlockingHit)
 	if (!FPSMeshAnimInstance && !TPSMeshAnimInstance)
 		return false;
 
-	WeaponOverlapEnd();
-	AttackEnd();
+	if (bAttacking)
+	{
+		WeaponOverlapEnd();
+		AttackEnd();
+	}
+
 
 	bHitting = true;
 	bParringPlaying = false;
@@ -557,6 +574,10 @@ bool AARPGUnit::Hit(bool bBlockingHit)
 		else
 		{
 			PlayCameraShake(BP_PoiseHitMode_CS);
+			// bHitting은 히트모션시 다른 애니메이션이 실행하는 것을 방지하는 용인데,
+			// 강인도가 충분하여 히트모션이 발생하지않을경우에는 그냥 false 처리해야한다.
+			// 그래야 다른 애니메이션 실행가능 ex) 패링모션은 Hitting중에 실행되지않음.
+			bHitting = false; 
 		}
 	}
 	else
@@ -675,6 +696,11 @@ void AARPGUnit::TakeDamageAP(float Damage)
 void AARPGUnit::SetWeaponCollision(bool bFlag)
 {
 	FPSWeapon->SetWeaponCollision(bFlag);
+
+	// 결국 무기마다 고유의 SFX가 다르기때문에 무기에서 실행하게한다.
+	if(bFlag)
+		FPSWeapon->PlayWeaponSound(EWeaponSFX::SwingSFX);
+	
 }
 
 
@@ -731,6 +757,7 @@ void AARPGUnit::ShieldZeroAP()
 	FPSMeshAnimInstance->ShieldZeroAP();
 	TPSMeshAnimInstance->ShieldZeroAP();
 }
+
 
 // 적 락온
 void AARPGUnit::LockOn()

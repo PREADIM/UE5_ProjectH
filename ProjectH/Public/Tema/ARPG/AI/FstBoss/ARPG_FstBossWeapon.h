@@ -19,7 +19,7 @@ public:
 
 	virtual void AttackEnd() override;
 	virtual void SetWeaponCollision(bool bFlag) override;
-	virtual void End() override;
+	virtual void WeaponAttackEnd() override;
 
 	UFUNCTION()
 		void WeaponBeginOverlap(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);

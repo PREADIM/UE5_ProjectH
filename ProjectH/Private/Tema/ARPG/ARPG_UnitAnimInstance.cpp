@@ -3,7 +3,6 @@
 
 #include "Tema/ARPG/ARPG_UnitAnimInstance.h"
 #include "Tema/ARPG/ARPGUnit.h"
-#include "Tema/ARPG/Weapon/ARPGWeapon.h"
 #include "Kismet/GameplayStatics.h"
 
 UARPG_UnitAnimInstance::UARPG_UnitAnimInstance()
@@ -166,11 +165,7 @@ void UARPG_UnitAnimInstance::AnimNotify_AttackStart()
 		OwnerUnit->UnitState.SetAP(AP);
 		OwnerUnit->bUseAP = true;
 		OwnerUnit->bUsingAP = false;
-		OwnerUnit->SetWeaponCollision(true);
-		if (!SFXSounds.Find(ESFXMode::AttackSound))
-			return;
-
-		UGameplayStatics::PlaySoundAtLocation(GetWorld(), SFXSounds[ESFXMode::AttackSound], OwnerUnit->GetActorLocation());
+		OwnerUnit->SetWeaponCollision(true);		
 	}
 }
 
@@ -264,7 +259,6 @@ void UARPG_UnitAnimInstance::AnimNotify_HoldAttack()
 {
 	if (OwnerUnit->bChargeAttacking == false)
 	{
-		_DEBUG("HoldAttack")
 		OwnerUnit->ChargeAttackStart();
 	}
 }

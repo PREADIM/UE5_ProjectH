@@ -36,18 +36,17 @@ void AARPGShield::SetWeaponCollision(bool bFlag)
 {
 	if (bFlag)
 	{
-		ShieldCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-		//_DEBUG("Collision On");
+		ShieldCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);	
 	}
 	else
 	{
-		ShieldCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		//_DEBUG("Collision Off");
+		ShieldCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);	
 	}
 }
 
 void AARPGShield::SetPhysics()
 {
+	Super::SetPhysics();
 	ShieldMesh->SetSimulatePhysics(true);
 	ShieldMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 }

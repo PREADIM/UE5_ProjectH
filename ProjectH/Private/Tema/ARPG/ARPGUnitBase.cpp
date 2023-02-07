@@ -3,7 +3,6 @@
 
 #include "Tema/ARPG/ARPGUnitBase.h"
 #include "Components/WidgetComponent.h"
-#include "Tema/ARPG/Weapon/ARPGWeapon.h"
 #include "Tema/ARPG/Widget/ARPGWidget_BattleHP.h"
 
 // Sets default values
@@ -99,7 +98,12 @@ void AARPGUnitBase::Death()
 {
 	bDeath = true;
 	FTimerHandle Handle;
+	FTimerHandle DeathHandle;
 	GetWorld()->GetTimerManager().SetTimer(Handle, this, &AARPGUnitBase::BattleHPWidgetHide, 5.0f, false);
+	GetWorld()->GetTimerManager().SetTimer(DeathHandle, FTimerDelegate::CreateLambda([&]()
+		{
+			Destroy();
+		}), 20.f, false);
 }
 
 void AARPGUnitBase::BattleHPWidgetHide()
@@ -136,9 +140,7 @@ float AARPGUnitBase::TakeDamageCalculator(AARPGWeapon* DamageWeapon, FDamageEven
 
 float AARPGUnitBase::CalculDamage(float Damage)
 {
-	float HPDMG = (Damage + UnitState.ATK) * CurrentAttackFactor;
-
-	return HPDMG;
+	return (Damage + UnitState.ATK) * CurrentAttackFactor;
 }
 
 float AARPGUnitBase::CalculAPDamage(float APDamage)

@@ -56,6 +56,8 @@ void UARPG_FstBossAnimInstance::PlayHitMontage()
 {
 	HittedReset();
 	Montage_Play(HitMontage);
+	if (SFXSounds.Find(ESFXMode_FstBoss::HitSound))
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), SFXSounds[ESFXMode_FstBoss::HitSound], FstBoss->GetActorLocation());
 }
 
 void UARPG_FstBossAnimInstance::PlayDeadMontage()
@@ -63,6 +65,8 @@ void UARPG_FstBossAnimInstance::PlayDeadMontage()
 	bDeath = true;
 	bPlayedSound = false;
 	HittedReset();
+	if (SFXSounds.Find(ESFXMode_FstBoss::Death))
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), SFXSounds[ESFXMode_FstBoss::Death], FstBoss->GetActorLocation());
 }
 
 void UARPG_FstBossAnimInstance::PlayParringHitMontage()
@@ -148,7 +152,7 @@ void UARPG_FstBossAnimInstance::AnimNotify_PlaySound()
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), CurrentSounds[CurrentSoundIndex], FstBoss->GetActorLocation(), FstBoss->GetActorRotation());
 
 	bPlayedSound = true;
-	GetWorld()->GetTimerManager().SetTimer(SoundHandle, this, &UARPG_FstBossAnimInstance::PlayedSoundFunc, 5.f, false);
+	GetWorld()->GetTimerManager().SetTimer(SoundHandle, this, &UARPG_FstBossAnimInstance::PlayedSoundFunc, 3.f, false);
 
 	++CurrentSoundIndex;
 }
@@ -230,6 +234,7 @@ void UARPG_FstBossAnimInstance::AnimNotify_HitEnd()
 void UARPG_FstBossAnimInstance::AnimNotify_Death()
 {
 	// 보통 여기서 무기 피직스를 끄는 시뮬레이션을 진행하지만 이 보스는 없다.
+	FstBoss->DeathCollsionEnabled();
 }
 
 

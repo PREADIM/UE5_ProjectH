@@ -25,15 +25,13 @@ public:
 	virtual void SetOwnerNoSee(bool bFlag) override;
 
 	virtual bool IsChargeAttack() override;
+	virtual void ChargeAttackInit() override;
 	virtual float ChargeAttack(float DeltaSeconds) override;
 
-	virtual void End() override;
+	virtual void WeaponAttackEnd() override;
 
 	UFUNCTION()
 		void SwordBeginOverlap(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-	
-	//UFUNCTION()
-	//	void SetHitEndActor() { HitEndActor.Empty(); } // 때린것들 초기화.
 
 protected:
 	// Called when the game starts or when spawned

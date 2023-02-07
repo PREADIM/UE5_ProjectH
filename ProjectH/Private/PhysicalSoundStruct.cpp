@@ -23,6 +23,8 @@ EPhysicalSurface TracePysicalSurface(AActor* Unit, float EndDistance)
 
 	}
 	 
-	_DEBUG("Not Surface");
+	//_DEBUG("Not Surface");
 	return EPhysicalSurface::SurfaceType_Default;
 }
+
+

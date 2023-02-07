@@ -2,7 +2,6 @@
 
 
 #include "Tema/ARPG/ARPGEnermy_FstBoss.h"
-#include "Tema/ARPG/Weapon/ARPGWeapon.h"
 #include "Tema/ARPG/AttackClass.h"
 #include "Tema/ARPG/ARPGAttackComponent.h"
 #include "Tema/ARPG/AI/FstBoss/ARPG_FstBossAnimInstance.h"
@@ -122,6 +121,7 @@ void AARPGEnermy_FstBoss::TakeDamageAP(float Damage)
 	}
 }
 
+
 bool AARPGEnermy_FstBoss::Hit(bool bBlockingHit)
 {
 	if (!FstBossAnimInstance)
@@ -200,8 +200,8 @@ void AARPGEnermy_FstBoss::PlayAttack(int32 index)
 
 void AARPGEnermy_FstBoss::Death()
 {
-	Super::Death(); // 여기서 컨트롤러 및 모든걸 해제
 	DeathReset();
+	Super::Death(); // 여기서 컨트롤러 및 모든걸 해제
 	FstBossAnimInstance->PlayDeadMontage();
 }
 
@@ -300,12 +300,18 @@ void AARPGEnermy_FstBoss::SetWeaponCollision(bool bFlag, int32 index)
 	{
 	case 0:
 		TwinWeapon->SetWeaponCollision(bFlag);
+		if (bFlag)
+			TwinWeapon->PlayWeaponSound(EWeaponSFX::SwingSFX);
 		break;
 	case 1:
 		LeftWeapon->SetWeaponCollision(bFlag);
+		if (bFlag)
+			LeftWeapon->PlayWeaponSound(EWeaponSFX::SwingSFX);
 		break;
 	case 2:
 		RightWeapon->SetWeaponCollision(bFlag);
+		if (bFlag)
+			RightWeapon->PlayWeaponSound(EWeaponSFX::SwingSFX);
 		break;
 	}
 }

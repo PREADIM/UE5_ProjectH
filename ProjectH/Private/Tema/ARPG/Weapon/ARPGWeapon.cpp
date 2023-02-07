@@ -2,6 +2,7 @@
 
 
 #include "Tema/ARPG/Weapon/ARPGWeapon.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AARPGWeapon::AARPGWeapon()
@@ -10,6 +11,12 @@ AARPGWeapon::AARPGWeapon()
 	PrimaryActorTick.bCanEverTick = false;
 
 	ARPGUnitChannel = ECollisionChannel::ECC_GameTraceChannel12;
+}
+
+void AARPGWeapon::PlayWeaponSound(EWeaponSFX WeaponSFX)
+{
+	if(WeaponSFXs.Find(WeaponSFX))
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), WeaponSFXs[WeaponSFX], GetActorLocation());
 }
 
 // Called when the game starts or when spawned
@@ -26,6 +33,19 @@ void AARPGWeapon::Tick(float DeltaTime)
 
 }
 
+void AARPGWeapon::SetPhysics()
+{
+	PlayWeaponSound(EWeaponSFX::DropSFX);
+	FTimerHandle DestroyHandle;
+	if (GetWorld())
+	{
+		GetWorld()->GetTimerManager().SetTimer(DestroyHandle, FTimerDelegate::CreateLambda([&]()
+			{
+				Destroy();
+			}), 10.f, false);
+	}
+}
+
 AController* AARPGWeapon::GetOwnerController()
 {
 	APawn* OwnerPawn = Cast<APawn>(GetOwner());
@@ -34,5 +54,7 @@ AController* AARPGWeapon::GetOwnerController()
 
 	return OwnerPawn->GetController();
 }
+
+
 
 

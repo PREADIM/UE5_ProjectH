@@ -34,6 +34,8 @@ void AARPGFstBoss_Projectile::BeginPlay()
 	OwnerUnit = Cast<AARPGUnitBase>(GetOwner());
 	Collision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 
+	PlayWeaponSound(EWeaponSFX::SwingSFX); //★ Projectile은 무한루프되는 사운드를 실행시켜주자.
+
 	Collision->OnComponentBeginOverlap.AddDynamic(this, &AARPGFstBoss_Projectile::OverlapProjectile);
 	FTimerHandle CollisionOffHandle;
 	GetWorld()->GetTimerManager().SetTimer(CollisionOffHandle, this, &AARPGFstBoss_Projectile::CollisionOff, EndCollisionTime, false);

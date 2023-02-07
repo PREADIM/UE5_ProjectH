@@ -41,7 +41,7 @@ void AARPG_FstBossWeapon::SetWeaponCollision(bool bFlag)
 }
 
 
-void AARPG_FstBossWeapon::End()
+void AARPG_FstBossWeapon::WeaponAttackEnd()
 {
 }
 
@@ -53,7 +53,7 @@ void AARPG_FstBossWeapon::WeaponBeginOverlap(UPrimitiveComponent* OverlappedComp
 		{
 			if (OtherActor == Hit)
 			{
-				_DEBUG("Return HitEndActor");
+				//_DEBUG("Return HitEndActor");
 				return;
 				// 이미 닿은 액터라 데미지 중첩 방지.
 			}
@@ -73,7 +73,7 @@ void AARPG_FstBossWeapon::WeaponBeginOverlap(UPrimitiveComponent* OverlappedComp
 			AARPGUnitBase* Unit = Cast<AARPGUnitBase>(OtherActor);
 			if (Unit)
 			{
-				_DEBUG("Boss Overlap");
+				//_DEBUG("Boss Overlap");
 				FDamageEvent DamageEvent;
 				if (Unit->bDeath != true) // 공격 할 수 있는지 판단
 				{
@@ -88,12 +88,13 @@ void AARPG_FstBossWeapon::WeaponBeginOverlap(UPrimitiveComponent* OverlappedComp
 						{
 							// 일단 공격을 하고 블럭킹인지 죽었는지는 알아서 판단
 							Unit->TakeDamageCalculator(this, DamageEvent, OwnerController, OwnerUnit);
+							PlayWeaponSound(EWeaponSFX::AttackHitSFX);
 						}
 					}
-					else
+					else // 패링중이 아니거나 패링을 못하는 공격
 					{
-						// 일단 공격을 하고 블럭킹인지 죽었는지는 알아서 판단
 						Unit->TakeDamageCalculator(this, DamageEvent, OwnerController, OwnerUnit);
+						PlayWeaponSound(EWeaponSFX::AttackHitSFX);
 					}
 				}
 

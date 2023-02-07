@@ -57,9 +57,13 @@ void UARPG_EnermyAnimInstance::PlayHitMontage(EEnermy_Mini_Mode UnitMode)
 	{
 	case EEnermy_Mini_Mode::BattleMode :
 		Montage_Play(HitMontage);
+		if (SFXSounds.Find(ESFXMode_Enermy_Mini::HitSound))
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), SFXSounds[ESFXMode_Enermy_Mini::HitSound], OwnerUnit->GetActorLocation());
 		break;
 	case EEnermy_Mini_Mode::BlockingMode :
 		Montage_Play(BlockingHitMontage);
+		if (SFXSounds.Find(ESFXMode_Enermy_Mini::BlockingHitSound))
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), SFXSounds[ESFXMode_Enermy_Mini::BlockingHitSound], OwnerUnit->GetActorLocation());
 		break;
 	}
 }
@@ -67,6 +71,8 @@ void UARPG_EnermyAnimInstance::PlayHitMontage(EEnermy_Mini_Mode UnitMode)
 void UARPG_EnermyAnimInstance::PlayDeadMontage()
 {
 	bDeath = true;
+	if (SFXSounds.Find(ESFXMode_Enermy_Mini::Death))
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), SFXSounds[ESFXMode_Enermy_Mini::Death], OwnerUnit->GetActorLocation());
 }
 
 void UARPG_EnermyAnimInstance::PlayParringHitMontage()
@@ -171,6 +177,8 @@ void UARPG_EnermyAnimInstance::AnimNotify_HitEnd()
 void UARPG_EnermyAnimInstance::AnimNotify_Death()
 {
 	OwnerUnit->DeathWeaponSimulate();
+	OwnerUnit->DeathCollsionEnabled(); 
+	// 바로 콜리전을 해제해버리면 땅에 들어가는등 이상한 행동을 하므로 애니를 기다림.
 }
 
 void UARPG_EnermyAnimInstance::AnimNotify_DontMoving()

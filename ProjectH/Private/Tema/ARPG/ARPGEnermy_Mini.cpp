@@ -4,7 +4,6 @@
 #include "Tema/ARPG/ARPGEnermy_Mini.h"
 #include "Tema/ARPG/AttackClass.h"
 #include "Tema/ARPG/ARPGAttackComponent.h"
-#include "Tema/ARPG/Weapon/ARPGWeapon.h"
 #include "Tema/ARPG/AI/ARPG_EnermyAnimInstance.h"
 
 
@@ -237,7 +236,6 @@ void AARPGEnermy_Mini::DeathWeaponSimulate()
 }
 
 
-
 // 이게 실행되었다는 것은 결국 BT에서 AttackDistance로 검사해서 문제없다는 뜻이다.
 void AARPGEnermy_Mini::Attack(int32 index)
 {
@@ -268,6 +266,8 @@ void AARPGEnermy_Mini::PlayAttack(int32 index)
 void AARPGEnermy_Mini::SetWeaponCollision(bool bFlag)
 {
 	Weapon->SetWeaponCollision(bFlag);
+	if (bFlag)
+		Weapon->PlayWeaponSound(EWeaponSFX::SwingSFX);
 }
 
 void AARPGEnermy_Mini::SetShieldCollision(bool bFlag)
@@ -300,8 +300,8 @@ void AARPGEnermy_Mini::DeathReset()
 
 void AARPGEnermy_Mini::Death()
 {
-	Super::Death(); // 여기서 컨트롤러 및 모든걸 해제
 	DeathReset();
+	Super::Death(); // 여기서 컨트롤러 및 모든걸 해제	
 	EnermyAnimInstance->PlayDeadMontage();	
 }
 

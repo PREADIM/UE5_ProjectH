@@ -67,9 +67,9 @@ public:
 
 	virtual void Tick(float DeltaSeconds);
 	virtual void PostInitializeComponents();
-	//virtual float TakeDamageCalculator(float APDamage, float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
 	virtual float TakeDamageCalculator(class AARPGWeapon* DamageWeapon, FDamageEvent const& DamageEvent, AController* EventInstigator, AARPGUnitBase* DamageCauser);
 	virtual void TakeDamageAP(float Damage) {}
+
 	// 맞았을때 함수. UnitBase에서 먼저 강인도를 따져서 히트 모션이 나올것인지 판별한다.
 	virtual bool Hit(bool bBlockingHit) { return Super::Hit(bBlocking); } 
 	virtual bool CanThisDamage() { return false; }
@@ -82,7 +82,7 @@ public:
 	virtual void Parring(bool bFlag) {} // 패링 함수
 	virtual void Death(); // 죽음 함수
 	virtual void ParringHit(class AARPGUnitBase* InstigatorActor) {} // 패링당함
-	virtual void DeathCollsionEnabled() {} 
+	virtual void DeathCollsionEnabled() {}
 	virtual void DeathWeaponSimulate() {} // 죽어서 무기 물리 시뮬레이트
 	virtual void ZeroAP(); // AP가 제로이다
 

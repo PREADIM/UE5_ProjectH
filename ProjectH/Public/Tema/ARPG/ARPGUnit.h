@@ -31,7 +31,6 @@ public:
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void PostInitializeComponents() override;;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	//virtual float TakeDamageCalculator(float APDamage, float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	virtual float TakeDamageCalculator(class AARPGWeapon* DamageWeapon, FDamageEvent const& DamageEvent, AController* EventInstigator, AARPGUnitBase* DamageCauser) override;
 
 	// 공격을 막아내 AP를 깎아야할때 사용하는 함수.
@@ -149,8 +148,8 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		bool bAttackBackward;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		float AttackCharge;
+	/*UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		float AttackCharge;*/
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		float MouseSensivity;

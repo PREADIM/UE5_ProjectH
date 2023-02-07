@@ -5,7 +5,6 @@
 #include "Tema/ARPG/AI/ARPG_EnermyAnimInstance.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Tema/ARPG/ARPGUnit.h"
-#include "Tema/ARPG/Weapon/ARPGWeapon.h"
 #include "Tema/ARPG/ARPGAIController.h"
 #include "Tema/ARPG/ARPGAttackComponent.h"
 
@@ -81,7 +80,7 @@ void AARPGEnermy::Death()
 {
 	Super::Death();
 	SetActorTickEnabled(false);
-	DeathCollsionEnabled();
+	//DeathCollsionEnabled();
 	OwnerAIController->OnUnPossess();
 }
 

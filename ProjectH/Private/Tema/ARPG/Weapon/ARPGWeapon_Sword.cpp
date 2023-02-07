@@ -51,6 +51,7 @@ void AARPGWeapon_Sword::SetWeaponCollision(bool bFlag)
 
 void AARPGWeapon_Sword::SetPhysics()
 {
+	Super::SetPhysics();
 	SwordMesh->SetSimulatePhysics(true);
 	SwordMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 }
@@ -84,7 +85,7 @@ float AARPGWeapon_Sword::ChargeAttack(float DeltaSeconds)
 	
 	if (ChargeDMG >= 0.5)
 	{
-		Charge = ChargeDMG + 2.0f;
+		Charge = ChargeDMG + 6.0f;
 	}
 	else
 	{
@@ -95,10 +96,14 @@ float AARPGWeapon_Sword::ChargeAttack(float DeltaSeconds)
 	return ChargeDMG;
 }
 
-void AARPGWeapon_Sword::End()
+void AARPGWeapon_Sword::ChargeAttackInit()
 {
 	Charge = 1.f;
 	ChargeTime = 0.f;
+}
+
+void AARPGWeapon_Sword::WeaponAttackEnd()
+{
 }
 
 void AARPGWeapon_Sword::SwordBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -149,12 +154,14 @@ void AARPGWeapon_Sword::SwordBeginOverlap(UPrimitiveComponent* OverlappedComp, A
 						{
 							// 일단 공격을 하고 블럭킹인지 죽었는지는 알아서 판단
 							Unit->TakeDamageCalculator(this, DamageEvent, OwnerController, OwnerUnit);
+							PlayWeaponSound(EWeaponSFX::AttackHitSFX);
 						}
 					}
 					else
 					{
 						// 일단 공격을 하고 블럭킹인지 죽었는지는 알아서 판단
 						Unit->TakeDamageCalculator(this, DamageEvent, OwnerController, OwnerUnit);
+						PlayWeaponSound(EWeaponSFX::AttackHitSFX);
 					}
 				}
 

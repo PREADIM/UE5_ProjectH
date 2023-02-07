@@ -14,7 +14,6 @@ enum class ESFXMode : uint8
 	Default UMETA(DisplayName = "Default"),
 	DrawSword UMETA(DisplayName = "DrawSword"),
 	StowSword UMETA(DisplayName = "StowSword"),
-	AttackSound UMETA (DisplayName = "AttackSound"),
 	HitSound UMETA(DisplayName = "HitSound"),
 	BlockingHitSound UMETA(DisplayName = "BlockingHitSound"),
 	Death UMETA(DisplayName = "Death")

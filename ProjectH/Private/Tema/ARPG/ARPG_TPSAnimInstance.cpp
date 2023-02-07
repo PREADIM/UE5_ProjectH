@@ -3,7 +3,6 @@
 
 #include "Tema/ARPG/ARPG_TPSAnimInstance.h"
 #include "Tema/ARPG/ARPGUnit.h"
-#include "Tema/ARPG/Weapon/ARPGWeapon.h"
 #include "Kismet/KismetMathLibrary.h"
 
 UARPG_TPSAnimInstance::UARPG_TPSAnimInstance()

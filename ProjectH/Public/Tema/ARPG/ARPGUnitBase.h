@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "Tema/ARPG/UnitState.h"
 #include "PhysicalSoundStruct.h"
+#include "Tema/ARPG/Weapon/ARPGWeapon.h"
 #include "ARPGUnitBase.generated.h"
 
 
@@ -47,13 +48,15 @@ public:
 	virtual void ZeroAP(); // 공격을 사용해서 AP가 제로이다
 	
 	virtual void DeathWeaponSimulate() {}
+	virtual void DeathCollsionEnabled() {}
 	// 죽음
 	virtual void Death();
 	//공격이 끝났을때 반드시 호출되어야할 함수들을 모아둔 것.
 	virtual void EndAttack() {}
+
+
 public:
 	// TakeDamage 대신 이 함수에서 데미지 처리를 알아서 하게한다.
-	//virtual float TakeDamageCalculator (float APDamage, float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
 	virtual float TakeDamageCalculator(class AARPGWeapon* DamageWeapon, FDamageEvent const& DamageEvent, AController* EventInstigator, AARPGUnitBase* DamageCauser);
 	float CalculDamage(float Damage);
 	float CalculAPDamage(float APDamage);
