@@ -472,13 +472,13 @@ void AARPGUnit::Parring()
 // AP 사용 함수들 각 역할 중요.
 void AARPGUnit::StartUseAPFunction()
 {
-	_DEBUG("Start UseAP");
+	//_DEBUG("Start UseAP");
 	bUseAP = true;
 }
 
 void AARPGUnit::UsingAPFunction()
 {
-	_DEBUG("Using AP");
+	//_DEBUG("Using AP");
 
 	bUseAP = true; // 애초에 AP를 사용하려면 이게 당연히 true다. 스프린트에서 유용
 	bUsingAP = true;
@@ -486,7 +486,7 @@ void AARPGUnit::UsingAPFunction()
 
 void AARPGUnit::EndAPFunction()
 {
-	_DEBUG("End UseAP");
+	//_DEBUG("End UseAP");
 
 	bUseAP = false;
 	bUsingAP = false;

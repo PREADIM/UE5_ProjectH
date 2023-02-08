@@ -57,10 +57,6 @@ void AARPGEnermy_FstBoss::PostInitializeComponents()
 	if (GetMesh()) // 가끔 C++ 클래스를 상속받은 블프가 디테일창이 사라지면서 null값을 넣기때문.(버그)
 	{
 		FstBossAnimInstance = Cast<UARPG_FstBossAnimInstance>(GetMesh()->GetAnimInstance());
-		if (FstBossAnimInstance == nullptr)
-		{
-			_DEBUG("FstBoss Not AnimInstance");
-		}
 	}
 }
 
@@ -170,7 +166,15 @@ void AARPGEnermy_FstBoss::SetBattleMode(bool bFlag)
 
 		// 사운드 실행
 		if (BossMusic)
-			PlayerUnit->PlaySound(BossMusic);
+		{
+			if(bFlag)
+				PlayerUnit->PlaySound(BossMusic);
+			else
+			{
+				PlayerUnit->PlaySound(nullptr);
+			}
+		}
+			
 	}
 
 }

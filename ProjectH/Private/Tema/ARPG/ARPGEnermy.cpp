@@ -176,9 +176,11 @@ void AARPGEnermy::SetBattleMode(bool bFlag)
 {
 	bBattleMode = bFlag;
 
-	if(!bFlag)
+	if (!bFlag)
+	{
 		UnitState.ResetPoise();
-	
+		PlayerUnit = nullptr;
+	}
 }
 
 void AARPGEnermy::SetEnermyMoveMode(EEnermyMoveMode Mode)

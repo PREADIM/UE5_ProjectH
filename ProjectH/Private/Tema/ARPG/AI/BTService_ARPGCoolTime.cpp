@@ -23,7 +23,6 @@ void UBTService_ARPGCoolTime::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 	AARPGEnermy* OwnerPawn = Cast<AARPGEnermy>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(FName("CurrentUnit")));
 	if (!OwnerPawn)
 	{
-		_DEBUG("OwnerPawn Fail");
 		return;
 	}
 
@@ -50,7 +49,6 @@ void UBTService_ARPGCoolTime::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 		APawn* TargetUnit = Cast<APawn>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(TEXT("TargetUnit")));
 		if (!TargetUnit)
 		{
-			_DEBUG("TargetUnit false");
 			return;
 		}
 
@@ -102,7 +100,6 @@ void UBTService_ARPGCoolTime::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 		if (AttackIndex == -1)
 		{
 			OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("CanAttack"), false);
-			_DEBUG("Attack Index -1");
 			return;
 		}
 

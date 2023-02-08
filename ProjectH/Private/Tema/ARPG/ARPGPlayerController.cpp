@@ -143,10 +143,20 @@ bool AARPGPlayerController::IsBossHPWidget()
 
 void AARPGPlayerController::SetPlaySound(USoundBase* Sound)
 {
-	if (!Sound || !AudioComponent)
+	if (!AudioComponent)
 		return;
 
-	AudioComponent->SetSound(Sound);
+	if (Sound == nullptr)
+	{
+		// nullptr일 경우 전의 음악을 재생함.
+		if(PrevSound)
+			AudioComponent->SetSound(PrevSound);
+	}	
+	else
+	{
+		AudioComponent->SetSound(Sound);
+	}
+
 	AudioComponent->Play();
 	PrevSound = NormalSound;
 }

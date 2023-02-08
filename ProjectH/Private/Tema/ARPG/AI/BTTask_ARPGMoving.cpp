@@ -18,7 +18,6 @@ EBTNodeResult::Type UBTTask_ARPGMoving::ExecuteTask(UBehaviorTreeComponent& Owne
 	OwnerPawn = Cast<AARPGEnermy>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(FName("CurrentUnit")));
 	if (!OwnerPawn)
 	{
-		_DEBUG("OwnerPawn Fail");
 		return EBTNodeResult::Failed;
 	}
 
@@ -26,7 +25,6 @@ EBTNodeResult::Type UBTTask_ARPGMoving::ExecuteTask(UBehaviorTreeComponent& Owne
 	TargetUnit = Cast<APawn>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(TEXT("TargetUnit")));
 	if (!TargetUnit)
 	{
-		_DEBUG("TargetUnit Fail");
 		return EBTNodeResult::Failed;
 	}
 
@@ -38,7 +36,6 @@ EBTNodeResult::Type UBTTask_ARPGMoving::ExecuteTask(UBehaviorTreeComponent& Owne
 	case EEnermyMoveMode::None:
 		Temp = (uint8)EEnermyMoveMode::ForwardMoving;
 		OwnerPawn->SetEnermyMoveMode((EEnermyMoveMode)Temp);
-		//_DEBUG("None");
 		break;
 	case EEnermyMoveMode::LeftMoving:
 	case EEnermyMoveMode::RightMoving:
@@ -46,7 +43,6 @@ EBTNodeResult::Type UBTTask_ARPGMoving::ExecuteTask(UBehaviorTreeComponent& Owne
 	case EEnermyMoveMode::ForwardMoving:
 		Temp = (uint8)RandomMoving();
 		OwnerPawn->SetEnermyMoveMode((EEnermyMoveMode)Temp);
-		//_DEBUG("Random");
 		break;
 	}
 
@@ -67,19 +63,15 @@ EEnermyMoveMode UBTTask_ARPGMoving::RandomMoving()
 	switch (FMath::RandRange(StartRange, 6))
 	{
 	case 0:
-	case 1:
-		//_DEBUG("F");		
+	case 1:	
 		return EEnermyMoveMode::ForwardMoving;
 	case 2:
 	case 3:
-		//_DEBUG("L");
 		return EEnermyMoveMode::LeftMoving;	
 	case 4:
 	case 5:
-		//_DEBUG("R");
 		return EEnermyMoveMode::RightMoving;
 	case 6:
-		//_DEBUG("B");
 		return EEnermyMoveMode::BackMoving;
 	}
 

@@ -138,10 +138,6 @@ void UARPG_UnitAnimInstance::AnimNotify_BattleMode()
 		OwnerUnit->OnWeaponDraw.Execute();
 		if(SFXSounds.Find(ESFXMode::DrawSword))
 			UGameplayStatics::PlaySoundAtLocation(GetWorld(), SFXSounds[ESFXMode::DrawSword].Sound, OwnerUnit->GetActorLocation(), 1.f, 1.f, 1.f, SFXSounds[ESFXMode::DrawSword].Attenuation);
-		else
-		{
-			_DEBUG("Not");
-		}
 	}
 }
 
@@ -209,7 +205,6 @@ void UARPG_UnitAnimInstance::AnimNotify_HitEnd()
 	{
 		OwnerUnit->OnEndAP.Broadcast();
 		OwnerUnit->HitEnd();
-		//_DEBUG("Hit End");
 	}
 }
 

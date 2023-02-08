@@ -270,7 +270,6 @@ void UARPG_FstBossAnimInstance::AnimNotify_FstBoss_TeleportEnd()
 
 	if (FstBoss->PlayerUnit)
 	{
-		_DEBUG("TeleportPlayerUnit");
 		FVector TargetLocation = FstBoss->PlayerUnit->GetActorLocation();
 		TargetLocation = TargetLocation + ((FstBoss->PlayerUnit->GetActorForwardVector() * 100.f) * -1.f);
 		// 타겟의 뒷쪽으로 위치 잡기.

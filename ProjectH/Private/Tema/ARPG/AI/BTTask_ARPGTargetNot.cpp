@@ -18,7 +18,6 @@ EBTNodeResult::Type UBTTask_ARPGTargetNot::ExecuteTask(UBehaviorTreeComponent& O
 	AARPGEnermy* OwnerPawn = Cast<AARPGEnermy>(OwnerComp.GetAIOwner()->GetPawn());
 	if (!OwnerPawn)
 	{
-		_DEBUG("OwnerPawn Fail");
 		return EBTNodeResult::Failed;
 	}
 

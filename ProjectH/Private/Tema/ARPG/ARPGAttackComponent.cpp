@@ -20,7 +20,6 @@ void UARPGAttackComponent::Init(TArray<TSubclassOf<UAttackClass>> BP_Attacks)
 	OwnerUnit = Cast<AARPGUnitBase>(GetOwner());
 	if (OwnerUnit == nullptr)
 	{
-		_DEBUG("AttackComp Not OwnerUnit");
 		return;
 	}
 
@@ -50,8 +49,6 @@ UAttackClass* UARPGAttackComponent::GetAttackClass(int32 index)
 	{
 		return Attacks[index];
 	}
-
-	_DEBUG("Not Dynamic Delegate Error");
 	return nullptr;
 }
 

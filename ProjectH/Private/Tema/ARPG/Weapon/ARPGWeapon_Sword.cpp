@@ -40,12 +40,10 @@ void AARPGWeapon_Sword::SetWeaponCollision(bool bFlag)
 	if (bFlag)
 	{
 		WeaponCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-		//_DEBUG("Collision On");
 	}
 	else
 	{
 		WeaponCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		//_DEBUG("Collision Off");
 	}
 }
 
