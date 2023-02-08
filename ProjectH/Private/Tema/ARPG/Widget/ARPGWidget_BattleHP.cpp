@@ -27,6 +27,7 @@ void UARPGWidget_BattleHP::NativeConstruct()
 	}
 
 	BattleHP->SetPercent(1.f);
+	BattleHP_Prev->SetPercent(1.f);
 	OwnerUnit->OnDamage.AddUFunction(this, FName("SetHP"));
 	OwnerUnit->OnDamage.AddUFunction(this, FName("SetTextDamage"));
 	Damage->SetRenderOpacity(0.f);
@@ -37,12 +38,13 @@ void UARPGWidget_BattleHP::SetHP()
 	CurrentHPPercent = OwnerUnit->UnitState.HP / OwnerUnit->UnitState.NormallyHP;
 	BattleHP->SetPercent(CurrentHPPercent);
 
-	if (GetWorld()->GetTimerManager().IsTimerActive(PrevHPHandle))
+	/*if (!GetWorld()->GetTimerManager().IsTimerActive(PrevHPHandle))
 	{
-		GetWorld()->GetTimerManager().ClearTimer(PrevHPHandle);
-	}
+		GetWorld()->GetTimerManager().SetTimer(PrevHPHandle, this, &UARPGWidget_BattleHP::SetPrevHP, GetWorld()->GetDeltaSeconds(), true, 2.f);
+	}*/
 
-	GetWorld()->GetTimerManager().SetTimer(PrevHPHandle, this, &UARPGWidget_BattleHP::SetPrevHP, GetWorld()->GetDeltaSeconds(), true, 3.f);
+	// ClearTime을 하지않아도 어처피 SetTimer를 하면 새롭게 씌여진다.
+	GetWorld()->GetTimerManager().SetTimer(PrevHPHandle, this, &UARPGWidget_BattleHP::SetPrevHP, GetWorld()->GetDeltaSeconds(), true, 2.f);
 }
 
 void UARPGWidget_BattleHP::SetPrevHP()

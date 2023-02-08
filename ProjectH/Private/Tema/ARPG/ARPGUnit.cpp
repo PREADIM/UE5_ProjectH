@@ -122,6 +122,10 @@ void AARPGUnit::BeginPlay()
 	OnUsingAP.AddUFunction(this, FName("UsingAPFunction"));
 	OnEndAP.AddUFunction(this, FName("EndAPFunction"));
 
+	OnAttackAP.AddLambda([&]() {
+		bAttackAndHitAP = true;
+	});
+
 	OnWeaponDraw.BindLambda([&](){
 		WalkSpeed = BattleSpeed;
 		LMBReleased();
@@ -643,6 +647,7 @@ float AARPGUnit::TakeDamageCalculator(AARPGWeapon* DamageWeapon, FDamageEvent co
 			float APDMG = DamageCauser->CalculAPDamage(DamageWeapon->WeaponAP_DMG);
 			Damaged = Damaged - (Damaged * BlockingDEF); // BlockingDEF는 0.0~1.0으로 되어있다.
 			TakeDamageAP(APDMG);
+			OnAttackAP.Broadcast();
 			bBlockingHit = true;
 		}
 	}

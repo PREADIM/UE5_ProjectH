@@ -44,7 +44,7 @@ void AARPGUnitBase::Tick(float DeltaSeconds)
 
 	SetPhysicalSound();
 
-	if (!bZeroAP)
+	if (!bZeroAP && !bAttackAndHitAP)
 	{
 		if (!bUseAP)
 		{
@@ -64,15 +64,31 @@ void AARPGUnitBase::Tick(float DeltaSeconds)
 	}
 	else
 	{
-		if (CurrentWaitTime >= ZeroAPWaitTime)
+		if (bZeroAP)
 		{
-			bZeroAP = false;
-			CurrentWaitTime = 0.f;
+			if (CurrentWaitTime >= ZeroAPWaitTime)
+			{
+				bZeroAP = false;
+				CurrentWaitTime = 0.f;
+			}
+			else
+			{
+				CurrentWaitTime = CurrentWaitTime + DeltaSeconds;
+			}
 		}
-		else
+		else if (bAttackAndHitAP)
 		{
-			CurrentWaitTime = CurrentWaitTime + DeltaSeconds;
+			if (CurrentWaitTime >= AttackAPWaitTime)
+			{
+				bAttackAndHitAP = false;
+				CurrentWaitTime = 0.f;
+			}
+			else
+			{
+				CurrentWaitTime = CurrentWaitTime + DeltaSeconds;
+			}
 		}
+
 		
 	}
 

@@ -15,6 +15,24 @@ class PROJECTH_API UARPGWidget_State : public UARPGWidgetBase
 	GENERATED_BODY()
 
 public:
+	virtual void NativeConstruct() override;
+	virtual void Init(class AARPGUnitBase* Unit) override;
+
+
+public:
+	UFUNCTION()
+		void SetHP();
+	void SetPrevHP();
+
+	UFUNCTION()
+		void SetAP();
+	void SetPrevAP();
+	
+	// 평상시 AP출력
+	UFUNCTION(BlueprintCallable)
+		float RetAP();
+
+public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 		class UProgressBar* HP;
 
@@ -27,27 +45,20 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 		class UProgressBar* PrevAP;
 
-public:
-	virtual void NativeConstruct() override;
-	virtual void Init(class AARPGUnitBase* Unit) override;
 
-
-public:
-	UFUNCTION()
-		void SetHP();
-
-	void SetPrevHP();
-	
-	UFUNCTION(BlueprintCallable)
-		float RetAP();
-
-
-public:
+	// 데미지 출력을 위한 타이머
 	FTimerHandle DmgRenderTimer;
-	FTimerHandle PrevHPHandle;
 
-	// 이 두함수는 부드럽게 HP를 계산하기위한 변수.
+	// 부드러운 위젯 연출을 위한 타이머 핸들
+	FTimerHandle PrevHPHandle;
+	FTimerHandle PrevAPHandle;
+
+	// 이 두 변수는 부드럽게 HP를 계산하기위한 변수.
 	float CurrentHPPercent;
 	float LerpHPPercent;
+
+	// 이 두 변수는 부드럽게 AP를 계산하기위한 변수.
+	float CurrentAPPercent;
+	float LerpAPPercent;
 	
 };

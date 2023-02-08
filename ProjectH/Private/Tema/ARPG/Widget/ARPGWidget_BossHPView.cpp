@@ -29,6 +29,7 @@ void UARPGWidget_BossHPView::NativeConstruct()
 
 	// 어처피 데미지를 입는 수치는 같으므로 그냥 둘다 델리게이트에 실행
 	BossHP->SetPercent(1.f);
+	BossHP_Prev->SetPercent(1.f);
 	BossUnit->OnDamage.AddUFunction(this, FName("SetHP"));
 	BossUnit->OnDamage.AddUFunction(this, FName("SetTextDamage"));
 	DamageText->SetRenderOpacity(0.f);
@@ -40,17 +41,17 @@ void UARPGWidget_BossHPView::SetHP()
 	CurrentHPPercent = BossUnit->UnitState.HP / BossUnit->UnitState.NormallyHP;
 	BossHP->SetPercent(CurrentHPPercent);
 
-	if (GetWorld()->GetTimerManager().IsTimerActive(PrevHPHandle))
+	/*if (!GetWorld()->GetTimerManager().IsTimerActive(PrevHPHandle))
 	{
-		GetWorld()->GetTimerManager().ClearTimer(PrevHPHandle);
-	}
+		GetWorld()->GetTimerManager().SetTimer(PrevHPHandle, this, &UARPGWidget_BossHPView::SetPrevHP, GetWorld()->GetDeltaSeconds(), true, 1.f);
+	}*/
 
-	GetWorld()->GetTimerManager().SetTimer(PrevHPHandle, this, &UARPGWidget_BossHPView::SetPrevHP, GetWorld()->GetDeltaSeconds(), true, 3.f);
+	// ClearTime을 하지않아도 어처피 SetTimer를 하면 새롭게 씌여진다.
+	GetWorld()->GetTimerManager().SetTimer(PrevHPHandle, this, &UARPGWidget_BossHPView::SetPrevHP, GetWorld()->GetDeltaSeconds(), true, 1.f);
 }
 
 void UARPGWidget_BossHPView::SetPrevHP()
 {
-	_DEBUG("SetPrevHP");
 	LerpHPPercent = FMath::FInterpTo(LerpHPPercent, CurrentHPPercent, GetWorld()->GetDeltaSeconds(), 3.f);
 	BossHP_Prev->SetPercent(LerpHPPercent);
 

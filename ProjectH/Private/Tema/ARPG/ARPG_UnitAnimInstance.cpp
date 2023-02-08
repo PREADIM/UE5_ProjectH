@@ -170,6 +170,7 @@ void UARPG_UnitAnimInstance::AnimNotify_AttackStart()
 		OwnerUnit->bUseAP = true;
 		OwnerUnit->bUsingAP = false;
 		OwnerUnit->SetWeaponCollision(true);		
+		OwnerUnit->OnAttackAP.Broadcast(); // AP ±ð´Â ¿¬Ãâ
 	}
 }
 

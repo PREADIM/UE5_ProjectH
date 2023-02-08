@@ -173,7 +173,7 @@ bool AARPGEnermy_Mini::Hit(bool bBlockingHit)
 // 해당 클래스는 그런거 없는 기본 적이므로 그냥 배틀모드끝나면 가드중인거 풀기 정도.
 void AARPGEnermy_Mini::SetBattleMode(bool bFlag)
 {
-	if (bBattleMode && bFlag) // 이게 true면 이미 한번이상 실행 되었다는 뜻
+	if (bBattleMode == bFlag) // 이게 true면 이미 한번이상 실행 되었다는 뜻
 		return;
 
 	// bBattleMode 값을 바꿔주면서 동시에 강인도 초기화.
