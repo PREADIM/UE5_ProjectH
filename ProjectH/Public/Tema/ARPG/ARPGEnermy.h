@@ -97,9 +97,6 @@ public:
 		FOnAttack OnAttack;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		bool bBattleMode;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		bool bMoving; // 양 옆으로 움직이거나 백스텝을 함.
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
@@ -192,6 +189,10 @@ public:
 
 
 	//--------------------------------------------------
+	// 
+	// 배틀모드일시 SetBattleMode가 계속해서 실행되는 것을 방지하는 용도.
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		bool bBattleMode; 
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		bool bBlockMode; // 이건 애니메이션을 위한 변수.

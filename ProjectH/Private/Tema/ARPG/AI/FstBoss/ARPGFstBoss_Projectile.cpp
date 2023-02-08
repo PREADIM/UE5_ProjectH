@@ -57,12 +57,9 @@ void AARPGFstBoss_Projectile::OverlapProjectile(UPrimitiveComponent* OverlappedC
 
 	if (!OwnerUnit)
 	{
-		_DEBUG("Projectile Not OwnerUnit");
+		//_DEBUG("Projectile Not OwnerUnit");
 		return;
 	}
-
-
-	_DEBUG("Projectile");
 
 	if (OtherActor != OwnerUnit && OtherActor->GetOwner() != OwnerUnit->GetOwner())
 	{
@@ -80,6 +77,7 @@ void AARPGFstBoss_Projectile::OverlapProjectile(UPrimitiveComponent* OverlappedC
 					//_DEBUG("Projectile Hit");
 					// 일단 공격을 하고 블럭킹인지 죽었는지는 알아서 판단
 					Unit->TakeDamageCalculator(this, DamageEvent, OwnerUnit->GetController(), OwnerUnit);
+					PlayWeaponSound(EWeaponSFX::AttackHitSFX);
 				}
 
 				HitEndActor.AddUnique(OtherActor);

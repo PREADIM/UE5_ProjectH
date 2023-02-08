@@ -10,8 +10,11 @@
 /**
  * 
  */
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAttackFunc)
 DECLARE_MULTICAST_DELEGATE(FOnCppAttackFunc)
+
+struct FSoundAndAttenuation;
 
 USTRUCT(BlueprintType)
 struct FAttackEffect
@@ -40,13 +43,13 @@ public:
 
 	// 캐릭터 목소리
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TArray<class USoundBase*> Sounds;
+		TArray<FSoundAndAttenuation> Sounds;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		int32 SoundCnt;
 
 	// 공격 사운드 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TArray<class USoundBase*> AttackSounds;
+		TArray<FSoundAndAttenuation> AttackSounds;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		int32 AttackSoundCnt;
 

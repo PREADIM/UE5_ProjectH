@@ -3,16 +3,6 @@
 #include "Components/ProgressBar.h"
 #include "Tema/ARPG/ARPGUnitBase.h"
 
-void UARPGWidget_State::NativeConstruct()
-{
-	Super::NativeConstruct();
-
-	HP->PercentDelegate.BindUFunction(this, FName("RetHP"));
-	AP->PercentDelegate.BindUFunction(this, FName("RetAP"));
-	HP->SynchronizeProperties();
-	AP->SynchronizeProperties();
-}
-
 void UARPGWidget_State::Init(AARPGUnitBase* Unit)
 {
 	Super::Init(Unit);
@@ -20,14 +10,40 @@ void UARPGWidget_State::Init(AARPGUnitBase* Unit)
 	if (!OwnerUnit)
 		return;
 
+	LerpHPPercent = 1.f;
 }
 
-float UARPGWidget_State::RetHP()
+void UARPGWidget_State::NativeConstruct()
 {
-	if (!OwnerUnit)
-		return 0.0f;
+	Super::NativeConstruct();
 
-	return OwnerUnit->UnitState.HP / OwnerUnit->UnitState.NormallyHP;
+	OwnerUnit->OnDamage.AddUFunction(this, FName("SetHP"));
+	HP->SetPercent(1.f);
+	AP->PercentDelegate.BindUFunction(this, FName("RetAP"));
+	AP->SynchronizeProperties();
+}
+
+
+void UARPGWidget_State::SetHP()
+{
+	CurrentHPPercent = OwnerUnit->UnitState.HP / OwnerUnit->UnitState.NormallyHP;
+	HP->SetPercent(CurrentHPPercent);
+
+	if (GetWorld()->GetTimerManager().IsTimerActive(PrevHPHandle))
+	{
+		GetWorld()->GetTimerManager().ClearTimer(PrevHPHandle);
+	}
+
+	GetWorld()->GetTimerManager().SetTimer(PrevHPHandle, this, &UARPGWidget_State::SetPrevHP, GetWorld()->GetDeltaSeconds(), true, 4.f);
+}
+
+void UARPGWidget_State::SetPrevHP()
+{
+	LerpHPPercent = FMath::FInterpTo(LerpHPPercent, CurrentHPPercent, GetWorld()->GetDeltaSeconds(), 3.f);
+	PrevHP->SetPercent(LerpHPPercent);
+
+	if (LerpHPPercent <= CurrentHPPercent)
+		GetWorld()->GetTimerManager().ClearTimer(PrevHPHandle);
 }
 
 float UARPGWidget_State::RetAP()

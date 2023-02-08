@@ -13,7 +13,7 @@ AARPGUnitBase::AARPGUnitBase()
 
 	BattleHPComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("HPWidget"));
 	BattleHPComponent->SetupAttachment(RootComponent);
-	BattleHPComponent->SetDrawSize(FVector2D(150.f, 35.f));
+	BattleHPComponent->SetDrawSize(FVector2D(185.f, 55.f));
 	BattleHPComponent->SetWidgetSpace(EWidgetSpace::Screen);
 	BattleHPComponent->SetOwnerNoSee(true);
 
@@ -184,5 +184,6 @@ void AARPGUnitBase::SetPhysicalSound()
 	if (!PhysicalAllSounds.Find(PS))
 		return;
 
-	PhysicalSounds = PhysicalAllSounds[PS].PhysicalSounds; // 해당하는 표면의 사운드 가져오기
+	PhysicalSounds = PhysicalAllSounds[PS]; // 해당하는 표면의 사운드 가져오기
+
 }

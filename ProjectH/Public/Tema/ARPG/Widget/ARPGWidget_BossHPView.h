@@ -9,7 +9,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(Meta = (DisableNativeTick))
 class PROJECTH_API UARPGWidget_BossHPView : public UARPGWidgetBase
 {
 	GENERATED_BODY()
@@ -19,8 +19,10 @@ public:
 	virtual void NativeConstruct() override;
 
 public:
-	UFUNCTION(BlueprintCallable)
-		float RetHP();
+	UFUNCTION()
+		void SetHP();
+	void SetPrevHP();
+
 
 	UFUNCTION()
 		void SetTextDamage(float TakeDamage);
@@ -32,18 +34,24 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		class AARPGEnermy* BossUnit;
 
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 		class UProgressBar* BossHP;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+		class UProgressBar* BossHP_Prev;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 		class UTextBlock* DamageText;
 
 	FTimerHandle DmgRenderTimer;
+	FTimerHandle PrevHPHandle;
 
 	UPROPERTY(EditAnywhere)
 		float MaxDamageRenderDelay;
 	float PrevDamage;
 	float Delay;
-	
+
+	// 이 두함수는 부드럽게 HP를 계산하기위한 변수.
+	float CurrentHPPercent;
+	float LerpHPPercent;
 };

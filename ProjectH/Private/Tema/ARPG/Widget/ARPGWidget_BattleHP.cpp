@@ -12,6 +12,7 @@ void UARPGWidget_BattleHP::Init(AARPGUnitBase* Unit)
 
 	MaxDamageRenderDelay = 5.f;
 	MaxRenderDelay = 10.f; // 체력바 딜레이
+	LerpHPPercent = 1.f;
 	Delay = 0.f;
 }
 
@@ -25,19 +26,32 @@ void UARPGWidget_BattleHP::NativeConstruct()
 		return;
 	}
 
-	BattleHP->PercentDelegate.BindUFunction(this, FName("RetHP"));
-	BattleHP->SynchronizeProperties();
-
+	BattleHP->SetPercent(1.f);
+	OwnerUnit->OnDamage.AddUFunction(this, FName("SetHP"));
 	OwnerUnit->OnDamage.AddUFunction(this, FName("SetTextDamage"));
 	Damage->SetRenderOpacity(0.f);
 }
 
-float UARPGWidget_BattleHP::RetHP()
+void UARPGWidget_BattleHP::SetHP()
 {
-	if (!OwnerUnit)
-		return 0.f;
+	CurrentHPPercent = OwnerUnit->UnitState.HP / OwnerUnit->UnitState.NormallyHP;
+	BattleHP->SetPercent(CurrentHPPercent);
 
-	return OwnerUnit->UnitState.HP / OwnerUnit->UnitState.NormallyHP;
+	if (GetWorld()->GetTimerManager().IsTimerActive(PrevHPHandle))
+	{
+		GetWorld()->GetTimerManager().ClearTimer(PrevHPHandle);
+	}
+
+	GetWorld()->GetTimerManager().SetTimer(PrevHPHandle, this, &UARPGWidget_BattleHP::SetPrevHP, GetWorld()->GetDeltaSeconds(), true, 3.f);
+}
+
+void UARPGWidget_BattleHP::SetPrevHP()
+{
+	LerpHPPercent = FMath::FInterpTo(LerpHPPercent, CurrentHPPercent, GetWorld()->GetDeltaSeconds(), 3.f);
+	BattleHP_Prev->SetPercent(LerpHPPercent);
+
+	if (LerpHPPercent <= CurrentHPPercent)
+		GetWorld()->GetTimerManager().ClearTimer(PrevHPHandle);
 }
 
 void UARPGWidget_BattleHP::SetTextDamage(float TakeDamage)

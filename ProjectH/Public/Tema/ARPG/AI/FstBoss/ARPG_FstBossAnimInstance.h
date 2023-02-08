@@ -5,6 +5,7 @@
 #include "ProjectH.h"
 #include "Animation/AnimInstance.h"
 #include "Tema/ARPG/AttackClass.h"
+#include "PhysicalSoundStruct.h"
 #include "ARPG_FstBossAnimInstance.generated.h"
 
 /**
@@ -150,15 +151,15 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		TArray<FAttackEffect> CurrentEffects;
 	UPROPERTY(VisibleAnywhere)
-		TArray<class USoundBase*> CurrentSounds;
+		TArray<FSoundAndAttenuation> CurrentSounds;
 	UPROPERTY(VisibleAnywhere)
-		TArray<class USoundBase*> CurrentAttackSounds;
+		TArray<FSoundAndAttenuation> CurrentAttackSounds;
 
 	//----------------------------------
 	//SFX
 
 	UPROPERTY(EditAnywhere)
-		TMap<ESFXMode_FstBoss, class USoundBase*> SFXSounds;
+		TMap<ESFXMode_FstBoss, FSoundAndAttenuation> SFXSounds;
 
 	//----------------------------------
 

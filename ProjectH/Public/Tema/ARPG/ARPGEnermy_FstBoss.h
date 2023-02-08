@@ -20,6 +20,9 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UPROPERTY(EditAnywhere)
+		class USoundBase* BossMusic; // 보스급은 사운드를 하나이상 가지고 있다.
+
 public:
 	AARPGEnermy_FstBoss();
 	virtual void Tick(float DeltaSeconds) override;

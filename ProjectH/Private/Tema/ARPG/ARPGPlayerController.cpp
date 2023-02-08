@@ -9,7 +9,7 @@
 
 AARPGPlayerController::AARPGPlayerController()
 {
-
+	AudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioComponent"));
 }
 
 void AARPGPlayerController::OnPossess(APawn* InPawn)
@@ -20,7 +20,7 @@ void AARPGPlayerController::OnPossess(APawn* InPawn)
 	if (OwnerUnit == nullptr)
 	{
 		return;
-		_DEBUG("Not OwnerUnit");
+		//_DEBUG("Not OwnerUnit");
 	}
 
 	GM = Cast<AARPGGameMode>(GetWorld()->GetAuthGameMode());
@@ -55,7 +55,7 @@ void AARPGPlayerController::BeginPlay()
 		LockOnUI = CreateWidget<UUserWidget>(GetWorld(), BP_LockOnUI);
 	}
 
-
+	SetPlaySound(NormalSound);
 }
 
 void AARPGPlayerController::SetupInputComponent()
@@ -139,4 +139,23 @@ bool AARPGPlayerController::IsBossHPWidget()
 	}
 	else
 		return false;
+}
+
+void AARPGPlayerController::SetPlaySound(USoundBase* Sound)
+{
+	if (!Sound || !AudioComponent)
+		return;
+
+	AudioComponent->SetSound(Sound);
+	AudioComponent->Play();
+	PrevSound = NormalSound;
+}
+
+void AARPGPlayerController::StopSound()
+{
+	if (!AudioComponent)
+		return;
+
+	if (AudioComponent->IsPlaying())
+		AudioComponent->Stop();
 }

@@ -5,6 +5,7 @@
 #include "ProjectH.h"
 #include "Animation/AnimInstance.h"
 #include "Tema/ARPG/ARPG_TPSAnimInstance.h"
+#include "PhysicalSoundStruct.h"
 #include "ARPG_UnitAnimInstance.generated.h"
 
 
@@ -129,7 +130,7 @@ public:
 	//SFX
 
 	UPROPERTY(EditAnywhere)
-		TMap<ESFXMode, class USoundBase*> SFXSounds;
+		TMap<ESFXMode, FSoundAndAttenuation> SFXSounds;
 
 	//----------------------------------
 	// ¸ùÅ¸ÁÖ

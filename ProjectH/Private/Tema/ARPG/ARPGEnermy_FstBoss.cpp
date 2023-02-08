@@ -156,13 +156,21 @@ bool AARPGEnermy_FstBoss::Hit(bool bBlockingHit)
 // 배틀모드가 실행 되었을때 실행되는 함수. true면 배틀 시작시 버프라던가 무언가 실행 가능.
 void AARPGEnermy_FstBoss::SetBattleMode(bool bFlag)
 {
-	Super::SetBattleMode(bFlag);
+	if (bBattleMode && bFlag) // 이게 true면 이미 한번이상 실행 되었다는 뜻
+		return;
 
-	// 보스전용 아래에 보스 체력을 나타내는 UI 생성
+	// bBattleMode 값을 바꿔주면서 동시에 강인도 초기화.
+	Super::SetBattleMode(bFlag); 
+	
 	if (PlayerUnit)
 	{
+		// 보스전용 아래에 보스 체력을 나타내는 UI 생성
 		if(!PlayerUnit->IsBossHPWidget())
 			PlayerUnit->SetBossHPWidget(bFlag, this);
+
+		// 사운드 실행
+		if (BossMusic)
+			PlayerUnit->PlaySound(BossMusic);
 	}
 
 }

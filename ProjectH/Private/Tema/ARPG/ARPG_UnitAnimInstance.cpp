@@ -69,13 +69,13 @@ void UARPG_UnitAnimInstance::Hit(EUnitMode UnitMode)
 	case EUnitMode::BattleMode :
 		Montage_Play(HitMontage);	
 		if (SFXSounds.Find(ESFXMode::HitSound))
-			UGameplayStatics::PlaySoundAtLocation(GetWorld(), SFXSounds[ESFXMode::HitSound], OwnerUnit->GetActorLocation());
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), SFXSounds[ESFXMode::HitSound].Sound, OwnerUnit->GetActorLocation(), 1.f, 1.f, 1.f, SFXSounds[ESFXMode::HitSound].Attenuation);
 		
 		break;
 	case EUnitMode::BlockingMode :
 		Montage_Play(BlockingHitMontage);
 		if (SFXSounds.Find(ESFXMode::BlockingHitSound))
-			UGameplayStatics::PlaySoundAtLocation(GetWorld(), SFXSounds[ESFXMode::BlockingHitSound], OwnerUnit->GetActorLocation());	
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), SFXSounds[ESFXMode::BlockingHitSound].Sound, OwnerUnit->GetActorLocation(), 1.f, 1.f, 1.f, SFXSounds[ESFXMode::BlockingHitSound].Attenuation);
 		break;
 	}
 
@@ -86,7 +86,7 @@ void UARPG_UnitAnimInstance::Death()
 {
 	bDeath = true;
 	if (SFXSounds.Find(ESFXMode::Death))
-		UGameplayStatics::PlaySoundAtLocation(GetWorld(), SFXSounds[ESFXMode::Death], OwnerUnit->GetActorLocation());
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), SFXSounds[ESFXMode::Death].Sound, OwnerUnit->GetActorLocation(), 1.f, 1.f, 1.f, SFXSounds[ESFXMode::Death].Attenuation);
 }
 
 void UARPG_UnitAnimInstance::WeaponOnOff(bool bFlag)
@@ -137,7 +137,11 @@ void UARPG_UnitAnimInstance::AnimNotify_BattleMode()
 		bIsSheathed = false;
 		OwnerUnit->OnWeaponDraw.Execute();
 		if(SFXSounds.Find(ESFXMode::DrawSword))
-			UGameplayStatics::PlaySoundAtLocation(GetWorld(), SFXSounds[ESFXMode::DrawSword], OwnerUnit->GetActorLocation());	
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), SFXSounds[ESFXMode::DrawSword].Sound, OwnerUnit->GetActorLocation(), 1.f, 1.f, 1.f, SFXSounds[ESFXMode::DrawSword].Attenuation);
+		else
+		{
+			_DEBUG("Not");
+		}
 	}
 }
 
@@ -152,7 +156,7 @@ void UARPG_UnitAnimInstance::AnimNotify_NormalMode()
 		bIsSheathed = true;
 		OwnerUnit->OnWeaponStow.Execute();
 		if (SFXSounds.Find(ESFXMode::StowSword))
-			UGameplayStatics::PlaySoundAtLocation(GetWorld(), SFXSounds[ESFXMode::StowSword], OwnerUnit->GetActorLocation());
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), SFXSounds[ESFXMode::StowSword].Sound, OwnerUnit->GetActorLocation(), 1.f, 1.f, 1.f, SFXSounds[ESFXMode::StowSword].Attenuation);
 	
 	}
 }
@@ -280,12 +284,12 @@ void UARPG_UnitAnimInstance::AnimNotify_Death()
 
 void UARPG_UnitAnimInstance::FootStepPlaySound(int32 SoundNum)
 {
-	UGameplayStatics::PlaySoundAtLocation(GetWorld(), OwnerUnit->PhysicalSounds[SoundNum], OwnerUnit->GetMesh()->GetSocketLocation(FName("Root")));
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), OwnerUnit->PhysicalSounds.Sounds[SoundNum], OwnerUnit->GetMesh()->GetSocketLocation(FName("Root")), 1.f, 1.f, 1.f, OwnerUnit->PhysicalSounds.Attenuation);
 }
 
 void UARPG_UnitAnimInstance::AnimNotify_WalkSound()
 {
-	if (!OwnerUnit->PhysicalSounds.IsValidIndex(0))
+	if (!OwnerUnit->PhysicalSounds.Sounds.IsValidIndex(0))
 		return;
 
 	FootStepPlaySound(0);
@@ -293,7 +297,7 @@ void UARPG_UnitAnimInstance::AnimNotify_WalkSound()
 
 void UARPG_UnitAnimInstance::AnimNotify_SprintSound()
 {
-	if (!OwnerUnit->PhysicalSounds.IsValidIndex(1))
+	if (!OwnerUnit->PhysicalSounds.Sounds.IsValidIndex(1))
 		return;
 
 	FootStepPlaySound(1);
@@ -302,7 +306,7 @@ void UARPG_UnitAnimInstance::AnimNotify_SprintSound()
 
 void UARPG_UnitAnimInstance::AnimNotify_JumpSound()
 {
-	if (!OwnerUnit->PhysicalSounds.IsValidIndex(2))
+	if (!OwnerUnit->PhysicalSounds.Sounds.IsValidIndex(2))
 		return;
 
 	FootStepPlaySound(2);

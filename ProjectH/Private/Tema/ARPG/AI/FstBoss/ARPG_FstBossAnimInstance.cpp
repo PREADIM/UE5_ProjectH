@@ -57,7 +57,7 @@ void UARPG_FstBossAnimInstance::PlayHitMontage()
 	HittedReset();
 	Montage_Play(HitMontage);
 	if (SFXSounds.Find(ESFXMode_FstBoss::HitSound))
-		UGameplayStatics::PlaySoundAtLocation(GetWorld(), SFXSounds[ESFXMode_FstBoss::HitSound], FstBoss->GetActorLocation());
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), SFXSounds[ESFXMode_FstBoss::HitSound].Sound, FstBoss->GetActorLocation(), 1.f, 1.f, 1.f, SFXSounds[ESFXMode_FstBoss::HitSound].Attenuation);
 }
 
 void UARPG_FstBossAnimInstance::PlayDeadMontage()
@@ -66,7 +66,7 @@ void UARPG_FstBossAnimInstance::PlayDeadMontage()
 	bPlayedSound = false;
 	HittedReset();
 	if (SFXSounds.Find(ESFXMode_FstBoss::Death))
-		UGameplayStatics::PlaySoundAtLocation(GetWorld(), SFXSounds[ESFXMode_FstBoss::Death], FstBoss->GetActorLocation());
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), SFXSounds[ESFXMode_FstBoss::Death].Sound, FstBoss->GetActorLocation(), 1.f, 1.f, 1.f, SFXSounds[ESFXMode_FstBoss::Death].Attenuation);
 }
 
 void UARPG_FstBossAnimInstance::PlayParringHitMontage()
@@ -149,20 +149,14 @@ void UARPG_FstBossAnimInstance::AnimNotify_PlaySound()
 	}
 
 	// 사운드 실행 이미 실행되고있는 사운드가 있으면 실행하지 않도록 하자.
-	UGameplayStatics::PlaySoundAtLocation(GetWorld(), CurrentSounds[CurrentSoundIndex], FstBoss->GetActorLocation(), FstBoss->GetActorRotation());
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), CurrentSounds[CurrentSoundIndex].Sound, FstBoss->GetActorLocation(), FstBoss->GetActorRotation(), 1.f, 1.f, 1.f, CurrentSounds[CurrentSoundIndex].Attenuation);
 
 	bPlayedSound = true;
-	GetWorld()->GetTimerManager().SetTimer(SoundHandle, this, &UARPG_FstBossAnimInstance::PlayedSoundFunc, 3.f, false);
+	GetWorld()->GetTimerManager().SetTimer(SoundHandle, this, &UARPG_FstBossAnimInstance::PlayedSoundFunc, 4.f, false);
 
 	++CurrentSoundIndex;
 }
 
-
-void UARPG_FstBossAnimInstance::PlayedSoundFunc()
-{
-	GetWorld()->GetTimerManager().ClearTimer(SoundHandle);
-	bPlayedSound = false;
-}
 
 
 void UARPG_FstBossAnimInstance::AnimNotify_PlayAttackSound()
@@ -171,8 +165,15 @@ void UARPG_FstBossAnimInstance::AnimNotify_PlayAttackSound()
 		return;
 
 	// 사운드 실행
-	UGameplayStatics::PlaySoundAtLocation(GetWorld(), CurrentAttackSounds[CurrentAttackSoundIndex], FstBoss->GetActorLocation(), FstBoss->GetActorRotation());
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), CurrentAttackSounds[CurrentAttackSoundIndex].Sound, FstBoss->GetActorLocation(), FstBoss->GetActorRotation(), 1.f, 1.f, 1.f, CurrentAttackSounds[CurrentAttackSoundIndex].Attenuation);
 	++CurrentAttackSoundIndex;
+}
+
+
+void UARPG_FstBossAnimInstance::PlayedSoundFunc()
+{
+	GetWorld()->GetTimerManager().ClearTimer(SoundHandle);
+	bPlayedSound = false;
 }
 
 
@@ -321,12 +322,12 @@ void UARPG_FstBossAnimInstance::AnimNotify_FstBoss_E_Projectile()
 
 void UARPG_FstBossAnimInstance::FootStepPlaySound(int32 SoundNum)
 {
-	UGameplayStatics::PlaySoundAtLocation(GetWorld(), FstBoss->PhysicalSounds[SoundNum], FstBoss->GetMesh()->GetSocketLocation(FName("Root")));
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), FstBoss->PhysicalSounds.Sounds[SoundNum], FstBoss->GetMesh()->GetSocketLocation(FName("Root")), 1.f, 1.f, 1.f, FstBoss->PhysicalSounds.Attenuation);
 }
 
 void UARPG_FstBossAnimInstance::AnimNotify_WalkSound()
 {
-	if (!FstBoss->PhysicalSounds.IsValidIndex(0))
+	if (!FstBoss->PhysicalSounds.Sounds.IsValidIndex(0))
 		return;
 
 	FootStepPlaySound(0);
@@ -334,7 +335,7 @@ void UARPG_FstBossAnimInstance::AnimNotify_WalkSound()
 
 void UARPG_FstBossAnimInstance::AnimNotify_SprintSound()
 {
-	if (!FstBoss->PhysicalSounds.IsValidIndex(1))
+	if (!FstBoss->PhysicalSounds.Sounds.IsValidIndex(1))
 		return;
 
 	FootStepPlaySound(1);
@@ -343,7 +344,7 @@ void UARPG_FstBossAnimInstance::AnimNotify_SprintSound()
 
 void UARPG_FstBossAnimInstance::AnimNotify_JumpSound()
 {
-	if (!FstBoss->PhysicalSounds.IsValidIndex(2))
+	if (!FstBoss->PhysicalSounds.Sounds.IsValidIndex(2))
 		return;
 
 	FootStepPlaySound(2);

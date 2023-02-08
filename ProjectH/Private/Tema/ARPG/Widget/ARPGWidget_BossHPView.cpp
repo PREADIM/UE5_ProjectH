@@ -10,6 +10,7 @@ void UARPGWidget_BossHPView::Init(AARPGUnitBase* Unit)
 {
 	Super::Init(Unit);
 	MaxDamageRenderDelay = 5.f;
+	LerpHPPercent = 1.f;
 }
 
 void UARPGWidget_BossHPView::NativeConstruct()
@@ -22,22 +23,41 @@ void UARPGWidget_BossHPView::NativeConstruct()
 		return;
 	}
 
-	// 이게 안되면 과연 블프로 만든것을 넣었는지 의심해보자.
-	BossHP->PercentDelegate.BindUFunction(this, FName("RetHP"));
-	BossHP->SynchronizeProperties();
+	// 이게 안되면 과연 BP에서 위젯 블프로 만든것을 넣었는지 의심해보자.
+	/*BossHP->PercentDelegate.BindUFunction(this, FName("RetHP"));
+	BossHP->SynchronizeProperties();*/
 
+	// 어처피 데미지를 입는 수치는 같으므로 그냥 둘다 델리게이트에 실행
+	BossHP->SetPercent(1.f);
+	BossUnit->OnDamage.AddUFunction(this, FName("SetHP"));
 	BossUnit->OnDamage.AddUFunction(this, FName("SetTextDamage"));
-	_DEBUG("AddUFUNCTION");
 	DamageText->SetRenderOpacity(0.f);
 }
 
-float UARPGWidget_BossHPView::RetHP()
-{
-	if (!BossUnit)
-		return 0.f;
 
-	return BossUnit->UnitState.HP / BossUnit->UnitState.NormallyHP;
+void UARPGWidget_BossHPView::SetHP()
+{
+	CurrentHPPercent = BossUnit->UnitState.HP / BossUnit->UnitState.NormallyHP;
+	BossHP->SetPercent(CurrentHPPercent);
+
+	if (GetWorld()->GetTimerManager().IsTimerActive(PrevHPHandle))
+	{
+		GetWorld()->GetTimerManager().ClearTimer(PrevHPHandle);
+	}
+
+	GetWorld()->GetTimerManager().SetTimer(PrevHPHandle, this, &UARPGWidget_BossHPView::SetPrevHP, GetWorld()->GetDeltaSeconds(), true, 3.f);
 }
+
+void UARPGWidget_BossHPView::SetPrevHP()
+{
+	_DEBUG("SetPrevHP");
+	LerpHPPercent = FMath::FInterpTo(LerpHPPercent, CurrentHPPercent, GetWorld()->GetDeltaSeconds(), 3.f);
+	BossHP_Prev->SetPercent(LerpHPPercent);
+
+	if(LerpHPPercent <= CurrentHPPercent)
+		GetWorld()->GetTimerManager().ClearTimer(PrevHPHandle);
+}
+
 
 void UARPGWidget_BossHPView::SetTextDamage(float TakeDamage)
 {

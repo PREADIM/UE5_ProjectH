@@ -174,11 +174,11 @@ void AARPGEnermy::SetState()
 
 void AARPGEnermy::SetBattleMode(bool bFlag)
 {
-	if (bBattleMode == bFlag)
-		return;
-
-	UnitState.ResetPoise();
 	bBattleMode = bFlag;
+
+	if(!bFlag)
+		UnitState.ResetPoise();
+	
 }
 
 void AARPGEnermy::SetEnermyMoveMode(EEnermyMoveMode Mode)

@@ -88,8 +88,10 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TMap<TEnumAsByte<EPhysicalSurface>, FPhysicalSoundStruct> PhysicalAllSounds;
+	/*UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		TArray<class USoundBase*> PhysicalSounds;*/
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		TArray<class USoundBase*> PhysicalSounds;
+		FPhysicalSoundStruct PhysicalSounds;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float SurfaceDistance; // ¶¥³¡ÀÇ °Å¸®
 

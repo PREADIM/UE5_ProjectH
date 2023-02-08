@@ -15,6 +15,16 @@ class PROJECTH_API AARPGPlayerController : public APlayerController
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+		class UAudioComponent* AudioComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class USoundBase* NormalSound;
+
+	UPROPERTY(VisibleAnywhere)
+		class USoundBase* PrevSound;
+
+public:
 	AARPGPlayerController();
 	virtual void OnPossess(APawn* InPawn) override;
 	virtual void OnUnPossess() override;
@@ -30,6 +40,9 @@ public:
 
 	void SetBossHPWidget(bool bFlag, class AARPGEnermy* Boss);
 	bool IsBossHPWidget();
+
+	void SetPlaySound(class USoundBase* Sound);
+	void StopSound();
 
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)

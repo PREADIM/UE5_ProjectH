@@ -2,6 +2,20 @@
 #include "ProjectH.h"
 #include "PhysicalSoundStruct.generated.h"
 
+
+USTRUCT(BlueprintType)
+struct FSoundAndAttenuation
+{
+	GENERATED_USTRUCT_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class USoundBase* Sound;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class USoundAttenuation* Attenuation;
+};
+
+
 USTRUCT(BlueprintType)
 struct FPhysicalSoundStruct
 {
@@ -9,7 +23,9 @@ struct FPhysicalSoundStruct
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TArray<class USoundBase*> PhysicalSounds;
+		TArray<class USoundBase*> Sounds;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class USoundAttenuation* Attenuation;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TEnumAsByte<EPhysicalSurface> SurfaceName;
 };

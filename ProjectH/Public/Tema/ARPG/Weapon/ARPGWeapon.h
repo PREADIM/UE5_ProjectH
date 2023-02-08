@@ -4,12 +4,14 @@
 
 #include "ProjectH.h"
 #include "GameFramework/Actor.h"
+#include "PhysicalSoundStruct.h"
 #include "ARPGWeapon.generated.h"
 
 
 UENUM(BlueprintType)
 enum class EWeaponSFX : uint8
 {
+	Default UMETA(DisplayName = "Default"),
 	DropSFX UMETA(DisplayName = "DropSFX"),
 	PhysicsOverlapSFX UMETA(DisplayName = "PhysicsOverlapSFX"),
 	SwingSFX UMETA(DisplayName = "SwingSFX"),
@@ -92,7 +94,7 @@ public:
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SFX")
-		TMap<EWeaponSFX, class USoundBase*> WeaponSFXs;
+		TMap<EWeaponSFX, FSoundAndAttenuation> WeaponSFXs;
 	
 
 	//-------------------------------------------

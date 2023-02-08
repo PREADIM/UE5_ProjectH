@@ -419,6 +419,9 @@ void AARPGUnit::Sprint()
 	if (bAttacking)
 		return;
 
+	if (!FPSMeshAnimInstance->IsMoving)
+		return;
+
 	if(CanUseAP())
 		bSprint = true;
 }
@@ -812,7 +815,11 @@ void AARPGUnit::LockOnAddViewport(bool bFlag)
 	OwnerController->LockOnAddViewport(bFlag);
 }
 
-
+void AARPGUnit::PlaySound(class USoundBase* Sound)
+{
+	if (OwnerController)
+		OwnerController->SetPlaySound(Sound);
+}
 
 
 

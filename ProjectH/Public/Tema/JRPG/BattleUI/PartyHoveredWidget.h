@@ -9,7 +9,8 @@
 /**
  * 
  */
-UCLASS()
+//UCLASS() 일단 아래로 해본다.
+UCLASS(Meta = (DisableNativeTick))
 class PROJECTH_API UPartyHoveredWidget : public UUserWidget
 {
 	GENERATED_BODY()

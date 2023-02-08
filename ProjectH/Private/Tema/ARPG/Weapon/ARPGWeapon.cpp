@@ -16,7 +16,7 @@ AARPGWeapon::AARPGWeapon()
 void AARPGWeapon::PlayWeaponSound(EWeaponSFX WeaponSFX)
 {
 	if(WeaponSFXs.Find(WeaponSFX))
-		UGameplayStatics::PlaySoundAtLocation(GetWorld(), WeaponSFXs[WeaponSFX], GetActorLocation());
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), WeaponSFXs[WeaponSFX].Sound, GetActorLocation(), 1.f, 1.f, 1.f, WeaponSFXs[WeaponSFX].Attenuation);
 }
 
 // Called when the game starts or when spawned

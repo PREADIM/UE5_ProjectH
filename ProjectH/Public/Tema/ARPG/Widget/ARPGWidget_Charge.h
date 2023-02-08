@@ -9,7 +9,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(Meta = (DisableNativeTick))
 class PROJECTH_API UARPGWidget_Charge : public UARPGWidgetBase
 {
 	GENERATED_BODY()

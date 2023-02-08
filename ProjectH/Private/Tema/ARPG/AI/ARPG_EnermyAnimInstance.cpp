@@ -58,12 +58,12 @@ void UARPG_EnermyAnimInstance::PlayHitMontage(EEnermy_Mini_Mode UnitMode)
 	case EEnermy_Mini_Mode::BattleMode :
 		Montage_Play(HitMontage);
 		if (SFXSounds.Find(ESFXMode_Enermy_Mini::HitSound))
-			UGameplayStatics::PlaySoundAtLocation(GetWorld(), SFXSounds[ESFXMode_Enermy_Mini::HitSound], OwnerUnit->GetActorLocation());
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), SFXSounds[ESFXMode_Enermy_Mini::HitSound].Sound, OwnerUnit->GetActorLocation(), 1.f, 1.f, 1.f, SFXSounds[ESFXMode_Enermy_Mini::HitSound].Attenuation);
 		break;
 	case EEnermy_Mini_Mode::BlockingMode :
 		Montage_Play(BlockingHitMontage);
 		if (SFXSounds.Find(ESFXMode_Enermy_Mini::BlockingHitSound))
-			UGameplayStatics::PlaySoundAtLocation(GetWorld(), SFXSounds[ESFXMode_Enermy_Mini::BlockingHitSound], OwnerUnit->GetActorLocation());
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), SFXSounds[ESFXMode_Enermy_Mini::BlockingHitSound].Sound, OwnerUnit->GetActorLocation(), 1.f, 1.f, 1.f, SFXSounds[ESFXMode_Enermy_Mini::BlockingHitSound].Attenuation);
 		break;
 	}
 }
@@ -72,7 +72,7 @@ void UARPG_EnermyAnimInstance::PlayDeadMontage()
 {
 	bDeath = true;
 	if (SFXSounds.Find(ESFXMode_Enermy_Mini::Death))
-		UGameplayStatics::PlaySoundAtLocation(GetWorld(), SFXSounds[ESFXMode_Enermy_Mini::Death], OwnerUnit->GetActorLocation());
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), SFXSounds[ESFXMode_Enermy_Mini::Death].Sound, OwnerUnit->GetActorLocation(), 1.f, 1.f, 1.f, SFXSounds[ESFXMode_Enermy_Mini::Death].Attenuation);
 }
 
 void UARPG_EnermyAnimInstance::PlayParringHitMontage()
@@ -113,7 +113,7 @@ void UARPG_EnermyAnimInstance::AnimNotify_PlaySound()
 		return;
 
 	// 사운드 실행
-	UGameplayStatics::PlaySoundAtLocation(GetWorld(), CurrentSounds[CurrentSoundIndex], OwnerUnit->GetActorLocation(), OwnerUnit->GetActorRotation());
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), CurrentSounds[CurrentSoundIndex].Sound, OwnerUnit->GetActorLocation(), OwnerUnit->GetActorRotation(), 1.f, 1.f, 1.f, CurrentSounds[CurrentSoundIndex].Attenuation);
 
 	bPlayedSound = true;
 	GetWorld()->GetTimerManager().SetTimer(SoundHandle, this, &UARPG_EnermyAnimInstance::PlayedSoundFunc, 5.f, false);
@@ -134,7 +134,7 @@ void UARPG_EnermyAnimInstance::AnimNotify_PlayAttackSound()
 		return;
 
 	// 사운드 실행
-	UGameplayStatics::PlaySoundAtLocation(GetWorld(), CurrentAttackSounds[CurrentAttackSoundIndex], OwnerUnit->GetActorLocation(), OwnerUnit->GetActorRotation());
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), CurrentAttackSounds[CurrentAttackSoundIndex].Sound, OwnerUnit->GetActorLocation(), OwnerUnit->GetActorRotation(), 1.f, 1.f, 1.f, CurrentAttackSounds[CurrentAttackSoundIndex].Attenuation);
 	++CurrentAttackSoundIndex;
 }
 
@@ -202,12 +202,12 @@ void UARPG_EnermyAnimInstance::AnimNotify_CanLockOn()
 
 void UARPG_EnermyAnimInstance::FootStepPlaySound(int32 SoundNum)
 {
-	UGameplayStatics::PlaySoundAtLocation(GetWorld(), OwnerUnit->PhysicalSounds[SoundNum], OwnerUnit->GetMesh()->GetSocketLocation(FName("Root")));
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), OwnerUnit->PhysicalSounds.Sounds[SoundNum], OwnerUnit->GetMesh()->GetSocketLocation(FName("Root")), 1.f, 1.f, 1.f, OwnerUnit->PhysicalSounds.Attenuation);
 }
 
 void UARPG_EnermyAnimInstance::AnimNotify_WalkSound()
 {
-	if (!OwnerUnit->PhysicalSounds.IsValidIndex(0))
+	if (!OwnerUnit->PhysicalSounds.Sounds.IsValidIndex(0))
 		return;
 
 	FootStepPlaySound(0);
@@ -215,7 +215,7 @@ void UARPG_EnermyAnimInstance::AnimNotify_WalkSound()
 
 void UARPG_EnermyAnimInstance::AnimNotify_SprintSound()
 {
-	if (!OwnerUnit->PhysicalSounds.IsValidIndex(1))
+	if (!OwnerUnit->PhysicalSounds.Sounds.IsValidIndex(1))
 		return;
 
 	FootStepPlaySound(1);
@@ -224,7 +224,7 @@ void UARPG_EnermyAnimInstance::AnimNotify_SprintSound()
 
 void UARPG_EnermyAnimInstance::AnimNotify_JumpSound()
 {
-	if (!OwnerUnit->PhysicalSounds.IsValidIndex(2))
+	if (!OwnerUnit->PhysicalSounds.Sounds.IsValidIndex(2))
 		return;
 
 	FootStepPlaySound(2);

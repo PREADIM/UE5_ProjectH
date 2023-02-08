@@ -49,6 +49,10 @@ public:
 	//공격이 끝났을때 반드시 호출되어야할 함수들을 모아둔 것.
 	virtual void EndAttack() override;
 
+public:
+	// 음악 재생
+	void PlaySound(class USoundBase* Sound);
+
 	void ChargeAttackStart();
 	void ChargeAttackEnd();
 	void SetBossHPWidget(bool bFlag, class AARPGEnermy* Boss);
