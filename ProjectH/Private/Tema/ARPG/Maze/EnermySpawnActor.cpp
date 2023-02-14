@@ -11,6 +11,9 @@ AEnermySpawnActor::AEnermySpawnActor()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
+	Collision = CreateDefaultSubobject<class USphereComponent>(TEXT("Collision"));
+	RootComponent = Collision;
+
 	Collision->OnComponentBeginOverlap.AddDynamic(this, &AEnermySpawnActor::OverlapUnit);
 	Collision->OnComponentEndOverlap.AddDynamic(this, &AEnermySpawnActor::OverlapEndUnit);
 }

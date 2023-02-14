@@ -4,6 +4,7 @@
 #include "Special/EllerMaze.h"
 #include "Special/MazeBase.h"
 #include "Components/InstancedStaticMeshComponent.h"
+#include "Tema/ARPG/Maze/EnermySpawnActor.h"
 
 // Sets default values
 AEllerMaze::AEllerMaze()
@@ -309,13 +310,13 @@ void AEllerMaze::SpawnEnermy()
 			Rot = FRotator(0.f, 0.f, 0.f);
 			break;
 		case MazeDirection::South :
-			Rot = FRotator(0.f, 0.f, 180.f);
+			Rot = FRotator(0.f, 180.f, 0.f);
 			break;
 		case MazeDirection::West :
-			Rot = FRotator(0.f, 0.f, -90.f);
+			Rot = FRotator(0.f, -90.f, 0.f);
 			break;
 		case MazeDirection::East :
-			Rot = FRotator(0.f, 0.f, 90.f);
+			Rot = FRotator(0.f, 90.f, 0.f);
 			break;
 		default:
 			Rot = FRotator(0.f, 0.f, 0.f);

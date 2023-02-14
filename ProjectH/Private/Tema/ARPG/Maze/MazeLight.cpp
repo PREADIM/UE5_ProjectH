@@ -44,8 +44,9 @@ void AMazeLight::OverlapCharacter(UPrimitiveComponent* OverlappedComp, AActor* O
 	if (Unit)
 	{
 		VisibleLight(true);
+		//_DEBUG("Overlap Light");
 	}
-	//_DEBUG("Overlap Light");
+
 }
 
 void AMazeLight::OverlapEndCharacter(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
@@ -54,8 +55,9 @@ void AMazeLight::OverlapEndCharacter(UPrimitiveComponent* OverlappedComp, AActor
 	if (Unit)
 	{
 		VisibleLight(false);
+		//_DEBUG("Overlap End Light");
 	}
-	//_DEBUG("Overlap End Light");
+
 }
 
 void AMazeLight::VisibleLight(bool bFlag)

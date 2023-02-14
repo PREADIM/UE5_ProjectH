@@ -29,6 +29,11 @@ public:
 	int32 Index;
 	MazeDirection Direction;
 
+	FIndexAndRotation()
+	{
+
+	}
+
 	FIndexAndRotation(int32 Num, MazeDirection MD)
 	{
 		Index = Num;
@@ -98,10 +103,10 @@ public:
 	FName EastSocket = FName("Y"); // 동
 	FName SouthSocket = FName("-X"); // 남
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere)
 		TArray<TSubclassOf<class AARPGEnermy>> BP_Enermys;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere)
 		TSubclassOf<class AEnermySpawnActor> BP_EnermySapwn; // 에너미 스폰할 액터. 해당 액터에 Overlap되면 적을 소환하는 방식으로 한다.
 
 	UPROPERTY()
