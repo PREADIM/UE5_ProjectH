@@ -17,8 +17,6 @@ class PROJECTH_API AARPGWeapon_Sword : public AARPGWeapon
 public:
 	AARPGWeapon_Sword();
 
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
 	virtual void AttackEnd() override;
 	virtual void SetWeaponCollision(bool bFlag) override;
 	virtual void SetPhysics() override;

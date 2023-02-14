@@ -109,11 +109,11 @@ void UARPG_TPSAnimInstance::AnimNotify_BattleMode()
 	if (!OwnerUnit)
 		return;
 
-	if (OwnerUnit->TPSWeapon)
+	/*if (OwnerUnit->TPSWeapon)
 	{
 		OwnerUnit->TPSWeapon->AttachToComponent(OwnerUnit->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, OwnerUnit->WeaponSocketName);
 		bIsSheathed = false;
-	}
+	}*/
 }
 
 void UARPG_TPSAnimInstance::AnimNotify_NormalMode()
@@ -121,9 +121,9 @@ void UARPG_TPSAnimInstance::AnimNotify_NormalMode()
 	if (!OwnerUnit)
 		return;
 
-	if (OwnerUnit->TPSWeapon)
+	/*if (OwnerUnit->TPSWeapon)
 	{
 		OwnerUnit->TPSWeapon->AttachToComponent(OwnerUnit->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, OwnerUnit->IdleSocketName);
 		bIsSheathed = true;
-	}
+	}*/
 }

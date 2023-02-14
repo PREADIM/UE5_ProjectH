@@ -43,6 +43,7 @@ void UARPG_EnermyAnimInstance::PlayAttackMontage(UAnimMontage* AttackMontage)
 {
 	CurrentEffectIndex = 0;
 	CurrentSoundIndex = 0;
+	CurrentAttackSoundIndex = 0;
 	Montage_Play(AttackMontage);
 }
 

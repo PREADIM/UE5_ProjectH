@@ -19,25 +19,30 @@ void AARPGEnermy_Mini::BeginPlay()
 
 	if (BP_Weapon)
 	{
-		Weapon = GetWorld()->SpawnActor<AARPGWeapon>(BP_Weapon);
+
+		Weapon = GetWorld()->SpawnActorDeferred<AARPGWeapon>(BP_Weapon, FTransform(), this, nullptr, ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding);
 		if (Weapon)
 		{
 			Weapon->OwnerUnit = this;
 			Weapon->SetOwner(this);
 			Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, WeaponSocketName);
+
+			Weapon->FinishSpawning(FTransform());
 		}
 
 	}
 
 	if (BP_Shield)
 	{
-		Shield = GetWorld()->SpawnActor<AARPGWeapon>(BP_Shield);
+		Shield = GetWorld()->SpawnActorDeferred<AARPGWeapon>(BP_Shield, FTransform(), this, nullptr, ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding);
 		if (Shield)
 		{
 			Shield->OwnerUnit = this;
 			Shield->SetOwner(this);
 			BlockingDEF = Shield->BlockingDEF;
 			Shield->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, ShieldSockName);
+
+			Shield->FinishSpawning(FTransform());
 		}
 	}
 }
@@ -257,6 +262,9 @@ void AARPGEnermy_Mini::PlayAttack(int32 index)
 
 	bAttacking = true;
 	Attacks[index]->PlayAttack(GetWorld());
+	EnermyAnimInstance->CurrentEffects = Attacks[index]->Effects;
+	EnermyAnimInstance->CurrentSounds = Attacks[index]->Sounds;
+	EnermyAnimInstance->CurrentAttackSounds = Attacks[index]->AttackSounds;
 	EnermyAnimInstance->PlayAttackMontage(Attacks[index]->AttackMontage);
 }
 

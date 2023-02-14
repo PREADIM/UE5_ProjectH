@@ -207,6 +207,7 @@ void AARPGEnermy_FstBoss::PlayAttack(int32 index)
 	Attacks[index]->PlayAttack(GetWorld());
 	FstBossAnimInstance->CurrentEffects = Attacks[index]->Effects;
 	FstBossAnimInstance->CurrentSounds = Attacks[index]->Sounds;
+	FstBossAnimInstance->CurrentAttackSounds = Attacks[index]->AttackSounds;
 	FstBossAnimInstance->PlayAttackMontage(Attacks[index]->AttackMontage);
 }
 

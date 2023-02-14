@@ -3,6 +3,7 @@
 
 #include "Tema/ARPG/Weapon/ARPGWeapon.h"
 #include "Kismet/GameplayStatics.h"
+#include "Tema/ARPG/ARPGUnitBase.h"
 
 // Sets default values
 AARPGWeapon::AARPGWeapon()
@@ -15,6 +16,12 @@ AARPGWeapon::AARPGWeapon()
 
 void AARPGWeapon::PlayWeaponSound(EWeaponSFX WeaponSFX)
 {
+	if (WeaponSFX == EWeaponSFX::SwingSFX)
+	{
+		if (ChargeRatio >= 0.5f)
+			WeaponSFX = EWeaponSFX::ChargeSwingSFX;
+	}
+
 	if(WeaponSFXs.Find(WeaponSFX))
 		UGameplayStatics::PlaySoundAtLocation(GetWorld(), WeaponSFXs[WeaponSFX].Sound, GetActorLocation(), 1.f, 1.f, 1.f, WeaponSFXs[WeaponSFX].Attenuation);
 }
@@ -23,7 +30,6 @@ void AARPGWeapon::PlayWeaponSound(EWeaponSFX WeaponSFX)
 void AARPGWeapon::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 // Called every frame
@@ -44,6 +50,13 @@ void AARPGWeapon::SetPhysics()
 				Destroy();
 			}), 10.f, false);
 	}
+}
+
+void AARPGWeapon::ChargeAttackInit()
+{
+	Charge = 1.f;
+	ChargeTime = 0.f;
+	ChargeRatio = 0.f;
 }
 
 AController* AARPGWeapon::GetOwnerController()

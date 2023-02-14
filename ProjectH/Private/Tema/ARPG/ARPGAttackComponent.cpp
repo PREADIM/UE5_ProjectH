@@ -34,7 +34,7 @@ void UARPGAttackComponent::Init(TArray<TSubclassOf<UAttackClass>> BP_Attacks)
 		{
 			temp->Init();
 			temp->OwnerUnit = OwnerUnit;
-			Attacks.Add(temp);	
+			Attacks.Emplace(temp);	 // Add대신 Emplace 써보기.
 			AttackCnt++;
 			MaxAttackDistance = MaxAttackDistance < temp->AttackStruct.AttackDistance ? temp->AttackStruct.AttackDistance : MaxAttackDistance;
 			// 공격의 가장 최대길이를 가져와서 해당 길이로 무빙을 칠건지 안칠건지 알수있음

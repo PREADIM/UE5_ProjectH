@@ -15,6 +15,7 @@ DECLARE_MULTICAST_DELEGATE(FOnUsingAP)
 DECLARE_MULTICAST_DELEGATE(FOnEndAP)
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnDamage, float)
 DECLARE_MULTICAST_DELEGATE(FOnAttackAP)
+DECLARE_MULTICAST_DELEGATE(FOnChargeAttackInit)
 
 UCLASS()
 class PROJECTH_API AARPGUnitBase : public ACharacter
@@ -178,7 +179,7 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		bool bAttackAndHitAP; // 공격이나 쉴드로 막았을 경우 1초 기다렸다가 AP가 차게한다.
 
-	const float ZeroAPWaitTime = 2.0f; // 2초간 대기
+	const float ZeroAPWaitTime = 1.5f; // 1.5초간 대기
 	const float AttackAPWaitTime = 1.0f; // 1초간 대기
 	float CurrentWaitTime = 0.0f;
 
@@ -189,5 +190,5 @@ public:
 	FOnUseAP OnEndAP; // 몽타주가 끝나 AP가 다시 차야할 때 사용할 델리게이트
 	FOnDamage OnDamage; // 데미지 처리를 할때 호출될 함수. 인자로 float
 	FOnAttackAP OnAttackAP; // 공격시나 공격 당했을시 AP 차감 델리게이트.
-
+	FOnChargeAttackInit OnChargeAttackInit; // 차지어택 시작시 델리게이트
 };

@@ -25,7 +25,7 @@ void AARPG_FstBossWeapon::BeginPlay()
 void AARPG_FstBossWeapon::AttackEnd()
 {
 	SetHitEndActor();
-	_DEBUG("FstBossWeapon AttackEnd");
+	//_DEBUG("FstBossWeapon AttackEnd");
 }
 
 void AARPG_FstBossWeapon::SetWeaponCollision(bool bFlag)

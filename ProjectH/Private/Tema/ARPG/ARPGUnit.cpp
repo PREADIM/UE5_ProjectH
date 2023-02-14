@@ -57,26 +57,30 @@ void AARPGUnit::BeginPlay()
 
 	if (BP_Sword)
 	{	
-		TPSWeapon = GetWorld()->SpawnActorDeferred<AARPGWeapon>(BP_Sword, FTransform(), this, nullptr, ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding);
+		//TPSWeapon = GetWorld()->SpawnActorDeferred<AARPGWeapon>(BP_Sword, FTransform(), this, nullptr, ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding);
 		FPSWeapon = GetWorld()->SpawnActorDeferred<AARPGWeapon>(BP_Sword, FTransform(), this, nullptr, ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding);
 
-		if (TPSWeapon && FPSWeapon)
+		//if (TPSWeapon && FPSWeapon)
+		if (FPSWeapon)
 		{
-			TPSWeapon->OwnerUnit = this;		
+			//TPSWeapon->OwnerUnit = this;				
+			//TPSWeapon->SetOwner(this);
+
 			FPSWeapon->OwnerUnit = this;
-			TPSWeapon->SetOwner(this);
 			FPSWeapon->SetOwner(this);
 
-			TPSWeapon->SetOwnerNoSee(true);
+			//TPSWeapon->SetOwnerNoSee(true);
+			// 원래는 보여야하지만, 애니메이션이 없어서 그냥 가린다.
+
 			FPSWeapon->SetOwnerNoSee(false);
-
-			TPSWeapon->FinishSpawning(FTransform());
-			FPSWeapon->FinishSpawning(FTransform());
-
-			LMB_AP = TPSWeapon->UseAP;
-			UnitState.NormallyPoise += TPSWeapon->WeaponPoise;
-			TPSWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("IdleSword"));
+			LMB_AP = FPSWeapon->UseAP;
+			UnitState.NormallyPoise += FPSWeapon->WeaponPoise;
+	
 			FPSWeapon->AttachToComponent(FPSMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("IdleSword"));
+			FPSWeapon->FinishSpawning(FTransform());	
+
+			//TPSWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("IdleSword"));
+			//TPSWeapon->FinishSpawning(FTransform());
 		}
 	}
 
@@ -85,25 +89,27 @@ void AARPGUnit::BeginPlay()
 	// (하지만 지금 이 게임은 존재하지 않는다.)
 	if (BP_Shield)
 	{
-		TPSShield = GetWorld()->SpawnActorDeferred<AARPGWeapon>(BP_Shield, FTransform(), this, nullptr, ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding);
+		//TPSShield = GetWorld()->SpawnActorDeferred<AARPGWeapon>(BP_Shield, FTransform(), this, nullptr, ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding);
 		FPSShield = GetWorld()->SpawnActorDeferred<AARPGWeapon>(BP_Shield, FTransform(), this, nullptr, ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding);
 
-		if (TPSShield && FPSShield)
+		//if (TPSShield && FPSShield)
+		if (FPSShield)
 		{
-			TPSShield->OwnerUnit = this;
+			//TPSShield->OwnerUnit = this;		
+			//TPSShield->SetOwner(this);
+
 			FPSShield->OwnerUnit = this;
-			TPSShield->SetOwner(this);
 			FPSShield->SetOwner(this);
 
-			TPSShield->SetOwnerNoSee(true);
-			FPSShield->SetOwnerNoSee(false);
+			//TPSShield->SetOwnerNoSee(true);
+			//TPSShield->FinishSpawning(FTransform());
+			//TPSShield->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("ShieldSocket"));
 
-			TPSShield->FinishSpawning(FTransform());
-			FPSShield->FinishSpawning(FTransform());
+			FPSShield->SetOwnerNoSee(false);
+			FPSShield->FinishSpawning(FTransform());				
+			FPSShield->AttachToComponent(FPSMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("ShieldSocket"));
 
 			RMB_AP = FPSShield->UseAP;
-			TPSShield->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("ShieldSocket"));
-			FPSShield->AttachToComponent(FPSMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("ShieldSocket"));
 		}
 	}
 
@@ -283,7 +289,7 @@ void AARPGUnit::DeathWeaponSimulate()
 	// 죽으면 들고있는 무기를 소켓에서 떼어내 피직스 시뮬
 	FDetachmentTransformRules Rule(EDetachmentRule::KeepWorld, false);
 
-	if (TPSWeapon)
+	/*if (TPSWeapon)
 	{
 		TPSWeapon->DetachFromActor(Rule);
 		TPSWeapon->SetPhysics();
@@ -293,9 +299,7 @@ void AARPGUnit::DeathWeaponSimulate()
 	{
 		TPSShield->DetachFromActor(Rule);
 		TPSShield->SetPhysics();
-	}
-
-
+	}*/
 }
 
 void AARPGUnit::SetDeathCamera()
@@ -324,7 +328,8 @@ void AARPGUnit::LMB()
 		else if(!FPSMeshAnimInstance->bMontagePlaying && !bAttacking) // 몽타주 실행 중이 아닐 경우
 		{
 			bAttacking = true;
-			FPSWeapon->ChargeAttackInit();
+			
+			OnChargeAttackInit.Broadcast();
 			if (InputComponent->GetAxisValue(TEXT("MoveRight")) == 0.0f)
 			{
 				if (InputComponent->GetAxisValue(TEXT("Forward")) < 0.0f)
@@ -728,7 +733,6 @@ void AARPGUnit::AttackEnd()
 	//몽타주 기반 공격도 아니고 섹션 점프도 없기때문에, 콤보 공격이 없어서,
 	//그냥 LMBRelease 함수에서 false를 하기 때문에 굳이 하지 않아도 된다.
 	EndAttack();
-
 }
 
 // 콤보 공격이나, 콜리전을 잠시 꺼야할 때 호출.
@@ -819,6 +823,7 @@ void AARPGUnit::LockOnAddViewport(bool bFlag)
 {
 	OwnerController->LockOnAddViewport(bFlag);
 }
+
 
 void AARPGUnit::PlaySound(class USoundBase* Sound)
 {

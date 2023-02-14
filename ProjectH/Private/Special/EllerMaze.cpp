@@ -3,6 +3,7 @@
 
 #include "Special/EllerMaze.h"
 #include "Special/MazeBase.h"
+#include "Components/InstancedStaticMeshComponent.h"
 
 // Sets default values
 AEllerMaze::AEllerMaze()
@@ -16,19 +17,26 @@ AEllerMaze::AEllerMaze()
 void AEllerMaze::BeginPlay()
 {
 	Super::BeginPlay();
-	UnionList.Init(0, MAZE_COUNT * MAZE_COUNT);
 	CreateMaze();
 }
 
 void AEllerMaze::CreateMaze()
 {
+	if (!BP_MazeActor)
+		return;
+
+	if (!UnionList.IsEmpty())
+		UnionList.Empty();
+
+	UnionList.Init(0, MAZE_COUNT * MAZE_COUNT);
 	Init();
 	Start();
-	MazeActors.Add(GetWorld()->SpawnActor<AMazeBase>(GetActorLocation(), FRotator::ZeroRotator));
+	MazeActors.Emplace(GetWorld()->SpawnActor<AMazeBase>(BP_MazeActor, GetActorLocation(), FRotator::ZeroRotator));
 	if (MazeActors.IsValidIndex(0))
 		MazeActors[0]->NorthInvisible();
 	SpawnMaze();
 
+	SpawnIndexs.Empty(); // 랜덤 적 스폰한 위치배열 초기화.
 }
 
 
@@ -92,6 +100,7 @@ void AEllerMaze::Start()
 	{
 		CreateRandomMaze(i);
 		NextColumn(i);
+		RandomEnermyGroup(i); // 에너미 랜덤 그룹
 	}
 
 	LastLine(MAZE_COUNT - 1);
@@ -118,7 +127,7 @@ void AEllerMaze::CreateRandomMaze(int32 CurrentCol)
 		case 2: // 왼쪽으로 합병하기.
 			if (i - 1 < 0)
 				break;
-
+			
 			if (Union(List[CurrentCol][i].Group, List[CurrentCol][i - 1].Group))
 			{
 				List[CurrentCol][i].OpenDir.West = true;
@@ -127,6 +136,16 @@ void AEllerMaze::CreateRandomMaze(int32 CurrentCol)
 			break;
 
 		default: // 합병 안하기
+			if (i - 1 < 0)
+				break;
+
+			// 같은 그룹이면 애초에 할 필요없으니, 같은 그룹이 아닌경우에 뚫기.
+			if (FindGroup(List[CurrentCol][i].Group) != FindGroup(List[CurrentCol][i - 1].Group))
+			{
+				if (List[CurrentCol][i - 1].OpenDir.East == false) // 전에 벽이 막혀있는 경우
+					List[CurrentCol][i - 1].OpenDir.East = true; // 겹쳐지는 액터를 최소화 하기위함.
+			}
+
 			break;
 		}
 	}
@@ -142,6 +161,7 @@ void AEllerMaze::NextColumn(int32 CurrentCol)
 		int Group = FindGroup(List[CurrentCol][i].Group);
 		if (GroupMap.Find(Group) == nullptr)
 		{
+			// 그룹 추가.
 			GroupMap.Add(Group);
 			GroupMap[Group].Add(i);
 		}
@@ -149,7 +169,6 @@ void AEllerMaze::NextColumn(int32 CurrentCol)
 		{
 			GroupMap[Group].Add(i);
 		}
-
 	}
 
 	for (auto it = GroupMap.CreateConstIterator(); it; ++it) // TMap 전체 돌기
@@ -157,15 +176,19 @@ void AEllerMaze::NextColumn(int32 CurrentCol)
 		bool flag = false; // 엘러 알고리즘은 그룹내에서 단 한개라도 다음 행으로 내려야가야한다.
 		for (int32 i = 0; i < it->Value.Num(); i++)
 		{
+			int32 Row = it->Value[i];
 			if (FMath::RandRange(0, 1) == 1)
-			{
-				int32 Row = it->Value[i];
+			{			
 				if (Union(List[CurrentCol][Row].Group, List[CurrentCol + 1][Row].Group))
 				{
 					List[CurrentCol][Row].OpenDir.South = true;
 					List[CurrentCol + 1][Row].OpenDir.North = true;
 					flag = true;
 				}
+			}
+			else
+			{
+				List[CurrentCol][Row].OpenDir.South = true; // 겹쳐지는 액터를 없애기 위함.
 			}
 		}
 
@@ -204,10 +227,7 @@ void AEllerMaze::LastLine(int32 LastLineRow)
 void AEllerMaze::SpawnMaze()
 {
 	if (MazeActors.IsEmpty())
-	{
-		_DEBUG("MAZE NULL");
 		return;
-	}
 
 	int ColCnt = 0;
 	for (int32 x = 0; x < MAZE_COUNT; x++)
@@ -217,23 +237,23 @@ void AEllerMaze::SpawnMaze()
 		{
 			if (!MazeActors.IsValidIndex(y + ColCnt))
 			{
-				_DEBUG("NULL MAZE");
+				//_DEBUG("NULL MAZE");
 				return;
 			}
 
 			FVector Location = MazeActors[y + ColCnt]->Floor->GetSocketLocation(EastSocket);
-			MazeActors.Add(GetWorld()->SpawnActor<AMazeBase>(Location, FRotator::ZeroRotator));
+			MazeActors.Emplace(GetWorld()->SpawnActor<AMazeBase>(BP_MazeActor, Location, FRotator::ZeroRotator));
 		}
 
 		if (x != MAZE_COUNT - 1)
 		{
 			FVector Location = MazeActors[ColCnt]->Floor->GetSocketLocation(SouthSocket);
-			MazeActors.Add(GetWorld()->SpawnActor<AMazeBase>(Location, FRotator::ZeroRotator));
+			MazeActors.Emplace(GetWorld()->SpawnActor<AMazeBase>(BP_MazeActor, Location, FRotator::ZeroRotator));
 		}
 	}
 
 	MazeOpenWall();
-
+	SpawnEnermy(); // 에너미 스폰 액터를 소환한다.
 }
 
 /* 미로 문 열기 */
@@ -262,4 +282,78 @@ void AEllerMaze::MazeOpenWall()
 
 	MazeActors[MAZE_COUNT - 1]->EastInvisible();
 
+}
+
+void AEllerMaze::RandomEnermyGroup(int32 Colum)
+{
+	int32 Index = FMath::RandRange(0, MAZE_COUNT - 1);
+	MazeDirection MD = RetMazeDir(List[Colum][Index].OpenDir); // 랜덤 방향 가져오기.
+
+	SpawnIndexs.Emplace(FIndexAndRotation(Colum * MAZE_COUNT + Index, MD)); // 그룹 저장.
+}
+
+
+void AEllerMaze::SpawnEnermy()
+{
+	FActorSpawnParameters Param;
+	Param.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+	for (FIndexAndRotation IR : SpawnIndexs)
+	{
+		FVector Location = MazeActors[IR.Index]->GetActorLocation();
+		FRotator Rot;
+
+		switch (IR.Direction)
+		{
+		case MazeDirection::North :
+			Rot = FRotator(0.f, 0.f, 0.f);
+			break;
+		case MazeDirection::South :
+			Rot = FRotator(0.f, 0.f, 180.f);
+			break;
+		case MazeDirection::West :
+			Rot = FRotator(0.f, 0.f, -90.f);
+			break;
+		case MazeDirection::East :
+			Rot = FRotator(0.f, 0.f, 90.f);
+			break;
+		default:
+			Rot = FRotator(0.f, 0.f, 0.f);
+			break;
+		}
+	
+		GetWorld()->SpawnActor<AEnermySpawnActor>(BP_EnermySapwn, MazeActors[IR.Index]->GetActorLocation(), Rot, Param);
+	}
+}
+
+MazeDirection AEllerMaze::RetMazeDir(OpenWallDir OWD)
+{
+	TArray<int32> DirNums;
+
+	if (OWD.North == true)
+		DirNums.Add(4);
+
+	if (OWD.South == true)
+		DirNums.Add(3);
+
+	if (OWD.West == true)
+		DirNums.Add(2);
+
+	if (OWD.East == true)
+		DirNums.Add(1);
+
+	int32 Index = FMath::RandRange(0, DirNums.Num() - 1);
+	switch (Index)
+	{
+	case 1:
+		return MazeDirection::East;
+	case 2:
+		return MazeDirection::West;
+	case 3:
+		return MazeDirection::South;
+	case 4:
+		return MazeDirection::North;
+	default:
+		return MazeDirection::South;
+	}
 }

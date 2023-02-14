@@ -16,17 +16,17 @@ AARPGWeapon_Sword::AARPGWeapon_Sword()
 	UseAP = 40.f;
 }
 
-void AARPGWeapon_Sword::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
-
 void AARPGWeapon_Sword::BeginPlay()
 {
 	Super::BeginPlay();
 
 	OwnerController = GetOwnerController();
 	WeaponCollision->OnComponentBeginOverlap.AddDynamic(this, &AARPGWeapon_Sword::SwordBeginOverlap);
+
+	if (OwnerUnit)
+	{
+		OwnerUnit->OnChargeAttackInit.AddUFunction(this, FName("ChargeAttackInit"));
+	}
 }
 
 
@@ -79,25 +79,24 @@ bool AARPGWeapon_Sword::IsChargeAttack()
 float AARPGWeapon_Sword::ChargeAttack(float DeltaSeconds)
 {
 	ChargeTime += DeltaSeconds;
-	float ChargeDMG = FMath::Clamp(ChargeTime / MaxChargeTime, 0.f, 1.0f);
+	ChargeRatio = FMath::Clamp(ChargeTime / MaxChargeTime, 0.f, 1.0f);
 	
-	if (ChargeDMG >= 0.5)
+	if (ChargeRatio >= 0.5)
 	{
-		Charge = ChargeDMG + 6.0f;
+		Charge = ChargeRatio + 6.0f;
 	}
 	else
 	{
-		Charge = ChargeDMG + 1.5f; // 해당 Charge로 WeaponDamage에 곱연산하여 딜 증가
+		Charge = ChargeRatio + 1.5f; // 해당 Charge로 WeaponDamage에 곱연산하여 딜 증가
 	}
 
 
-	return ChargeDMG;
+	return ChargeRatio;
 }
 
 void AARPGWeapon_Sword::ChargeAttackInit()
 {
-	Charge = 1.f;
-	ChargeTime = 0.f;
+	Super::ChargeAttackInit();
 }
 
 void AARPGWeapon_Sword::WeaponAttackEnd()

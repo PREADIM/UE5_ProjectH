@@ -15,6 +15,7 @@ enum class EWeaponSFX : uint8
 	DropSFX UMETA(DisplayName = "DropSFX"),
 	PhysicsOverlapSFX UMETA(DisplayName = "PhysicsOverlapSFX"),
 	SwingSFX UMETA(DisplayName = "SwingSFX"),
+	ChargeSwingSFX UMETA(DisplayName = "ChargeSwingSFX"),
 	AttackHitSFX UMETA(DisplayName = "AttackHitSFX")
 };
 
@@ -38,7 +39,9 @@ public:
 	
 	// 차지 어택이 가능한지 먼저 확인하고 true면 float형으로 현재 얼마나 차지되었는지 알려준다.
 	virtual bool IsChargeAttack() { return false; } // 무기마다 차지어택이 있을 수도 없을 수도 있다.
-	virtual void ChargeAttackInit() {}
+	UFUNCTION()
+		virtual void ChargeAttackInit();
+
 	virtual float ChargeAttack(float DeltaSeconds) { return 0.f; }
 
 	// 공격이 종료되었을때 무기마다 초기화 해야하는 수치가 있다면 이 함수를 이용.
@@ -79,7 +82,10 @@ public:
 		float WeaponDamage;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "ChargeAttack")
-		float Charge = 1.f; // 차지 데미지
+		float Charge = 1.f; // 차지 데미지 계수
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "ChargeAttack")
+		float ChargeRatio; // 차지 비율
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ChargeAttack")
 		float MaxChargeTime;

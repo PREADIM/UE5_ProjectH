@@ -84,6 +84,7 @@ void UARPG_FstBossAnimInstance::HittedReset()
 {
 	CurrentEffectIndex = 0;
 	CurrentSoundIndex = 0;
+	CurrentAttackSoundIndex = 0;
 	ProjectileCnt = 0;
 }
 
@@ -167,6 +168,7 @@ void UARPG_FstBossAnimInstance::AnimNotify_PlayAttackSound()
 	// 사운드 실행
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), CurrentAttackSounds[CurrentAttackSoundIndex].Sound, FstBoss->GetActorLocation(), FstBoss->GetActorRotation(), 1.f, 1.f, 1.f, CurrentAttackSounds[CurrentAttackSoundIndex].Attenuation);
 	++CurrentAttackSoundIndex;
+	_DEBUG("AttackSound %d", CurrentAttackSoundIndex);
 }
 
 

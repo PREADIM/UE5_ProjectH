@@ -2,7 +2,7 @@
 
 #pragma once
 
-#define MAZE_COUNT 30
+#define MAZE_COUNT 15
 #include "ProjectH.h"
 #include <iostream>
 #include "GameFramework/Actor.h"
@@ -11,10 +11,34 @@
 using namespace std;
 
 
+enum class MazeDirection
+{
+	North,
+	South,
+	West,
+	East
+};
+
+
+USTRUCT()
+struct FIndexAndRotation
+{
+	GENERATED_USTRUCT_BODY()
+
+public:
+	int32 Index;
+	MazeDirection Direction;
+
+	FIndexAndRotation(int32 Num, MazeDirection MD)
+	{
+		Index = Num;
+		Direction = MD;
+	}
+};
+
 
 struct OpenWallDir
 {
-
 public:
 	bool North;
 	bool South;
@@ -31,9 +55,9 @@ public:
 };
 
 
+
 struct Maze
 {
-
 public:
 	int32 Group;
 	OpenWallDir OpenDir;
@@ -60,7 +84,10 @@ protected:
 	virtual void BeginPlay() override;
 
 public:	
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditANywhere)
+		TSubclassOf<class AMazeBase> BP_MazeActor;
+
+	UPROPERTY(VisibleAnywhere)
 		TArray<class AMazeBase*> MazeActors;
 
 	UPROPERTY()
@@ -68,11 +95,19 @@ public:
 
 	Maze List[MAZE_COUNT][MAZE_COUNT];
 
-	FName EastSocket = FName("Y");
-	FName SouthSocket = FName("-X");
+	FName EastSocket = FName("Y"); // 동
+	FName SouthSocket = FName("-X"); // 남
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TArray<TSubclassOf<class AARPGEnermy>> BP_Enermys;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<class AEnermySpawnActor> BP_EnermySapwn; // 에너미 스폰할 액터. 해당 액터에 Overlap되면 적을 소환하는 방식으로 한다.
+
+	UPROPERTY()
+		TArray<FIndexAndRotation> SpawnIndexs; // 스폰할 인덱스만 넣어두고 마지막에 스폰.
 
 public:
-
 	void CreateMaze(); // 호출하면 미로 생성.
 
 	/*-----------------
@@ -92,5 +127,12 @@ public:
 	----------------*/
 	void SpawnMaze();
 	void MazeOpenWall();
+
+	/*------------------
+		Ramdom Enermy
+	--------------------*/
+	void RandomEnermyGroup(int32 Colum);
+	void SpawnEnermy();
+	MazeDirection RetMazeDir(OpenWallDir OWD); // OpenWallDir을 확인해서 뚫린 방면 랜덤으로 바라보게 하는 것.
 
 };

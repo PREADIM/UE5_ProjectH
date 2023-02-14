@@ -20,6 +20,8 @@ protected:
 	virtual void BeginPlay() override;
 
 public:	
+	// ¸Þ½Ã
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		class UStaticMeshComponent* NorthWall;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
@@ -28,10 +30,10 @@ public:
 		class UStaticMeshComponent* WestWall;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		class UStaticMeshComponent* EastWall;
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		class UStaticMeshComponent* Floor;
 
+	TArray<FName> FloorSocket; 
 
 public:
 	void NorthInvisible();

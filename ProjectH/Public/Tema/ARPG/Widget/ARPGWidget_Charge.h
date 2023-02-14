@@ -22,10 +22,19 @@ public:
 public:
 	void BindCharge(float Ratio);
 
+	UFUNCTION()
+		void SetCurrentColor();
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 		class UProgressBar* Charge;
 
-	
+	UPROPERTY(EditAnywhere)
+		FLinearColor NormalColor;
+	UPROPERTY(EditAnywhere)
+		FLinearColor ChargeColor;
+
+	FLinearColor CurrentColor;
+
+	bool bChargeHalf; // 차지가 절반 이상이다.
 };

@@ -70,6 +70,7 @@ void AARPGUnitBase::Tick(float DeltaSeconds)
 			{
 				bZeroAP = false;
 				CurrentWaitTime = 0.f;
+				bAttackAndHitAP = false; // 이것도 같이 해줘야한다.
 			}
 			else
 			{
@@ -116,10 +117,11 @@ void AARPGUnitBase::Death()
 	FTimerHandle Handle;
 	FTimerHandle DeathHandle;
 	GetWorld()->GetTimerManager().SetTimer(Handle, this, &AARPGUnitBase::BattleHPWidgetHide, 5.0f, false);
-	GetWorld()->GetTimerManager().SetTimer(DeathHandle, FTimerDelegate::CreateLambda([&]()
+	/*GetWorld()->GetTimerManager().SetTimer(DeathHandle, FTimerDelegate::CreateLambda([&]()
 		{
 			Destroy();
-		}), 20.f, false);
+		}), 20.f, false);*/
+	// 죽었을때 삭제 함수는 일단 보류. 미로에서 길찾을때 표식용으로 사용가능
 }
 
 void AARPGUnitBase::BattleHPWidgetHide()
@@ -138,9 +140,10 @@ void AARPGUnitBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 float AARPGUnitBase::TakeDamageCalculator(AARPGWeapon* DamageWeapon, FDamageEvent const& DamageEvent, AController* EventInstigator, AARPGUnitBase* DamageCauser)
 {
 	// 강인도 계산
-	// 강인도 를 시간이 지나면 차는 것과 특정 행동을 하면 다시 차게 할 순있지만 하지않음.
+	// 강인도를 시간이 지나면 차는 것과 특정 행동을 하면 다시 차게 할 순있지만 하지않음.
 
 	// 강인도가 0 아래라는 것은 경직 먹었다는 뜻 때문에 다시 초기화.
+	// 여기서 계산법은 때린사람의 강인도를 그냥 빼는 식으로 결정.
 	if (UnitState.Poise <= 0)
 		UnitState.ResetPoise();
 

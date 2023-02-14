@@ -19,10 +19,7 @@ void UAttackClass::Init()
 void UAttackClass::PlayAttack(UWorld* UnitWorld)
 {
 	if (OwnerUnit == nullptr || UnitWorld == nullptr)
-	{
-		_DEBUG("OwnerUnit nullptr");
 		return;
-	}
 
 	if(World == nullptr)
 		World = UnitWorld;
@@ -56,7 +53,6 @@ void UAttackClass::CoolTimeFunc()
 		CurrentCoolTime = 0.f;
 		SetCanThisAttack(true);
 		World->GetTimerManager().ClearTimer(CoolTimeHandle);
-		_DEBUG("CoolTime Clear");
 	}
 	else
 	{

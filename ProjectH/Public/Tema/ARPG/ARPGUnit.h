@@ -78,7 +78,6 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		class UARPG_TPSAnimInstance* TPSMeshAnimInstance;
 
-
 	FOnWeaponDraw OnWeaponDraw; // 무기를 뽑을때 실행하는 델리게이트.
 	FOnWeaponStow OnWeaponStow; // 무기를 집어넣을때 실행하는 델리게이트.
 	
@@ -102,8 +101,8 @@ public:
 	// L
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TSubclassOf<class AARPGWeapon> BP_Sword;
-	UPROPERTY(BlueprintReadWrite)
-		class AARPGWeapon* TPSWeapon;
+	/*UPROPERTY(BlueprintReadWrite)
+		class AARPGWeapon* TPSWeapon;*/
 	UPROPERTY(BlueprintReadWrite)
 		class AARPGWeapon* FPSWeapon;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -113,8 +112,8 @@ public:
 	// R
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TSubclassOf<class AARPGWeapon> BP_Shield;
-	UPROPERTY(BlueprintReadWrite)
-		class AARPGWeapon* TPSShield;
+	/*UPROPERTY(BlueprintReadWrite)
+		class AARPGWeapon* TPSShield;*/
 	UPROPERTY(BlueprintReadWrite)
 		class AARPGWeapon* FPSShield;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -276,5 +275,6 @@ public:
 	void LockOn();
 	void LockOnSetPosition(FVector TargetPos);
 	void LockOnAddViewport(bool bFlag);
+
 
 };
