@@ -211,6 +211,7 @@ void UARPG_UnitAnimInstance::AnimNotify_HitEnd()
 void UARPG_UnitAnimInstance::AnimNotify_ParringStart()
 {
 	OwnerUnit->bParring = true;
+	OwnerUnit->ParringSwingSFX();
 }
 
 void UARPG_UnitAnimInstance::AnimNotify_ParringEnd()

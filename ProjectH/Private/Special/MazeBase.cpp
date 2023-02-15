@@ -20,6 +20,7 @@ AMazeBase::AMazeBase()
 
 
 	FloorSocket = {{TEXT("YWall")},  {TEXT("-YWall")}, {TEXT("-XWall")}, {TEXT("XWall")} };
+
 	// µ¿¼­³²ºÏ
 
 	FString FloorPath = TEXT("/Script/Engine.StaticMesh'/Game/PROJECT/BP_CLASS/Tema/ARPG/Mesh/MazeFloor.MazeFloor'");

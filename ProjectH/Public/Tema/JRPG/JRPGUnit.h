@@ -192,6 +192,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BattlePriority)
 		int32 Priority; // 우선순위
 
+	//★★★★
+	// 디버프 클래스를 받아오자.
+
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FJRPGCharStat CharacterStat; // 해당 캐릭터의 스텟

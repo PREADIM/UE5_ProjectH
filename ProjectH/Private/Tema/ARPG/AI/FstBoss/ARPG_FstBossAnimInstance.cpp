@@ -168,7 +168,6 @@ void UARPG_FstBossAnimInstance::AnimNotify_PlayAttackSound()
 	// 사운드 실행
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), CurrentAttackSounds[CurrentAttackSoundIndex].Sound, FstBoss->GetActorLocation(), FstBoss->GetActorRotation(), 1.f, 1.f, 1.f, CurrentAttackSounds[CurrentAttackSoundIndex].Attenuation);
 	++CurrentAttackSoundIndex;
-	_DEBUG("AttackSound %d", CurrentAttackSoundIndex);
 }
 
 
@@ -238,6 +237,15 @@ void UARPG_FstBossAnimInstance::AnimNotify_Death()
 {
 	// 보통 여기서 무기 피직스를 끄는 시뮬레이션을 진행하지만 이 보스는 없다.
 	FstBoss->DeathCollsionEnabled();
+
+	if (DeathEffect)
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), DeathEffect, FstBoss->GetActorTransform());
+	}
+	FstBoss->Destroy();
+
+
+	// 추후에 여기서 몇초 뒤에 게임 맵을 탈출하는 로직을 짜자.
 }
 
 

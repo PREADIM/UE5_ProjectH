@@ -25,6 +25,8 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
+	virtual void SetHiddenActor(bool bFlag) override; // 플레이어가 가까울때 로드
+
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void PostInitializeComponents() override;
 	virtual float TakeDamageCalculator(class AARPGWeapon* DamageWeapon, FDamageEvent const& DamageEvent, AController* EventInstigator, AARPGUnitBase* DamageCauser) override;

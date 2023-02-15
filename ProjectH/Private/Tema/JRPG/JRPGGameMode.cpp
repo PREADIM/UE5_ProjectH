@@ -149,12 +149,6 @@ FJRPGCharStat AJRPGGameMode::GetCharStat(int32 CharNum, int32 Level)
 	FJRPGCharStatTablePaths* CharStatTablePath = CharStatTablePaths->FindRow<FJRPGCharStatTablePaths>(*FString::FromInt(CharNum), TEXT(""));
 	if (CharStatTablePath != nullptr)
 	{
-		// ★★★ FObjectFinder는 COD에서만 가능하다.
-		/*static ConstructorHelpers::FObjectFinder<UDataTable> DT_Table(*CharStatTablePath->Path);
-		if (DT_Table.Succeeded())
-		{
-			StatTable = DT_Table.Object;
-		}*/
 
 		//★★ 데이터 테이블 런타임에서 가져오는 방법.
 		UDataTable* StatTable;

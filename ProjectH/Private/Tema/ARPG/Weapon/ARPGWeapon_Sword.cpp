@@ -145,6 +145,7 @@ void AARPGWeapon_Sword::SwordBeginOverlap(UPrimitiveComponent* OverlappedComp, A
 						if (Unit->ParringHitFunc(OwnerUnit->GetActorLocation()))
 						{
 							OwnerUnit->ParringHit(Unit);
+							PlayWeaponSound(EWeaponSFX::ParringHitSFX);
 							Unit->bCanParringAttack = true;
 						}
 						else // 패링 실패

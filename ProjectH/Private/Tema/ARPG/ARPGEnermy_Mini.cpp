@@ -47,6 +47,21 @@ void AARPGEnermy_Mini::BeginPlay()
 	}
 }
 
+void AARPGEnermy_Mini::SetHiddenActor(bool bFlag)
+{
+	SetActorHiddenInGame(bFlag);
+	if (Weapon)
+	{
+		Weapon->SetActorHiddenInGame(bFlag);
+	}
+
+	if (Shield)
+	{
+		Shield->SetActorHiddenInGame(bFlag);
+	}
+}
+
+
 void AARPGEnermy_Mini::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
@@ -133,17 +148,7 @@ void AARPGEnermy_Mini::TakeDamageAP(float Damage)
 bool AARPGEnermy_Mini::Hit(bool bBlockingHit)
 {
 	if (!EnermyAnimInstance)
-		return false;
-
-	bDontMoving = true;
-	bHitting = true;
-	bParringHit = false;
-
-	if (bAttacking)
-	{
-		WeaponOverlapEnd();
-		AttackEnd();
-	}
+		return false;	
 
 	if (!bBlockingHit)
 	{
@@ -152,15 +157,29 @@ bool AARPGEnermy_Mini::Hit(bool bBlockingHit)
 
 		if (bHitMontagePlay)
 		{
-			EnermyAnimInstance->PlayHitMontage(EEnermy_Mini_Mode::BattleMode);
+			bDontMoving = true;
+			bHitting = true;
+			bParringHit = false;
+
+			if (bAttacking)
+			{
+				WeaponOverlapEnd();
+				//AttackEnd();
+			}
+
+		EnermyAnimInstance->PlayHitMontage(EEnermy_Mini_Mode::BattleMode);	
 		}
 		else
 		{
-			HitEnd();
+			//HitEnd();
 		}
 	}
 	else
 	{
+		bDontMoving = true;
+		bHitting = true;
+		bParringHit = false;
+
 		EnermyAnimInstance->PlayHitMontage(EEnermy_Mini_Mode::BlockingMode);
 	}
 
@@ -191,6 +210,8 @@ void AARPGEnermy_Mini::HitEnd()
 	bDontMoving = false;
 	bHitting = false;
 	bParringHit = false;
+
+	AttackEnd();
 }
 
 

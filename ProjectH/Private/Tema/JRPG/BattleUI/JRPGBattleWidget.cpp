@@ -13,6 +13,7 @@
 #include "Components/HorizontalBox.h"
 #include "Tema/JRPG/BattleUI/EnermyIconButton.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Blueprint/WidgetLayoutLibrary.h"
 
 void UJRPGBattleWidget::NativeConstruct()
 {
@@ -30,7 +31,10 @@ void UJRPGBattleWidget::NativeTick(const FGeometry& MyGeometry, const float InDe
 	{	
 		TargetLockOn = TargetUnit->GetActorLocation();
 		OwnerController->ProjectWorldLocationToScreen(TargetLockOn, Pos);
-		LockOnIcon->SetPositionInViewport(Pos);
+		float Scale = UWidgetLayoutLibrary::GetViewportScale(GetWorld()->GetGameViewport());
+
+		//FVector2D(Pos.X / Scale, Pos.Y / Scale)
+		//LockOnIcon->SetPositionInViewport(Pos);
 		//_DEBUG("%f, %f", Pos.X, Pos.Y);
 	}
 

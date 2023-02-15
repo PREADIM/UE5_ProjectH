@@ -47,6 +47,7 @@ void UARPGWidget_BossHPView::SetHP()
 	}*/
 
 	// ClearTime을 하지않아도 어처피 SetTimer를 하면 새롭게 씌여진다.
+
 	GetWorld()->GetTimerManager().SetTimer(PrevHPHandle, this, &UARPGWidget_BossHPView::SetPrevHP, GetWorld()->GetDeltaSeconds(), true, 1.f);
 }
 
@@ -64,7 +65,7 @@ void UARPGWidget_BossHPView::SetTextDamage(float TakeDamage)
 {
 	int32 IntDamage = FMath::FloorToInt(PrevDamage + TakeDamage);
 
-	_DEBUG("SetTextDamage");
+	//_DEBUG("SetTextDamage");
 	Delay = 0.f;
 	DamageText->SetText(FText::FromString(FString::FromInt(IntDamage)));
 

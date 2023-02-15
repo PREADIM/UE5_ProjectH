@@ -168,11 +168,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float SprintSpeed;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float LockOnRadius; // 락온 할수 있는 범위
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	//	float LockOnRadius; // 락온 할수 있는 범위
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		bool bTargeting = false;
+	//UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	//	bool bTargeting = false;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		bool bChargeAttacking = false;
@@ -270,11 +270,13 @@ public:
 
 	void SetDeathCamera(); // 죽었을때 카메라가 캐릭터 머리에 달린 것으로 블렌드 되어서 역동적인 연출.
 
+	void ParringSwingSFX(); // 패링 공격 SFX
+
 
 public:
-	void LockOn();
+	/*void LockOn();
 	void LockOnSetPosition(FVector TargetPos);
-	void LockOnAddViewport(bool bFlag);
+	void LockOnAddViewport(bool bFlag);*/
 
 
 };

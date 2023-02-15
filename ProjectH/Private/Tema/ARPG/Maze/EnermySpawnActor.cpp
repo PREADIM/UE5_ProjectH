@@ -27,26 +27,20 @@ void AEnermySpawnActor::BeginPlay()
 
 void AEnermySpawnActor::OverlapUnit(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	AARPGUnit* Unit = Cast<AARPGUnit>(OtherActor);
-	if (Unit)
+	if (!SpawnEnermy) // 贸澜 积己
 	{
-		if (!SpawnEnermy) // 贸澜 积己
+		SpawnRandEnermy();
+		if (SpawnEnermy)
 		{
-			SpawnRandEnermy();
-			if (SpawnEnermy)
-			{
-				AttachToActor(SpawnEnermy, FAttachmentTransformRules::SnapToTargetIncludingScale);
-				_DEBUG("Attach Spawner");
-			}
+			AttachToActor(SpawnEnermy, FAttachmentTransformRules::SnapToTargetIncludingScale);
+			//_DEBUG("Attach Spawner");
 		}
-		else
-		{
-			SpawnEnermy->SetActorHiddenInGame(true);
-			_DEBUG("Hidden false");
-		}
-
 	}
-
+	else
+	{
+		SpawnEnermy->SetHiddenActor(false);
+		//_DEBUG("Hidden false");
+	}
 }
 
 
@@ -55,15 +49,14 @@ void AEnermySpawnActor::OverlapEndUnit(UPrimitiveComponent* OverlappedComp, AAct
 	if (SpawnEnermy)
 	{
 		SpawnEnermy->SetActorLocation(DefaultLocation);
-		SpawnEnermy->SetActorHiddenInGame(true);
+		SpawnEnermy->SetHiddenActor(true);
 	}
-
 }
 
 
 void AEnermySpawnActor::SpawnRandEnermy()
 {
-	int32 Index = FMath::RandRange(0, BP_Enermys.Num());
+	int32 Index = FMath::RandRange(0, BP_Enermys.Num() - 1);
 	FActorSpawnParameters Param;
 	Param.Owner = this;
 	Param.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;

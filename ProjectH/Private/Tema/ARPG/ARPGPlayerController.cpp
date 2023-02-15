@@ -50,10 +50,10 @@ void AARPGPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (BP_LockOnUI)
+	/*if (BP_LockOnUI)
 	{
 		LockOnUI = CreateWidget<UUserWidget>(GetWorld(), BP_LockOnUI);
-	}
+	}*/
 
 	SetPlaySound(NormalSound);
 }
@@ -65,28 +65,28 @@ void AARPGPlayerController::SetupInputComponent()
 }
 
 
-void AARPGPlayerController::SetLockPosition(FVector2D Pos)
-{
-	if (LockOnUI)
-	{
-		LockOnUI->SetPositionInViewport(Pos);
-	}
-}
-
-void AARPGPlayerController::LockOnAddViewport(bool bFlag)
-{
-	if (!LockOnUI)
-		return;
-
-	if (bFlag)
-	{
-		LockOnUI->AddToViewport();
-	}
-	else
-	{
-		LockOnUI->RemoveFromParent();
-	}
-}
+//void AARPGPlayerController::SetLockPosition(FVector2D Pos)
+//{
+//	if (LockOnUI)
+//	{
+//		LockOnUI->SetPositionInViewport(Pos);
+//	}
+//}
+//
+//void AARPGPlayerController::LockOnAddViewport(bool bFlag)
+//{
+//	if (!LockOnUI)
+//		return;
+//
+//	if (bFlag)
+//	{
+//		LockOnUI->AddToViewport();
+//	}
+//	else
+//	{
+//		LockOnUI->RemoveFromParent();
+//	}
+//}
 
 void AARPGPlayerController::SetChargeAttacking(float Ratio)
 {

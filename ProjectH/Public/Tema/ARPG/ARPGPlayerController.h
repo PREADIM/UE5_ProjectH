@@ -31,8 +31,8 @@ public:
 	virtual void BeginPlay();
 	virtual void SetupInputComponent() override;
 public:
-	void SetLockPosition(FVector2D Pos);
-	void LockOnAddViewport(bool bFlag);
+	/*void SetLockPosition(FVector2D Pos);
+	void LockOnAddViewport(bool bFlag);*/
 
 	//차지 어택 위젯비율 전달
 	void SetChargeAttacking(float Ratio);
@@ -51,10 +51,10 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		class AARPGUnitBase* OwnerUnit;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	/*UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TSubclassOf<class UUserWidget> BP_LockOnUI;
 	UPROPERTY()
-		class UUserWidget* LockOnUI;
+		class UUserWidget* LockOnUI;*/
 
 	//-------------------------------------------------------
 	// 메인 UI

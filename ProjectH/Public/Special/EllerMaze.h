@@ -103,6 +103,7 @@ public:
 	FName EastSocket = FName("Y"); // µ¿
 	FName SouthSocket = FName("-X"); // ³²
 
+
 	UPROPERTY(EditAnywhere)
 		TArray<TSubclassOf<class AARPGEnermy>> BP_Enermys;
 

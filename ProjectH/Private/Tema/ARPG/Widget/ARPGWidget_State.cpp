@@ -75,7 +75,7 @@ void UARPGWidget_State::SetAP()
 
 void UARPGWidget_State::SetPrevAP()
 {
-	LerpAPPercent = FMath::FInterpTo(LerpAPPercent, CurrentAPPercent, GetWorld()->GetDeltaSeconds(), 4.f);
+	LerpAPPercent = FMath::FInterpTo(LerpAPPercent, CurrentAPPercent, GetWorld()->GetDeltaSeconds(), 15.f);
 	PrevAP->SetPercent(LerpAPPercent);
 
 	if (LerpAPPercent <= CurrentAPPercent)

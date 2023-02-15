@@ -64,23 +64,24 @@ void AMazeLight::VisibleLight(bool bFlag)
 {
 	if (bFlag)
 	{
-		Light->SetVisibility(true);
-		Effect->SetVisibility(true);
 		if (Audio)
-		{
 			Audio->Play();
-			_DEBUG("Play");
-		}
+
+		Light->SetVisibility(true);
+
+		if(!bDontEffectVisible)
+			Effect->SetVisibility(true);		
 	}
 	else
 	{
-		Light->SetVisibility(false);
-		Effect->SetVisibility(false);
 		if (Audio)
-		{
 			Audio->Stop();
-			_DEBUG("Stop");
-		}
+
+		Light->SetVisibility(false);
+
+		if (!bDontEffectVisible)
+			Effect->SetVisibility(false);
+	
 	}
 }
 

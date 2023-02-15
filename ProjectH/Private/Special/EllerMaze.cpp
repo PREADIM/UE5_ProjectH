@@ -122,6 +122,16 @@ void AEllerMaze::CreateRandomMaze(int32 CurrentCol)
 			{
 				List[CurrentCol][i].OpenDir.East = true;
 				List[CurrentCol][i + 1].OpenDir.West = true;
+
+				if (i - 1 >= 0)
+				{
+					// 같은 그룹이면 애초에 할 필요없으니, 같은 그룹이 아닌경우에 뚫기.
+					if (FindGroup(List[CurrentCol][i].Group) != FindGroup(List[CurrentCol][i - 1].Group))
+					{
+						if (List[CurrentCol][i - 1].OpenDir.East == false) // 전에 벽이 막혀있는 경우
+							List[CurrentCol][i - 1].OpenDir.East = true; // 겹쳐지는 액터를 최소화 하기위함.
+					}
+				}
 			}
 			break;
 
@@ -137,16 +147,15 @@ void AEllerMaze::CreateRandomMaze(int32 CurrentCol)
 			break;
 
 		default: // 합병 안하기
-			if (i - 1 < 0)
-				break;
-
-			// 같은 그룹이면 애초에 할 필요없으니, 같은 그룹이 아닌경우에 뚫기.
-			if (FindGroup(List[CurrentCol][i].Group) != FindGroup(List[CurrentCol][i - 1].Group))
+			if (i - 1 >= 0)
 			{
-				if (List[CurrentCol][i - 1].OpenDir.East == false) // 전에 벽이 막혀있는 경우
-					List[CurrentCol][i - 1].OpenDir.East = true; // 겹쳐지는 액터를 최소화 하기위함.
+				// 같은 그룹이면 애초에 할 필요없으니, 같은 그룹이 아닌경우에 뚫기.
+				if (FindGroup(List[CurrentCol][i].Group) != FindGroup(List[CurrentCol][i - 1].Group))
+				{
+					if (List[CurrentCol][i - 1].OpenDir.East == false) // 전에 벽이 막혀있는 경우
+						List[CurrentCol][i - 1].OpenDir.East = true; // 겹쳐지는 액터를 최소화 하기위함.
+				}
 			}
-
 			break;
 		}
 	}
@@ -288,7 +297,7 @@ void AEllerMaze::MazeOpenWall()
 void AEllerMaze::RandomEnermyGroup(int32 Colum)
 {
 	int32 Index = FMath::RandRange(0, MAZE_COUNT - 1);
-	MazeDirection MD = RetMazeDir(List[Colum][Index].OpenDir); // 랜덤 방향 가져오기.
+	MazeDirection MD = RetMazeDir(List[Colum][Index].OpenDir); // 방향 가져오기.
 
 	SpawnIndexs.Emplace(FIndexAndRotation(Colum * MAZE_COUNT + Index, MD)); // 그룹 저장.
 }
@@ -323,13 +332,27 @@ void AEllerMaze::SpawnEnermy()
 			break;
 		}
 	
-		GetWorld()->SpawnActor<AEnermySpawnActor>(BP_EnermySapwn, MazeActors[IR.Index]->GetActorLocation(), Rot, Param);
+		GetWorld()->SpawnActor<AEnermySpawnActor>(BP_EnermySapwn, MazeActors[IR.Index]->GetActorLocation() + FVector(0.f, 0.f, 200.f), Rot, Param);
 	}
 }
 
 MazeDirection AEllerMaze::RetMazeDir(OpenWallDir OWD)
 {
-	TArray<int32> DirNums;
+	// 미로는 위에서 아래로 한줄씩 생성되기 때문에 북쪽이 열려있다는건 북쪽을 바라봐야됨.
+	if (OWD.North == true)
+		return MazeDirection::North;
+
+	// 위가 막혀있고 아래가 뚫려있는 경우는 캐릭터가 옆이나 아래에서 올수있다는 소리
+	if (OWD.South == true)
+		return MazeDirection::South;
+
+	if (OWD.West || OWD.East)
+		return MazeDirection::West;
+
+
+	return MazeDirection::East;
+
+	/*TArray<int32> DirNums;
 
 	if (OWD.North == true)
 		DirNums.Add(4);
@@ -356,5 +379,5 @@ MazeDirection AEllerMaze::RetMazeDir(OpenWallDir OWD)
 		return MazeDirection::North;
 	default:
 		return MazeDirection::South;
-	}
+	}*/
 }

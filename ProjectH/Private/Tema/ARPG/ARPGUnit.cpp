@@ -35,7 +35,7 @@ AARPGUnit::AARPGUnit()
 	BattleSpeed = 150.f;
 	BlockSpeed = 130.f;
 	WalkSpeed = NormalSpeed;
-	LockOnRadius = 750.f;
+	//LockOnRadius = 750.f;
 
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 
@@ -165,7 +165,7 @@ void AARPGUnit::Tick(float DeltaSeconds)
 		}
 	}
 
-	if (bTargeting)
+	/*if (bTargeting)
 	{
 		if (TargetingPawn)
 		{
@@ -179,7 +179,7 @@ void AARPGUnit::Tick(float DeltaSeconds)
 				TargetingPawn = nullptr;
 			}
 		}
-	}
+	}*/
 }
 
 void AARPGUnit::PostInitializeComponents()
@@ -187,7 +187,7 @@ void AARPGUnit::PostInitializeComponents()
 	Super::PostInitializeComponents();
 
 	FPSMeshAnimInstance = Cast<UARPG_UnitAnimInstance>(FPSMesh->GetAnimInstance());
-	TPSMeshAnimInstance = Cast<UARPG_TPSAnimInstance>(GetMesh()->GetAnimInstance());
+	//TPSMeshAnimInstance = Cast<UARPG_TPSAnimInstance>(GetMesh()->GetAnimInstance());
 }
 
 // Called to bind functionality to input
@@ -216,7 +216,7 @@ void AARPGUnit::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("R", IE_Pressed, this, &AARPGUnit::Sheathed);
 	PlayerInputComponent->BindAction("F", IE_Pressed, this, &AARPGUnit::Parring);
 
-	PlayerInputComponent->BindAction("LCntl", IE_Pressed, this, &AARPGUnit::LockOn);
+	//PlayerInputComponent->BindAction("LCntl", IE_Pressed, this, &AARPGUnit::LockOn);
 	//일단 보류
 }
 
@@ -254,13 +254,15 @@ void AARPGUnit::MoveRight(float Value)
 
 void AARPGUnit::LookUp(float AxisValue)
 {
-	if (!bTargeting || !bParringHit)
+	//if (!bTargeting || !bParringHit)
+	if (!bParringHit)
 		AddControllerPitchInput(AxisValue * MouseSensivity * GetWorld()->GetDeltaSeconds());
 }
 
 void AARPGUnit::LookRight(float AxisValue)
 {
-	if(!bTargeting || !bParringHit)
+	//if(!bTargeting || !bParringHit)
+	if (!bParringHit)
 		AddControllerYawInput(AxisValue * MouseSensivity * GetWorld()->GetDeltaSeconds());
 }
 
@@ -270,6 +272,19 @@ void AARPGUnit::SpecialAttack()
 	bSpecialAttackMode = true;
 	bSpecialAttackPlaying = true;
 	UnitState.ATK = UnitState.NormallyATK * 2.0; // 일시적 펌핑
+
+	FPSWeapon->PlayWeaponSound(EWeaponSFX::SpecialAttackSFX);
+	//여기도 스폐셜 어택 사운드를 넣자.
+}
+
+
+void AARPGUnit::ParringSwingSFX()
+{
+	// 패링 스윙 사운드 출력
+	if (FPSShield)
+	{
+		FPSShield->PlayWeaponSound(EWeaponSFX::SwingSFX);
+	}
 }
 
 void AARPGUnit::ZeroAP()
@@ -323,7 +338,7 @@ void AARPGUnit::LMB()
 		{
 			SpecialAttack();
 			FPSMeshAnimInstance->ParringAttack();
-			TPSMeshAnimInstance->ParringAttack();
+			//TPSMeshAnimInstance->ParringAttack();
 		}
 		else if(!FPSMeshAnimInstance->bMontagePlaying && !bAttacking) // 몽타주 실행 중이 아닐 경우
 		{
@@ -460,7 +475,7 @@ void AARPGUnit::Sheathed()
 	AttackEnd();
 
 	FPSMeshAnimInstance->WeaponOnOff(!bNormalMode);
-	TPSMeshAnimInstance->WeaponOnOff(!bNormalMode);
+	//TPSMeshAnimInstance->WeaponOnOff(!bNormalMode);
 }
 
 void AARPGUnit::Parring()
@@ -468,7 +483,7 @@ void AARPGUnit::Parring()
 	if (bBlocking && !bParringPlaying && !bHitting)
 	{
 		FPSMeshAnimInstance->Parring();
-		TPSMeshAnimInstance->Parring();
+		//TPSMeshAnimInstance->Parring();
 	}
 }
 
@@ -560,17 +575,10 @@ bool AARPGUnit::Hit(bool bBlockingHit)
 	if (!FPSMeshAnimInstance && !TPSMeshAnimInstance)
 		return false;
 
-	if (bAttacking)
-	{
-		WeaponOverlapEnd();
-		AttackEnd();
-	}
+	
 
 
-	bHitting = true;
-	bParringPlaying = false;
-	bParring = false;
-	bParringHit = false;
+
 
 	if (!bBlockingHit)
 	{
@@ -579,23 +587,41 @@ bool AARPGUnit::Hit(bool bBlockingHit)
 
 		if (bHitMontagePlay)
 		{
+			bHitting = true;
+			bParringPlaying = false;
+			bParring = false;
+			bParringHit = false;
+
 			FPSMeshAnimInstance->Hit(EUnitMode::BattleMode);
-			TPSMeshAnimInstance->Hit(EUnitMode::BattleMode);
+			//TPSMeshAnimInstance->Hit(EUnitMode::BattleMode);
+
+			if (bAttacking)
+			{
+				WeaponOverlapEnd();
+				//AttackEnd();
+			}
+
 			PlayCameraShake(BP_BattleMode_CS);
 		}
 		else
 		{
 			PlayCameraShake(BP_PoiseHitMode_CS);
+
 			// bHitting은 히트모션시 다른 애니메이션이 실행하는 것을 방지하는 용인데,
 			// 강인도가 충분하여 히트모션이 발생하지않을경우에는 그냥 false 처리해야한다.
 			// 그래야 다른 애니메이션 실행가능 ex) 패링모션은 Hitting중에 실행되지않음.
-			bHitting = false; 
+			//bHitting = false; 
 		}
 	}
 	else
 	{
+		bHitting = true;
+		bParringPlaying = false;
+		bParring = false;
+		bParringHit = false;
+
 		FPSMeshAnimInstance->Hit(EUnitMode::BlockingMode);
-		TPSMeshAnimInstance->Hit(EUnitMode::BlockingMode);
+		//TPSMeshAnimInstance->Hit(EUnitMode::BlockingMode);
 		PlayCameraShake(BP_BlockingMode_CS);
 	}
 
@@ -747,6 +773,7 @@ void AARPGUnit::HitEnd()
 {
 	bHitting = false;
 	bParringHit = false;
+	AttackEnd();
 
 	//맞고 나서도 RMB가 눌려져있으면 블럭킹이 알아서 되게 한다.
 	if (bRMBPush)
@@ -767,62 +794,62 @@ void AARPGUnit::ShieldZeroAP()
 	RMBReleased();
 	PlayCameraShake(BP_BlockingZeroAPMode_CS);
 	FPSMeshAnimInstance->ShieldZeroAP();
-	TPSMeshAnimInstance->ShieldZeroAP();
+	//TPSMeshAnimInstance->ShieldZeroAP();
 }
 
 
 // 적 락온
-void AARPGUnit::LockOn()
-{
-	if (bTargeting)
-	{
-		bTargeting = false;
-		LockOnAddViewport(false);
-		return;
-	}
+//void AARPGUnit::LockOn()
+//{
+//	if (bTargeting)
+//	{
+//		bTargeting = false;
+//		LockOnAddViewport(false);
+//		return;
+//	}
+//
+//
+//	TArray<AActor*> OutActors;
+//	APawn* TargetPawn = nullptr;
+//
+//	bool bResult = UKismetSystemLibrary::SphereOverlapActors(GetWorld(), GetActorLocation(), LockOnRadius, ObjectType, nullptr, IgnoreActor, OutActors);
+//	DrawDebugSphere(GetWorld(), GetActorLocation(), LockOnRadius, 20, bResult ? FColor::Green : FColor::Red, false, 3.0f);
+//
+//	if (bResult)
+//	{
+//		float Distance = LockOnRadius;
+//		for (auto OutActor : OutActors)
+//		{
+//			float temp = GetDistanceTo(OutActor);
+//			Distance > temp ? temp : Distance;
+//			TargetPawn = Cast<APawn>(OutActor);
+//			if (TargetPawn)
+//			{
+//				TargetingPawn = TargetPawn;
+//				bTargeting = true;
+//				LockOnAddViewport(true);
+//				_DEBUG("Lock True");
+//			}
+//		}
+//
+//		return;
+//	}
+//}
+//
+//void AARPGUnit::LockOnSetPosition(FVector TargetPos)
+//{
+//	if (OwnerController)
+//	{
+//		FVector2D Pos;
+//		OwnerController->ProjectWorldLocationToScreen(TargetPos, Pos);
+//		OwnerController->SetLockPosition(Pos);
+//	}
+//}
 
-
-	TArray<AActor*> OutActors;
-	APawn* TargetPawn = nullptr;
-
-	bool bResult = UKismetSystemLibrary::SphereOverlapActors(GetWorld(), GetActorLocation(), LockOnRadius, ObjectType, nullptr, IgnoreActor, OutActors);
-	DrawDebugSphere(GetWorld(), GetActorLocation(), LockOnRadius, 20, bResult ? FColor::Green : FColor::Red, false, 3.0f);
-
-	if (bResult)
-	{
-		float Distance = LockOnRadius;
-		for (auto OutActor : OutActors)
-		{
-			float temp = GetDistanceTo(OutActor);
-			Distance > temp ? temp : Distance;
-			TargetPawn = Cast<APawn>(OutActor);
-			if (TargetPawn)
-			{
-				TargetingPawn = TargetPawn;
-				bTargeting = true;
-				LockOnAddViewport(true);
-				_DEBUG("Lock True");
-			}
-		}
-
-		return;
-	}
-}
-
-void AARPGUnit::LockOnSetPosition(FVector TargetPos)
-{
-	if (OwnerController)
-	{
-		FVector2D Pos;
-		OwnerController->ProjectWorldLocationToScreen(TargetPos, Pos);
-		OwnerController->SetLockPosition(Pos);
-	}
-}
-
-void AARPGUnit::LockOnAddViewport(bool bFlag)
-{
-	OwnerController->LockOnAddViewport(bFlag);
-}
+//void AARPGUnit::LockOnAddViewport(bool bFlag)
+//{
+//	OwnerController->LockOnAddViewport(bFlag);
+//}
 
 
 void AARPGUnit::PlaySound(class USoundBase* Sound)

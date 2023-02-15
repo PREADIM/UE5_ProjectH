@@ -161,6 +161,10 @@ public:
 	UPROPERTY(EditAnywhere)
 		TMap<ESFXMode_FstBoss, FSoundAndAttenuation> SFXSounds;
 
+	UPROPERTY(EditAnywhere)
+		class UParticleSystem* DeathEffect;
+
+
 	//----------------------------------
 
 

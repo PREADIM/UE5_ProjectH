@@ -24,6 +24,9 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		class UAudioComponent* Audio;
 
+	UPROPERTY(EditAnywhere)
+		bool bDontEffectVisible;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

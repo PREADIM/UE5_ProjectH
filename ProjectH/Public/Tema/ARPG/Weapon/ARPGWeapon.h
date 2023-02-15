@@ -16,7 +16,9 @@ enum class EWeaponSFX : uint8
 	PhysicsOverlapSFX UMETA(DisplayName = "PhysicsOverlapSFX"),
 	SwingSFX UMETA(DisplayName = "SwingSFX"),
 	ChargeSwingSFX UMETA(DisplayName = "ChargeSwingSFX"),
-	AttackHitSFX UMETA(DisplayName = "AttackHitSFX")
+	AttackHitSFX UMETA(DisplayName = "AttackHitSFX"),
+	ParringHitSFX UMETA(DisplayName = "ParringHitSFX"),
+	SpecialAttackSFX UMETA(DisplayName = "SpecialAttackSFX")
 };
 
 

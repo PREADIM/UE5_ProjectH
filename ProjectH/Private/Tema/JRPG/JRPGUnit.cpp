@@ -163,6 +163,8 @@ float AJRPGUnit::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent,
 	float DamageApplied = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
 
+	// 여기서 디버프 상태를 확인한 뒤에 해당 디버프를 계산한다. (방어력 감소등)
+
 	float DFEDamage = 100 / (100 + CharacterStat.Shelid);
 	float Damage = DamageAmount * DFEDamage;
 
@@ -324,6 +326,8 @@ void AJRPGUnit::TargetAttack(float ATK)
 {
 	if (OwnerController)
 	{
+		// 여기서 디버프 계산?
+
 		FDamageEvent DamageEvent;
 		OwnerController->TargetUnit->TakeDamage(ATK, DamageEvent, OwnerController, this);
 	}
@@ -336,6 +340,8 @@ void AJRPGUnit::TargetManyAttack(float ATK)
 	{
 		for (AJRPGUnit* Unit : OwnerController->TargetUnits)
 		{
+			// 여기서 디버프 계산?
+
 			FDamageEvent DamageEvent;
 			Unit->TakeDamage(ATK, DamageEvent, OwnerController, this);
 		}

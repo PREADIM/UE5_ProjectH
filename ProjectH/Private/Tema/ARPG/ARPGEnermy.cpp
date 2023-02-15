@@ -22,6 +22,7 @@ AARPGEnermy::AARPGEnermy()
 void AARPGEnermy::BeginPlay()
 {
 	Super::BeginPlay();
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Falling);
 
 	//★★ CreateDefaultSubobject를 하면 해당 클래스를 가진 액터들이 CDO를 공유하게 되므로 NewObject로 따로 할당.
 	AttackComponent = NewObject<UARPGAttackComponent>(this, UARPGAttackComponent::StaticClass());
@@ -29,7 +30,7 @@ void AARPGEnermy::BeginPlay()
 
 	if (AttackComponent)
 		AttackComponent->Init(BP_Attacks);
-
+	
 	UnitState.Init(this); // 스탯 초기화.
 }
 
@@ -90,6 +91,8 @@ void AARPGEnermy::ZeroAP()
 
 
 }
+
+
 
 
 

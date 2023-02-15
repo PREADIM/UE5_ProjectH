@@ -64,6 +64,8 @@ public:
 
 	----------------------------*/
 
+	virtual void SetHiddenActor(bool bFlag) {} // 플레이어가 가까울때 로드
+
 
 	virtual void Tick(float DeltaSeconds);
 	virtual void PostInitializeComponents();
@@ -167,6 +169,7 @@ public:
 
 
 public:
+
 	UFUNCTION(BlueprintImplementableEvent)
 		void EnermyMoving(); // 블루프린트에서 각 적에 알맞는 행동 하게하기 실질적인 Tick에서 실행할 메인 함수.
 

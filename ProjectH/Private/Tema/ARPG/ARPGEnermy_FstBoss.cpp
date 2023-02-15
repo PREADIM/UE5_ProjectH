@@ -123,27 +123,29 @@ bool AARPGEnermy_FstBoss::Hit(bool bBlockingHit)
 	if (!FstBossAnimInstance)
 		return false;
 
-	bDontMoving = true;
-	bHitting = true;
-	bParringHit = false;
-
-	if (bAttacking)
-	{
-		WeaponOverlapEnd(3);
-		AttackEnd();
-	}
+	
 
 	bool bHitMontagePlay = Super::Hit(bBlockingHit); // 강인도 검사
 	// 적의 경우 AP는 그로기 여부이고, 강인도는 슈퍼아머냐 아니냐의 차이이다.
 
 	if (bHitMontagePlay)
 	{
+		bDontMoving = true;
+		bHitting = true;
+		bParringHit = false;
+
+		if (bAttacking)
+		{
+			WeaponOverlapEnd(3);
+			//AttackEnd();
+		}
+
 		FstBossAnimInstance->PlayHitMontage();
 		bMoving = false;
 	}
 	else
 	{
-		HitEnd();
+		//HitEnd();
 	}
 
 	return true;
@@ -184,6 +186,7 @@ void AARPGEnermy_FstBoss::HitEnd()
 	bDontMoving = false;
 	bHitting = false;
 	bParringHit = false;
+	AttackEnd();
 }
 
 void AARPGEnermy_FstBoss::Attack(int32 index)
@@ -268,7 +271,7 @@ void AARPGEnermy_FstBoss::AttackEnd()
 		bDontMoving = false;
 
 	OnAttack.Broadcast();
-	OnAttack.Clear();
+	//OnAttack.Clear();
 }
 
 void AARPGEnermy_FstBoss::WeaponOverlapEnd(int32 Num)
