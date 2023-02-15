@@ -187,7 +187,7 @@ void AARPGUnit::PostInitializeComponents()
 	Super::PostInitializeComponents();
 
 	FPSMeshAnimInstance = Cast<UARPG_UnitAnimInstance>(FPSMesh->GetAnimInstance());
-	//TPSMeshAnimInstance = Cast<UARPG_TPSAnimInstance>(GetMesh()->GetAnimInstance());
+	TPSMeshAnimInstance = Cast<UARPG_TPSAnimInstance>(GetMesh()->GetAnimInstance());
 }
 
 // Called to bind functionality to input
@@ -338,7 +338,7 @@ void AARPGUnit::LMB()
 		{
 			SpecialAttack();
 			FPSMeshAnimInstance->ParringAttack();
-			//TPSMeshAnimInstance->ParringAttack();
+			TPSMeshAnimInstance->ParringAttack(); // 루트모션은 디폴트 메시에서 실행되므로. 동시실행
 		}
 		else if(!FPSMeshAnimInstance->bMontagePlaying && !bAttacking) // 몽타주 실행 중이 아닐 경우
 		{

@@ -17,7 +17,7 @@ enum class EWeaponSFX : uint8
 	SwingSFX UMETA(DisplayName = "SwingSFX"),
 	ChargeSwingSFX UMETA(DisplayName = "ChargeSwingSFX"),
 	AttackHitSFX UMETA(DisplayName = "AttackHitSFX"),
-	ParringHitSFX UMETA(DisplayName = "ParringHitSFX"),
+	ParringHitSFX UMETA(DisplayName = "ParringHitSFX"), // 패링당했을때 무기에서 날 소리
 	SpecialAttackSFX UMETA(DisplayName = "SpecialAttackSFX")
 };
 

@@ -80,6 +80,7 @@ float AARPGEnermy::TakeDamageCalculator(AARPGWeapon* DamageWeapon, FDamageEvent 
 void AARPGEnermy::Death()
 {
 	Super::Death();
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Falling);
 	SetActorTickEnabled(false);
 	//DeathCollsionEnabled();
 	OwnerAIController->OnUnPossess();

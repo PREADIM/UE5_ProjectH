@@ -195,6 +195,9 @@ void UARPG_UnitAnimInstance::AnimNotify_BlockStart()
 	if (OwnerUnit)
 	{
 		OwnerUnit->bBlocking = true;
+		float AP = OwnerUnit->UnitState.AP - OwnerUnit->RMB_AP;
+		OwnerUnit->UnitState.SetAP(AP);
+		OwnerUnit->OnAttackAP.Broadcast(); // AP ±ð´Â ¿¬Ãâ
 		OwnerUnit->GetCharacterMovement()->MaxWalkSpeed = OwnerUnit->BlockSpeed;
 	}
 }
