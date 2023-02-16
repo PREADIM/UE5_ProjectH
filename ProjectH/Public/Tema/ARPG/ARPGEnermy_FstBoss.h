@@ -96,4 +96,16 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TSubclassOf<class AARPGFstBoss_Projectile> BP_E_Projectile;
 
+
+
+	/*------------------------------------------------*/
+	// ½ÃÄö½º
+
+	UPROPERTY()
+		class ULevelSequencePlayer* SequencePlayer;
+	UPROPERTY(EditAnywhere)
+		class ULevelSequence* BossStartSequence;
+
+	void PlayBossStartSequence();
+
 };

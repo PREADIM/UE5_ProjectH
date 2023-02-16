@@ -9,17 +9,18 @@ void UARPGWidget_State::Init(AARPGUnitBase* Unit)
 
 	if (!OwnerUnit)
 		return;
-
-	LerpHPPercent = 0.f;
 }
 
 void UARPGWidget_State::NativeConstruct()
 {
 	Super::NativeConstruct();
 
+
+	LerpHPPercent = 1.f;
 	HP->SetPercent(1.f);
 	PrevHP->SetPercent(1.f);
 	OwnerUnit->OnDamage.AddUFunction(this, FName("SetHP"));
+
 
 	AP->SetPercent(1.f);
 	PrevAP->SetPercent(0.f);
@@ -35,12 +36,12 @@ void UARPGWidget_State::SetHP()
 	CurrentHPPercent = OwnerUnit->UnitState.HP / OwnerUnit->UnitState.NormallyHP;
 	HP->SetPercent(CurrentHPPercent);
 
-	GetWorld()->GetTimerManager().SetTimer(PrevHPHandle, this, &UARPGWidget_State::SetPrevHP, GetWorld()->GetDeltaSeconds(), true, 2.f);
+	GetWorld()->GetTimerManager().SetTimer(PrevHPHandle, this, &UARPGWidget_State::SetPrevHP, GetWorld()->GetDeltaSeconds(), true, 1.f);
 }
 
 void UARPGWidget_State::SetPrevHP()
 {
-	LerpHPPercent = FMath::FInterpTo(LerpHPPercent, CurrentHPPercent, GetWorld()->GetDeltaSeconds(), 3.f);
+	LerpHPPercent = FMath::FInterpTo(LerpHPPercent, CurrentHPPercent, GetWorld()->GetDeltaSeconds(), 5.f);
 	PrevHP->SetPercent(LerpHPPercent);
 
 	if (LerpHPPercent <= CurrentHPPercent)
@@ -75,7 +76,7 @@ void UARPGWidget_State::SetAP()
 
 void UARPGWidget_State::SetPrevAP()
 {
-	LerpAPPercent = FMath::FInterpTo(LerpAPPercent, CurrentAPPercent, GetWorld()->GetDeltaSeconds(), 15.f);
+	LerpAPPercent = FMath::FInterpTo(LerpAPPercent, CurrentAPPercent, GetWorld()->GetDeltaSeconds(), 12.f);
 	PrevAP->SetPercent(LerpAPPercent);
 
 	if (LerpAPPercent <= CurrentAPPercent)

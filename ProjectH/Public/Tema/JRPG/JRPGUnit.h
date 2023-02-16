@@ -5,6 +5,7 @@
 #include "GameFramework/Character.h"
 #include "Tema/JRPG/JRPGCharStat.h"
 #include "Tema/JRPG/JRPGUnitSkill.h"
+#include "PhysicalSoundStruct.h"
 #include "JRPGUnit.generated.h"
 
 
@@ -42,6 +43,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	virtual void PossessedBy(AController* NewController) override;
+	virtual void PostInitializeComponents() override;
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -141,9 +143,17 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void TargetManyAttack(float ATK); // 여러 마리를 때린다.
 
+
+	// LMB 어택일때 블루프린트에서 실행할 것들.
+	UFUNCTION(BlueprintImplementableEvent)
+		void PlayLMBAttack();
+
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		class AJRPGPlayerController* OwnerController;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		class UAnimInstance* AnimInstance;
 
 
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
@@ -223,5 +233,22 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UAnimMontage* HitAnim;
 
+
+	// 피지컬 머터리얼 사운드
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TMap<TEnumAsByte<EPhysicalSurface>, FPhysicalSoundStruct> PhysicalAllSounds;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		FPhysicalSoundStruct PhysicalSounds;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float SurfaceDistance = 150.f; // 땅끝의 거리
+
+	void SetPhysicalSound();
+
+	// 레벨 스타트 몽타주
+	UPROPERTY(EditAnywhere)
+		class UAnimMontage* BattleStartMontage;
+	void PlayStartMontage();
 
 };

@@ -44,12 +44,12 @@ void UARPGWidget_BattleHP::SetHP()
 	}*/
 
 	// ClearTime을 하지않아도 어처피 SetTimer를 하면 새롭게 씌여진다.
-	GetWorld()->GetTimerManager().SetTimer(PrevHPHandle, this, &UARPGWidget_BattleHP::SetPrevHP, GetWorld()->GetDeltaSeconds(), true, 2.f);
+	GetWorld()->GetTimerManager().SetTimer(PrevHPHandle, this, &UARPGWidget_BattleHP::SetPrevHP, GetWorld()->GetDeltaSeconds(), true, 1.f);
 }
 
 void UARPGWidget_BattleHP::SetPrevHP()
 {
-	LerpHPPercent = FMath::FInterpTo(LerpHPPercent, CurrentHPPercent, GetWorld()->GetDeltaSeconds(), 3.f);
+	LerpHPPercent = FMath::FInterpTo(LerpHPPercent, CurrentHPPercent, GetWorld()->GetDeltaSeconds(), 5.f);
 	BattleHP_Prev->SetPercent(LerpHPPercent);
 
 	if (LerpHPPercent <= CurrentHPPercent)

@@ -6,6 +6,9 @@
 #include "Tema/ARPG/ARPGUnitBase.h"
 #include "Tema/ARPG/Widget/ARPGWidgetMain.h"
 #include "Tema/ARPG/Widget/ARPGWidget_BossHPView.h"
+#include <LevelSequencePlayer.h>
+#include <LevelSequenceActor.h>
+#include <MovieSceneSequencePlayer.h>
 
 AARPGPlayerController::AARPGPlayerController()
 {
@@ -168,4 +171,22 @@ void AARPGPlayerController::StopSound()
 
 	if (AudioComponent->IsPlaying())
 		AudioComponent->Stop();
+}
+
+
+float AARPGPlayerController::PlayDeathSequence()
+{
+	SequencePlayer = nullptr;
+
+	ALevelSequenceActor* LQActor;
+	if (DeathSequence)
+		SequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(GetWorld(), DeathSequence, FMovieSceneSequencePlaybackSettings(), LQActor);
+
+	if (SequencePlayer)
+	{
+		SequencePlayer->Play();
+		return SequencePlayer->GetEndTime().AsSeconds();
+	}
+
+	return 0.0f;
 }

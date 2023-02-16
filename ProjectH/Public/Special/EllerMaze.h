@@ -113,6 +113,9 @@ public:
 	UPROPERTY()
 		TArray<FIndexAndRotation> SpawnIndexs; // 스폰할 인덱스만 넣어두고 마지막에 스폰.
 
+	UPROPERTY()
+		TArray<class AEnermySpawnActor*> EnermySpawner;
+
 public:
 	void CreateMaze(); // 호출하면 미로 생성.
 

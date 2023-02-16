@@ -43,10 +43,12 @@ public:
 		TArray<UEnermyIconButton*> Buttons; 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TSubclassOf<class UUserWidget> BP_LockOnIcon;
+		TSubclassOf<class ULockOnWidget> BP_LockOnIcon;
 	UPROPERTY()
-		class UUserWidget* LockOnIcon;
+		class ULockOnWidget* LockOnIcon;
 
+	UPROPERTY()
+		class UCanvasPanelSlot* CanvasSlot;
 
 	FVector TargetLockOn;
 	FVector2D Pos;

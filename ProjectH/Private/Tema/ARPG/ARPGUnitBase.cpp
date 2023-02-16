@@ -5,6 +5,7 @@
 #include "Components/WidgetComponent.h"
 #include "Tema/ARPG/Widget/ARPGWidget_BattleHP.h"
 
+
 // Sets default values
 AARPGUnitBase::AARPGUnitBase()
 {
@@ -115,12 +116,11 @@ void AARPGUnitBase::Death()
 {
 	bDeath = true;
 	FTimerHandle Handle;
-	FTimerHandle DeathHandle;
-	GetWorld()->GetTimerManager().SetTimer(Handle, this, &AARPGUnitBase::BattleHPWidgetHide, 5.0f, false);
+	GetWorld()->GetTimerManager().SetTimer(Handle, this, &AARPGUnitBase::BattleHPWidgetHide, 4.0f, false);
 	/*GetWorld()->GetTimerManager().SetTimer(DeathHandle, FTimerDelegate::CreateLambda([&]()
-		{
-			Destroy();
-		}), 20.f, false);*/
+	{
+		Destroy();		
+	}), 20.f, false);*/
 	// 죽었을때 삭제 함수는 일단 보류. 미로에서 길찾을때 표식용으로 사용가능
 }
 

@@ -71,4 +71,16 @@ public:
 		class UARPGWidget_BossHPView* WidgetBossHP;
 
 
+
+	/*------------------------------------------------*/
+	// 시퀀스
+	UPROPERTY()
+		class ULevelSequencePlayer* SequencePlayer;
+	UPROPERTY(EditAnywhere)
+		class ULevelSequence* DeathSequence;
+
+	float PlayDeathSequence();
+	//배틀 종료 후의 시퀀스.
+
+
 };

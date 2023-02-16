@@ -11,6 +11,8 @@
 #include "Tema/JRPG/JRPGCamera.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "GameMode/ProjectHGameInstance.h"
+#include "Animation/AnimInstance.h"
+
 
 // Sets default values
 AJRPGUnit::AJRPGUnit()
@@ -75,6 +77,8 @@ void AJRPGUnit::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	SetPhysicalSound();
+
 	if (bIsJRPGUnit) // 턴제 유닛으로 소환된 경우.
 	{
 		if (OwnerController->TargetUnit)
@@ -101,8 +105,13 @@ void AJRPGUnit::PossessedBy(AController* NewController)
 			//★ 대표 캐릭터 변경로직 실행시 여기서 해당 캐릭터의 정보를 위젯에 초기화하는 작업 수행.
 		}
 	}
-	
+}
 
+void AJRPGUnit::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	AnimInstance = Cast<UAnimInstance>(GetMesh()->GetAnimInstance());
 }
 
 
@@ -230,13 +239,14 @@ float AJRPGUnit::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent,
 
 void AJRPGUnit::LMB()
 {
-	if (LMBAnim)
+	if (LMBAnim && !GetCharacterMovement()->IsFalling())
 	{
 		if (bIsLMBAttack || OwnerController->GameType == EGameModeType::UI)
 			return;
 
 		CallLMB();
 		PlayAnimMontage(LMBAnim); // 배틀 시작 공격 애니메이션 실행.
+		PlayLMBAttack();
 		bIsLMBAttack = true;
 	}
 }
@@ -419,4 +429,26 @@ void AJRPGUnit::AttackEnd()
 void AJRPGUnit::CallAIAttackEnd()
 {
 	OnAIAttackEnd.Broadcast();
+}
+
+
+
+void AJRPGUnit::SetPhysicalSound()
+{
+	TEnumAsByte<EPhysicalSurface> PS = TracePysicalSurface(this, SurfaceDistance);
+
+	if (!PhysicalAllSounds.Find(PS))
+		return;
+
+	PhysicalSounds = PhysicalAllSounds[PS]; // 해당하는 표면의 사운드 가져오기
+
+}
+
+
+void AJRPGUnit::PlayStartMontage()
+{
+	if (AnimInstance && BattleStartMontage)
+	{
+		AnimInstance->Montage_Play(BattleStartMontage);
+	}
 }

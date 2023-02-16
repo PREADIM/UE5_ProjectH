@@ -11,6 +11,7 @@ UBTTask_ARPGAttack::UBTTask_ARPGAttack()
 	NodeName = TEXT("ARPGAttack");
 	bNotifyTick = true; // TickTask를 사용하려면 true 해야한다.
 	bCreateNodeInstance = true; // BT는 같은 메모리를 공유하기때문에 CreateNodeInstance를 true 해주면 BT가 할당된 AI마다 고유의 AI노트가 생성됨.
+
 }
 
 EBTNodeResult::Type UBTTask_ARPGAttack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
@@ -59,7 +60,6 @@ void UBTTask_ARPGAttack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Node
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	}
 }
-
 
 
 void UBTTask_ARPGAttack::AttackEnd()

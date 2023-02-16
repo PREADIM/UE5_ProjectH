@@ -19,4 +19,7 @@ public:
 	AARPGGameMode();
 	virtual void PostLogin(APlayerController* Login) override;
 	
+
+public:
+	void Restart();
 };

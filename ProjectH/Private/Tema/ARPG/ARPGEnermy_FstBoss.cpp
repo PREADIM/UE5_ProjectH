@@ -6,12 +6,17 @@
 #include "Tema/ARPG/ARPGAttackComponent.h"
 #include "Tema/ARPG/AI/FstBoss/ARPG_FstBossAnimInstance.h"
 #include "Tema/ARPG/ARPGUnit.h"
+#include <LevelSequencePlayer.h>
+#include <LevelSequenceActor.h>
+#include <MovieSceneSequencePlayer.h>
 
 AARPGEnermy_FstBoss::AARPGEnermy_FstBoss()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	UnitState.NormallyAP = 500.f;
 	EnermyType = EEnermyType::Boss;
+
+	SetActorHiddenInGame(true);
 }
 
 void AARPGEnermy_FstBoss::BeginPlay()
@@ -271,7 +276,7 @@ void AARPGEnermy_FstBoss::AttackEnd()
 		bDontMoving = false;
 
 	OnAttack.Broadcast();
-	//OnAttack.Clear();
+	OnAttack.Clear();
 }
 
 void AARPGEnermy_FstBoss::WeaponOverlapEnd(int32 Num)
@@ -330,5 +335,29 @@ void AARPGEnermy_FstBoss::SetWeaponCollision(bool bFlag, int32 index)
 			RightWeapon->PlayWeaponSound(EWeaponSFX::SwingSFX);
 		break;
 	}
+}
+
+
+
+void AARPGEnermy_FstBoss::PlayBossStartSequence()
+{
+	SequencePlayer = nullptr;
+	ALevelSequenceActor* LQActor;
+	if (BossStartSequence)
+		SequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(GetWorld(), BossStartSequence, FMovieSceneSequencePlaybackSettings(), LQActor);
+
+	if (SequencePlayer)
+	{
+		SequencePlayer->Play();
+		float EndTime = SequencePlayer->GetEndTime().AsSeconds();
+
+		FTimerHandle BossHandle;
+		GetWorld()->GetTimerManager().SetTimer(BossHandle, FTimerDelegate::CreateLambda([&]()
+		{
+			SetActorHiddenInGame(false);
+		}), 0.2f, false, EndTime);
+	}
+
+
 }
 

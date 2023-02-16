@@ -13,6 +13,9 @@
 #include "Components/HorizontalBox.h"
 #include "Tema/JRPG/BattleUI/EnermyIconButton.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Tema/JRPG/BattleUI/LockOnWidget.h"
+#include "Components/CanvasPanelSlot.h"
+#include "Components/CanvasPanel.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
 
 void UJRPGBattleWidget::NativeConstruct()
@@ -29,13 +32,13 @@ void UJRPGBattleWidget::NativeTick(const FGeometry& MyGeometry, const float InDe
 
 	if (TargetUnit)
 	{	
-		TargetLockOn = TargetUnit->GetActorLocation();
+		TargetLockOn = TargetUnit->GetMesh()->GetSocketLocation(FName("pelvis"));
 		OwnerController->ProjectWorldLocationToScreen(TargetLockOn, Pos);
 		float Scale = UWidgetLayoutLibrary::GetViewportScale(GetWorld()->GetGameViewport());
-
-		//FVector2D(Pos.X / Scale, Pos.Y / Scale)
-		//LockOnIcon->SetPositionInViewport(Pos);
-		//_DEBUG("%f, %f", Pos.X, Pos.Y);
+		if (CanvasSlot)
+		{
+			CanvasSlot->SetPosition(FVector2D(Pos.X / Scale, (Pos.Y / Scale) - 30.f));
+		}
 	}
 
 }
@@ -56,7 +59,9 @@ void UJRPGBattleWidget::Init()
 
 	if (BP_LockOnIcon)
 	{
-		LockOnIcon = CreateWidget<UUserWidget>(GetWorld(), BP_LockOnIcon);
+		//LockOnIcon = CreateWidget<ULockOnWidget>(GetWorld(), BP_LockOnIcon);
+		/*if(LockOnIcon)
+			CanvasSlot = Cast<UCanvasPanelSlot>(LockOnIcon->Image->Slot);*/
 	}
 }
 

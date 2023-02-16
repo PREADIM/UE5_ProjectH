@@ -7,6 +7,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/KismetmathLibrary.h"
 #include "Tema/ARPG/ARPG_UnitAnimInstance.h"
+#include "Tema/ARPG/ARPGGameMode.h"
 
 // Sets default values
 AARPGUnit::AARPGUnit()
@@ -216,7 +217,7 @@ void AARPGUnit::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("R", IE_Pressed, this, &AARPGUnit::Sheathed);
 	PlayerInputComponent->BindAction("F", IE_Pressed, this, &AARPGUnit::Parring);
 
-	//PlayerInputComponent->BindAction("LCntl", IE_Pressed, this, &AARPGUnit::LockOn);
+	PlayerInputComponent->BindAction("LCntl", IE_Pressed, this, &AARPGUnit::Death);
 	//일단 보류
 }
 
@@ -271,7 +272,7 @@ void AARPGUnit::SpecialAttack()
 {
 	bSpecialAttackMode = true;
 	bSpecialAttackPlaying = true;
-	UnitState.ATK = UnitState.NormallyATK * 2.0; // 일시적 펌핑
+	UnitState.ATK = UnitState.NormallyATK * 4.0; // 일시적 펌핑
 
 	FPSWeapon->PlayWeaponSound(EWeaponSFX::SpecialAttackSFX);
 	//여기도 스폐셜 어택 사운드를 넣자.
@@ -530,6 +531,16 @@ void AARPGUnit::Death()
 		DeathCamera->SetActive(true);
 	}
 
+	FTimerHandle DeathHandle;
+	GetWorld()->GetTimerManager().SetTimer(DeathHandle, FTimerDelegate::CreateLambda([&]()
+	{
+		AARPGGameMode* GM = Cast<AARPGGameMode>(GetWorld()->GetAuthGameMode());
+		if (GM)
+		{
+			GM->Restart();
+		}
+
+	}), 5.f, false);
 
 }
 
@@ -574,10 +585,6 @@ bool AARPGUnit::Hit(bool bBlockingHit)
 {
 	if (!FPSMeshAnimInstance && !TPSMeshAnimInstance)
 		return false;
-
-	
-
-
 
 
 	if (!bBlockingHit)

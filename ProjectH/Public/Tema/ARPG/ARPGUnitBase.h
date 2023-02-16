@@ -64,6 +64,8 @@ public:
 	float CalculAPDamage(float APDamage);
 	bool CanUseAP(); // AP가 쓸수있나?
 
+
+
 	// 패링당할수 있는지 판단하는 함수. (내적으로 각도 계산 함수 필요).
 	bool ParringHitFunc(FVector TargetLocation);
 	//TargetCharacter와 this 캐릭터의 내적 연산. 위치 값과, 원하는 각도를 대입해서 bool로 받아옴.
@@ -90,8 +92,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TMap<TEnumAsByte<EPhysicalSurface>, FPhysicalSoundStruct> PhysicalAllSounds;
-	/*UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		TArray<class USoundBase*> PhysicalSounds;*/
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		FPhysicalSoundStruct PhysicalSounds;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

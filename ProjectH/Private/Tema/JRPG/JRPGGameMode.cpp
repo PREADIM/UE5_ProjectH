@@ -213,11 +213,13 @@ AJRPGUnit* AJRPGGameMode::GetCharacterSpawn(int32 CharacterNum, FTransform UnitL
 	{
 		AJRPGUnit* Unit = GetWorld()->SpawnActor<class AJRPGUnit>(List->BP_JRPGCharacter, UnitLocation, SpawnParameters);
 		if (Unit)
+		{
 			Unit->CharNum = CharacterNum;
-		return Unit;
+			return Unit;
+		}
 	}	
-	else
-		return nullptr;
+
+	return nullptr;
 }
 
 
@@ -474,7 +476,6 @@ void AJRPGGameMode::SetOwnerUnits()
 		if (Unit != nullptr)
 		{
 			Unit->OwnerController = OwnerController;
-		
 			if (OwnerController->HaveCharLevels.Find(CharList[i]) != nullptr)
 			{
 				Unit->ThisUnitBattleUnit(true);
@@ -484,6 +485,9 @@ void AJRPGGameMode::SetOwnerUnits()
 			}
 			
 			OwnerUnits.HeapPush(FPriorityUnit(Unit), PriorityUnitFunc());
+
+			Unit->PlayStartMontage();
+			// 레벨 스타트 몽타주 실행하기.
 		}
 	}
 }
@@ -524,6 +528,9 @@ void AJRPGGameMode::SetEnermyUnits(TArray<FEnermys> Enermys)
 
 			EnermyUnits.HeapPush(FPriorityUnit(Unit), PriorityUnitFunc());
 			EnermyList.Add(Unit); // 적의 실질적인 리스트.
+
+			Unit->PlayStartMontage();
+			// 레벨 스타트 몽타주 실행하기.
 		}
 
 	}

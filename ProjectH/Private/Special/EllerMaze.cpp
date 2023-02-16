@@ -29,6 +29,11 @@ void AEllerMaze::CreateMaze()
 	if (!UnionList.IsEmpty())
 		UnionList.Empty();
 
+	/*if (!EnermySpawner.IsEmpty())
+	{
+		for(AEnermySpawnActor : )
+	}*/
+
 	UnionList.Init(0, MAZE_COUNT * MAZE_COUNT);
 	Init();
 	Start();
@@ -332,7 +337,7 @@ void AEllerMaze::SpawnEnermy()
 			break;
 		}
 	
-		GetWorld()->SpawnActor<AEnermySpawnActor>(BP_EnermySapwn, MazeActors[IR.Index]->GetActorLocation() + FVector(0.f, 0.f, 200.f), Rot, Param);
+		EnermySpawner.Emplace(GetWorld()->SpawnActor<AEnermySpawnActor>(BP_EnermySapwn, MazeActors[IR.Index]->GetActorLocation() + FVector(0.f, 0.f, 200.f), Rot, Param));
 	}
 }
 
@@ -352,32 +357,4 @@ MazeDirection AEllerMaze::RetMazeDir(OpenWallDir OWD)
 
 	return MazeDirection::East;
 
-	/*TArray<int32> DirNums;
-
-	if (OWD.North == true)
-		DirNums.Add(4);
-
-	if (OWD.South == true)
-		DirNums.Add(3);
-
-	if (OWD.West == true)
-		DirNums.Add(2);
-
-	if (OWD.East == true)
-		DirNums.Add(1);
-
-	int32 Index = FMath::RandRange(0, DirNums.Num() - 1);
-	switch (Index)
-	{
-	case 1:
-		return MazeDirection::East;
-	case 2:
-		return MazeDirection::West;
-	case 3:
-		return MazeDirection::South;
-	case 4:
-		return MazeDirection::North;
-	default:
-		return MazeDirection::South;
-	}*/
 }

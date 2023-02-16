@@ -26,6 +26,7 @@ void AARPGEnermy_Mini::BeginPlay()
 			Weapon->OwnerUnit = this;
 			Weapon->SetOwner(this);
 			Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, WeaponSocketName);
+			UnitState.NormallyPoise += Weapon->WeaponPoise;
 
 			Weapon->FinishSpawning(FTransform());
 		}
@@ -338,8 +339,6 @@ void AARPGEnermy_Mini::ParringHit(AARPGUnitBase* InstigatorActor)
 	bHitting = true;
 	bBlocking = false;
 	bBlockMode = false;
-	OnAttack.Broadcast();
-	OnAttack.Clear();
 	WeaponOverlapEnd();
 	AttackEnd();
 	EnermyAnimInstance->ParringInstigatorUnit = InstigatorActor;

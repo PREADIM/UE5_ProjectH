@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "ProjectH.h"
 #include "Tema/JRPG/CustomWidget.h"
 #include "DamageWidget.generated.h"
 
@@ -17,6 +17,7 @@ class PROJECTH_API UDamageWidget : public UCustomWidget
 public:
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 		class UWidgetAnimation* DamageAnim;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UTextBlock* DamageText;
 

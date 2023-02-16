@@ -2,6 +2,7 @@
 
 
 #include "Tema/ARPG/ARPGGameMode.h"
+#include "Kismet/GameplayStatics.h"
 
 AARPGGameMode::AARPGGameMode()
 {
@@ -11,4 +12,10 @@ AARPGGameMode::AARPGGameMode()
 void AARPGGameMode::PostLogin(APlayerController* Login)
 {
 	Super::PostLogin(Login);
+}
+
+
+void AARPGGameMode::Restart()
+{
+	UGameplayStatics::OpenLevel(GetWorld(), FName("ARPGMap"));
 }
