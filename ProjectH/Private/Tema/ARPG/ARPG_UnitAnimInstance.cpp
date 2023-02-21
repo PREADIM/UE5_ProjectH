@@ -4,6 +4,7 @@
 #include "Tema/ARPG/ARPG_UnitAnimInstance.h"
 #include "Tema/ARPG/ARPGUnit.h"
 #include "Kismet/GameplayStatics.h"
+#include "Tema/ARPG/Weapon/ARPGWeapon.h"
 
 UARPG_UnitAnimInstance::UARPG_UnitAnimInstance()
 {
@@ -269,16 +270,22 @@ void UARPG_UnitAnimInstance::AnimNotify_HoldAttack()
 
 void UARPG_UnitAnimInstance::AnimNotify_SpecialAttackEnd()
 {
-	OwnerUnit->bSpecialAttackMode = false;
-	OwnerUnit->bSpecialAttackPlaying = false;
-	OwnerUnit->bCanParringAttack = false;
-	OwnerUnit->OnEndAP.Broadcast();
-	OwnerUnit->UnitState.ATK = OwnerUnit->UnitState.NormallyATK;
+	OwnerUnit->SpecialAttackEnd();
 }
 
 void UARPG_UnitAnimInstance::AnimNotify_Death()
 {
 	OwnerUnit->DeathWeaponSimulate();
+}
+
+
+
+void UARPG_UnitAnimInstance::AnimNotify_SpecialAttackSound()
+{
+	if (OwnerUnit->FPSWeapon)
+	{
+		OwnerUnit->FPSWeapon->PlayWeaponSound(EWeaponSFX::SpecialAttackSFX);
+	}
 }
 
 

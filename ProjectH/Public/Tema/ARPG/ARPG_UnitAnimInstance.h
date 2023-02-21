@@ -93,6 +93,9 @@ public:
 	UFUNCTION()
 		void AnimNotify_Death();
 
+	UFUNCTION()
+		void AnimNotify_SpecialAttackSound();
+
 
 	// ¡Ú °È±â ¶Ù±â Á¡ÇÁ »ç¿îµå ÀÌÆåÆ®
 

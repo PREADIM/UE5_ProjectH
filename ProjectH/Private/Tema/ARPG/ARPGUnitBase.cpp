@@ -139,6 +139,11 @@ void AARPGUnitBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 
 float AARPGUnitBase::TakeDamageCalculator(AARPGWeapon* DamageWeapon, FDamageEvent const& DamageEvent, AController* EventInstigator, AARPGUnitBase* DamageCauser)
 {
+	return 0.f;
+}
+
+float AARPGUnitBase::DamageFunction(AARPGWeapon* DamageWeapon, FDamageEvent const& DamageEvent, AController* EventInstigator, AARPGUnitBase* DamageCauser)
+{
 	// 강인도 계산
 	// 강인도를 시간이 지나면 차는 것과 특정 행동을 하면 다시 차게 할 순있지만 하지않음.
 
@@ -153,7 +158,7 @@ float AARPGUnitBase::TakeDamageCalculator(AARPGWeapon* DamageWeapon, FDamageEven
 		UnitState.Poise -= DamageCauser->UnitState.NormallyPoise;
 	}
 
-	return 0.f;
+	return 0.0f;
 }
 
 

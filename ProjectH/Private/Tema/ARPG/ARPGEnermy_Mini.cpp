@@ -19,7 +19,6 @@ void AARPGEnermy_Mini::BeginPlay()
 
 	if (BP_Weapon)
 	{
-
 		Weapon = GetWorld()->SpawnActorDeferred<AARPGWeapon>(BP_Weapon, FTransform(), this, nullptr, ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding);
 		if (Weapon)
 		{
@@ -82,17 +81,23 @@ void AARPGEnermy_Mini::PostInitializeComponents()
 
 float AARPGEnermy_Mini::TakeDamageCalculator(AARPGWeapon* DamageWeapon, FDamageEvent const& DamageEvent, AController* EventInstigator, AARPGUnitBase* DamageCauser)
 {
-	if (bDeath || bSpecialAttackMode)
+	if (bDeath || bSpecialAttackMode || bSpecialMontageHitting)
 	{
 		return 0.0f;
 	}
 
+	return DamageFunction(DamageWeapon, DamageEvent, EventInstigator, DamageCauser);
+}
+
+float AARPGEnermy_Mini::DamageFunction(AARPGWeapon* DamageWeapon, FDamageEvent const& DamageEvent, AController* EventInstigator, AARPGUnitBase* DamageCauser)
+{
+	_DEBUG("Mini Damage");
 	float Damaged = DamageCauser->CalculDamage(DamageWeapon->WeaponDamage * DamageWeapon->Charge);
 	float CurrentHP = UnitState.HP;
 	bool bBlockingHit = false;
 
 	//무기 강인도를 이용해서 맞은 액터의 강인도를 깎는다.
-	Super::TakeDamageCalculator(DamageWeapon, DamageEvent, EventInstigator, DamageCauser);
+	Super::DamageFunction(DamageWeapon, DamageEvent, EventInstigator, DamageCauser);
 
 	if (bBlocking)
 	{
@@ -111,12 +116,16 @@ float AARPGEnermy_Mini::TakeDamageCalculator(AARPGWeapon* DamageWeapon, FDamageE
 		Damaged = CurrentHP; // 남은 체력이 곧 라스트 데미지
 		CurrentHP = 0.f;
 		UnitState.SetTakeDamageHP(CurrentHP);
-		Death();
+
+		if (!bSpecialMontageHitting)
+			Death(); // 스페셜어택 끝난뒤에 죽음.
+
 		OnDamage.Broadcast(Damaged);
 	}
-	else 
-	{	
-		Hit(bBlockingHit);
+	else
+	{
+		if(!bSpecialMontageHitting)
+			Hit(bBlockingHit);
 		if (Damaged > 0.f)
 		{
 			CurrentHP -= Damaged;
@@ -165,14 +174,9 @@ bool AARPGEnermy_Mini::Hit(bool bBlockingHit)
 			if (bAttacking)
 			{
 				WeaponOverlapEnd();
-				//AttackEnd();
 			}
 
 		EnermyAnimInstance->PlayHitMontage(EEnermy_Mini_Mode::BattleMode);	
-		}
-		else
-		{
-			//HitEnd();
 		}
 	}
 	else
@@ -211,8 +215,17 @@ void AARPGEnermy_Mini::HitEnd()
 	bDontMoving = false;
 	bHitting = false;
 	bParringHit = false;
+	EndAttack();
+}
 
-	AttackEnd();
+void AARPGEnermy_Mini::SpecialAttackHitEnd()
+{
+	bSpecialMontageHitting = false;
+	HitEnd();
+	if (UnitState.HP <= 0.f)
+	{
+		Death();
+	}
 }
 
 
@@ -241,6 +254,14 @@ void AARPGEnermy_Mini::ZeroAP()
 	Super::ZeroAP();
 	Guard(false);
 	EnermyAnimInstance->ZeroAP();
+}
+
+
+// 스페셜 어택을 당하는중.
+void AARPGEnermy_Mini::SpecialAttackHitMontage()
+{
+	bSpecialMontageHitting = true;
+	EnermyAnimInstance->SpecialAttackHitMontagePlay();
 }
 
 void AARPGEnermy_Mini::DeathWeaponSimulate()
@@ -320,8 +341,7 @@ void AARPGEnermy_Mini::Parring(bool bFlag)
 void AARPGEnermy_Mini::DeathReset()
 {
 	bMoving = false;
-	WeaponOverlapEnd();
-	AttackEnd();
+	EndAttack();
 	Guard(false);
 }
 
@@ -332,6 +352,12 @@ void AARPGEnermy_Mini::Death()
 	EnermyAnimInstance->PlayDeadMontage();	
 }
 
+void AARPGEnermy_Mini::EndAttack()
+{
+	WeaponOverlapEnd();
+	AttackEnd();
+}
+
 void AARPGEnermy_Mini::ParringHit(AARPGUnitBase* InstigatorActor)
 {
 	bMoving = false;
@@ -339,8 +365,8 @@ void AARPGEnermy_Mini::ParringHit(AARPGUnitBase* InstigatorActor)
 	bHitting = true;
 	bBlocking = false;
 	bBlockMode = false;
-	WeaponOverlapEnd();
-	AttackEnd();
+	EndAttack();
+
 	EnermyAnimInstance->ParringInstigatorUnit = InstigatorActor;
 	EnermyAnimInstance->PlayParringHitMontage();
 }

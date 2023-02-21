@@ -12,6 +12,4 @@ public:
 		FText NPCName;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FText Dialogue;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UAnimSequence* Anim;
 };

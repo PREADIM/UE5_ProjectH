@@ -30,11 +30,13 @@ public:
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void PostInitializeComponents() override;
 	virtual float TakeDamageCalculator(class AARPGWeapon* DamageWeapon, FDamageEvent const& DamageEvent, AController* EventInstigator, AARPGUnitBase* DamageCauser) override;
+	virtual float DamageFunction(class AARPGWeapon* DamageWeapon, FDamageEvent const& DamageEvent, AController* EventInstigator, AARPGUnitBase* DamageCauser) override;
 
 	virtual void TakeDamageAP(float Damage) override;
 	virtual bool Hit(bool bBlockingHit) override;
 	// 공격 할수 있는지 판단 하는 함수.
 	virtual void HitEnd() override;
+	virtual void SpecialAttackHitEnd() override;
 	virtual void SetBattleMode(bool bFlag) override;
 
 	virtual void Attack(int32 index) override; // 공격 함수
@@ -49,6 +51,11 @@ public:
 
 	virtual void ZeroAP() override; // AP가 제로이다
 
+	//공격이 중단되었거나 끝났을때 호출 할 함수. 적의 경우 콜리전 없애는 함수가 따로있다.
+	// WeaponOverlapEnd(); AttackEnd();의 모음집.
+	virtual void EndAttack() override;
+
+	virtual void SpecialAttackHitMontage() override;
 
 	//---------------------------------------
 

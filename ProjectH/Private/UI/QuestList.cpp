@@ -42,7 +42,7 @@ void UQuestList::UpdateQuestList()
 			QSlot->Init();
 			QSlot->SetPadding(FMargin(120.f, 0.f, 0.f, 120.f));
 			CurrentQuest->AddChild(QSlot);
-			SlotArr.Add(QSlot);
+			SlotArr.Emplace(QSlot);
 		}
 		
 		// 액티브 퀘스트 먼저 넣기.
@@ -71,7 +71,7 @@ void UQuestList::UpdateQuestList()
 				OtherQuests->AddChild(QSlot);
 				break;
 			}
-			SlotArr.Add(QSlot);
+			SlotArr.Emplace(QSlot);
 		}
 	}
 }

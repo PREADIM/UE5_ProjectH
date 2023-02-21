@@ -12,7 +12,7 @@
 ATriggerEventBase::ATriggerEventBase()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 	Root = CreateDefaultSubobject<class USceneComponent>(TEXT("Root"));
 	Widget = CreateDefaultSubobject<UWidgetComponent>(TEXT("Widget"));
@@ -27,15 +27,17 @@ ATriggerEventBase::ATriggerEventBase()
 		Widget->SetDrawSize(FVector2D(100.f, 130.f));
 	}
 
-	bIsQuesting = false;
+	//bIsQuesting = false;
 	Widget->SetVisibility(false);
+	SetActorTickEnabled(false);
+
+	
 }
 
 // Called when the game starts or when spawned
 void ATriggerEventBase::BeginPlay()
 {
 	Super::BeginPlay();
-
 	Widget->InitWidget();
 }
 
@@ -43,25 +45,21 @@ void ATriggerEventBase::BeginPlay()
 void ATriggerEventBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
 	if (PlayerCharacter != nullptr)
 	{
-		FVector V = GetActorLocation() - PlayerCharacter->GetActorLocation();
-		float Range = UKismetMathLibrary::MapRangeUnclamped(V.Length(), 100, 5000, 1.0, 0.7);
-
 		UQuestIcon* Icon = Cast<UQuestIcon>(Widget->GetUserWidgetObject());
 		if (Icon)
 		{
-			Icon->SetRenderScale(FVector2D(Range, Range));
-			int32 Dist = UKismetMathLibrary::FTrunc(PlayerCharacter->GetDistanceTo(this) / 100);
+			int32 Dist = UKismetMathLibrary::FTrunc(GetDistanceTo(PlayerCharacter) / 100);
 			if (Icon->Distance != Dist)
 			{
-				Icon->Distance = Dist;
-				Icon->Init();
+				Icon->Init(Dist);
 			}
 		}
-			
 	}
 }
+
 
 /*void ATriggerEventBase::SetInit()
 {
@@ -117,7 +115,8 @@ bool ATriggerEventBase::IsThisTrigger()
 
 		if (QuestComponent->GetActiveQuest().QuestSteps[0].Trigger == this) // °°Àº °¡?
 		{
-			QuestNextStep();
+			//QuestNextStep();
+			SetInit();
 			return true;
 		}
 	}

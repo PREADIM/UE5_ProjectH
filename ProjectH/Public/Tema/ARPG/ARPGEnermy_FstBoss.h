@@ -28,10 +28,12 @@ public:
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void PostInitializeComponents() override;
 	virtual float TakeDamageCalculator(class AARPGWeapon* DamageWeapon, FDamageEvent const& DamageEvent, AController* EventInstigator, AARPGUnitBase* DamageCauser) override;
+	virtual float DamageFunction(class AARPGWeapon* DamageWeapon, FDamageEvent const& DamageEvent, AController* EventInstigator, AARPGUnitBase* DamageCauser) override;
 	virtual void TakeDamageAP(float Damage) override;
 	virtual bool Hit(bool bBlockingHit) override;
 	virtual void SetBattleMode(bool bFlag) override;
 
+	virtual void SpecialAttackHitEnd() override;
 
 	virtual void HitEnd() override;
 

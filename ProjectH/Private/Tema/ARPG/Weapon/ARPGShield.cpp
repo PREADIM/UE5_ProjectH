@@ -55,15 +55,17 @@ void AARPGShield::SetOwnerNoSee(bool bFlag)
 {
 	if (bFlag)
 	{
+		ShieldMesh->SetOnlyOwnerSee(false);
 		ShieldMesh->SetOwnerNoSee(true);
-		ShieldMesh->SetCastShadow(true);
-		ShieldMesh->SetCastHiddenShadow(true);
+		/*ShieldMesh->SetCastShadow(true);
+		ShieldMesh->SetCastHiddenShadow(true);*/
 	}
 	else
 	{
 		ShieldMesh->SetOnlyOwnerSee(true);
-		ShieldMesh->SetCastShadow(false);
-		SetWeaponCollision(false);
+		ShieldMesh->SetOwnerNoSee(false);
+		/*ShieldMesh->SetCastShadow(false);
+		SetWeaponCollision(false);*/
 	}
 	
 }

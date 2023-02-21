@@ -72,13 +72,17 @@ float AARPGEnermy_FstBoss::TakeDamageCalculator(AARPGWeapon* DamageWeapon, FDama
 		return 0.0f;
 	}
 
-	
+	return DamageFunction(DamageWeapon, DamageEvent, EventInstigator, DamageCauser);
+}
+
+float AARPGEnermy_FstBoss::DamageFunction(class AARPGWeapon* DamageWeapon, FDamageEvent const& DamageEvent, AController* EventInstigator, AARPGUnitBase* DamageCauser)
+{
 	float APDMG = DamageCauser->CalculAPDamage(DamageWeapon->WeaponAP_DMG);
 	float Damaged = DamageCauser->CalculDamage(DamageWeapon->WeaponDamage * DamageWeapon->Charge);
 	float CurrentHP = UnitState.HP;
 
 	//무기 강인도를 이용해서 맞은 액터의 강인도를 깎는다.
-	Super::TakeDamageCalculator(DamageWeapon, DamageEvent, EventInstigator, DamageCauser);
+	Super::DamageFunction(DamageWeapon, DamageEvent, EventInstigator, DamageCauser);
 
 
 	if (CurrentHP <= Damaged)
@@ -89,9 +93,10 @@ float AARPGEnermy_FstBoss::TakeDamageCalculator(AARPGWeapon* DamageWeapon, FDama
 		Death();
 		OnDamage.Broadcast(Damaged);
 	}
-	else 
+	else
 	{
-		Hit(false); // 가드가 없다.		
+		if (!bSpecialMontageHitting)
+			Hit(false); // 가드가 없다.		
 		if (Damaged > 0.f)
 		{
 			CurrentHP -= Damaged;
@@ -184,6 +189,16 @@ void AARPGEnermy_FstBoss::SetBattleMode(bool bFlag)
 			
 	}
 
+}
+
+void AARPGEnermy_FstBoss::SpecialAttackHitEnd()
+{
+	bSpecialMontageHitting = false;
+	HitEnd();
+	if (UnitState.HP <= 0.f)
+	{
+		Death();
+	}
 }
 
 void AARPGEnermy_FstBoss::HitEnd()

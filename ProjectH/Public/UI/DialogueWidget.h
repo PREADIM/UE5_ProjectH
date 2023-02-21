@@ -39,6 +39,7 @@ public:
 
 	/*UPROPERTY()
 		class APlayerController* OwnerController;*/
+
 	UPROPERTY()
 		class UMainQuestUI* OwnerMainWidget;
 

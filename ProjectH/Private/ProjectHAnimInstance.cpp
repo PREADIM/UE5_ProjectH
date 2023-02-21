@@ -11,23 +11,6 @@ UProjectHAnimInstance::UProjectHAnimInstance()
 {
 	bIsMoving = false;
 	bIsRunning = false;
-	/*Side = 0.0;
-	BackTurn = 0.0f;
-	bTurnFlag = false;*/
-}
-
-
-void UProjectHAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
-{
-	Super::NativeUpdateAnimation(DeltaSeconds);
-
-	auto Pawn = TryGetPawnOwner();
-	if (::IsValid(Pawn) && OwnerCharacter)
-	{
-		CurrentSpeed = Pawn->GetVelocity().Size();
-		bIsMoving = bMoving();
-		TurnFunction();
-	}
 }
 
 void UProjectHAnimInstance::NativeBeginPlay()
@@ -40,6 +23,19 @@ void UProjectHAnimInstance::NativeBeginPlay()
 	}
 }
 
+void UProjectHAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
+{
+	Super::NativeUpdateAnimation(DeltaSeconds);
+
+	if (::IsValid(OwnerCharacter))
+	{
+		CurrentSpeed = OwnerCharacter->GetVelocity().Size();
+		bIsMoving = bMoving();
+		Direction = SetDirection();
+		bIsInAir = MovementComponent->IsFalling();
+	}
+}
+
 
 bool UProjectHAnimInstance::bMoving()
 {
@@ -47,26 +43,13 @@ bool UProjectHAnimInstance::bMoving()
 	return MovementComponent->GetCurrentAcceleration() != FVector::ZeroVector && CurrentSpeed > 10.0f;
 }
 
-void UProjectHAnimInstance::TurnFunction()
+
+float UProjectHAnimInstance::SetDirection()
 {
-	// 어디쪽으로 도는지 알수있는 방법. 캐릭터에서 각각 입력축과 이동하는 방향을 곱해서 여기로 건네줌.
-	//FVector temp = UKismetMathLibrary::Normal(ForwardV + RightV);
-	//BackTurn = FVector::DotProduct(temp, OwnerCharacter->GetActorForwardVector()); // BackTurn는 현재 바라보는 방향으로 가냐 안가냐를 나타내고
-	//Side = FVector::DotProduct(temp, OwnerCharacter->GetActorRightVector()); // Side는 어느방향으로 도는가를 알아본다.
+	FRotator Temp;
+	Temp = UKismetMathLibrary::NormalizedDeltaRotator(OwnerCharacter->GetActorRotation(), OwnerCharacter->GetVelocity().Rotation());
 
-	// 입력축을 눌러서 현재 어디 방향으로 이동하고 있는지 알수있는 방법.
-	//FRotator Rtemp = UKismetMathLibrary::NormalizedDeltaRotator(OwnerCharacter->GetControlRotation(), OwnerCharacter->GetVelocity().Rotation());
-
-	FRotator Temp = UKismetMathLibrary::NormalizedDeltaRotator(OwnerCharacter->GetBaseAimRotation(), OwnerCharacter->GetActorRotation());
-	Direction = Temp.Yaw * -1.f;
-	Pitch = Temp.Pitch;
-}
-
-void UProjectHAnimInstance::TurnMontage(bool D, float TR)
-{
-	/*bTurnFlag = true;
-	bDirection = D;
-	TurnRate = 1.0f - TR;*/
+	return Temp.Yaw;
 }
 
 

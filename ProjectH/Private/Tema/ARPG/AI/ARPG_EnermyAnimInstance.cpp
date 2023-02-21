@@ -87,6 +87,11 @@ void UARPG_EnermyAnimInstance::ZeroAP()
 	Montage_Play(BlockingZeroAPMontage);
 }
 
+void UARPG_EnermyAnimInstance::SpecialAttackHitMontagePlay()
+{
+	Montage_Play(SpecialAttackHitMontage);
+}
+
 float UARPG_EnermyAnimInstance::SetDirection()
 {
 	FRotator Temp;
@@ -200,6 +205,12 @@ void UARPG_EnermyAnimInstance::AnimNotify_CanLockOn()
 	OwnerUnit->bDontLockOn = false;
 }
 
+void UARPG_EnermyAnimInstance::AnimNotify_HitSound()
+{
+	if (SFXSounds.Find(ESFXMode_Enermy_Mini::HitSound))
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), SFXSounds[ESFXMode_Enermy_Mini::HitSound].Sound, OwnerUnit->GetActorLocation(), 1.f, 1.f, 1.f, SFXSounds[ESFXMode_Enermy_Mini::HitSound].Attenuation);
+}
+
 
 void UARPG_EnermyAnimInstance::FootStepPlaySound(int32 SoundNum)
 {
@@ -229,4 +240,18 @@ void UARPG_EnermyAnimInstance::AnimNotify_JumpSound()
 		return;
 
 	FootStepPlaySound(2);
+}
+
+
+
+void UARPG_EnermyAnimInstance::AnimNotify_SpecialAttackEnd()
+{
+	if (ParringInstigatorUnit != nullptr)
+	{
+		ParringInstigatorUnit->bCanParringAttack = false; // 패링 어택 끄기
+		ParringInstigatorUnit->CanSATargetUnit = nullptr;
+		ParringInstigatorUnit = nullptr;
+	}
+
+	OwnerUnit->SpecialAttackHitEnd();
 }

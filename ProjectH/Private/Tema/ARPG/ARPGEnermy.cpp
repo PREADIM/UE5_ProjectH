@@ -59,7 +59,13 @@ void AARPGEnermy::PostInitializeComponents()
 
 float AARPGEnermy::TakeDamageCalculator(AARPGWeapon* DamageWeapon, FDamageEvent const& DamageEvent, AController* EventInstigator, AARPGUnitBase* DamageCauser)
 {
-	Super::TakeDamageCalculator(DamageWeapon, DamageEvent, EventInstigator, DamageCauser);
+	return 0.f;
+}
+
+
+float AARPGEnermy::DamageFunction(class AARPGWeapon* DamageWeapon, FDamageEvent const& DamageEvent, AController* EventInstigator, AARPGUnitBase* DamageCauser)
+{
+	Super::DamageFunction(DamageWeapon, DamageEvent, EventInstigator, DamageCauser);
 
 	if (PlayerUnit == nullptr)
 	{
@@ -69,7 +75,6 @@ float AARPGEnermy::TakeDamageCalculator(AARPGWeapon* DamageWeapon, FDamageEvent 
 			PlayerUnit = Temp;
 		}
 	}
-
 
 	return 0.f;
 }

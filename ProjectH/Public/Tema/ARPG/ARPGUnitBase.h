@@ -10,12 +10,12 @@
 #include "ARPGUnitBase.generated.h"
 
 
-DECLARE_MULTICAST_DELEGATE(FOnUseAP)
-DECLARE_MULTICAST_DELEGATE(FOnUsingAP)
-DECLARE_MULTICAST_DELEGATE(FOnEndAP)
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnDamage, float)
-DECLARE_MULTICAST_DELEGATE(FOnAttackAP)
-DECLARE_MULTICAST_DELEGATE(FOnChargeAttackInit)
+DECLARE_MULTICAST_DELEGATE(FOnUseAP);
+DECLARE_MULTICAST_DELEGATE(FOnUsingAP);
+DECLARE_MULTICAST_DELEGATE(FOnEndAP);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnDamage, float);
+DECLARE_MULTICAST_DELEGATE(FOnAttackAP);
+DECLARE_MULTICAST_DELEGATE(FOnChargeAttackInit);
 
 UCLASS()
 class PROJECTH_API AARPGUnitBase : public ACharacter
@@ -53,13 +53,18 @@ public:
 	virtual void DeathCollsionEnabled() {}
 	// 죽음
 	virtual void Death();
-	//공격이 끝났을때 반드시 호출되어야할 함수들을 모아둔 것.
+	//공격이 중단되거나 끝났을때 반드시 호출되어야할 함수들을 모아둔 것.
 	virtual void EndAttack() {}
 
+	virtual void SpecialAttackHitMontage() {} // 스페셜 어택을 당했을때 해당몽타주를 실행한다.
 
 public:
 	// TakeDamage 대신 이 함수에서 데미지 처리를 알아서 하게한다.
 	virtual float TakeDamageCalculator(class AARPGWeapon* DamageWeapon, FDamageEvent const& DamageEvent, AController* EventInstigator, AARPGUnitBase* DamageCauser);
+	virtual float DamageFunction(class AARPGWeapon* DamageWeapon, FDamageEvent const& DamageEvent, AController* EventInstigator, AARPGUnitBase* DamageCauser);
+	// 같은 함수가 이름만 다르게 두개 있는 이유는 데미지 처리는 TakeDamage에서 담당하지만, 특수한 경우 (패링 공격) 등은 
+	// 무조건 데미지가 들어가야하므로 DamageFunction을 호출.
+
 	float CalculDamage(float Damage);
 	float CalculAPDamage(float APDamage);
 	bool CanUseAP(); // AP가 쓸수있나?
@@ -70,7 +75,6 @@ public:
 	bool ParringHitFunc(FVector TargetLocation);
 	//TargetCharacter와 this 캐릭터의 내적 연산. 위치 값과, 원하는 각도를 대입해서 bool로 받아옴.
 	bool TargetDotProduct(FVector TargetLocation, float CompareCos);
-
 
 	void BattleHPWidgetHide();
 public:
@@ -137,6 +141,13 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		bool bDeath;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		bool bSpecialMontageHitting = false; // 특수 공격의 몽타주가 실행중이다.
+
+	UPROPERTY(VisibleAnywhere)
+		class AARPGUnitBase* CanSATargetUnit; // 스페셜 어택을 해당 유닛에게 가능하다.
+
 
 	//패링 어택을 할 수있는지 여부. 소울류처럼 특별한 상호작용 패링을 하려면 적이 공격할때
 	//나에게 닿는 순간 패링되었다는 변수를 True하고 내 캐릭터에게 자신의 포인터 정보를 넘겨주면 될듯.

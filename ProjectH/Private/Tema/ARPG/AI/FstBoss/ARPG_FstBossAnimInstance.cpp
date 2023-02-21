@@ -159,6 +159,25 @@ void UARPG_FstBossAnimInstance::AnimNotify_PlaySound()
 }
 
 
+void UARPG_FstBossAnimInstance::AnimNotify_HitSound()
+{
+	if (SFXSounds.Find(ESFXMode_FstBoss::HitSound))
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), SFXSounds[ESFXMode_FstBoss::HitSound].Sound, FstBoss->GetActorLocation(), 1.f, 1.f, 1.f, SFXSounds[ESFXMode_FstBoss::HitSound].Attenuation);
+}
+
+
+void UARPG_FstBossAnimInstance::AnimNotify_SpecialAttackEnd()
+{
+	if (ParringInstigatorUnit != nullptr)
+	{
+		ParringInstigatorUnit->bCanParringAttack = false; // 패링 어택 끄기
+		ParringInstigatorUnit->CanSATargetUnit = nullptr;
+		ParringInstigatorUnit = nullptr;
+	}
+
+	FstBoss->SpecialAttackHitEnd();
+}
+
 
 void UARPG_FstBossAnimInstance::AnimNotify_PlayAttackSound()
 {

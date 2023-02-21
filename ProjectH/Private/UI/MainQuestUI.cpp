@@ -247,7 +247,8 @@ void UMainQuestUI::OpenDialogue()
 void UMainQuestUI::CloseDialogue()
 {
 	Dialogue->SetRenderOpacity(0.0f);
-	Dialogue->SetVisibility(ESlateVisibility::HitTestInvisible);
+	//Dialogue->SetVisibility(ESlateVisibility::HitTestInvisible);
+	Dialogue->SetVisibility(ESlateVisibility::Hidden);
 	Dialogue->Clear();
 
 	OwnerController->SetShowMouseCursor(false);
@@ -290,4 +291,10 @@ void UMainQuestUI::SetMouseCursorCenter()
 	int32 x, y;
 	OwnerController->GetViewportSize(x, y);
 	OwnerController->SetMouseLocation(UKismetMathLibrary::FTrunc(x / 2), UKismetMathLibrary::FTrunc(y / 2));
+}
+
+void UMainQuestUI::SetDialogueNPC(AQuestNPCBase* NPC)
+{
+	Dialogue->OwnerNPC = NPC;
+	Dialogue->NPCDialogue();
 }

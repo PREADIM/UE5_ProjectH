@@ -46,6 +46,8 @@ public:
 
 	void SetMouseCursorCenter();
 
+	void SetDialogueNPC(class AQuestNPCBase* NPC);
+
 public:
 	/*-----------------
 		Public Value

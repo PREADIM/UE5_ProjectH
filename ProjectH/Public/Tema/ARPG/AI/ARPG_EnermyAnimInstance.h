@@ -47,6 +47,9 @@ public:
 	void PlayParringHitMontage();
 	void ZeroAP();
 
+
+	void SpecialAttackHitMontagePlay();
+
 public:
 	float SetDirection();
 
@@ -96,6 +99,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UAnimMontage* ParringHitMontage;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UAnimMontage* SpecialAttackHitMontage;
+
 	// 패링을 실시한 유닛을 일시적으로 가져온다.
 	UPROPERTY(BlueprintReadWrite)
 		class AARPGUnitBase* ParringInstigatorUnit;
@@ -141,6 +147,12 @@ public:
 
 	UFUNCTION()
 		void AnimNotify_CanLockOn();
+
+	UFUNCTION()
+		void AnimNotify_HitSound(); // Hit몽타주 실행시 히트 사운드가 나오지만, 따로 애니메이션에서 추가로 호출해야할때 호출.
+
+	UFUNCTION()
+		void AnimNotify_SpecialAttackEnd();
 
 	//-----------------------------------------------------------
 

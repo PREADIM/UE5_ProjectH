@@ -26,6 +26,12 @@ void UBTService_ARPGCoolTime::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 		return;
 	}
 
+	if (OwnerPawn->bSpecialMontageHitting)
+	{
+		//_DEBUG("Special Attack");
+		OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("CanAttack"), false);
+		return;
+	}
 	
 	// 아직 공격 타이밍이 아닌 경우 시간을 잰다.
 	bCoolTime = OwnerComp.GetBlackboardComponent()->GetValueAsBool(TEXT("CoolTime"));

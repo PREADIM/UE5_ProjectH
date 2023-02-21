@@ -7,7 +7,6 @@
 #include "ActorComponent/QuestComponent/TriggerEventBase.h"
 #include "Controller/ProjectH_PC.h"
 #include "Character/ProjectHCharacter.h"
-#include "UI/MainQuestUI.h"
 #include "UI/QuestInfo.h"
 #include "UI/DialogueWidget.h"
 #include "GameMode/ProjectHGameInstance.h"
@@ -24,18 +23,19 @@ AQuestNPCBase::AQuestNPCBase()
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
-	CapsuleCollision = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Capsule"));
-	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
+
+	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+	//CapsuleCollision = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Capsule"));
+
 	IconWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("IconWidget"));
 	MainIconWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("MainIconWidget"));
 	SucceedWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("SucceedWidget"));
 
 
-	RootComponent = CapsuleCollision;
-	Mesh->SetupAttachment(CapsuleCollision);
-	IconWidget->SetupAttachment(Mesh);
-	MainIconWidget->SetupAttachment(Mesh);
-	SucceedWidget->SetupAttachment(Mesh);
+	RootComponent = Root;
+	IconWidget->SetupAttachment(Root);
+	MainIconWidget->SetupAttachment(Root);
+	SucceedWidget->SetupAttachment(Root);
 
 	static ConstructorHelpers::FClassFinder<UNormalIconUI> BP_Icon(TEXT("WidgetBlueprint'/Game/PROJECT/BP_CLASS/Blueprints/04_Special/BP_QuestSystem/BP_QuestIcon'"));
 	if (BP_Icon.Succeeded())
@@ -113,33 +113,6 @@ void AQuestNPCBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 }
 
-
-
-// Called every frame
-void AQuestNPCBase::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-	
-	if (PlayerCharacter != nullptr)
-	{
-		FVector V = GetActorLocation() - PlayerCharacter->GetActorLocation();
-		float Range = UKismetMathLibrary::MapRangeUnclamped(V.Length(), 100.f, 6000.f, 1.0f, 0.2f);
-		if (bQuestSucceed)
-		{
-			SucceedWidget->GetUserWidgetObject()->SetRenderScale(FVector2D(Range, Range));
-		}
-		else if (bHaveMainQuest)
-		{
-			MainIconWidget->GetUserWidgetObject()->SetRenderScale(FVector2D(Range, Range));
-		}
-		else
-		{
-			IconWidget->GetUserWidgetObject()->SetRenderScale(FVector2D(Range, Range));
-		}
-	}
-}
-
-
 /*-------------------
 	Public Function
 --------------------*/
@@ -150,27 +123,14 @@ void AQuestNPCBase::AddNPCQuest(FNPCQuest Quest)
 	//FindCanQuest(); 
 	CanQuestCnt++;
 	bCanAccept = true;
-	//bQuestSucceed = true; 이런식으로 추가와 동시에 Succeed를 하면 바로 완료된걸 수행하게 할수 있을듯하다.
+	bQuestSucceed = true; //이런식으로 추가와 동시에 Succeed를 하면 바로 완료된걸 수행하게 할수 있을듯하다.
 }
 
 
 void AQuestNPCBase::Interact_Implementation(class AProjectHCharacter* OwnerCharacter)
 {
-	//다이얼로그
-	AProjectH_PC* OwnerController = Cast<AProjectH_PC>(OwnerCharacter->GetController());
-	if (OwnerController)
-	{
-		if (!OwnerController->MainQuestUI->bDialogueOpen())
-		{
-			OwnerController->MainQuestUI->Dialogue->OwnerNPC = this;
-			OwnerController->MainQuestUI->Dialogue->NPCDialogue();
-			OwnerController->MainQuestUI->OpenDialogue();
-		}
-	}
-
 	
-	//QuestInfoOpen(0, Cast<AProjectH_PC>(OwnerCharacter->GetController()));
-	// 클릭할수있는 퀘스트가 여러개 일수도있으니 인덱스 번호와 , 컨트롤러 반환.
+	
 }
 
 
@@ -270,8 +230,7 @@ bool AQuestNPCBase::FindCanQuest()
 					bHaveMainQuest = true;
 				}
 				return true;
-			}
-			
+			}	
 		}
 	}
 	return false;

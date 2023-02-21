@@ -17,27 +17,6 @@ class AProjectHCharacter : public ACharacter, public IOverlapActorInterface
 {
 	GENERATED_BODY()
 
-public:	
-	/*--------------------
-		TPS & FPS Change
-	---------------------*/
-	enum class ControllerView
-	{
-		FIRST,
-		THRID
-	};
-
-	float MinSpringArmLength = 10.f; // 자연스러운 시점 변환할때 최소 길이. 수정 불가.
-	bool bChangeView = false;
-
-	ControllerView CurrentView = ControllerView::THRID;
-	bool bTPS() 
-	{ 
-		if (CurrentView == ControllerView::THRID)
-			return true;
-		else
-			return false;
-	}
 
 public:
 	AProjectHCharacter();
@@ -52,29 +31,21 @@ protected:
 		Component
 	----------------*/
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component)
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Collision)
+		float InteractRadius = 250.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Collision)
+		float QuestRadius = 600.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Collision)
 		class USphereComponent* QuestCollision;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Collision)
 		class USphereComponent* InteractCollision;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 		class UCameraComponent* Camera;
-
-	/*UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Mesh1P, meta = (AllowPrivateAccess = "true"))
-		class USkeletalMeshComponent* Mesh1P;*/
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = SpringArm, meta = (AllowPrivateAccess = "true"))
-		USpringArmComponent* SpringArm;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Camera3P, meta = (AllowPrivateAccess = "true"))
-		UCameraComponent* Camera3P;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = "true"))
-		class UInvisibleWallComponent* InvisibleComponent;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = "true"))
-		class UUtilityComponent* UtilityComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component, meta = (AllowPrivateAccess = "true"))
 		class UQuestComponent* QuestComponent;
@@ -84,7 +55,6 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 		class UProjectHAnimInstance* AnimInstance;
-
 
 protected:
 	/*----------------
@@ -103,20 +73,10 @@ protected:
 		void InteractKey();
 	UFUNCTION()
 		void AnyKey(FKey Key);
-	UFUNCTION()
+	/*UFUNCTION()
 		void Run();
 	UFUNCTION()
-		void NotRun();
-	UFUNCTION()
-		void WheelDown();
-	UFUNCTION()
-		void WheelUp();
-
-
-	virtual void LMB() {};
-	virtual void RMB() {};
-
-
+		void NotRun();*/
 
 	/* 공통 입력 */
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent);
@@ -126,25 +86,9 @@ public:
 	/* ----------------
 		Public Value
 	------------------*/
-	UPROPERTY()
-		float SpringArmLength;
-	UPROPERTY()
-		FVector SpringArmLocation;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = SpingArm)
-		float MaxArmLength;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = SpingArm)
-		float MinArmLength;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = SpingArm)
-		FVector MaxArmLocation;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = SpingArm)
-		FVector MinArmLocation;
-	/* 여기까지 스프링 암. */
 
 	UPROPERTY(VisibleAnywhere)
 		float MouseSensitivity;
-
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MaxSpingArm)
-	//	float MaxSpringArmLength; // 자연스러운 시점 변환할때 최대 길이 및 최대 카메라 거리.
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = RunSpeed)
@@ -152,16 +96,28 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = RunSpeed)
 		float WalkSpeed;
 
+	UPROPERTY(VisibleAnywhere)
+		bool bCanInteract = false;
 
-	bool bCanInteract = false;
-	bool bWheel = false;
-	/*UPROPERTY()
+
+	UPROPERTY()
 		TArray<TEnumAsByte<EObjectTypeQuery>> Object;
 	UPROPERTY()
-		TArray<AActor*> IgnoreActor;*/
+		TArray<TEnumAsByte<EObjectTypeQuery>> NPCObject;
+	UPROPERTY()
+		TArray<AActor*> IgnoreActor;
+	UPROPERTY()
+		TArray<AActor*> NPCActors;
+	UPROPERTY()
+		TArray<AActor*> NPCAndTriggerActors;
+
 
 	UPROPERTY()
 		class AQuestNPCBase* InteractNPCActor;
+	UPROPERTY()
+		class ATriggerSpawnActor* InteractActor;
+
+	float Dist;
 
 
 	bool bQTE = false;
@@ -170,10 +126,9 @@ public:
 	/*--------------------
 		Public Function
 	---------------------*/
-	//void SetViewChange();
-	//void SetControllerMode(ControllerView CView);
 
 	UQuestComponent* GetQuestComponent() { return QuestComponent; }
+
 	UFUNCTION()
 		void QuestCollisionOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()
@@ -183,10 +138,9 @@ public:
 	UFUNCTION()
 		void InteractCollisionEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
+	void QuestCollisionSetUp(); /* 퀘스트 콜리전의 크기를 줄였다가 다시 늘려서 새로 오버랩 되게하는 트릭*/
+	void InteractCollisionSetUp();
 
-	//UFUNCTION(BlueprintCallable) 일단 보류
-		void QuestCollisionSetUp(); /* 퀘스트 콜리전의 크기를 줄였다가 다시 늘려서 새로 오버랩 되게하는 트릭*/
-		void InteractCollisionSetUp();
 	/*---------------------
 		virtual Function
 	---------------------*/

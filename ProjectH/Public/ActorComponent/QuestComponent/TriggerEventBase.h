@@ -4,6 +4,7 @@
 
 #include "ProjectH.h"
 #include "GameFramework/Actor.h"
+#include "ActorComponent/QuestComponent/NPCInterface.h"
 #include "TriggerEventBase.generated.h"
 
 UCLASS()
@@ -23,7 +24,6 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FString QuestName;
@@ -37,8 +37,9 @@ public:
 		class UWidgetComponent* Widget;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component)
 		class AProjectHCharacter* PlayerCharacter;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		bool bIsQuesting; // ?
+
+	//UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	//	bool bIsQuesting; // ?
 
 
 public:

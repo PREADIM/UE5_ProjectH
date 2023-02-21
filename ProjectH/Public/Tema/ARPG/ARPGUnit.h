@@ -7,8 +7,8 @@
 #include "ARPGUnit.generated.h"
 
 
-DECLARE_DELEGATE(FOnWeaponDraw)
-DECLARE_DELEGATE(FOnWeaponStow)
+DECLARE_DELEGATE(FOnWeaponDraw);
+DECLARE_DELEGATE(FOnWeaponStow);
 
 
 UCLASS()
@@ -58,10 +58,17 @@ public:
 	void ChargeAttackEnd();
 	void SetBossHPWidget(bool bFlag, class AARPGEnermy* Boss);
 	bool IsBossHPWidget();
+	void SpecialAttackEnd();
+
+	void SetFPSMeshOwnerNoSee(bool bFlag);
+	void SetTPSMeshOwnerNoSee(bool bFlag);
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
 		class UCameraComponent* FPSCamera;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
+		class UCameraComponent* SpecialAttackCamera;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
 		class UCameraComponent* DeathCamera;

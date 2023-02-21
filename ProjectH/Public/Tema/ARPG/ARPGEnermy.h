@@ -11,8 +11,8 @@
 // (ex. 수색 범위, 속도, 공격중, 패링중 , 블록킹 등 상태 같은 것들)
 
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAttack)
-DECLARE_MULTICAST_DELEGATE(FOnMoving)
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAttack);
+DECLARE_MULTICAST_DELEGATE(FOnMoving);
 
 UENUM(BlueprintType)
 enum class EEnermyType : uint8
@@ -70,12 +70,14 @@ public:
 	virtual void Tick(float DeltaSeconds);
 	virtual void PostInitializeComponents();
 	virtual float TakeDamageCalculator(class AARPGWeapon* DamageWeapon, FDamageEvent const& DamageEvent, AController* EventInstigator, AARPGUnitBase* DamageCauser);
+	virtual float DamageFunction(class AARPGWeapon* DamageWeapon, FDamageEvent const& DamageEvent, AController* EventInstigator, AARPGUnitBase* DamageCauser);
 	virtual void TakeDamageAP(float Damage) {}
 
 	// 맞았을때 함수. UnitBase에서 먼저 강인도를 따져서 히트 모션이 나올것인지 판별한다.
 	virtual bool Hit(bool bBlockingHit) { return Super::Hit(bBlocking); } 
 	virtual bool CanThisDamage() { return false; }
 	virtual void HitEnd() {}
+	virtual void SpecialAttackHitEnd() {}
 	virtual void SetBattleMode(bool bFlag);
 
 
@@ -87,6 +89,8 @@ public:
 	virtual void DeathCollsionEnabled() {}
 	virtual void DeathWeaponSimulate() {} // 죽어서 무기 물리 시뮬레이트
 	virtual void ZeroAP(); // AP가 제로이다
+
+	virtual void SpecialAttackHitMontage() {} // 스페셜 어택을 당했을때 해당몽타주를 실행한다.
 
 
 public:
@@ -139,11 +143,8 @@ public:
 
 	// 이 유닛의 전투 태세에 들어가는 범위. 적마다 다르기때문에 이 값을 실시간으로 가져와서 바꾼다.
 	// 보스의 경우에는 무조건 락온 -> 공격 이므로 필요하지 않을수도 있음.
-	/*UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float BattleDistance;*/
 
 	float GetBattleDistance();
-	//void SetBattleDistance(float Distance) { BattleDistance = Distance; }
 
 
 	//--------------------------------

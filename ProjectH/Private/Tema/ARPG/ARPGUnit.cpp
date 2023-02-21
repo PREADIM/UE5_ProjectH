@@ -25,7 +25,10 @@ AARPGUnit::AARPGUnit()
 
 	FPSMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("FPSMesh"));
 	FPSMesh->SetupAttachment(FPSCamera);
-	FPSMesh->SetOwnerNoSee(true);
+
+	SpecialAttackCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("SpecialAttackCamera"));
+	SpecialAttackCamera->SetupAttachment(RootComponent);
+	SpecialAttackCamera->SetActive(false);
 
 	DeathCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("DeathCamera"));
 	DeathCamera->SetupAttachment(GetMesh());
@@ -226,7 +229,7 @@ void AARPGUnit::Forward(float Value)
 	if (bDeath)
 		return;
 
-	if (!bSpecialAttackPlaying || !bParringHit)
+	if (!bSpecialAttackMode && !bParringHit)
 	{
 		//AddMovementInput(FRotationMatrix(GetControlRotation()).GetScaledAxis(EAxis::X), Value);
 		//AddMovementInput(GetActorForwardVector(), Value);
@@ -242,7 +245,7 @@ void AARPGUnit::MoveRight(float Value)
 	if (bDeath)
 		return;
 	
-	if (!bSpecialAttackPlaying || !bParringHit)
+	if (!bSpecialAttackMode && !bParringHit)
 	{
 		//AddMovementInput(FRotationMatrix(GetControlRotation()).GetScaledAxis(EAxis::Y), Value);
 		//AddMovementInput(GetActorRightVector(), Value);
@@ -255,27 +258,35 @@ void AARPGUnit::MoveRight(float Value)
 
 void AARPGUnit::LookUp(float AxisValue)
 {
-	//if (!bTargeting || !bParringHit)
-	if (!bParringHit)
+	if (!bParringHit && !bSpecialAttackMode)
 		AddControllerPitchInput(AxisValue * MouseSensivity * GetWorld()->GetDeltaSeconds());
 }
 
 void AARPGUnit::LookRight(float AxisValue)
 {
-	//if(!bTargeting || !bParringHit)
-	if (!bParringHit)
+	if (!bParringHit && !bSpecialAttackMode)
 		AddControllerYawInput(AxisValue * MouseSensivity * GetWorld()->GetDeltaSeconds());
 }
 
 
 void AARPGUnit::SpecialAttack()
 {
+	FRotator R = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), CanSATargetUnit->GetActorLocation());
+	R = FRotator(0.f, R.Yaw + 180.f, 0.f); // 몽타주가 뒤를 돌고있기때문.
+	FVector L = CanSATargetUnit->GetActorLocation() + (CanSATargetUnit->GetActorForwardVector() * 20.f);
+
+	OwnerController->SetControlRotation(R);
+	SetActorLocation(L);
+	
 	bSpecialAttackMode = true;
 	bSpecialAttackPlaying = true;
 	UnitState.ATK = UnitState.NormallyATK * 4.0; // 일시적 펌핑
+	
+	SetFPSMeshOwnerNoSee(true);
+	SetTPSMeshOwnerNoSee(false);
 
-	FPSWeapon->PlayWeaponSound(EWeaponSFX::SpecialAttackSFX);
-	//여기도 스폐셜 어택 사운드를 넣자.
+	FPSCamera->SetActive(false);
+	SpecialAttackCamera->SetActive(true);
 }
 
 
@@ -337,9 +348,19 @@ void AARPGUnit::LMB()
 
 		if (bCanParringAttack && !bSpecialAttackPlaying)
 		{
-			SpecialAttack();
-			FPSMeshAnimInstance->ParringAttack();
-			TPSMeshAnimInstance->ParringAttack(); // 루트모션은 디폴트 메시에서 실행되므로. 동시실행
+			if (CanSATargetUnit)
+			{
+				FDamageEvent DamageEvent;
+				SpecialAttack();
+				FPSMeshAnimInstance->ParringAttack();
+				TPSMeshAnimInstance->ParringAttack(); // 루트모션은 디폴트 메시에서 실행되므로. 동시실행
+				CanSATargetUnit->EndAttack();
+				CanSATargetUnit->SpecialAttackHitMontage();
+				CanSATargetUnit->DamageFunction(FPSWeapon, DamageEvent, OwnerController, this); 
+				// 원래 TakeDamageCalcul 함수로 데미지를 입혔지만 이렇게 아무런 조건없이 바로 데미지를 입혀야 하는 것은
+				// 바로 데미지 처리 함수를 실행
+			}
+
 		}
 		else if(!FPSMeshAnimInstance->bMontagePlaying && !bAttacking) // 몽타주 실행 중이 아닐 경우
 		{
@@ -581,6 +602,38 @@ bool AARPGUnit::IsBossHPWidget()
 	return false;
 }
 
+void AARPGUnit::SpecialAttackEnd()
+{
+	bSpecialAttackMode = false;
+	bSpecialAttackPlaying = false;
+	bCanParringAttack = false;
+	OnEndAP.Broadcast();
+	UnitState.ATK = UnitState.NormallyATK;
+
+	FPSCamera->SetActive(true);
+	SpecialAttackCamera->SetActive(false);
+
+	SetFPSMeshOwnerNoSee(false);
+	SetTPSMeshOwnerNoSee(true);
+}
+
+void AARPGUnit::SetFPSMeshOwnerNoSee(bool bFlag)
+{
+	FPSMesh->SetOwnerNoSee(bFlag);
+	if(FPSWeapon)
+		FPSWeapon->SetOwnerNoSee(bFlag);
+	if(FPSShield)
+		FPSShield->SetOwnerNoSee(bFlag);
+}
+
+void AARPGUnit::SetTPSMeshOwnerNoSee(bool bFlag)
+{
+	GetMesh()->SetOwnerNoSee(bFlag);
+}
+
+
+
+
 bool AARPGUnit::Hit(bool bBlockingHit)
 {
 	if (!FPSMeshAnimInstance && !TPSMeshAnimInstance)
@@ -668,6 +721,7 @@ float AARPGUnit::TakeDamageCalculator(AARPGWeapon* DamageWeapon, FDamageEvent co
 {
 	if (bDeath || bSpecialAttackMode)
 	{
+		_DEBUG("SpecialMode");
 		return 0.0f;
 	}
 

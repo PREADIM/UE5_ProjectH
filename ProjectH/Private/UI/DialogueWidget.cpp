@@ -93,10 +93,6 @@ void UDialogueWidget::SetSelectDial(int32 Index)
 	{
 		NameText->SetText(SelectText[SelectTextIndex].NPCName);
 		DialText->SetText(SelectText[SelectTextIndex].Dialogue);
-		/*if (SelectText[SelectTextIndex].Anim != nullptr)
-		{
-			애니메이션도 할당되어있다면 애니메이션 실행.
-		}*/
 	}
 }
 

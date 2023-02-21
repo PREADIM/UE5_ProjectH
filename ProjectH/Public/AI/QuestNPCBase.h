@@ -36,7 +36,7 @@ protected:
 
 public:	
 	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	//virtual void Tick(float DeltaTime) override;
 
 
 public:
@@ -55,9 +55,10 @@ public:
 		FNPCAllQuest NPCQuests; // 가지고 있을 퀘스트 목록들.
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component)
-		class UCapsuleComponent* CapsuleCollision;
+		class USceneComponent* Root;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component)
-		class USkeletalMeshComponent* Mesh;
+		class UCapsuleComponent* CapsuleCollision;
 
 	/*-----------------------
 		Quest Widget Value
@@ -113,6 +114,7 @@ public:
 	void AddNPCQuest(FNPCQuest Quest); // NPC 퀘스트 만들어서 실시간으로 전달하기 함수.
 
 	virtual void Interact_Implementation(class AProjectHCharacter* OwnerCharacter);
+
 	void QuestInfoOpen(int32 QuestIndex, class AProjectH_PC* OwnerController);
 	void SaveNPCQuest(); // 게임 인스턴스 안에있는 세이브 클래스에 저장하는 함수.
 

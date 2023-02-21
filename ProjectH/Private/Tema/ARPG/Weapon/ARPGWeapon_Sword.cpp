@@ -58,15 +58,13 @@ void AARPGWeapon_Sword::SetOwnerNoSee(bool bFlag)
 {
 	if (bFlag)
 	{
+		SwordMesh->SetOnlyOwnerSee(false);
 		SwordMesh->SetOwnerNoSee(true);
-		SwordMesh->SetCastShadow(true);
-		SwordMesh->SetCastHiddenShadow(true);
 	}
 	else
 	{
 		SwordMesh->SetOnlyOwnerSee(true);
-		SwordMesh->SetCastShadow(false);
-		SetWeaponCollision(false);
+		SwordMesh->SetOwnerNoSee(false);
 	}
 
 }
@@ -111,6 +109,7 @@ void AARPGWeapon_Sword::SwordBeginOverlap(UPrimitiveComponent* OverlappedComp, A
 		{
 			if (OtherActor == Hit)
 			{
+				//_DEBUG("HitEnd Actor");
 				return;
 				// 이미 닿은 액터라 데미지 중첩 방지.
 			}
@@ -145,6 +144,7 @@ void AARPGWeapon_Sword::SwordBeginOverlap(UPrimitiveComponent* OverlappedComp, A
 						if (Unit->ParringHitFunc(OwnerUnit->GetActorLocation()))
 						{
 							OwnerUnit->ParringHit(Unit);
+							Unit->CanSATargetUnit = OwnerUnit;
 							PlayWeaponSound(EWeaponSFX::ParringHitSFX);
 							Unit->bCanParringAttack = true;
 						}

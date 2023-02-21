@@ -33,7 +33,6 @@ public:
 	class AController* GetOwnerController();
 
 public:
-	virtual void Tick(float DeltaTime);
 	virtual void AttackEnd() {}
 	virtual void SetWeaponCollision(bool bFlag) {}
 	virtual void SetPhysics();

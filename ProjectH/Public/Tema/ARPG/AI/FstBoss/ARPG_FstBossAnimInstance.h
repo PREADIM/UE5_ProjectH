@@ -120,6 +120,12 @@ public:
 	UFUNCTION()
 		void AnimNotify_CanLockOn();
 
+	UFUNCTION()
+		void AnimNotify_HitSound(); // Hit몽타주 실행시 히트 사운드가 나오지만, 따로 애니메이션에서 추가로 호출해야할때 호출.
+
+	UFUNCTION()
+		void AnimNotify_SpecialAttackEnd();
+
 	//----------------------------------------------------
 
 	void FootStepPlaySound(int32 SoundNum);

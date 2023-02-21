@@ -32,13 +32,6 @@ void AARPGWeapon::BeginPlay()
 	Super::BeginPlay();
 }
 
-// Called every frame
-void AARPGWeapon::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
-
 void AARPGWeapon::SetPhysics()
 {
 	PlayWeaponSound(EWeaponSFX::DropSFX);

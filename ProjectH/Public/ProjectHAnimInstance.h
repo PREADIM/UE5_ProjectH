@@ -26,13 +26,15 @@ public:
 
 public:
 	bool bMoving();
-	void TurnFunction();
-	void TurnMontage(bool D, float TR);
+
+	float SetDirection();
 
 	UFUNCTION()
 		void AnimNotify_Disable();
 	UFUNCTION()
 		void AnimNotify_Enable();
+
+
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
@@ -51,18 +53,7 @@ public:
 		bool bIsRunning;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = RunSpeed)
 		float CurrentAccel;
-
-	/*UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Pawn)
-		float Side;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Pawn)
-		float BackTurn;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Pawn)
-		bool bTurnFlag;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Pawn)
-		bool bDirection;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Pawn)
-		float TurnRate;*/
-	//FVector ForwardV;
-	//FVector RightV;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = RunSpeed)
+		bool bIsInAir;
 
 };
