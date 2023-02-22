@@ -31,18 +31,14 @@ protected:
 		Component
 	----------------*/
 
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Collision)
-		float InteractRadius = 250.f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Collision)
-		float QuestRadius = 600.f;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Collision)
 		class USphereComponent* QuestCollision;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Collision)
-		class USphereComponent* InteractCollision;
+		class UBoxComponent* InteractCollision;
+
+	UPROPERTY(EditAnywhere, Category = Collision)
+		FVector InteractBoxSize;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 		class UCameraComponent* Camera;
@@ -101,24 +97,15 @@ public:
 
 
 	UPROPERTY()
-		TArray<TEnumAsByte<EObjectTypeQuery>> Object;
-	UPROPERTY()
-		TArray<TEnumAsByte<EObjectTypeQuery>> NPCObject;
+		TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
 	UPROPERTY()
 		TArray<AActor*> IgnoreActor;
-	UPROPERTY()
-		TArray<AActor*> NPCActors;
-	UPROPERTY()
-		TArray<AActor*> NPCAndTriggerActors;
 
 
 	UPROPERTY()
 		class AQuestNPCBase* InteractNPCActor;
 	UPROPERTY()
 		class ATriggerSpawnActor* InteractActor;
-
-	float Dist;
-
 
 	bool bQTE = false;
 	bool bPlay = true;

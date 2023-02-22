@@ -39,10 +39,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool bBPBindFunc; // BPBindFunc를 사용한다면 이걸 True로 해준다.
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool bCanThisInteract; // 이 액터가 현재 인터랙트 가능한지 여부.
+
 public:
 	virtual void Interact_Implementation(class AProjectHCharacter* OwnerCharacter);
 
-	// ★★ 스폰후 반드시 실행
+	// ★★ Trigger에서 스폰된다면 스폰후 반드시 실행
 	UFUNCTION(BlueprintCallable)
 		void SetTriggerBaseInit(class ATriggerEventBase* TriggerBase, AProjectHCharacter* OwnerCharacter);
 

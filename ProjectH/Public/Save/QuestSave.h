@@ -28,7 +28,7 @@ public:
 		int32 MainCanCnt;
 
 	FbQuestFlag();
-	FbQuestFlag(bool bFlag1, bool bFlag2, bool bFlag3, bool bFalg4, int32 Cnt1, int32 Cnt2);
+	FbQuestFlag(bool bFlag_Succeed, bool bFlag_Questing, bool bFlag_CanAccept, bool bFalg_CanMainAccept, int32 Cnt_CanCnt, int32 Cnt_MainCanCnt);
 
 };
 /**

@@ -56,7 +56,7 @@ void UProjectHGameInstance::Init()
 		if(PlayerSave)
 			SetPlayerCanQuest(); // 이미 저장된 퀘스트 목록들을 가져온다.
 	}
-	else
+	else // 플레이어 퀘스트가 없는경우.
 	{
 		PlayerSave = Cast<UPlayerStateSave>(UGameplayStatics::CreateSaveGameObject(UPlayerStateSave::StaticClass()));
 		if (PlayerSave)
@@ -134,7 +134,7 @@ FQuestDataBase* UProjectHGameInstance::GetPQData(int32 QuestNumber)
 	return PQTable->FindRow<FQuestDataBase>(*FString::FromInt(QuestNumber), TEXT(""));
 }
 
-TArray<FTextNAnim> UProjectHGameInstance::GetDialData(int32 QuestNumber)
+TArray<FTextNName> UProjectHGameInstance::GetDialData(int32 QuestNumber)
 {
 	FDialogueStruct* Dial = DialTable->FindRow<FDialogueStruct>(*FString::FromInt(QuestNumber), TEXT(""));
 	return Dial->Dialogue;

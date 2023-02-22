@@ -30,7 +30,7 @@ public:
 	virtual void SetupInputComponent();
 
 
-	void BegineInit();
+	void BeginInit();
 	
 
 	/* ---------------

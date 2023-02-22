@@ -19,14 +19,14 @@ FbQuestFlag::FbQuestFlag()
 	MainCanCnt = 0;
 }
 
-FbQuestFlag::FbQuestFlag(bool bFlag1, bool bFlag2, bool bFlag3, bool bFalg4, int32 Cnt1, int32 Cnt2)
+FbQuestFlag::FbQuestFlag(bool bFlag_Succeed, bool bFlag_Questing, bool bFlag_CanAccept, bool bFalg_CanMainAccept, int32 Cnt_CanCnt, int32 Cnt_MainCanCnt)
 {
-	bSucceed = bFlag1;
-	bQuesting = bFlag2;
-	bCanAccept = bFlag3;
-	bCanMainAccept = bFalg4;
-	CanCnt = Cnt1;
-	MainCanCnt = Cnt2;
+	bSucceed = bFlag_Succeed;
+	bQuesting = bFlag_Questing;
+	bCanAccept = bFlag_CanAccept;
+	bCanMainAccept = bFalg_CanMainAccept;
+	CanCnt = Cnt_CanCnt;
+	MainCanCnt = Cnt_MainCanCnt;
 }
 
 
@@ -95,7 +95,7 @@ bool UQuestSave::LoadNPC(AQuestNPCBase* NPC)
 
 	// 퀘스트 상태를 위한 변수들 가져오기.
 	NPC->bQuestSucceed = Flag->bSucceed;
-	NPC->bQuestSucceed = Flag->bQuesting;
+	NPC->bIsQuesting = Flag->bQuesting;
 	NPC->bCanAccept = Flag->bCanAccept;
 	NPC->bHaveMainQuest = Flag->bCanMainAccept;
 	NPC->CanQuestCnt = Flag->CanCnt;

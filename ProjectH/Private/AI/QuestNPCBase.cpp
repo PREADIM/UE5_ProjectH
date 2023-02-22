@@ -118,12 +118,12 @@ void AQuestNPCBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 --------------------*/
 
 /* 실시간으로 NPC에 퀘스트 추가하는 방법. 완료 퀘스트도 결국엔 퀘스트 이기때문에 이런식으로 추가 가능.*/
-void AQuestNPCBase::AddNPCQuest(FNPCQuest Quest)
+void AQuestNPCBase::AddNPCQuest(FNPCQuest Quest, bool bSucceed)
 {
 	//FindCanQuest(); 
 	CanQuestCnt++;
 	bCanAccept = true;
-	bQuestSucceed = true; //이런식으로 추가와 동시에 Succeed를 하면 바로 완료된걸 수행하게 할수 있을듯하다.
+	bQuestSucceed = bSucceed; //이런식으로 추가와 동시에 Succeed를 하면 바로 완료된걸 수행하게 할수 있을듯하다.
 }
 
 

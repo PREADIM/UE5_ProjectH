@@ -43,12 +43,15 @@ public:
 	UPROPERTY()
 		class UMainQuestUI* OwnerMainWidget;
 
+	/*UPROPERTY()
+		TArray<FText> NormalDialogue;*/
+
 	UPROPERTY()
-		TArray<FText> NormalDialogue;
+		TArray<FTextNName> NormalDialogue;
 	int32 DialIndex = 0;
 	
 	UPROPERTY()
-		TArray<FTextNAnim> SelectText;
+		TArray<FTextNName> SelectText;
 	int32 SelectTextIndex = 0;
 
 

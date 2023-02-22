@@ -4,7 +4,7 @@
 #include "TextNAnim.generated.h"
 
 USTRUCT(BlueprintType)
-struct FTextNAnim
+struct FTextNName
 {
 	GENERATED_USTRUCT_BODY()
 public:

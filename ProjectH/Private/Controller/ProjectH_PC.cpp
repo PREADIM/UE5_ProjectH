@@ -36,7 +36,7 @@ void AProjectH_PC::BeginPlay()
 	CreateQTE();*/
 }
 
-void AProjectH_PC::BegineInit()
+void AProjectH_PC::BeginInit()
 {
 	UProjectHGameInstance* GI = Cast<UProjectHGameInstance>(UGameplayStatics::GetGameInstance(this));
 	if (GI)
@@ -62,7 +62,7 @@ void AProjectH_PC::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 	OwnerCharacter = Cast<AProjectHCharacter>(InPawn);
-	BegineInit();
+	BeginInit();
 }
 
 void AProjectH_PC::OnUnPossess()

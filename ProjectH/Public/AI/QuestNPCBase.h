@@ -5,6 +5,7 @@
 #include "ProjectH.h"
 #include "GameFramework/Pawn.h"
 #include "NPCAllQuest.h"
+#include "Dialogue/TextNAnim.h"
 #include "ActorComponent/QuestComponent/NPCInterface.h"
 #include "QuestNPCBase.generated.h"
 
@@ -14,8 +15,11 @@ struct FNormalDialogue
 {
 	GENERATED_USTRUCT_BODY()
 public:
+	/*UPROPERTY(EditAnywhere)
+		TArray<FText> Dialogue;*/
+
 	UPROPERTY(EditAnywhere)
-		TArray<FText> Dialogue;
+		TArray<FTextNName> Dialogue;
 
 };
 
@@ -102,8 +106,11 @@ public:
 		Dialogue Property
 	--------------------*/
 
+	/*UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TArray<FNormalDialogue> NormalDialogue;*/
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TArray<FNormalDialogue> NormalDialogue;
+		FNormalDialogue NormalDialogue;
 
 
 public:
@@ -111,7 +118,7 @@ public:
 		Public Function
 	--------------------*/
 
-	void AddNPCQuest(FNPCQuest Quest); // NPC 퀘스트 만들어서 실시간으로 전달하기 함수.
+	void AddNPCQuest(FNPCQuest Quest, bool bSucceed); // NPC 퀘스트 만들어서 실시간으로 전달하기 함수.
 
 	virtual void Interact_Implementation(class AProjectHCharacter* OwnerCharacter);
 

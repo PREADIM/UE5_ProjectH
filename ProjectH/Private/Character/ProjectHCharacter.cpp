@@ -12,10 +12,10 @@
 #include "GameMode/ProjectHGameInstance.h"
 #include "Controller/ProjectH_PC.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "UI/InteractWidget.h"
 #include "UI/MainQuestUI.h"
 #include "Components/Button.h"
-//#include "ActorComponent/QuestComponent/TriggerEventBase.h"
 #include "ActorComponent/QuestComponent/TriggerSpawnActor.h"
 
 
@@ -31,10 +31,9 @@ AProjectHCharacter::AProjectHCharacter()
 
 	QuestCollision = CreateDefaultSubobject<USphereComponent>(TEXT("QuestCollision"));
 	QuestCollision->SetupAttachment(RootComponent);
-	InteractCollision = CreateDefaultSubobject<USphereComponent>(TEXT("InteractCollision"));
-	InteractCollision->SetupAttachment(RootComponent);
-	InteractCollision->SetSphereRadius(250.f);
-
+	InteractCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("InteractCollision"));
+	InteractCollision->SetupAttachment(Camera);
+	InteractCollision->SetBoxExtent(InteractBoxSize);
 
 	// 컨트롤러의 회전값에 동기화
 	bUseControllerRotationPitch = false;
@@ -52,6 +51,11 @@ AProjectHCharacter::AProjectHCharacter()
 	
 	//RunningSpeed = 500.f;
 	WalkSpeed = 150.f;	
+
+	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+
+	//오버랩 되었을때 벽 뒤에 있는지 판단하기 위한 것.
+	
 }
 
 
@@ -59,9 +63,10 @@ AProjectHCharacter::AProjectHCharacter()
 void AProjectHCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
-	Object.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel4));
-	Object.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel16));
+	ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_WorldStatic));
+	ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_WorldDynamic));
+	ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel4));
+	ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel16));
 	IgnoreActor.Add(this);
 
 	// 게임 인스턴스에서 정보 가져오기
@@ -164,8 +169,11 @@ void AProjectHCharacter::InteractKey()
 		{	
 			if (OwnerController)
 			{
+
 				InteractActor->Interact_Implementation(this);
-				OwnerController->MainQuestUI->CloseInteract();
+				//OwnerController->MainQuestUI->CloseInteract();
+				InteractCollisionSetUp();
+				
 			}
 		}
 	}
@@ -261,7 +269,6 @@ void AProjectHCharacter::QuestCollisionEndOverlap(UPrimitiveComponent* Overlappe
 	AQuestNPCBase* NPC = Cast<AQuestNPCBase>(OtherActor);
 	if (NPC)
 	{
-		//NPC->SetActorTickEnabled(false);
 		NPC->HiddenIcon();
 	}
 
@@ -270,48 +277,48 @@ void AProjectHCharacter::QuestCollisionEndOverlap(UPrimitiveComponent* Overlappe
 
 void AProjectHCharacter::InteractCollisionOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	AQuestNPCBase* NPC = Cast<AQuestNPCBase>(OtherActor);
-	if (NPC)
-	{
-		if (InteractNPCActor == NPC)
-			return;
+	FVector StartLocation = Camera->GetComponentLocation();
+	FVector EndLocation = OtherComp->GetComponentLocation();
+	FHitResult HitResult;
 	
-		bCanInteract = true;
-		InteractNPCActor = NPC;
-		OwnerController->MainQuestUI->SetName(NPC->NPCName);
-		OwnerController->MainQuestUI->OpenInteract();
-		return;
-	}
-	else
+	bool bTrace = UKismetSystemLibrary::BoxTraceSingleForObjects(GetWorld(), StartLocation, EndLocation, InteractBoxSize, Camera->GetComponentRotation(), ObjectTypes, false, IgnoreActor, EDrawDebugTrace::None, HitResult, true);
+	if (bTrace)
 	{
-		ATriggerSpawnActor* TriggerActor = Cast<ATriggerSpawnActor>(OtherActor);
-		if (TriggerActor)
+		if (OtherComp != HitResult.GetComponent())
+			return;
+
+		AQuestNPCBase* NPC = Cast<AQuestNPCBase>(OtherActor);
+		if (NPC)
 		{
-			if (InteractActor == TriggerActor)
+			if (InteractNPCActor == NPC)
 				return;
 
+
 			bCanInteract = true;
-			InteractActor = TriggerActor;
-			InteractActor->PlayerCharacter = this;
-			OwnerController->MainQuestUI->SetName(InteractActor->TriggerText);
+			InteractNPCActor = NPC;
+			OwnerController->MainQuestUI->SetName(NPC->NPCName);
 			OwnerController->MainQuestUI->OpenInteract();
 			return;
 		}
-
-
-		/*ATriggerEventBase* Trigger = Cast<ATriggerEventBase>(OtherActor);
-		if (Trigger)
+		else
 		{
-			if (InteractActor == Trigger)
-				return;
+			ATriggerSpawnActor* TriggerActor = Cast<ATriggerSpawnActor>(OtherActor);
+			if (TriggerActor)
+			{
+				if (InteractActor == TriggerActor)
+					return;
 
-			bCanInteract = true;
-			InteractActor = Trigger;
-			InteractActor->PlayerCharacter = this;	
-			OwnerController->MainQuestUI->SetName(InteractActor->TriggerText);
-			OwnerController->MainQuestUI->OpenInteract();
-			return;
-		}*/
+				if (TriggerActor->bCanThisInteract)
+				{
+					bCanInteract = true;
+					InteractActor = TriggerActor;
+					InteractActor->PlayerCharacter = this;
+					OwnerController->MainQuestUI->SetName(InteractActor->TriggerText);
+					OwnerController->MainQuestUI->OpenInteract();
+					return;
+				}
+			}
+		}
 	}
 }
 
@@ -347,25 +354,25 @@ void AProjectHCharacter::InteractCollisionEndOverlap(UPrimitiveComponent* Overla
 
 void AProjectHCharacter::QuestCollisionSetUp()
 {
-	QuestCollision->SetSphereRadius(0.5f);
+	QuestCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	//타이머
 	FTimerHandle Handle;
 	GetWorld()->GetTimerManager().SetTimer(Handle, FTimerDelegate::CreateLambda([&]()
 		{
-			QuestCollision->SetSphereRadius(QuestRadius);
+			QuestCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 		}), 0.2f, false);
 }
 
 
 void AProjectHCharacter::InteractCollisionSetUp()
 {
-	InteractCollision->SetSphereRadius(0.5f);
+	InteractCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	FTimerHandle Handle;
 	GetWorld()->GetTimerManager().SetTimer(Handle, FTimerDelegate::CreateLambda([&]()
 		{
-			InteractCollision->SetSphereRadius(InteractRadius);
+			InteractCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 		}), 0.2f, false);	
 }
 

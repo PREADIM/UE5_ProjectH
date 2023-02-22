@@ -14,15 +14,28 @@
 
 void UDialogueWidget::NPCDialogue()
 {
-	SetNameText(FText::FromString(OwnerNPC->NPCName));
-	if (OwnerNPC->NormalDialogue.Num())
+	//SetNameText(FText::FromString(OwnerNPC->NPCName));
+	//if (OwnerNPC->NormalDialogue.Num())
+	//{
+	//	NormalDialogue = OwnerNPC->NormalDialogue[0].Dialogue;
+	//	SetNormalDialText(0);
+	//}
+	//else
+	//{
+	//	// ¡Ú º¸·ù 23 02 22
+	//	//DialText->SetText(FText::FromString("..."));
+	//	SetCanQuestList();
+	//}
+
+	if (OwnerNPC->NormalDialogue.Dialogue.Num())
 	{
-		NormalDialogue = OwnerNPC->NormalDialogue[0].Dialogue;
+		NormalDialogue = OwnerNPC->NormalDialogue.Dialogue;
 		SetNormalDialText(0);
 	}
 	else
 	{
-		DialText->SetText(FText::FromString("..."));
+		// ¡Ú º¸·ù 23 02 22
+		//DialText->SetText(FText::FromString("..."));
 		SetCanQuestList();
 	}
 }
@@ -39,7 +52,9 @@ void UDialogueWidget::SetNormalDialText(int32 index)
 	}
 	else if(NormalDialogue.Num() > DialIndex)
 	{
-		DialText->SetText(NormalDialogue[DialIndex]);
+		NameText->SetText(NormalDialogue[DialIndex].NPCName);
+
+		DialText->SetText(NormalDialogue[DialIndex].Dialogue);
 	}
 	
 }
@@ -53,6 +68,9 @@ void UDialogueWidget::SetCanQuestList()
 	{
 		SelectBox->ClearChildren();
 		int32 Cnt = 0; // Äù½ºÆ® ÀÎµ¦½º
+		if (!OwnerNPC->NPCQuests.Quests.Num())
+			return;
+
 		for (FNPCQuest& Quests : OwnerNPC->NPCQuests.Quests)
 		{	
 			if (Quests.bCanAccepted == true)

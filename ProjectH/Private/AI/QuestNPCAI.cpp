@@ -28,9 +28,7 @@ void AQuestNPCAI::Interact_Implementation(class AProjectHCharacter* OwnerCharact
 	{
 		if (!OwnerController->MainQuestUI->bDialogueOpen())
 		{
-			/*OwnerController->MainQuestUI->Dialogue->OwnerNPC = this;
-			OwnerController->MainQuestUI->Dialogue->NPCDialogue();*/
-
+			_DEBUG("NPC Dial");
 			OwnerController->MainQuestUI->SetDialogueNPC(this);
 			OwnerController->MainQuestUI->OpenDialogue();
 		}

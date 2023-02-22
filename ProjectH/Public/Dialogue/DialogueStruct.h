@@ -13,5 +13,5 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		int32 QuestNumber;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TArray<FTextNAnim> Dialogue;
+		TArray<FTextNName> Dialogue;
 };

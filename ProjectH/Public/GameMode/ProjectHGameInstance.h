@@ -44,7 +44,7 @@ public:
 	void SetPlayerCanQuest();
 
 	FQuestDataBase* GetPQData(int32 QuestNumber);
-	TArray<FTextNAnim> GetDialData(int32 QuestNumber);
+	TArray<FTextNName> GetDialData(int32 QuestNumber);
 
 
 	void AcceptQuestNumber(int32 QuestNumber); // 진행 가능한 퀘스트를 수락했을 때
