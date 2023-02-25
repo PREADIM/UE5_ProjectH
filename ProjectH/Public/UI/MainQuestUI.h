@@ -13,7 +13,7 @@
 
 
 
-UCLASS()
+UCLASS(Meta = (DisableNativeTick))
 class PROJECTH_API UMainQuestUI : public UUserWidget
 {
 	GENERATED_BODY()
@@ -22,7 +22,9 @@ public:
 	void Init();
 	bool OpenUI(bool IsOpen);
 	void OpenInfoUI(FNPCQuest NPCQuest, int32 QuestIndex);
+	void OpenSucceedInfo(FNPCQuest NPCQuest, int32 QuestIndex);
 	void QuestInfoAnimation(bool IsOpened);
+	void QuestSucceedInfoAnimation(bool IsOpened);
 
 
 	void SettingKey();
@@ -57,6 +59,8 @@ public:
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 		class UQuestInfo* QuestInfo;
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
+		class UQuestSucceedInfo* QuestSucceedInfo;
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
 		class UESCMenu* ESCMenu;
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 		class UDialogueWidget* Dialogue;
@@ -76,6 +80,8 @@ public:
 		class UWidgetAnimation* Fade;
 	UPROPERTY(BlueprintReadWrite, Transient, meta = (BindWidgetAnim))
 		class UWidgetAnimation* QuestInfoFade;
+	UPROPERTY(BlueprintReadWrite, Transient, meta = (BindWidgetAnim))
+		class UWidgetAnimation* QuestSucceedInfoFade;
 	UPROPERTY(BlueprintReadWrite, Transient, meta = (BindWidgetAnim))
 		class UWidgetAnimation* DialFade;
 

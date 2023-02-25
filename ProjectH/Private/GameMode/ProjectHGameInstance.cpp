@@ -15,19 +15,27 @@ FCanQuestNums::FCanQuestNums()
 
 FCanQuestNums::FCanQuestNums(int32 QuestNumber)
 {
-	QuestNums.Add(QuestNumber);
+	QuestNums.Emplace(QuestNumber);
 }
 
 UProjectHGameInstance::UProjectHGameInstance()
 {
-	FString QuestDataPath = TEXT("DataTable'/Game/PROJECT/BP_CLASS/Blueprints/05_DataBase/DT_QuestData.DT_QuestData'");
+	FString NPCQuestDataPath = TEXT("/Script/Engine.DataTable'/Game/PROJECT/BP_CLASS/Blueprints/05_DataBase/DT_NPCQuestDataBase'");
+	static ConstructorHelpers::FObjectFinder<UDataTable> DT_NPCQuestData(*NPCQuestDataPath);
+	if (DT_NPCQuestData.Succeeded())
+	{
+		NPCQBTable = DT_NPCQuestData.Object;
+	}
+
+
+	FString QuestDataPath = TEXT("/Script/Engine.DataTable'/Game/PROJECT/BP_CLASS/Blueprints/05_DataBase/DT_Quests.DT_Quests'");
 	static ConstructorHelpers::FObjectFinder<UDataTable> DT_QuestData(*QuestDataPath);
 	if (DT_QuestData.Succeeded())
 	{
 		PQTable = DT_QuestData.Object;
 	}
 
-	FString DialogueDataPath = TEXT("DataTable'/Game/PROJECT/BP_CLASS/Blueprints/05_DataBase/DT_Dialogue.DT_Dialogue'");
+	FString DialogueDataPath = TEXT("/Script/Engine.DataTable'/Game/PROJECT/BP_CLASS/Blueprints/05_DataBase/DT_QuestDialogues'");
 	static ConstructorHelpers::FObjectFinder<UDataTable> DT_DialData(*DialogueDataPath);
 	if (DT_DialData.Succeeded())
 	{
@@ -84,6 +92,25 @@ void UProjectHGameInstance::Init()
 	/* 지원되는 스크린 저장.*/
 }
 
+void UProjectHGameInstance::SetNPCPtr(FString Name, AQuestNPCBase* NPC)
+{
+	if (!NPCAllPtr.Find(Name))
+		NPCAllPtr.Add(Name, NPC);
+}
+
+AQuestNPCBase* UProjectHGameInstance::GetNPCPtr(FString NPCName)
+{
+	return *NPCAllPtr.Find(NPCName);
+}
+
+
+void UProjectHGameInstance::SetLoadSlot(class UQuestComponent* QuestComponent)
+{
+	if (QuestComponent && QuestSave)
+	{
+		QuestSave->LoadQuest(QuestComponent);
+	}
+}
 
 
 void UProjectHGameInstance::SetSaveSlot(UQuestComponent* QuestComponent)
@@ -91,16 +118,23 @@ void UProjectHGameInstance::SetSaveSlot(UQuestComponent* QuestComponent)
 	if (QuestComponent && QuestSave)
 	{
 		QuestSave->SaveQuest(QuestComponent->GetQuests(), QuestComponent->GetCurrentID());
-
 	}
+}
 
+bool UProjectHGameInstance::SetNPCLoadSlot(AQuestNPCBase* NPC)
+{
+	if (NPC && QuestSave)
+	{
+		return QuestSave->LoadNPC(NPC);
+	}
+	return false;
 }
 
 void UProjectHGameInstance::SetNPCSaveSlot(AQuestNPCBase* NPC)
 {
 	if (NPC && QuestSave)
 	{
-		QuestSave->SaveNPC(NPC->NPCName, NPC->NPCQuests, NPC->bQuestSucceed, NPC->bIsQuesting, NPC->bCanAccept, NPC->bHaveMainQuest, NPC->CanQuestCnt, NPC->CanMainQuestCnt);
+		QuestSave->SaveNPC(NPC->NPCName, NPC->QuestingNums, NPC->SucceedQuestsNums, NPC->EndedQuestsNums);
 	}
 }
 
@@ -117,16 +151,19 @@ void UProjectHGameInstance::SetPlayerCanQuest()
 			if (QDB)
 			{
 				if (PlayerCanQuest.Find(QDB->NPCName))
-				{
 					PlayerCanQuest[QDB->NPCName].QuestNums.Add(Nums);
-				}
 				else
-				{
 					PlayerCanQuest.Add(QDB->NPCName, FCanQuestNums(Nums));
-				}
 			}
 		}
 	}
+}
+
+
+
+FNPCQuestDataBase* UProjectHGameInstance::GetNPCQuestData(FString NPCName)
+{
+	return NPCQBTable->FindRow<FNPCQuestDataBase>(*NPCName, TEXT(""));
 }
 
 FQuestDataBase* UProjectHGameInstance::GetPQData(int32 QuestNumber)
@@ -134,36 +171,33 @@ FQuestDataBase* UProjectHGameInstance::GetPQData(int32 QuestNumber)
 	return PQTable->FindRow<FQuestDataBase>(*FString::FromInt(QuestNumber), TEXT(""));
 }
 
-TArray<FTextNName> UProjectHGameInstance::GetDialData(int32 QuestNumber)
+TArray<FTextNName> UProjectHGameInstance::GetDialData(EDialougeState DialState, int32 QuestNumber)
 {
 	FDialogueStruct* Dial = DialTable->FindRow<FDialogueStruct>(*FString::FromInt(QuestNumber), TEXT(""));
-	return Dial->Dialogue;
+	if (Dial)
+	{
+		if (Dial->DialogueMap.Find(DialState))
+		{
+			return Dial->DialogueMap[DialState].Dialogues;
+		}
+	}
+
+	return TArray<FTextNName>();
 }
 
 
-/* 진행 가능한 퀘스트를 수락했을 때 변경하는 함수.  완료했을때 제거해도될듯.*/
-/* 여기서 NPC 이름까지 받아와서 PlayerCanQuest TMap을 제거해도되나, 애초에 퀘스트를 받을때 
-	NPC에서 퀘스트를 제거함으로 이게임에서는 구현하지 않아도 될듯 하다.*/
-void UProjectHGameInstance::AcceptQuestNumber(int32 QuestNumber)
+/* 퀘스트를 완료했을때 제거하도록 하자.*/
+void UProjectHGameInstance::QuestClearNumber(FString NPCName, int32 QuestNumber)
 {
 	if (PlayerSave)
 	{
 		if (QuestNums.Contains(QuestNumber))
 		{
+			PlayerCanQuest[NPCName].QuestNums.Remove(QuestNumber);
 			QuestNums.RemoveSingle(QuestNumber);
+			FinishedQuests.Emplace(QuestNumber);
 			PlayerSave->SavePlayerQuest(&QuestNums, &FinishedQuests);
-			// 따로 분리 해도될듯. QuestNums와 FinishedQuests는 다른곳에서 수정됨.
 		}
-	}
-}
-
-/* 퀘스트를 완료 했을 때 변경하는 함수 */
-void UProjectHGameInstance::FinishedQuestNumber(int32 QuestNumber)
-{
-	if (PlayerSave)
-	{
-		FinishedQuests.Add(QuestNumber);
-		PlayerSave->SavePlayerQuest(&QuestNums, &FinishedQuests);
 	}
 }
 

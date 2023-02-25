@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "UI/QuestInfo.h"
+#include "UI/QuestSucceedInfo.h"
 #include "UI/QuestList.h"
 #include "Components/TextBlock.h"
 #include "Components/Button.h"
@@ -15,13 +15,14 @@
 #include "GameMode/ProjectHGameInstance.h"
 
 
-void UQuestInfo::Init()
+
+void UQuestSucceedInfo::Init()
 {
 	SetText();
 }
 
 
-void UQuestInfo::SetText()
+void UQuestSucceedInfo::SetText()
 {
 	QuestNameText->SetText(FText::FromString(NPCQuest.QuestName));
 	QuestDescriptionText->SetText(FText::FromString(NPCQuest.QuestDescription));
@@ -29,7 +30,7 @@ void UQuestInfo::SetText()
 }
 
 /* 퀘스트 이름 사이즈에 비례해서 형광펜 이미지 조절하기. (퀘스트 슬롯에도 있음.)*/
-void UQuestInfo::SetColorPenSize()
+void UQuestSucceedInfo::SetColorPenSize()
 {
 	// 메인퀘스트를 나타내는 색과 일반퀘스트 색을 다르게 하기.
 	if (NPCQuest.QuestType == EQuestType::Main)
@@ -63,41 +64,39 @@ void UQuestInfo::SetColorPenSize()
 }
 
 
-void UQuestInfo::BindingFunction()
+void UQuestSucceedInfo::BindingFunction()
 {
-	Accept->OnClicked.AddDynamic(this, &UQuestInfo::AcceptClick);
-	Decline->OnClicked.AddDynamic(this, &UQuestInfo::DeclineClick);
+	Succeed->OnClicked.AddDynamic(this, &UQuestSucceedInfo::SucceedClick);
+	Decline->OnClicked.AddDynamic(this, &UQuestSucceedInfo::DeclineClick);
 }
 
 
-void UQuestInfo::AcceptClick()
+void UQuestSucceedInfo::SucceedClick()
 {
 	if (QuestComponent && OwnerController)
 	{
-		QuestComponent->AddQuest(NPCQuest);
-
 		if (!GI)
 			return;
 
 		AQuestNPCBase* OwnerNPC = GI->GetNPCPtr(NPCQuest.OwnerNPCName);
 		if (OwnerNPC) // 안전 검사.
 		{
-			OwnerNPC->QuestingNums.Emplace(NPCQuest.QuestNumber);
+			OwnerNPC->EndedQuestsNums.Emplace(NPCQuest.QuestNumber);
 			OwnerNPC->SaveNPCQuest();
+			QuestComponent->RemoveQuest(NPCQuest.QuestNumber);
 			OwnerController->SetQuestCollisionSetup();
 		}
 
-		QuestComponent->AcceptQuest();
 		DeclineClick();
 	}
-	
+
 }
 
 
-void UQuestInfo::DeclineClick()
+void UQuestSucceedInfo::DeclineClick()
 {
 	if (OwnerController)
 	{
-		OwnerController->MainQuestUI->QuestInfoAnimation(true); // 끄기
+		OwnerController->MainQuestUI->QuestSucceedInfoAnimation(true); // 끄기
 	}
 }

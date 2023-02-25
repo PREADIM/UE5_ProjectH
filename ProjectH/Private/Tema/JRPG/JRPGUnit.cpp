@@ -120,17 +120,25 @@ void AJRPGUnit::PostInitializeComponents()
 -----------------*/
 void AJRPGUnit::Forward(float Value)
 {
-	if(!bIsLMBAttack && OwnerController->GameType != EGameModeType::UI)
-		AddMovementInput(FRotationMatrix(GetControlRotation()).GetScaledAxis(EAxis::X), Value);
-
+	if (!bIsLMBAttack && OwnerController->GameType != EGameModeType::UI)
+	{
+		FVector Direction = FRotationMatrix(GetControlRotation()).GetScaledAxis(EAxis::X);
+		Direction.Z = 0.f;
+		Direction.Normalize();
+		AddMovementInput(Direction, Value);
+	}
 }
 
 
 void AJRPGUnit::MoveRight(float Value)
 {
 	if (!bIsLMBAttack && OwnerController->GameType != EGameModeType::UI)
-		AddMovementInput(FRotationMatrix(GetControlRotation()).GetScaledAxis(EAxis::Y), Value);
-
+	{
+		FVector Direction = FRotationMatrix(GetControlRotation()).GetScaledAxis(EAxis::Y);
+		Direction.Z = 0.f;
+		Direction.Normalize();
+		AddMovementInput(Direction, Value);
+	}
 }
 
 

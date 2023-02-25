@@ -32,10 +32,9 @@ public:
 		EQuestType QuestType;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TArray<FQuestStep> QuestSteps;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class AQuestNPCBase* OwnerNPC; // °¡´É?
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		bool bSucceed = false;
+		FString OwnerNPCName;
 
 	FQuestStruct();
 	FQuestStruct(const FNPCQuest& Quest);

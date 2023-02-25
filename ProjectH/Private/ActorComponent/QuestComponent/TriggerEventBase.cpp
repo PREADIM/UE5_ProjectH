@@ -7,6 +7,8 @@
 #include "Components/WidgetComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Character/ProjectHCharacter.h"
+#include "GameMode/ProjectHGameInstance.h"
+#include "AI/QuestNPCBase.h"
 
 // Sets default values
 ATriggerEventBase::ATriggerEventBase()
@@ -27,11 +29,8 @@ ATriggerEventBase::ATriggerEventBase()
 		Widget->SetDrawSize(FVector2D(100.f, 130.f));
 	}
 
-	//bIsQuesting = false;
 	Widget->SetVisibility(false);
-	SetActorTickEnabled(false);
-
-	
+	SetActorTickEnabled(false);	
 }
 
 // Called when the game starts or when spawned
@@ -69,6 +68,12 @@ void ATriggerEventBase::Tick(float DeltaTime)
 }*/
 
 
+void ATriggerEventBase::TriggerDestroy()
+{
+	TriggerDestroyBPBind();
+	Destroy();
+}
+
 void ATriggerEventBase::SetTriggerWidget()
 {
 	if (QuestComponent)
@@ -95,16 +100,6 @@ void ATriggerEventBase::SetHiddenTriggerWidget()
 }
 
 
-/* 이 함수가 호출되면 저장되어있는 QuestComponent를 이용해서 퀘스트를 다음 스텝으로 넘겨준다.*/
-void ATriggerEventBase::QuestClear()
-{
-	if (QuestComponent != nullptr)
-	{
-		if (QuestComponent->GetActiveQuest().bSucceed) // 퀘스트 조건을 채웠는가?
-			IsThisTrigger();
-	}
-}
-
 
 bool ATriggerEventBase::IsThisTrigger()
 {
@@ -113,9 +108,10 @@ bool ATriggerEventBase::IsThisTrigger()
 		if (QuestComponent->GetActiveQuest().QuestSteps.IsEmpty())
 			return false;
 
+		// 액티브 퀘스트에 맞춰서 실행하는 조건.
 		if (QuestComponent->GetActiveQuest().QuestSteps[0].Trigger == this) // 같은 가?
 		{
-			//QuestNextStep();
+			SetHiddenTriggerWidget(); // 틱과 위젯 끄기. 원신의 퀘스트 트리거를 생각해보자.
 			SetInit();
 			return true;
 		}
@@ -135,4 +131,19 @@ void ATriggerEventBase::BindProgressCnt()
 	if (QuestComponent)
 		QuestComponent->BindSetDescription();
 
+}
+
+// 퀘스트를 완료한게아니라 완료 가능해졌다는 뜻.
+void ATriggerEventBase::ClearQuest()
+{
+	if (GI && PlayerCharacter)
+	{
+		AQuestNPCBase* NPC = GI->GetNPCPtr(OwnerNPCName);
+		if (NPC)
+		{
+			TriggerDestroy();
+			NPC->SucceedQuestsNums.Emplace(QuestNumber);
+		}
+		PlayerCharacter->QuestCollisionSetUp();
+	}
 }

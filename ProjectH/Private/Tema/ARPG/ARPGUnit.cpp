@@ -168,22 +168,6 @@ void AARPGUnit::Tick(float DeltaSeconds)
 			OwnerController->SetChargeAttacking(FPSWeapon->ChargeAttack(DeltaSeconds));
 		}
 	}
-
-	/*if (bTargeting)
-	{
-		if (TargetingPawn)
-		{
-			LockOnSetPosition(TargetingPawn->GetActorLocation());
-			FRotator Rot = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), TargetingPawn->GetActorLocation());
-			OwnerController->SetControlRotation(Rot);
-
-			if (GetDistanceTo(TargetingPawn) > LockOnRadius)
-			{
-				bTargeting = false;
-				TargetingPawn = nullptr;
-			}
-		}
-	}*/
 }
 
 void AARPGUnit::PostInitializeComponents()

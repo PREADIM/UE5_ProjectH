@@ -9,7 +9,6 @@
 #include "Components/CanvasPanelSlot.h"
 #include "ActorComponent/QuestComponent/QuestComponent.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "QuestStep.h"
 
 
 
@@ -24,15 +23,14 @@ void UQuestSlot::Init()
 	{
 		BindQuestDescription(); // 퀘스트 목표 설정
 		ActiveQuestColor(); // 현재 활성화 퀘스트 색 변경
-		QuestFollow->OnClicked.AddDynamic(this, &UQuestSlot::ButtonClicked);
+		QuestFollow->OnClicked.AddDynamic(this, &UQuestSlot::SelectButtonClicked);
 	}
 }
 
 
 void UQuestSlot::BindQuestDescription()
 {
-	QuestDescriptionText->SetText(FText::FromString(
-		QuestComponent->GetQuestCashes()[QuestName].QuestSteps[0].Description));
+	QuestDescriptionText->SetText(FText::FromString(QuestDescription));
 	// QuestCashes를 퀘스트 이름으로 검색해서 그 퀘스트의 완료 조건을 출력.
 }
 
@@ -56,7 +54,7 @@ void UQuestSlot::ActiveQuestColor()
 	QuestNameText->SetColorAndOpacity(FSlateColor(NameColor));
 }
 
-void UQuestSlot::ButtonClicked()
+void UQuestSlot::SelectButtonClicked()
 {
 	QuestComponent->SelectQuest(QuestName);
 }

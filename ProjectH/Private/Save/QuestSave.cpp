@@ -9,30 +9,23 @@
 const FString UQuestSave::SlotName = FString("QuestSave");
 
 
-FbQuestFlag::FbQuestFlag()
+FNPCQuestingAndSucceedQuests::FNPCQuestingAndSucceedQuests()
 {
-	bSucceed = false;
-	bQuesting = false;
-	bCanAccept = false;
-	bCanMainAccept = false;
-	CanCnt = 0;
-	MainCanCnt = 0;
+	QuestingNums.IsEmpty();
+	SucceedQuestNums.IsEmpty();
+	EndedQuestsNums.IsEmpty();
 }
 
-FbQuestFlag::FbQuestFlag(bool bFlag_Succeed, bool bFlag_Questing, bool bFlag_CanAccept, bool bFalg_CanMainAccept, int32 Cnt_CanCnt, int32 Cnt_MainCanCnt)
+FNPCQuestingAndSucceedQuests::FNPCQuestingAndSucceedQuests(TSet<int32> QuestingQuests, TSet<int32> SucceedQuests, TSet<int32> EndedQuests)
 {
-	bSucceed = bFlag_Succeed;
-	bQuesting = bFlag_Questing;
-	bCanAccept = bFlag_CanAccept;
-	bCanMainAccept = bFalg_CanMainAccept;
-	CanCnt = Cnt_CanCnt;
-	MainCanCnt = Cnt_MainCanCnt;
+	QuestingNums = QuestingQuests; // 완료한 퀘스트가 하나라도 있는가?
+	SucceedQuestNums = SucceedQuests;
+	EndedQuestsNums = EndedQuests;
 }
 
 
 UQuestSave::UQuestSave()
 {
-	bCanChangeQuest = true;
 }
 
 
@@ -40,9 +33,9 @@ void UQuestSave::SaveQuest(TArray<FQuestStruct> GetQuests, const int32 GetCurren
 {
 	// 레퍼런스가 아닌 복사를 해서 저장한다.
 
+	_DEBUG("SaveQuest");
 	Quests = GetQuests;
 	CurrentQuestId = GetCurrentQuestId;
-
 	SaveSlot();
 }
 
@@ -50,6 +43,7 @@ void UQuestSave::SaveQuest(TArray<FQuestStruct> GetQuests, const int32 GetCurren
 
 void UQuestSave::LoadQuest(class UQuestComponent* QuestComponent)
 {
+	// 캐릭터에 생으로 갔다 넣는게 아니라, 로드된 퀘스트를 AddQuest로 트리거를 스폰한다.
 	for (FQuestStruct Quest : Quests)
 	{
 		QuestComponent->AddQuest(FNPCQuest(Quest));
@@ -57,49 +51,30 @@ void UQuestSave::LoadQuest(class UQuestComponent* QuestComponent)
 
 	if (Quests.Num())
 		QuestComponent->SelectQuest(Quests[CurrentQuestId].QuestName);
-
-	QuestComponent->UpdateQuestSave();
-
 }
 
-void UQuestSave::SaveNPC(FString Name, FNPCAllQuest NPCQuest, bool bSucceed, bool bQuesting, bool bCanAccept, bool bMainQuest, int32 QuestCnt, int32 MainQuestCnt)
+void UQuestSave::SaveNPC(FString Name, TSet<int32> QuestingQuests, TSet<int32> SucceedQuests, TSet<int32> EndedQuests)
 {
-	if (NPCQuests.Find(Name) && bNPCSucceed.Find(Name))
-	{
-		NPCQuests[Name] = NPCQuest;
-		bNPCSucceed[Name] = FbQuestFlag(bSucceed, bQuesting, bCanAccept, bMainQuest, QuestCnt, MainQuestCnt);
-	}
+	if (NPCQuestingAndSucceedQuest.Find(Name))
+		NPCQuestingAndSucceedQuest[Name] = FNPCQuestingAndSucceedQuests(QuestingQuests, SucceedQuests, EndedQuests);
 	else
 	{
-		NPCQuests.Add(Name, NPCQuest);
-		bNPCSucceed.Add(Name, FbQuestFlag(bSucceed, bQuesting, bCanAccept, bMainQuest, QuestCnt, MainQuestCnt));
+		NPCQuestingAndSucceedQuest.Add(Name, FNPCQuestingAndSucceedQuests(QuestingQuests, SucceedQuests, EndedQuests));
 	}
 
-	//SaveSlot();
+	SaveSlot();
 }
 
 bool UQuestSave::LoadNPC(AQuestNPCBase* NPC)
 {
-	if (!NPCQuests.Num())
+	FNPCQuestingAndSucceedQuests* NPC_QSQ = NPCQuestingAndSucceedQuest.Find(NPC->NPCName);
+	if (!NPC_QSQ) // 없으면 리턴
 		return false;
-
-	FNPCAllQuest* AllQuests = NPCQuests.Find(NPC->NPCName);
-	if (!AllQuests) // 없으면 리턴
-		return false;
-
-	FbQuestFlag* Flag = bNPCSucceed.Find(NPC->NPCName);
-	if (!Flag) // 없으면 리턴
-		return false;
-
-	NPC->SetNPCQuests(*AllQuests); // 참조값으로 받는 함수 이므로 값을 그대로 전달.
 
 	// 퀘스트 상태를 위한 변수들 가져오기.
-	NPC->bQuestSucceed = Flag->bSucceed;
-	NPC->bIsQuesting = Flag->bQuesting;
-	NPC->bCanAccept = Flag->bCanAccept;
-	NPC->bHaveMainQuest = Flag->bCanMainAccept;
-	NPC->CanQuestCnt = Flag->CanCnt;
-	NPC->CanMainQuestCnt = Flag->MainCanCnt;
+	NPC->QuestingNums = NPC_QSQ->QuestingNums; // NPC에게 유저가 하나라도 완료한 퀘가 있는지
+	NPC->SucceedQuestsNums = NPC_QSQ->SucceedQuestNums; // 퀘스트 중인지
+	NPC->EndedQuestsNums = NPC_QSQ->EndedQuestsNums; 
 
 	return true;
 }

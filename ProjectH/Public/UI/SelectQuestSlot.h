@@ -4,6 +4,8 @@
 
 #include "ProjectH.h"
 #include "Blueprint/UserWidget.h"
+#include "UI/DialogueWidget.h"
+#include "NPCQuest.h"
 #include "SelectQuestSlot.generated.h"
 
 /**
@@ -28,9 +30,13 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		int32 QuestNumber;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		FString QuestName;
+		FString QuestName; // º¸·ù
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		int32 Num;
+
+	UPROPERTY(VisibleAnywhere)
+		EDialougeState DialougeState;
 
 	UPROPERTY()
 		class UDialogueWidget* Dial;

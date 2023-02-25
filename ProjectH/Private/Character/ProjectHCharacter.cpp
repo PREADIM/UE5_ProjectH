@@ -71,8 +71,10 @@ void AProjectHCharacter::BeginPlay()
 
 	// 게임 인스턴스에서 정보 가져오기
 	if (QuestComponent)
-		QuestComponent->StartQuestLoad();
-
+	{
+		QuestComponent->StartQuestLoad(); // 로드
+		QuestComponent->BeginSetupHaveQuests();
+	}
 
 	OwnerController = Cast<class AProjectH_PC>(GetController());
 	if (OwnerController)
@@ -154,16 +156,12 @@ void AProjectHCharacter::InteractKey()
 	if (bCanInteract)
 	{
 		if (InteractNPCActor)
-		{		
-			if (InteractNPCActor->bCanAccept)
+		{	
+			if (OwnerController)
 			{
-				if (OwnerController)
-				{
-					InteractNPCActor->Interact_Implementation(this);
-					OwnerController->MainQuestUI->CloseInteract();
-				}
-				
-			}	
+				InteractNPCActor->Interact_Implementation(this);
+				OwnerController->MainQuestUI->CloseInteract();
+			}
 		}
 		else if(InteractActor) // 트리거에 의해 스폰된 액터를 인터랙트.
 		{	
@@ -245,23 +243,11 @@ void AProjectHCharacter::QuestCollisionOverlap(UPrimitiveComponent* OverlappedCo
 	AQuestNPCBase* NPC = Cast<AQuestNPCBase>(OtherActor);
 	if (NPC)
 	{
-		if (NPC->CanVisibleWidget()) // 내가 수행할수 있는 퀘스트인지 여기서 검사해서 느낌표를 띄우면 될듯하다.
+		if (NPC->NPCQuestSetup())
 		{
-			//NPC->SetActorTickEnabled(true);
 			NPC->PlayerCharacter = this;
-			NPC->SetIconWidget();
-		}
-		else
-		{
-			if (NPC->FindCanQuest())
-			{
-				//NPC->SetActorTickEnabled(true);
-				NPC->PlayerCharacter = this;
-				NPC->SetIconWidget();
-			}
 		}
 	}
-
 }
 
 void AProjectHCharacter::QuestCollisionEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
@@ -272,7 +258,7 @@ void AProjectHCharacter::QuestCollisionEndOverlap(UPrimitiveComponent* Overlappe
 		NPC->HiddenIcon();
 	}
 
-	QuestCollisionSetUp();
+	//QuestCollisionSetUp(); 인터랙트와는 다르게 퀘스트 콜리전의 경우는 다시 셋업 안해줘도될듯하다.
 }
 
 void AProjectHCharacter::InteractCollisionOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -354,6 +340,7 @@ void AProjectHCharacter::InteractCollisionEndOverlap(UPrimitiveComponent* Overla
 
 void AProjectHCharacter::QuestCollisionSetUp()
 {
+	_DEBUG("Quest Collision Setup");
 	QuestCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	//타이머
@@ -367,6 +354,7 @@ void AProjectHCharacter::QuestCollisionSetUp()
 
 void AProjectHCharacter::InteractCollisionSetUp()
 {
+	_DEBUG("Interact Collision Setup");
 	InteractCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	FTimerHandle Handle;

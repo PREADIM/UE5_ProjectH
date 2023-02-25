@@ -7,6 +7,7 @@
 #include "ActorComponent/QuestComponent/QuestComponent.h"
 #include "UI/QuestList.h"
 #include "UI/QuestInfo.h"
+#include "UI/QuestSucceedInfo.h"
 #include "UI/ESCMenu.h"
 #include "UI/OptionMenu.h"
 #include "UI/HelpMenu.h"
@@ -15,6 +16,7 @@
 #include "Components/CanvasPanel.h"
 #include "Components/Button.h"
 #include "Kismet/KismetmathLibrary.h"
+#include "GameMode/ProjectHGameInstance.h"
 
 
 void UMainQuestUI::Init()
@@ -28,7 +30,13 @@ void UMainQuestUI::Init()
 
 		QuestInfo->OwnerController = OwnerController;
 		QuestInfo->QuestComponent = QuestComponent;
+		QuestInfo->GI = Cast<class UProjectHGameInstance>(UGameplayStatics::GetGameInstance(this));
 		QuestInfo->BindingFunction(); // 수락, 거절 버튼 바인딩.
+
+		QuestSucceedInfo->OwnerController = OwnerController;
+		QuestSucceedInfo->QuestComponent = QuestComponent;
+		QuestSucceedInfo->GI = Cast<class UProjectHGameInstance>(UGameplayStatics::GetGameInstance(this));
+		QuestSucceedInfo->BindingFunction(); // 수락, 거절 버튼 바인딩.
 
 		ESCMenu->OwnerController = OwnerController;
 		ESCMenu->Init();
@@ -75,13 +83,28 @@ void UMainQuestUI::OpenInfoUI(FNPCQuest NPCQuest, int32 QuestIndex)
 	else
 	{
 		QuestInfo->QuestIndex = QuestIndex;
-		QuestInfo->QuestName = NPCQuest.QuestName;
-		QuestInfo->QuestDescription = NPCQuest.QuestDescription;
 		QuestInfo->NPCQuest = NPCQuest;
 
 		QuestInfo->Init();
 		QuestInfoAnimation(false);
 	}
+}
+
+void UMainQuestUI::OpenSucceedInfo(FNPCQuest NPCQuest, int32 QuestIndex)
+{
+	if (QuestSucceedInfo->GetRenderOpacity() > 0.2f)
+	{
+		return;
+	}
+	else
+	{
+		QuestSucceedInfo->QuestIndex = QuestIndex;
+		QuestSucceedInfo->NPCQuest = NPCQuest;
+
+		QuestSucceedInfo->Init();
+		QuestSucceedInfoAnimation(false);
+	}
+
 }
 
 
@@ -90,6 +113,25 @@ void UMainQuestUI::QuestInfoAnimation(bool IsOpened)
 {
 	PlayAnimation(QuestInfoFade, 0.f, 1, IsOpened ? EUMGSequencePlayMode::Reverse : EUMGSequencePlayMode::Forward);
 	QuestInfo->SetVisibility(IsOpened ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Visible);
+	// true면 무언가 켜져있다는 뜻, false면 켜져있는데 없다는 뜻.
+	if (!IsOpened)
+	{
+		OwnerController->SetShowMouseCursor(true);
+		OwnerController->SetInputMode(FInputModeGameAndUI());
+	}
+	else
+	{
+		/*FTimerHandle Handle;
+		GetWorld()->GetTimerManager().SetTimer(Handle, this, &UMainQuestUI::SetMouseOff, Fade->GetEndTime(), false);*/
+		SetMouseOff();
+	}
+}
+
+//true면 이제 끄는 것, false가 오면 이제 키는 것.
+void UMainQuestUI::QuestSucceedInfoAnimation(bool IsOpened)
+{
+	PlayAnimation(QuestSucceedInfoFade, 0.f, 1, IsOpened ? EUMGSequencePlayMode::Reverse : EUMGSequencePlayMode::Forward);
+	QuestSucceedInfo->SetVisibility(IsOpened ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Visible);
 	// true면 무언가 켜져있다는 뜻, false면 켜져있는데 없다는 뜻.
 	if (!IsOpened)
 	{
@@ -253,7 +295,9 @@ void UMainQuestUI::CloseDialogue()
 
 	OwnerController->SetShowMouseCursor(false);
 	OwnerController->SetInputMode(FInputModeGameOnly());
-	OwnerCharacter->QuestCollisionSetUp();
+
+	//OwnerCharacter->QuestCollisionSetUp();
+
 	OwnerCharacter->InteractCollisionSetUp();
 }
 

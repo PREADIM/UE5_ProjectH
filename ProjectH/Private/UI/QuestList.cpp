@@ -38,6 +38,7 @@ void UQuestList::UpdateQuestList()
 		if (QSlot)
 		{
 			QSlot->QuestName = QuestComponent->GetActiveQuest().QuestName;
+			QSlot->QuestDescription = QuestComponent->GetActiveQuest().QuestSteps[0].Description;
 			QSlot->QuestComponent = QuestComponent;
 			QSlot->Init();
 			QSlot->SetPadding(FMargin(120.f, 0.f, 0.f, 120.f));
@@ -59,6 +60,7 @@ void UQuestList::UpdateQuestList()
 		if (QSlot)
 		{
 			QSlot->QuestName = Quest.QuestName;
+			QSlot->QuestDescription = Quest.QuestSteps[0].Description;
 			QSlot->QuestComponent = QuestComponent;
 			QSlot->Init();
 			QSlot->SetPadding(FMargin(120.f, 0.f, 0.f, 120.f));

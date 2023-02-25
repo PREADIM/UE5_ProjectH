@@ -8,8 +8,7 @@ FQuestStruct::FQuestStruct()
 	QuestDescription = FString("");
 	QuestType = EQuestType::NONE;
 	QuestSteps.Empty();
-	OwnerNPC = nullptr;
-	bSucceed = false;
+	OwnerNPCName = FString("");
 }
 
 
@@ -21,19 +20,14 @@ FQuestStruct::FQuestStruct(const FNPCQuest& Quest)
 	QuestDescription = Quest.QuestDescription;
 	QuestType = Quest.QuestType;
 	QuestSteps = Quest.QuestSteps;
-	OwnerNPC = Quest.OwnerNPC;
-	bSucceed = false;
+	OwnerNPCName = Quest.OwnerNPCName;
 }
 
 void FQuestStruct::Clear() // ActiveQuest를 위한 함수. 전체 초기화
 {
-	/*QuestName.Empty();
-	QuestDescription.Empty();
-	QuestSteps.Empty();*/
 	QuestName = FString("");
 	QuestDescription = FString("");
 	QuestType = EQuestType::NONE;
 	QuestSteps.Empty();
-	OwnerNPC = nullptr;
-	bSucceed = false;
+	QuestName = FString("");
 }

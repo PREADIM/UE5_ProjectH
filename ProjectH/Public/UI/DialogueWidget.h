@@ -4,7 +4,7 @@
 
 #include "ProjectH.h"
 #include "Blueprint/UserWidget.h"
-#include "Dialogue/TextNAnim.h"
+#include "Dialogue/DialogueStruct.h"
 #include "DialogueWidget.generated.h"
 
 /**
@@ -37,14 +37,8 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		int32 OwnerQuestNum = 0;
 
-	/*UPROPERTY()
-		class APlayerController* OwnerController;*/
-
 	UPROPERTY()
 		class UMainQuestUI* OwnerMainWidget;
-
-	/*UPROPERTY()
-		TArray<FText> NormalDialogue;*/
 
 	UPROPERTY()
 		TArray<FTextNName> NormalDialogue;

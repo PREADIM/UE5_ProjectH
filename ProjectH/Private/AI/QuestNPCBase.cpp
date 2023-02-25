@@ -11,10 +11,12 @@
 #include "UI/DialogueWidget.h"
 #include "GameMode/ProjectHGameInstance.h"
 #include "Kismet/GameplayStatics.h"
-#include "Save/QuestSave.h"
+//#include "Save/QuestSave.h"
 #include "UI/NormalIconUI.h"
+#include "UI/MainQuestUI.h"
 #include "Components/WidgetComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "UI/NormalIconUI.h"
 
 
 // Sets default values
@@ -25,50 +27,21 @@ AQuestNPCBase::AQuestNPCBase()
 
 
 	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
-	//CapsuleCollision = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Capsule"));
-
-	IconWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("IconWidget"));
-	MainIconWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("MainIconWidget"));
-	SucceedWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("SucceedWidget"));
-
-
 	RootComponent = Root;
-	IconWidget->SetupAttachment(Root);
-	MainIconWidget->SetupAttachment(Root);
-	SucceedWidget->SetupAttachment(Root);
 
-	static ConstructorHelpers::FClassFinder<UNormalIconUI> BP_Icon(TEXT("WidgetBlueprint'/Game/PROJECT/BP_CLASS/Blueprints/04_Special/BP_QuestSystem/BP_QuestIcon'"));
+
+	QuestIconComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("QuestIconComponent"));
+	QuestIconComponent->SetupAttachment(RootComponent);
+
+	static ConstructorHelpers::FClassFinder<UNormalIconUI> BP_Icon(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/PROJECT/BP_CLASS/Blueprints/04_Special/BP_QuestSystem/BP_QuestIconWidget'"));
 	if (BP_Icon.Succeeded())
 	{
-		IconWidget->SetWidgetClass(BP_Icon.Class);
-		IconWidget->SetDrawSize(FVector2D(100.f, 100.f));
+		QuestIconComponent->SetWidgetClass(BP_Icon.Class);
+		QuestIconComponent->SetDrawSize(FVector2D(100.f, 100.f));
 	}
 
-	static ConstructorHelpers::FClassFinder<UNormalIconUI> BP_MainIcon(TEXT("WidgetBlueprint'/Game/PROJECT/BP_CLASS/Blueprints/04_Special/BP_QuestSystem/BP_MainQuestIcon'"));
-	if (BP_MainIcon.Succeeded())
-	{
-		MainIconWidget->SetWidgetClass(BP_MainIcon.Class);
-		MainIconWidget->SetDrawSize(FVector2D(100.f, 100.f));
-	}
-
-	static ConstructorHelpers::FClassFinder<UNormalIconUI> BP_SucceedIcon(TEXT("WidgetBlueprint'/Game/PROJECT/BP_CLASS/Blueprints/04_Special/BP_QuestSystem/BP_QuestIcon_Succeed'"));
-	if (BP_SucceedIcon.Succeeded())
-	{
-		SucceedWidget->SetWidgetClass(BP_SucceedIcon.Class);
-		SucceedWidget->SetDrawSize(FVector2D(100.f, 100.f));
-	}
-
-	
-	IconWidget->SetVisibility(false);
-	MainIconWidget->SetVisibility(false);
-	SucceedWidget->SetVisibility(false);
-
-	bQuestSucceed = false;
-	bIsQuesting = false;
-	bCanAccept = false;
-	bHaveMainQuest = false;
-	CanQuestCnt = 0;
-	CanMainQuestCnt = 0;
+	QuestIconComponent->SetVisibility(false);
+	QuestIconState = EQuestIconState::NONE;
 }
 
 // Called when the game starts or when spawned
@@ -76,32 +49,26 @@ void AQuestNPCBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	IconWidget->InitWidget();
-	MainIconWidget->InitWidget();
-	SucceedWidget->InitWidget();
+	QuestIconComponent->InitWidget();
+	QuestIconUI = Cast<UNormalIconUI>(QuestIconComponent->GetUserWidgetObject());
 
 	GI = Cast<UProjectHGameInstance>(UGameplayStatics::GetGameInstance(this));
 	if (GI)
 	{
-		bool bFlag = GI->QuestSave->LoadNPC(this);
-		if (!bFlag)
-		{
-			/* false 면 로드 할게 없음. true면 데이터가 있음.*/
-			FindCanQuest(); // 게임 인스턴스에서 퀘스트 목록 검사. 자세한것은 해당 함수에 적어둠.
-		}
-	}
+		// NPC 이름으로 검색을해 퀘스트를 가져온다.
+		FNPCQuestDataBase* AllQuest = GI->GetNPCQuestData(NPCName);
+		if (AllQuest)
+			NPCQuests = AllQuest->NPCAllQuests;
 
+		//퀘스트 플래그들을 로드한다. ex) 퀘스트중인지, 퀘스트 완료가 있는지. // 해당 플래그들은 곧 수정 예정
+		if (!GI->SetNPCLoadSlot(this))
+			_DEBUG("false LoadNPC");
+
+		GI->SetNPCPtr(NPCName, this);
+	}
 
 	if (!NPCQuests.Quests.Num()) // 없으면 그냥 리턴.
 		return;
-
-	for (int32 i = 0; i < NPCQuests.Quests.Num(); i++)
-	{
-		NPCQuests.Quests[i].OwnerNPC = this;
-	} //원래는 여기서 트리거의 정보를 저장했다. 월드에 미리 배치된 트리거를 여기서 저장.
-
-
-	SaveNPCQuest();
 }
 
 void AQuestNPCBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -113,6 +80,38 @@ void AQuestNPCBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 }
 
+int32 AQuestNPCBase::RetIconPriority(EQuestIconState State)
+{
+	switch (State)
+	{
+	case EQuestIconState::MainSucceedQuest:
+		return 6;
+	case EQuestIconState::SubSucceedQuest:
+		return 5;
+	case EQuestIconState::MainCanQuest:
+		return 4;
+	case EQuestIconState::SubCanQuest:
+		return 3;
+	case EQuestIconState::MainQuesting:
+		return 2;
+	case EQuestIconState::SubQuesting:
+		return 1;
+	default:
+		return 0;
+	}
+}
+
+void AQuestNPCBase::SetQuestIconState(EQuestIconState NewState)
+{
+	int32 Current = RetIconPriority(QuestIconState);
+	int32 New = RetIconPriority(NewState);
+
+	if (Current < New) // 새로운게 우선순위가 더 크면 교체.
+		QuestIconState = NewState;
+
+
+}
+
 /*-------------------
 	Public Function
 --------------------*/
@@ -120,10 +119,7 @@ void AQuestNPCBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 /* 실시간으로 NPC에 퀘스트 추가하는 방법. 완료 퀘스트도 결국엔 퀘스트 이기때문에 이런식으로 추가 가능.*/
 void AQuestNPCBase::AddNPCQuest(FNPCQuest Quest, bool bSucceed)
 {
-	//FindCanQuest(); 
-	CanQuestCnt++;
-	bCanAccept = true;
-	bQuestSucceed = bSucceed; //이런식으로 추가와 동시에 Succeed를 하면 바로 완료된걸 수행하게 할수 있을듯하다.
+	FindCanQuest();
 }
 
 
@@ -140,18 +136,43 @@ void AQuestNPCBase::QuestInfoOpen(int32 QuestIndex, AProjectH_PC* OwnerControlle
 	//나중에 텍스트를 넘기고 마지막에 퀘스트를 고르는 ui를 구현하기 위해 나눔. (ex.로스트아크)
 
 	if (!OwnerController && !NPCQuests.Quests.IsValidIndex(QuestIndex))
-	{
 		return;
-	}
 
 	OwnerController->MainQuestUI->OpenInfoUI(NPCQuests.Quests[QuestIndex], QuestIndex);
-	// 여기서 아예 QuestInfo에 퀘스트 인덱스 및, 퀘스트 이름, 퀘스트 정보를 전달해도 되지만,
-	// MainQuest의 Owner 컨트롤러나 퀘스트 컴포넌트도 추가해야하기때문에 Main에서 해결한다.
+}
+
+
+//완료 창을 따로 띄운다. Info와 거의 같다.
+void AQuestNPCBase::QuestSucceedInfoOpen(int32 QuestIndex, AProjectH_PC* OwnerController)
+{
+	if (!OwnerController && !NPCQuests.Quests.IsValidIndex(QuestIndex))
+		return;
+
+	OwnerController->MainQuestUI->OpenSucceedInfo(NPCQuests.Quests[QuestIndex], QuestIndex);
+}
+
+
+bool AQuestNPCBase::NPCQuestSetup()
+{
+	bool bHaveCanQuest = FindCanQuest();
+	SetIconWidget();
+	SaveNPCQuest();
+
+	if (bHaveCanQuest)
+	{
+		_DEBUG("Find Can Quest");
+	}
+	else
+	{
+		_DEBUG("Not Find Can Quest");
+	}
+
+	// 해당 NPC가 수행가능한 퀘가 있는지 판단.
+	return bHaveCanQuest;
 }
 
 void AQuestNPCBase::SaveNPCQuest()
 {
-	//GI->QuestSave->SaveNPC(NPCName, NPCQuests, bQuestSucceed, bIsQuesting, bCanAccept, bHaveMainQuest, CanQuestCnt, CanMainQuestCnt);
 	GI->SetNPCSaveSlot(this);
 	/* NPC 이름, NPC 퀘스트 목록, 퀘스트 완료상태, 퀘스트 중인지 상태, 퀘스트를 수락할수 있는지 상태 */
 }
@@ -159,31 +180,40 @@ void AQuestNPCBase::SaveNPCQuest()
 
 void AQuestNPCBase::SetIconWidget()
 {
-	switch (bQuestSucceed) // 퀘스트 완료 표시인가?
+	if (!QuestIconUI)
+		return;
+
+	QuestIconComponent->SetVisibility(true);
+
+	switch (QuestIconState)
 	{
-	case true:
-		SucceedWidget->SetVisibility(true);
+	case EQuestIconState::NONE:
 		break;
-	case false:
-		if (bHaveMainQuest)
-		{
-			MainIconWidget->SetVisibility(true);
-			break;
-		}
-		else
-		{
-			IconWidget->SetVisibility(true);
-			break;
-		}
-	
+	case EQuestIconState::SubCanQuest:
+		QuestIconUI->SetRenderIcon(EQuestState::SubQuest);
+		break;
+	case EQuestIconState::MainCanQuest:
+		QuestIconUI->SetRenderIcon(EQuestState::MainQuest);
+		break;
+	case EQuestIconState::SubQuesting:
+		QuestIconUI->SetRenderIcon(EQuestState::SubQuesting);
+		break;
+	case EQuestIconState::MainQuesting:
+		QuestIconUI->SetRenderIcon(EQuestState::MainQuesting);
+		break;
+	case EQuestIconState::SubSucceedQuest:
+		QuestIconUI->SetRenderIcon(EQuestState::SubSucceedQuest);
+		break;
+	case EQuestIconState::MainSucceedQuest:
+		QuestIconUI->SetRenderIcon(EQuestState::MainSucceedQuest);
+		break;
 	}
 }
 
 void AQuestNPCBase::HiddenIcon()
 {
-	SucceedWidget->SetVisibility(false);
-	IconWidget->SetVisibility(false);
-	MainIconWidget->SetVisibility(false);
+	QuestIconComponent->SetVisibility(false);
+	_DEBUG("HiddenIcon");
 }
 
 
@@ -192,56 +222,86 @@ bool AQuestNPCBase::FindCanQuest()
 {
 	// 게임 인스턴스 조회는 NPC 이름으로 하면 될듯하다.
 	/*게임 인스턴스 같은 곳에서 캐릭터가 수행가능한 퀘스트 목록을 퀘스트 이름으로 저장하고
-		여기서 그 목록을 조회해 해당 NPC가 수행가능한 퀘스트를 가지고 있으면 해당 퀘스트의 
-		bCanAccepted를 true하고 NPC 클래스의 bCanAccept를 true로 바꾼다.
-		해당 NPC 클래스의 bCanAccept는 캐릭터가 근처에 왔을 시에 위젯을 띄우기 용도로 쓰고,
+		여기서 그 목록을 조회해 해당 NPC가 수행가능한 퀘스트를 가지고 있으면 해당 퀘스트의
+		bCanAccepted를 true하고 NPC 클래스의 bCanInteractQuest를 true로 바꾼다.
+		해당 NPC 클래스의 bCanInteractQuest는 하나라도 수락 가능한 퀘스트가 있다는 뜻이고,
 		★ NPCQuest의 bCanAccepted는 다이얼 로그 후에 나열할 퀘스트 목록을 할떄 사용.
-		
-		여기서 가능한 Quest를 찾을때마다 CanQuestCnt도 늘려준다. 해당 값으로 퀘스트 위젯을 더 띄울지 말지
-		결정 한다.*/
+		또한 해당 퀘스트가 진행중인지, 완료가능인지 완료된 것인지 판단하여 퀘스트를 지우고, 플래그를 설정한다.
+		*/
+
+
+	//여기서 항상 NONE으로 기준을 잡고 하면 된다.★
+	QuestIconState = EQuestIconState::NONE;
 
 	if (GI)
 	{
 		FCanQuestNums* CanQuestNum = GI->PlayerCanQuest.Find(NPCName);
 		if (CanQuestNum)
 		{
-			for (int32 Nums : CanQuestNum->QuestNums)
+			for (int32 i = 0; i < NPCQuests.Quests.Num(); ++i)
 			{
-				for (FNPCQuest& Quests : NPCQuests.Quests)
+				int32* EndedNum = EndedQuestsNums.Find(NPCQuests.Quests[i].QuestNumber);
+				if (EndedNum)
+				{			
+					NPCQuests.Quests.RemoveAt(i); // 완료한 것들 찾아서 삭제.
+					--i; // 지우면서 엘리멘트가 앞으로 당겨졌으므로.
+					continue;
+				}
+				else
 				{
-					if (Quests.QuestNumber == Nums)
+					// 완료가능한 퀘스트 찾기.		
+					if (int32* SucceedQuestNum = SucceedQuestsNums.Find(NPCQuests.Quests[i].QuestNumber))
 					{
-						Quests.bCanAccepted = true;
-						CanQuestCnt++;
+						NPCQuests.Quests[i].CanSucceed = true;
+						NPCQuests.Quests[i].bCanAccepted = true;
 
-						if (Quests.QuestType == EQuestType::Main)
+						switch (NPCQuests.Quests[i].QuestType)
 						{
-							CanMainQuestCnt++;
-							// 메인퀘스트가 있으므로 메인퀘스트 아이콘을 출력.
+						case EQuestType::Main :
+							SetQuestIconState(EQuestIconState::MainSucceedQuest);
+							break;
+						case EQuestType::Normal :
+							SetQuestIconState(EQuestIconState::SubSucceedQuest);
+							break;
 						}
 					}
+					else if(int32* QuestingNum = QuestingNums.Find(NPCQuests.Quests[i].QuestNumber))
+					{		
+						NPCQuests.Quests[i].Questing = true;
+						NPCQuests.Quests[i].bCanAccepted = true;
+
+						switch (NPCQuests.Quests[i].QuestType)
+						{
+						case EQuestType::Main:
+							SetQuestIconState(EQuestIconState::MainQuesting);
+							break;
+						case EQuestType::Normal:
+							SetQuestIconState(EQuestIconState::SubQuesting);
+							break;
+						}
+					}					
+					else // 진행중도 아니고 완료가능한 퀘스트도 아닌경우. 
+					{
+						// 유저가 가능한 퀘스트 찾아서 퀘스트 가능하다고 체크해주기.		
+						if (int32* CanNum = CanQuestNum->QuestNums.Find(NPCQuests.Quests[i].QuestNumber))
+						{
+							NPCQuests.Quests[i].bCanAccepted = true;
+
+							switch (NPCQuests.Quests[i].QuestType)
+							{
+							case EQuestType::Main:
+								SetQuestIconState(EQuestIconState::MainCanQuest);
+								break;
+							case EQuestType::Normal:
+								SetQuestIconState(EQuestIconState::SubCanQuest);
+								break;
+							}
+						}
+					}			
 				}
 			}
-			if (CanQuestCnt > 0)
-			{
-				bCanAccept = true;
-				if (CanMainQuestCnt > 0)
-				{
-					bHaveMainQuest = true;
-				}
-				return true;
-			}	
+			return true;
 		}
 	}
 	return false;
-}
-
-
-// 위젯을 띄울지 말지 결정. ★★
-bool AQuestNPCBase::CanVisibleWidget()
-{
-	if (bCanAccept || bQuestSucceed) // 수락할수 있는게 있거나, 완료한게 있거나.
-		return true;
-	else
-		return false;
 }

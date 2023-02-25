@@ -5,13 +5,13 @@
 #include "ProjectH.h"
 #include "Blueprint/UserWidget.h"
 #include "NPCQuest.h"
-#include "QuestInfo.generated.h"
+#include "QuestSucceedInfo.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS(Meta = (DisableNativeTick))
-class PROJECTH_API UQuestInfo : public UUserWidget
+class PROJECTH_API UQuestSucceedInfo : public UUserWidget
 {
 	GENERATED_BODY()
 
@@ -25,7 +25,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 		class UTextBlock* QuestDescriptionText;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		class UButton* Accept;
+		class UButton* Succeed;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 		class UButton* Decline;
 
@@ -58,10 +58,10 @@ public:
 	void BindingFunction();
 
 	UFUNCTION()
-		void AcceptClick();
+		void SucceedClick();
 	UFUNCTION()
 		void DeclineClick();
 	UFUNCTION(BlueprintImplementableEvent)
 		void SetOutline(bool bMain);
-	
+
 };

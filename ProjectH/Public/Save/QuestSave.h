@@ -9,27 +9,22 @@
 #include "QuestSave.generated.h"
 
 USTRUCT(BlueprintType)
-struct FbQuestFlag
+struct FNPCQuestingAndSucceedQuests
 {
 	GENERATED_USTRUCT_BODY()
 
 public:
-	UPROPERTY()
-		bool bSucceed;
-	UPROPERTY()
-		bool bQuesting;
-	UPROPERTY()
-		bool bCanAccept;
-	UPROPERTY()
-		bool bCanMainAccept;
-	UPROPERTY()
-		int32 CanCnt;
-	UPROPERTY()
-		int32 MainCanCnt;
 
-	FbQuestFlag();
-	FbQuestFlag(bool bFlag_Succeed, bool bFlag_Questing, bool bFlag_CanAccept, bool bFalg_CanMainAccept, int32 Cnt_CanCnt, int32 Cnt_MainCanCnt);
+	//UPROPERTY를 넣지않으면 Save Load가 안됨.
+	UPROPERTY()
+		TSet<int32> QuestingNums;
+	UPROPERTY()
+		TSet<int32> SucceedQuestNums;
+	UPROPERTY()
+		TSet<int32> EndedQuestsNums;
 
+	FNPCQuestingAndSucceedQuests();
+	FNPCQuestingAndSucceedQuests(TSet<int32> QuestingQuests, TSet<int32> SucceedQuests, TSet<int32> EndedQuests);
 };
 /**
  * 
@@ -49,7 +44,7 @@ public:
 	void SaveQuest(TArray<FQuestStruct> GetQuests, const int32 GetCurrentQuestId);
 	void LoadQuest(class UQuestComponent* QuestComponent);
 
-	void SaveNPC(FString Name, FNPCAllQuest NPCQuest, bool bSucceed, bool bQuesting, bool bCanAccept, bool bMainQuest, int32 QuestCnt, int32 MainQuestCnt);
+	void SaveNPC(FString Name, TSet<int32> QuestingQuests, TSet<int32> SucceedQuests, TSet<int32> EndedQuests);
 	bool LoadNPC(class AQuestNPCBase* NPC);
 
 
@@ -58,14 +53,11 @@ private :
 		TArray<FQuestStruct> Quests;
 	UPROPERTY(VisibleAnywhere)
 		int32 CurrentQuestId;
-	UPROPERTY(VisibleAnywhere)
-		bool bCanChangeQuest;
+
 	UPROPERTY(VisibleAnywhere)
 		TMap<FString, FNPCAllQuest> NPCQuests;
 	UPROPERTY(VisibleAnywhere)
-		TMap<FString, FbQuestFlag> bNPCSucceed;
-
-
+		TMap<FString, FNPCQuestingAndSucceedQuests> NPCQuestingAndSucceedQuest;
 
 
 	void SaveSlot(); // 세이브 파일 저장.

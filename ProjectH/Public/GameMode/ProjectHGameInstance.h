@@ -19,7 +19,7 @@ struct FCanQuestNums
 {
 	GENERATED_USTRUCT_BODY()
 public:
-	TArray<int32> QuestNums;
+	TSet<int32> QuestNums;
 
 	FCanQuestNums();
 	FCanQuestNums(int32 QuestNumber);
@@ -39,17 +39,18 @@ public:
 	// 캐릭터와 NPC의 퀘스트 상태를 저장하는 함수. 각각 캐릭터와 NPC에게서 호출한다.
 
 	/*-- Quest --*/
+	void SetLoadSlot(class UQuestComponent* QuestComponent);
 	void SetSaveSlot(class UQuestComponent* QuestComponent);
+
+	bool SetNPCLoadSlot(class AQuestNPCBase* NPC);
 	void SetNPCSaveSlot(class AQuestNPCBase* NPC);
 	void SetPlayerCanQuest();
 
+	FNPCQuestDataBase* GetNPCQuestData(FString NPCName); // NPC 퀘스트를 가져온다.
 	FQuestDataBase* GetPQData(int32 QuestNumber);
-	TArray<FTextNName> GetDialData(int32 QuestNumber);
+	TArray<FTextNName> GetDialData(EDialougeState DialState, int32 QuestNumber);
 
-
-	void AcceptQuestNumber(int32 QuestNumber); // 진행 가능한 퀘스트를 수락했을 때
-
-	void FinishedQuestNumber(int32 QuestNumber); /* 퀘스트를 완료 했을 때 변경하는 함수 */
+	void QuestClearNumber(FString NPCName, int32 QuestNumber); // ★★퀘스트 완료시 호출.
 
 
 	/*-- Setting --*/
@@ -67,7 +68,6 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		class UPlayerStateSave* PlayerSave; // 캐릭터에 관한 세이브파일
 
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		TMap<FString, FCanQuestNums> PlayerCanQuest; // NPC와 비교할 것. 퀘스트 넘버로 데이터테이블에서 가져옴.
 
@@ -76,15 +76,27 @@ public:
 
 	UPROPERTY(VisibleAnywhere)
 		TArray<int32> QuestNums; // 진행 가능한 퀘스트 넘버로 가지고있다.
+
 	UPROPERTY(VisibleAnywhere)
 		TArray<int32> FinishedQuests; // 완료한 퀘스트들.
 
 	UPROPERTY(VisibleAnywhere)
-		class UDataTable* PQTable;
+		class UDataTable* NPCQBTable; // NPC의 퀘스트들이 넣어져있는 테이블에서 NPC가 스스로 퀘스트 가져오기 위한 테이블.
+
+	UPROPERTY(VisibleAnywhere)
+		class UDataTable* PQTable; // 플레이어가 가능한 퀘스트들의 테이블
 
 	UPROPERTY(VisibleAnywhere)
 		class UDataTable* DialTable;
 
+
+	UPROPERTY(VisibleAnywhere)
+		TMap<FString, class AQuestNPCBase*> NPCAllPtr; // NPC들을 이름으로 저장해둔다.
+	void SetNPCPtr(FString Name, class AQuestNPCBase* NPC);
+	// 해당 맵에 저장하는 함수,
+
+	UFUNCTION(BlueprintCallable)
+		class AQuestNPCBase* GetNPCPtr(FString NPCName);
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		TArray<FString> ResolutionArr; // 지원되는 해상도 저장.
@@ -100,14 +112,5 @@ public:
 		int32 T;
 	UPROPERTY()
 		float MS;
-
-
-
-
-
-	/*UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-		TMap<FString, class AQuestNPCBase> AllNPC;
-	void SaveAllNPC();
-	void LoadAllNPC(); */
 
 };

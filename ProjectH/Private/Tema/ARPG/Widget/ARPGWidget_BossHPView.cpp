@@ -23,10 +23,6 @@ void UARPGWidget_BossHPView::NativeConstruct()
 		return;
 	}
 
-	// 이게 안되면 과연 BP에서 위젯 블프로 만든것을 넣었는지 의심해보자.
-	/*BossHP->PercentDelegate.BindUFunction(this, FName("RetHP"));
-	BossHP->SynchronizeProperties();*/
-
 	// 어처피 데미지를 입는 수치는 같으므로 그냥 둘다 델리게이트에 실행
 	BossHP->SetPercent(1.f);
 	BossHP_Prev->SetPercent(1.f);

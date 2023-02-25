@@ -23,10 +23,18 @@ public:
 		EQuestType QuestType;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TArray<FQuestStep> QuestSteps;
+
+
+	// 런타임중 설정.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class AQuestNPCBase* OwnerNPC; // 가능?
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		bool bCanAccepted; 
+		FString OwnerNPCName;
+	UPROPERTY(VisibleAnywhere , BlueprintReadWrite)
+		bool bCanAccepted; // 인터랙트가 가능한 퀘스트
+
+	UPROPERTY(VisibleAnywhere)
+		bool Questing; // 해당 퀘스트는 진행중인 퀘스트이다.
+	UPROPERTY(VisibleAnywhere)
+		bool CanSucceed; // 해당 퀘스트는 완료'가능'한 퀘스트이다.
 
 	FNPCQuest();
 	FNPCQuest(const FQuestStruct& Quest);

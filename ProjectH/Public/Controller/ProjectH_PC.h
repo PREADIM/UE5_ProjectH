@@ -55,6 +55,14 @@ public:
 	// 마우스 감도 새로운 값 적용하는 함수.
 	void SetNewMouseSensitivity();
 
+	// 인터랙트와 퀘스트 콜리전을 껏다 켜서 다시한번 재 검사
+	void SetInteractCollisionSetup();
+	void SetQuestCollisionSetup();
+
+public:
+	UPROPERTY(VisibleAnywhere)
+		class AProjectHCharacter* OwnerCharacter;
+
 
 public:
 	/*-----------------
@@ -91,11 +99,6 @@ public:
 		float MouseSensitivity;
 
 	bool IsOpen = false;
-private:
-	UPROPERTY(VisibleAnywhere)
-		class AProjectHCharacter* OwnerCharacter;
 
-	
 
-	
 };

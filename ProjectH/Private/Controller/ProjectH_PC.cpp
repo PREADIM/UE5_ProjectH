@@ -221,6 +221,16 @@ void AProjectH_PC::SetNewMouseSensitivity()
 	}
 }
 
+void AProjectH_PC::SetInteractCollisionSetup()
+{
+	OwnerCharacter->InteractCollisionSetUp();
+}
+
+void AProjectH_PC::SetQuestCollisionSetup()
+{
+	OwnerCharacter->QuestCollisionSetUp();
+}
+
 
 
 void AProjectH_PC::SetupInputComponent()

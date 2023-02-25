@@ -12,7 +12,7 @@ FNPCQuest::FNPCQuest(const FQuestStruct& Quest)
 	QuestDescription = Quest.QuestDescription;
 	QuestType = Quest.QuestType;
 	QuestSteps = Quest.QuestSteps;
-	OwnerNPC = Quest.OwnerNPC;
+	OwnerNPCName = Quest.OwnerNPCName;
 	bCanAccepted = false;
 
 }

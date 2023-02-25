@@ -37,6 +37,8 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		FString QuestName;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		FString QuestDescription;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FLinearColor SelectColor;
@@ -59,7 +61,7 @@ public:
 		void ActiveQuestColor();
 
 	UFUNCTION()
-		void ButtonClicked();
+		void SelectButtonClicked();
 
 	UFUNCTION(BlueprintImplementableEvent)
 		void SetOutline(bool bActvie);

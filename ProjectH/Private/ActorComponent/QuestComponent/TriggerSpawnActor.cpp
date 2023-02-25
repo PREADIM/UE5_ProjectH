@@ -2,6 +2,9 @@
 
 
 #include "ActorComponent/QuestComponent/TriggerSpawnActor.h"
+#include "Character/ProjectHCharacter.h"
+#include "ActorComponent/QuestComponent/TriggerEventBase.h"
+
 
 // Sets default values
 ATriggerSpawnActor::ATriggerSpawnActor()
@@ -36,4 +39,14 @@ void ATriggerSpawnActor::SetTriggerBaseInit(ATriggerEventBase* TriggerBase, APro
 {
 	OwnerTrigger = TriggerBase;
 	PlayerCharacter = OwnerCharacter;
+	if (PlayerCharacter)
+		QuestComponent = PlayerCharacter->GetQuestComponent();
+}
+
+void ATriggerSpawnActor::ClearQuest()
+{
+	if (OwnerTrigger)
+	{
+		OwnerTrigger->QuestNextStep();
+	}
 }

@@ -42,16 +42,8 @@ public:
 	
 	FOnAddedRemovedQuest OnAddedRemovedQuest; // 퀘스트가 추가 및 삭제 되었을때 실행할 델리게이트.
 	FOnActiveQuestChange ActiveQuestChange; // 액티브 퀘스트가 변경되었을때 실행할 델리게이트
-	FOnAcceptEvent AcceptEvent; // 퀘스트 수락할 시에 호출될 함수들
 	FOnCompleteStep CompleteQuestDelegate; // 퀘스트 한 단계 클리어시 호출할 델리게이트.
 	FOnSetDescription SetDescriptionDelegate; // 횟수가 있는 퀘스트를 할때 진행률 변화.
-
-	/* 수락한 퀘스트의 NPC를 가져와서 NPC의 Index째의 퀘스트를 지운다.
-		또는 퀘스트 트리거에 해당 NPC의 정보를 넘겨준다.*/
-	UPROPERTY()
-		class AQuestNPCBase* NewNPC;
-	int32 NewNPCQuestIndex;
-
 
 public:
 	/* ------------------
@@ -62,12 +54,13 @@ public:
 	void SelectQuest(FString SelectQuestName); // 퀘스트를 내가 골랐거나, 아예 고르지않았을때 퀘스트가 선택됨.
 	// 퀘스트를 이미 한번이라도 수행했으면 퀘스트 못바꾸고, 아니면 바꿀수 있다.
 
-	void RemoveQuest(); // 완료한 퀘스트를 지운다.
+	void RemoveQuest(int32 RemoveQuestNumber); // 완료한 퀘스트를 지운다.
+	// 이 퀘스트 시스템은 반드시 추적하는 퀘스트만 완료되게 해놨지만 그런 것이 상관없다면 Remove역시 해당 퀘스트 인덱스를 받아와서 지운다..
 
 	void CompleteStep(); // QuestStep을 다음 단계로 넘긴다.
 
 	UFUNCTION()
-		void UpdateQuestCashes(); // 퀘스트 쉽게 찾을 수 있도록 캐쉬 설정.
+		void UpdateQuestStep(); // 퀘스트 쉽게 찾을 수 있도록 캐쉬 설정.
 	UFUNCTION()
 		void AcceptQuest(); // FOnAcceptEvent 델리게이트에 연동되어있는 함수.
 
@@ -78,13 +71,9 @@ public:
 
 	void BindSetDescription(); // 몬스터나 횟수가 있는 퀘스트를 할때 현재 진행률 바인드
 
-	void FinishedQuestNumber(int32 QuestNumber); // 퀘스트 완료하면 변경할 함수.
-	void SaveQuestNumber(int32 QuestNumber);
-	// NPC 이름까지 보내서 인스턴스 안에있는 TMap까지 제거 해도될듯 하다. ★★
-	// 굳이 이게임에서는 필요없으니 성능을 위해 구현하지 않음.
+	void SaveQuestNumber(FString NPCName, int32 QuestNumber);
 
-
-
+	void BeginSetupHaveQuests(); // 혹여나 퀘스트 중복 수락을 방지하기 위하여 HaveQuestNumber에 저장.
 
 	/*-------------
 		Get & Set
@@ -92,11 +81,8 @@ public:
 
 	FQuestStruct GetActiveQuest() { return ActiveQuest; }
 	TArray<FQuestStruct> GetQuests() { return Quests; }
-	TMap<FString, FQuestStruct> GetQuestCashes() { return QuestCashes; }
+	TSet<int32> GetHaveQuestNums() { return HaveQuestNumber; }
 	int32 GetCurrentID() { return CurrentQuestID; }
-
-
-
 
 
 private:
@@ -110,7 +96,7 @@ private:
 		TArray<FQuestStruct> Quests; // 전체 가지고 있는 퀘스트 리스트.
 
 	UPROPERTY(VisibleAnywhere)
-		TMap<FString, FQuestStruct> QuestCashes;
+		TSet<int32> HaveQuestNumber; // 가지고 있는 퀘스트번호를 검색하기 위한 것.
 
 	UPROPERTY(VisibleAnywhere)
 		  int32 CurrentQuestID = -1; // 현재 퀘스트의 번호
@@ -126,8 +112,5 @@ private:
 	--------------------*/
 
 	void ResetQuest(); // 현재 진행하고있는 퀘스트와 퀘스트 아이디 초기화.
-	void SelectTopQuest(); // 진행하는 퀘스트가 없다면 자동으로 가장 상단의 퀘스트 실행.
-
-
-		
+	void SelectTopQuest(int32 RemoveQuestNumber); // 진행하는 퀘스트가 없다면 자동으로 가장 상단의 퀘스트 실행.		
 };

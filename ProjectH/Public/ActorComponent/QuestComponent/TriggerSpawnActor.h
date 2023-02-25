@@ -32,9 +32,11 @@ public:
 		class AProjectHCharacter* PlayerCharacter;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		class UQuestComponent* QuestComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		class ATriggerEventBase* OwnerTrigger; // 이 액터는 트리거에 의해 소환되는 액터이므로, 
 	// 이 액터의 할일을 다했을시에 Trigger의 QuestNextStep()을 실행해준다.
-
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool bBPBindFunc; // BPBindFunc를 사용한다면 이걸 True로 해준다.
@@ -48,6 +50,10 @@ public:
 	// ★★ Trigger에서 스폰된다면 스폰후 반드시 실행
 	UFUNCTION(BlueprintCallable)
 		void SetTriggerBaseInit(class ATriggerEventBase* TriggerBase, AProjectHCharacter* OwnerCharacter);
+
+	// 트리거에 의한 스폰된 액터일시 퀘스트 완료시 오너 트리거에게 퀘스트 완료를 호출,
+	UFUNCTION(BlueprintCallable)
+		void ClearQuest();
 
 	UFUNCTION(BlueprintImplementableEvent)
 		void BPBindFunc();

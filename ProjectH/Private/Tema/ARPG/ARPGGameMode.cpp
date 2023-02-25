@@ -17,5 +17,6 @@ void AARPGGameMode::PostLogin(APlayerController* Login)
 
 void AARPGGameMode::Restart()
 {
-	UGameplayStatics::OpenLevel(GetWorld(), FName("ARPGMap"));
+	FString Name = UGameplayStatics::GetCurrentLevelName(GetWorld());
+	UGameplayStatics::OpenLevel(GetWorld(), FName(*Name));
 }
