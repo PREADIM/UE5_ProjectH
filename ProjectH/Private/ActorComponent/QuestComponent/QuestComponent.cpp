@@ -11,6 +11,30 @@
 #include "Save/QuestSave.h"
 #include "Kismet/GameplayStatics.h"
 
+
+FActiveQuest::FActiveQuest()
+{
+	Clear();
+}
+
+
+void FActiveQuest::Clear()
+{
+	QuestName = FString("");
+	QuestNumber = -1;
+	OwnerNPCName = FString("");
+}
+
+
+void FActiveQuest::SetActiveQuest(FQuestStruct& Quest)
+{
+	QuestName = Quest.QuestName;
+	QuestNumber = Quest.QuestNumber;
+	OwnerNPCName = Quest.OwnerNPCName;
+}
+
+
+
 // Sets default values for this component's properties
 UQuestComponent::UQuestComponent()
 {
@@ -26,9 +50,7 @@ void UQuestComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	OnAddedRemovedQuest.AddUFunction(this, FName("UpdateQuestStep"));
 	OwnerCharacter = Cast<class AProjectHCharacter>(GetOwner());
-	CompleteQuestDelegate.AddUFunction(this, FName("UpdateQuestStep"));
 	ActiveQuest.Clear();
 	// ...
 	
@@ -51,27 +73,25 @@ void UQuestComponent::AddQuest(FNPCQuest NPCQuest)
 {
 	if (HaveQuestNumber.Find(NPCQuest.QuestNumber))
 	{
-		_DEBUG("Have Quests");
 		return;
 	}
 
-	for (int32 i = 0; i < NPCQuest.QuestSteps.Num(); i++)
+	NPCQuest.QuestSteps[0].Trigger = GetWorld()->SpawnActorDeferred<ATriggerEventBase>(NPCQuest.QuestSteps[0].BP_Trigger, FTransform(NPCQuest.QuestSteps[0].TriggerLocation), OwnerCharacter, nullptr, ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding);
+	if (::IsValid(NPCQuest.QuestSteps[0].Trigger))
 	{
-		NPCQuest.QuestSteps[i].Trigger = GetWorld()->SpawnActorDeferred<ATriggerEventBase>(NPCQuest.QuestSteps[i].BP_Trigger, FTransform(NPCQuest.QuestSteps[i].TriggerLocation), OwnerCharacter, nullptr, ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding);
-		if (::IsValid(NPCQuest.QuestSteps[i].Trigger))
-		{
-			NPCQuest.QuestSteps[i].Trigger->QuestComponent = this;
-			NPCQuest.QuestSteps[i].Trigger->PlayerCharacter = Cast<AProjectHCharacter>(GetOwner());
-			NPCQuest.QuestSteps[i].Trigger->GI = GI;
-			NPCQuest.QuestSteps[i].Trigger->QuestName = NPCQuest.QuestName;
-			NPCQuest.QuestSteps[i].Trigger->OwnerNPCName = NPCQuest.OwnerNPCName;
-			NPCQuest.QuestSteps[i].Trigger->QuestNumber = NPCQuest.QuestNumber;
+		_DEBUG("Add Quest %d", NPCQuest.QuestNumber);
+		_DEBUG("Trigger Name : %s", *NPCQuest.QuestSteps[0].Trigger->GetName());
+		NPCQuest.QuestSteps[0].Trigger->QuestComponent = this;
+		NPCQuest.QuestSteps[0].Trigger->PlayerCharacter = Cast<AProjectHCharacter>(GetOwner());
+		NPCQuest.QuestSteps[0].Trigger->GI = GI;
+		NPCQuest.QuestSteps[0].Trigger->QuestName = NPCQuest.QuestName;
+		NPCQuest.QuestSteps[0].Trigger->OwnerNPCName = NPCQuest.OwnerNPCName;
+		NPCQuest.QuestSteps[0].Trigger->QuestNumber = NPCQuest.QuestNumber;
 
-			NPCQuest.QuestSteps[i].Trigger->FinishSpawning(FTransform(NPCQuest.QuestSteps[i].TriggerLocation));
+		NPCQuest.QuestSteps[0].Trigger->FinishSpawning(FTransform(NPCQuest.QuestSteps[0].TriggerLocation));
 
-			// 생성된 트리거에 컴포넌트값 전달. 
-			// 퀘스트가 들어오면 해당 트리거를 생성
-		}
+		// 생성된 트리거에 컴포넌트값 전달. 
+		// 퀘스트가 들어오면 해당 트리거를 생성
 	}
 
 	Quests.Emplace(NPCQuest);
@@ -79,12 +99,12 @@ void UQuestComponent::AddQuest(FNPCQuest NPCQuest)
 
 	if (ActiveQuest.QuestName == FString(""))
 	{
-		ActiveQuest = Quests[0];
+		ActiveQuest.SetActiveQuest(Quests[0]);
 		CurrentQuestID = 0;
-		ActiveQuest.QuestSteps[0].Trigger->SetTriggerWidget();
+		Quests[CurrentQuestID].QuestSteps[0].Trigger->SetTriggerWidget();
 	}
 
-	OnAddedRemovedQuest.Broadcast(); // 퀘스트 캐쉬 & UI 초기화.
+	OnUpdateQuestList.Broadcast(); // 퀘스트 캐쉬 & UI 초기화.
 }
 
 void UQuestComponent::SelectQuest(FString SelectQuestName)
@@ -98,13 +118,11 @@ void UQuestComponent::SelectQuest(FString SelectQuestName)
 	if (ActiveQuest.QuestName == SelectQuestName) // 이름이 같으면 할 필요 없다.
 		return;
 
-	// 이름이 같지 않을 시
-	if (ActiveQuest.QuestSteps.Num())
+	if (Quests[CurrentQuestID].QuestSteps.Num())
 	{
-		ActiveQuest.QuestSteps[0].Trigger->SetHiddenTriggerWidget(); // 먼저 열려있는 트리거의 틱과 위젯 비활성화.
-		Quests[CurrentQuestID] = ActiveQuest;
-		//★★ 이렇게 다시 저장하고 리셋하면 퀘스트 진행도를 그대로 다시 저장가능하다.
+		Quests[CurrentQuestID].QuestSteps[0].Trigger->SetHiddenTriggerWidget(); // 먼저 열려있는 트리거의 틱과 위젯 비활성화.
 	}
+
 	ResetQuest();	
 
 	//빈칸이 아닐때 무언가 선택했다는 뜻.
@@ -113,13 +131,14 @@ void UQuestComponent::SelectQuest(FString SelectQuestName)
 		if (Quests[i].QuestName == SelectQuestName)
 		{
 			CurrentQuestID = i;
-			ActiveQuest = Quests[i]; // 현재 실행하고 있는 퀘스트 실행.
-			ActiveQuestChange.Broadcast();
+			ActiveQuest.SetActiveQuest(Quests[i]);
+			if (Quests[CurrentQuestID].QuestSteps.Num() && Quests[CurrentQuestID].QuestSteps[0].Trigger)
+				Quests[CurrentQuestID].QuestSteps[0].Trigger->SetTriggerWidget();
+			OnUpdateQuestList.Broadcast();
+
 			break;
 		}
 	}
-
-	ActiveQuest.QuestSteps[0].Trigger->SetTriggerWidget();
 }
 
 
@@ -141,6 +160,7 @@ void UQuestComponent::RemoveQuest(int32 RemoveQuestNumber)
 
 		if (QuestIndex != -1)
 		{
+			Quests[QuestIndex].QuestSteps[0].Trigger->TriggerDestroy(); // 마지막 NPC 위치 나타내는 트리거 삭제. 필숨8★
 			GI->QuestClearNumber(Quests[QuestIndex].OwnerNPCName, RemoveQuestNumber);
 			Quests.RemoveAt(QuestIndex);
 
@@ -148,53 +168,61 @@ void UQuestComponent::RemoveQuest(int32 RemoveQuestNumber)
 			if (CurrentQuestID >= QuestIndex)
 				--CurrentQuestID;
 
+			
 			SelectTopQuest(RemoveQuestNumber); // 실행중인 퀘였다면 다른 퀘스트가있으면 가장 상단에 있는 것이 활성화되고, 아니면 냅둠.
-			OnAddedRemovedQuest.Broadcast();
+			OnUpdateQuestList.Broadcast();
 			UpdateQuestSave();
 		}
 	}	
 }
 
 // 퀘스트 다음 단계
-void UQuestComponent::CompleteStep()
+void UQuestComponent::CompleteStep(int32 QuestNumber)
 {
+	int32 QuestIndex = -1;
+	for (int32 i = 0; i < Quests.Num(); ++i)
+	{
+		if (QuestNumber == Quests[i].QuestNumber)
+		{
+			QuestIndex = i;
+			break;
+		}
+	}
 
-	ATriggerEventBase* RemoveTrigger = ActiveQuest.QuestSteps[0].Trigger; // 
+	if (QuestIndex == -1)
+		return;
+
+	ATriggerEventBase* RemoveTrigger = Quests[QuestIndex].QuestSteps[0].Trigger; // 
 	if (!RemoveTrigger)
 		return;
 
-	ActiveQuest.QuestSteps.RemoveAt(0);
-	if (ActiveQuest.QuestSteps.Num()) // 아직 존재하면,
+	if (Quests[QuestIndex].QuestSteps.Num() > 1) // 마지막은 완료 NPC위치 트리거이므로 반드시 마지막엔 1개가 남아있어야함
 	{
-		ActiveQuest.QuestSteps[0].Trigger->SetTriggerWidget(); // 새로운 퀘스트 위젯 띄우기.
-		CompleteQuestDelegate.Broadcast(); 
-		// 다음 퀘스트를 가리켜야하니 관련 함수 호출. 
-		// 퀘스트 캐시 업데이트와 실행중인 퀘스트 다음 퀘스트 설명으로 변경 함수가 바인딩 되어있다.
-	}
-	else
-	{
-		RemoveTrigger->ClearQuest(); // 퀘스트 클리어.
+		Quests[QuestIndex].QuestSteps.RemoveAt(0);
+		NewTriggerSet(QuestIndex); // 트리거 소환.
+		if (Quests[QuestIndex].QuestSteps[0].Trigger)
+		{
+			RemoveTrigger->TriggerDestroy();
+			Quests[QuestIndex].QuestSteps[0].Trigger->SetTriggerWidget();
+			OnUpdateDescription.Broadcast(QuestIndex); // 해당 퀘스트의 설명이 바뀜.
+
+			// 이제 액티브퀘스트는 이름, 넘버, NPC 이름만 가지고있기때문에 재정비가 필요없다.
+			/*if (ActiveQuest.QuestNumber == Quests[QuestIndex].QuestNumber)
+			{
+				ActiveQuest.SetActiveQuest(Quests[QuestIndex]);
+			}*/
+
+		}
 	}
 
-	RemoveTrigger->TriggerDestroy();
 
 	UpdateQuestSave(); // 세이브 데이터 갱신.
-}
-
-
-void UQuestComponent::UpdateQuestStep()
-{
-	if (CurrentQuestID != -1)
-		Quests[CurrentQuestID].QuestSteps = ActiveQuest.QuestSteps; // 퀘스트 진행도 저장.
-	// 이 것으로 인해 세이브를 하고 로드 할때도 액티브 퀘스트가 한 퀘스트를 하나 진행했음에도 그 다음부터 바로 시작할 수 있게 해준다.
 }
 
 
 //NPC -> MainUI -> QuestInfoUI ->QuestComponent 순이다.
 void UQuestComponent::AcceptQuest()
 {
-	// ★★ AcceptDelegate에 연결되어있는 함수. 추후에 사용 가능. 퀘스트를 수락버튼 누르면 호출됨.
-
 	UpdateQuestSave(); // 세이브 파일 갱신. 
 }
 
@@ -219,9 +247,9 @@ void UQuestComponent::StartQuestLoad()
 
 
 // 몬스터나 횟수가 있는 퀘스트를 할때 현재 진행률 바인드
-void UQuestComponent::BindSetDescription()
+void UQuestComponent::BindSetDescription(int32 QuestIndex)
 {
-	SetDescriptionDelegate.Broadcast();
+	OnUpdateDescription.Broadcast(QuestIndex);
 }
 
 
@@ -239,6 +267,26 @@ void UQuestComponent::BeginSetupHaveQuests()
 		HaveQuestNumber.Emplace(Quest.QuestNumber);
 	}
 
+}
+
+
+// 퀘스트 스텝이 완료되었을때 그 다음 트리거 베이스를 생성.
+void UQuestComponent::NewTriggerSet(int32 QuestIndex)
+{
+	Quests[QuestIndex].QuestSteps[0].Trigger = GetWorld()->SpawnActorDeferred<ATriggerEventBase>(Quests[QuestIndex].QuestSteps[0].BP_Trigger, FTransform(Quests[QuestIndex].QuestSteps[0].TriggerLocation), OwnerCharacter, nullptr, ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding);
+	if (::IsValid(Quests[QuestIndex].QuestSteps[0].Trigger))
+	{
+		Quests[QuestIndex].QuestSteps[0].Trigger->QuestComponent = this;
+		Quests[QuestIndex].QuestSteps[0].Trigger->PlayerCharacter = Cast<AProjectHCharacter>(GetOwner());
+		Quests[QuestIndex].QuestSteps[0].Trigger->GI = GI;
+		Quests[QuestIndex].QuestSteps[0].Trigger->QuestName = Quests[QuestIndex].QuestName;
+		Quests[QuestIndex].QuestSteps[0].Trigger->OwnerNPCName = Quests[QuestIndex].OwnerNPCName;
+		Quests[QuestIndex].QuestSteps[0].Trigger->QuestNumber = Quests[QuestIndex].QuestNumber;
+
+		Quests[QuestIndex].QuestSteps[0].Trigger->FinishSpawning(FTransform(Quests[QuestIndex].QuestSteps[0].TriggerLocation));
+		// 생성된 트리거에 컴포넌트값 전달. 
+		// 퀘스트가 들어오면 해당 트리거를 생성
+	}
 }
 
 /* ----------------
@@ -262,9 +310,10 @@ void UQuestComponent::SelectTopQuest(int32 RemoveQuestNumber)
 		{
 			// RemoveAt으로 만일 0번째 인덱스를 지웠더라도 여기서 Number가 같은 것을 인지하고 
 			// 0으로 만들어준다.
+
 			CurrentQuestID = 0;
-			ActiveQuest = Quests[0];
-			ActiveQuest.QuestSteps[0].Trigger->SetTriggerWidget(); // 새로운 퀘스트 위젯 띄우기.
+			ActiveQuest.SetActiveQuest(Quests[0]);
+			Quests[CurrentQuestID].QuestSteps[0].Trigger->SetTriggerWidget();
 		}
 	}
 	else

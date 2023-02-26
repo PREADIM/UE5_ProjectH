@@ -44,7 +44,7 @@ void UQuestSave::SaveQuest(TArray<FQuestStruct> GetQuests, const int32 GetCurren
 void UQuestSave::LoadQuest(class UQuestComponent* QuestComponent)
 {
 	// 캐릭터에 생으로 갔다 넣는게 아니라, 로드된 퀘스트를 AddQuest로 트리거를 스폰한다.
-	for (FQuestStruct Quest : Quests)
+	for (FQuestStruct& Quest : Quests)
 	{
 		QuestComponent->AddQuest(FNPCQuest(Quest));
 	}

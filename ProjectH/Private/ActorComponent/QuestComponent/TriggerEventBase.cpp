@@ -18,9 +18,11 @@ ATriggerEventBase::ATriggerEventBase()
 
 	Root = CreateDefaultSubobject<class USceneComponent>(TEXT("Root"));
 	Widget = CreateDefaultSubobject<UWidgetComponent>(TEXT("Widget"));
+	Collision = CreateDefaultSubobject<USphereComponent>(TEXT("Collision"));
 
 	RootComponent = Root;
 	Widget->SetupAttachment(Root);
+	Collision->SetupAttachment(Root);
 
 	static ConstructorHelpers::FClassFinder<UQuestIcon> BP_SucceedIcon(TEXT("WidgetBlueprint'/Game/PROJECT/BP_CLASS/Blueprints/04_Special/BP_QuestSystem/BP_SucceedIcon'"));
 	if (BP_SucceedIcon.Succeeded())
@@ -31,14 +33,20 @@ ATriggerEventBase::ATriggerEventBase()
 
 	Widget->SetVisibility(false);
 	SetActorTickEnabled(false);	
+
+	
 }
 
 // Called when the game starts or when spawned
 void ATriggerEventBase::BeginPlay()
 {
 	Super::BeginPlay();
+	Collision->OnComponentBeginOverlap.AddDynamic(this, &ATriggerEventBase::OverlapTrigger);
 	Widget->InitWidget();
+	SetupCollision();
 }
+
+
 
 // Called every frame
 void ATriggerEventBase::Tick(float DeltaTime)
@@ -68,6 +76,24 @@ void ATriggerEventBase::Tick(float DeltaTime)
 }*/
 
 
+void ATriggerEventBase::OverlapTrigger(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (OtherActor == PlayerCharacter)
+	{
+		IsThisTrigger();
+	}
+}
+
+void ATriggerEventBase::SetupCollision()
+{
+	Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	FTimerHandle Handle;
+	GetWorld()->GetTimerManager().SetTimer(Handle, FTimerDelegate::CreateLambda([&]()
+	{
+		Collision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	}), 0.2, false);
+}
+
 void ATriggerEventBase::TriggerDestroy()
 {
 	TriggerDestroyBPBind();
@@ -76,9 +102,9 @@ void ATriggerEventBase::TriggerDestroy()
 
 void ATriggerEventBase::SetTriggerWidget()
 {
-	if (QuestComponent)
+	if (QuestComponent != nullptr)
 	{
-		if (QuestComponent->GetActiveQuest().QuestSteps[0].Trigger == this)
+		if (QuestComponent->GetActiveQuest().QuestNumber == QuestNumber)
 		{
 			Widget->SetVisibility(true);
 			SetActorTickEnabled(true);
@@ -89,9 +115,9 @@ void ATriggerEventBase::SetTriggerWidget()
 
 void ATriggerEventBase::SetHiddenTriggerWidget()
 {
-	if (QuestComponent)
+	if (QuestComponent != nullptr)
 	{
-		if (QuestComponent->GetActiveQuest().QuestSteps[0].Trigger == this)
+		if (QuestComponent->GetActiveQuest().QuestNumber == QuestNumber)
 		{
 			Widget->SetVisibility(false);
 			SetActorTickEnabled(false);
@@ -105,11 +131,7 @@ bool ATriggerEventBase::IsThisTrigger()
 {
 	if (QuestComponent != nullptr)
 	{
-		if (QuestComponent->GetActiveQuest().QuestSteps.IsEmpty())
-			return false;
-
-		// 액티브 퀘스트에 맞춰서 실행하는 조건.
-		if (QuestComponent->GetActiveQuest().QuestSteps[0].Trigger == this) // 같은 가?
+		if (QuestComponent->GetHaveQuestNums()->Find(QuestNumber))
 		{
 			SetHiddenTriggerWidget(); // 틱과 위젯 끄기. 원신의 퀘스트 트리거를 생각해보자.
 			SetInit();
@@ -121,7 +143,9 @@ bool ATriggerEventBase::IsThisTrigger()
 
 void ATriggerEventBase::QuestNextStep()
 {
-	QuestComponent->CompleteStep();
+	// 가지고 있는 퀘스트라면
+	if(QuestComponent->GetHaveQuestNums()->Find(QuestNumber))
+		QuestComponent->CompleteStep(QuestNumber);
 }
 
 
@@ -129,10 +153,13 @@ void ATriggerEventBase::QuestNextStep()
 void ATriggerEventBase::BindProgressCnt()
 {
 	if (QuestComponent)
-		QuestComponent->BindSetDescription();
+		QuestComponent->BindSetDescription(QuestNumber);
 
 }
 
+
+
+// 퀘스트가 끝나는 시점의 QuestSucceed트리거에서 BeginPlay에서 실행하면 될듯 하다.
 // 퀘스트를 완료한게아니라 완료 가능해졌다는 뜻.
 void ATriggerEventBase::ClearQuest()
 {
@@ -141,7 +168,6 @@ void ATriggerEventBase::ClearQuest()
 		AQuestNPCBase* NPC = GI->GetNPCPtr(OwnerNPCName);
 		if (NPC)
 		{
-			TriggerDestroy();
 			NPC->SucceedQuestsNums.Emplace(QuestNumber);
 		}
 		PlayerCharacter->QuestCollisionSetUp();

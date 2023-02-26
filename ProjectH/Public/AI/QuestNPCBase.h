@@ -157,7 +157,7 @@ public:
 	
 	void QuestSucceedInfoOpen(int32 QuestIndex, class AProjectH_PC* OwnerController);
 
-	bool NPCQuestSetup(); // 한번에 반드시 실행되어야 할 아래 중요 함수들을 모아둔것.
+	void NPCQuestSetup(); // 한번에 반드시 실행되어야 할 아래 중요 함수들을 모아둔것.
 	//FindCanQuest, SetIconWidget, SaveNPCQuest
 
 	// ★★핵심 함수.

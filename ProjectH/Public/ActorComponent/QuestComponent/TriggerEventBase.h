@@ -40,6 +40,8 @@ public:
 		class USceneComponent* Root;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component)
 		class UWidgetComponent* Widget;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component)
+		class USphereComponent* Collision;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class AProjectHCharacter* PlayerCharacter;
@@ -48,18 +50,22 @@ public:
 		class UProjectHGameInstance* GI;
 
 public:
+	UFUNCTION()
+		void OverlapTrigger(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	void SetupCollision(); // 콜리전 껏다키기.
+
 	/* 트리거가 NPC를 소환해서 해당 NPC에게 퀘스트를 준다거나,
 	트리거가 무언가 해야하는 일이 있을때 사용할 함수.
 	게임실행시 QuestComponent의 AddQuest에서 실행시킨다. 블루프린트에서 작성하도록 만든다.*/
 	UFUNCTION(BlueprintImplementableEvent)
 		void SetInit(); 
+
 	UFUNCTION(BlueprintImplementableEvent)
 		void TriggerDestroyBPBind(); // 트리거가 CompleteStep으로 삭제될때 호출 되야하는 함수.
 	// TriggerSpawnActor가 소환되었다면 해당 함수에서 지워준다.
 
 	void TriggerDestroy(); // 삭제함수.
-	
-
 	void SetTriggerWidget(); // 트리거의 틱을 활성화하면서 위젯 생성하기.
 	void SetHiddenTriggerWidget(); // 위 함수의 반대 버전. 위젯 끄기.
 
@@ -71,7 +77,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void BindProgressCnt(); /* 진행률이 있는 퀘스트의 진행률을 다시 바인드. */
 
-	void ClearQuest(); // 퀘스트를 클리어했으니 NPC의 SucceedQuestsNums를 최신화해주면서, 캐릭터의 퀘스트 콜리전을 껏다 켜주면
+	UFUNCTION(BlueprintCallable)
+		void ClearQuest(); // 퀘스트를 클리어했으니 NPC의 SucceedQuestsNums를 최신화해주면서, 캐릭터의 퀘스트 콜리전을 껏다 켜주면
 	// 알아서 초기화 된다.
 
 };

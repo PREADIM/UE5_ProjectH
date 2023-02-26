@@ -19,6 +19,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TSubclassOf<class UQuestSlot> BP_QuestSlot;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<class UActiveQuestSlot> BP_ActiveQuestSlot;
+
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 		class UScrollBox* Scroll;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
@@ -37,6 +41,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		TArray<class UQuestSlot*> SlotArr;
 
+	UPROPERTY()
+		class UActiveQuestSlot* AQSlot;
+	int32 ActiveQuestIndex = -1; // 현재 액티브 퀘스트가 가리키는 슬롯 인덱스 저장.
 
 public:
 
@@ -46,6 +53,7 @@ public:
 		void UpdateQuestList();
 
 	UFUNCTION()
-		void CompleteStepSetSlot();
+		void CompleteStepSetSlot(int32 QuestIndex);
 
+	void ActiveClearButtonClick(); // 액티브 퀘스트 슬롯의 추정중지가 눌리면 실행되야하는 함수.
 };

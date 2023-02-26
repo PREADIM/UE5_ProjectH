@@ -13,6 +13,7 @@
 UENUM()
 enum class EQuestState : uint8
 {
+	NONE UMETA(DisplayName = "NONE"),
 	SubQuest UMETA(DisplayName = "SubQuest"),
 	MainQuest UMETA(DisplayName = "MainQuest"),
 	SubQuesting UMETA(DisplayName = "SubQuesting"),

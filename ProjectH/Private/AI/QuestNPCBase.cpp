@@ -152,8 +152,9 @@ void AQuestNPCBase::QuestSucceedInfoOpen(int32 QuestIndex, AProjectH_PC* OwnerCo
 }
 
 
-bool AQuestNPCBase::NPCQuestSetup()
+void AQuestNPCBase::NPCQuestSetup()
 {
+	// 여기서 받아오는 bool값을 이용해서 인터랙트 아이콘을 변경해도 될듯하다.
 	bool bHaveCanQuest = FindCanQuest();
 	SetIconWidget();
 	SaveNPCQuest();
@@ -166,9 +167,6 @@ bool AQuestNPCBase::NPCQuestSetup()
 	{
 		_DEBUG("Not Find Can Quest");
 	}
-
-	// 해당 NPC가 수행가능한 퀘가 있는지 판단.
-	return bHaveCanQuest;
 }
 
 void AQuestNPCBase::SaveNPCQuest()
@@ -183,12 +181,12 @@ void AQuestNPCBase::SetIconWidget()
 	if (!QuestIconUI)
 		return;
 
-	QuestIconComponent->SetVisibility(true);
-
 	switch (QuestIconState)
 	{
 	case EQuestIconState::NONE:
-		break;
+		QuestIconUI->SetRenderIcon(EQuestState::NONE);
+		QuestIconComponent->SetVisibility(false);
+		return; // 여기서는 리턴이다.
 	case EQuestIconState::SubCanQuest:
 		QuestIconUI->SetRenderIcon(EQuestState::SubQuest);
 		break;
@@ -208,6 +206,8 @@ void AQuestNPCBase::SetIconWidget()
 		QuestIconUI->SetRenderIcon(EQuestState::MainSucceedQuest);
 		break;
 	}
+
+	QuestIconComponent->SetVisibility(true);
 }
 
 void AQuestNPCBase::HiddenIcon()

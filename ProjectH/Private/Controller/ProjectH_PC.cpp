@@ -10,6 +10,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "GameMode/ProjectHGameInstance.h"
 #include "Kismet/GameplayStatics.h"
+#include "Special/QTE/QTECamera.h"
 
 
 AProjectH_PC::AProjectH_PC()
@@ -21,19 +22,6 @@ AProjectH_PC::AProjectH_PC()
 void AProjectH_PC::BeginPlay()
 {
 	Super::BeginPlay();
-
-
-	/*if (BP_MainQuestUI && OwnerCharacter)
-	{
-		MainQuestUI = CreateWidget<UMainQuestUI>(GetWorld(), BP_MainQuestUI);
-		MainQuestUI->OwnerCharacter = OwnerCharacter;
-		MainQuestUI->OwnerController = this;
-		MainQuestUI->Init();
-		MainQuestUI->AddToViewport();
-	}
-
-
-	CreateQTE();*/
 }
 
 void AProjectH_PC::BeginInit()
@@ -53,7 +41,7 @@ void AProjectH_PC::BeginInit()
 		MainQuestUI->AddToViewport();
 	}
 
-	CreateQTE();
+	//CreateQTE();
 	SetNewMouseSensitivity();
 }
 

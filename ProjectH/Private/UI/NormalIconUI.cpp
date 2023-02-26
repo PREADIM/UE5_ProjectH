@@ -21,6 +21,25 @@ void UNormalIconUI::SetRenderIcon(EQuestState State)
 {
 	switch (State)
 	{
+	case EQuestState::NONE:
+		if(SubQuestWidget->GetRenderOpacity() == 1.f)
+			SubQuestWidget->SetRenderOpacity(0.f);
+
+		if (MainQuestWidget->GetRenderOpacity() == 1.f)
+			MainQuestWidget->SetRenderOpacity(0.f);
+
+		if (SubQuestingWidget->GetRenderOpacity() == 1.f)
+			SubQuestingWidget->SetRenderOpacity(0.f);
+
+		if (MainQuestingWidget->GetRenderOpacity() == 1.f)
+			MainQuestingWidget->SetRenderOpacity(0.f);
+
+		if (SubSucceedWidget->GetRenderOpacity() == 1.f)
+			SubSucceedWidget->SetRenderOpacity(0.f);
+
+		if (MainSucceedWidget->GetRenderOpacity() == 1.f)
+			MainSucceedWidget->SetRenderOpacity(0.f);
+		break;
 	case EQuestState::SubQuest:
 		if (SubQuestWidget->GetRenderOpacity() != 1.f)
 		{

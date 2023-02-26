@@ -243,10 +243,8 @@ void AProjectHCharacter::QuestCollisionOverlap(UPrimitiveComponent* OverlappedCo
 	AQuestNPCBase* NPC = Cast<AQuestNPCBase>(OtherActor);
 	if (NPC)
 	{
-		if (NPC->NPCQuestSetup())
-		{
-			NPC->PlayerCharacter = this;
-		}
+		NPC->PlayerCharacter = this;
+		NPC->NPCQuestSetup();	
 	}
 }
 

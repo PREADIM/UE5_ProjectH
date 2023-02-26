@@ -10,12 +10,25 @@
 #include "QuestComponent.generated.h"
 
 
-DECLARE_MULTICAST_DELEGATE(FOnAddedRemovedQuest); // 퀘스트를 클리어하거나 새로 추가할때
-DECLARE_MULTICAST_DELEGATE(FOnActiveQuestChange); // 진행할 퀘스트를 변경했을때
-DECLARE_MULTICAST_DELEGATE(FOnAcceptEvent); 
-DECLARE_MULTICAST_DELEGATE(FOnCompleteStep); // 퀘스트 완료 했을때
-DECLARE_MULTICAST_DELEGATE(FOnSetDescription); // 횟수가 있는 퀘스트를 할때 진행률 변화.
+DECLARE_MULTICAST_DELEGATE(FOnUpdateQuestList); // 퀘스트를 클리어하거나 새로 추가할때
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnUpdateDescription, int32); // 퀘스트 완료 했을때
 
+USTRUCT()
+struct FActiveQuest
+{
+	GENERATED_USTRUCT_BODY()
+public:
+	UPROPERTY(VisibleAnywhere)
+		FString QuestName;
+	UPROPERTY(VisibleAnywhere)
+		int32 QuestNumber;
+	UPROPERTY(VisibleAnywhere)
+		FString OwnerNPCName;
+
+	FActiveQuest();
+	void Clear();
+	void SetActiveQuest(FQuestStruct& Quest);
+};
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PROJECTH_API UQuestComponent : public UActorComponent
@@ -40,10 +53,8 @@ public:
 		public Value
 	--------------------*/
 	
-	FOnAddedRemovedQuest OnAddedRemovedQuest; // 퀘스트가 추가 및 삭제 되었을때 실행할 델리게이트.
-	FOnActiveQuestChange ActiveQuestChange; // 액티브 퀘스트가 변경되었을때 실행할 델리게이트
-	FOnCompleteStep CompleteQuestDelegate; // 퀘스트 한 단계 클리어시 호출할 델리게이트.
-	FOnSetDescription SetDescriptionDelegate; // 횟수가 있는 퀘스트를 할때 진행률 변화.
+	FOnUpdateQuestList OnUpdateQuestList; // 퀘스트리스트를업데이트 할때 실행할 델리게이트.
+	FOnUpdateDescription OnUpdateDescription; // 퀘스트 한 단계 클리어시 호출할 델리게이트.
 
 public:
 	/* ------------------
@@ -57,10 +68,8 @@ public:
 	void RemoveQuest(int32 RemoveQuestNumber); // 완료한 퀘스트를 지운다.
 	// 이 퀘스트 시스템은 반드시 추적하는 퀘스트만 완료되게 해놨지만 그런 것이 상관없다면 Remove역시 해당 퀘스트 인덱스를 받아와서 지운다..
 
-	void CompleteStep(); // QuestStep을 다음 단계로 넘긴다.
+	void CompleteStep(int32 QuestNumber); // QuestStep을 다음 단계로 넘긴다.
 
-	UFUNCTION()
-		void UpdateQuestStep(); // 퀘스트 쉽게 찾을 수 있도록 캐쉬 설정.
 	UFUNCTION()
 		void AcceptQuest(); // FOnAcceptEvent 델리게이트에 연동되어있는 함수.
 
@@ -69,19 +78,21 @@ public:
 
 	void StartQuestLoad(); // 시작할때 퀘스트 로드하기.
 
-	void BindSetDescription(); // 몬스터나 횟수가 있는 퀘스트를 할때 현재 진행률 바인드
+	void BindSetDescription(int32 QuestIndex); // 몬스터나 횟수가 있는 퀘스트를 할때 현재 진행률 바인드
 
 	void SaveQuestNumber(FString NPCName, int32 QuestNumber);
 
 	void BeginSetupHaveQuests(); // 혹여나 퀘스트 중복 수락을 방지하기 위하여 HaveQuestNumber에 저장.
 
+	void NewTriggerSet(int32 QuestIndex); // 퀘스트 트리거를 완료하면 그다음 트리거를 생성한다.
+
 	/*-------------
 		Get & Set
 	--------------*/
 
-	FQuestStruct GetActiveQuest() { return ActiveQuest; }
+	FActiveQuest& GetActiveQuest() { return ActiveQuest; }
 	TArray<FQuestStruct> GetQuests() { return Quests; }
-	TSet<int32> GetHaveQuestNums() { return HaveQuestNumber; }
+	TSet<int32>* GetHaveQuestNums() { return &HaveQuestNumber; }
 	int32 GetCurrentID() { return CurrentQuestID; }
 
 
@@ -89,8 +100,9 @@ private:
 	/* ----------------
 		Private Value
 	------------------*/
+
 	UPROPERTY(VisibleAnywhere)
-		FQuestStruct ActiveQuest; // 현재 실행중인 퀘스트.
+		FActiveQuest ActiveQuest; // 현재 실행중인 퀘스트.
 
 	UPROPERTY(VisibleAnywhere)
 		TArray<FQuestStruct> Quests; // 전체 가지고 있는 퀘스트 리스트.
