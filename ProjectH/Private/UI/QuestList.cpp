@@ -143,9 +143,10 @@ void UQuestList::ActiveClearButtonClick()
 {
 	/*if (SlotArr.IsValidIndex(ActiveQuestIndex))
 	{
+		QuestComponent->GetQuests()[ActiveQuestIndex].QuestSteps[0].Trigger->SetHiddenTriggerWidget();
+		QuestComponent->GetActiveQuest().Clear();
 		CurrentQuest->ClearChildren();
-		SlotArr[ActiveQuestIndex]->Init();
-		QuestComponent->GetQuests()[ActiveQuestIndex].QuestSteps[0].Trigger->SetHiddenTriggerWidget(); // 먼저 열려있는 트리거의 틱과 위젯 비활성화.
+		SlotArr[ActiveQuestIndex]->Init();	
 	} */
 	// 오히려 이방식이 렉걸린다. 왤까?  
 
