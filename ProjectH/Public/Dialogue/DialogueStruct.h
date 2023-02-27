@@ -11,7 +11,7 @@ enum class EDialougeState : uint8
 {
 	CanSucceed UMETA(DisplayName = "SucceedQuest"),
 	Questing UMETA(DisplayName = "Questing"),
-	CanAccpet UMETA(DisplayName = "CanAccept")
+	CanAccept UMETA(DisplayName = "CanAccept")
 };
 
 USTRUCT(BlueprintType)

@@ -4,12 +4,44 @@
 #include "UI/SelectQuestSlot.h"
 #include "Components/TextBlock.h"
 #include "Components/Button.h"
+#include "Components/Image.h"
 #include "GameMode/ProjectHGameInstance.h"
 
 void USelectQuestSlot::Init()
 {
 	QuestNameText->SetText(FText::FromString(QuestName));
 	SlotButton->OnClicked.AddDynamic(this, &USelectQuestSlot::BindQuestStartButton);
+	SetupQuestStateImg();
+}
+
+void USelectQuestSlot::SetupQuestStateImg()
+{
+	FSlateBrush Brush;
+
+	switch (DialougeState)
+	{
+	case EDialougeState::CanSucceed:
+		Brush.SetResourceObject(SucceedTex);
+		Brush.SetImageSize(FVector2D(64.f, 64.f));
+		break;
+	case EDialougeState::Questing:
+		Brush.SetResourceObject(QuestingTex);
+		Brush.SetImageSize(FVector2D(64.f, 64.f));
+		break;
+	case EDialougeState::CanAccept:
+		Brush.SetResourceObject(CanAcceptTex);
+		Brush.SetImageSize(FVector2D(64.f, 64.f));
+		break;
+	}
+
+	if (QuestType == EQuestType::Main)
+		Brush.TintColor = FSlateColor(MainQuestColor);
+	else
+	{
+		Brush.TintColor = FSlateColor(SubQuestColor);
+	}
+
+	QuestStateImage->SetBrush(Brush);
 }
 
 
@@ -27,3 +59,5 @@ void USelectQuestSlot::BindQuestStartButton()
 		Dial->SetSelectDial(0);
 	}
 }
+
+

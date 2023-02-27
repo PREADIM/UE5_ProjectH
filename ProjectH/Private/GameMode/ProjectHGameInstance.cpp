@@ -35,7 +35,7 @@ UProjectHGameInstance::UProjectHGameInstance()
 		PQTable = DT_QuestData.Object;
 	}
 
-	FString DialogueDataPath = TEXT("/Script/Engine.DataTable'/Game/PROJECT/BP_CLASS/Blueprints/05_DataBase/DT_QuestDialogues'");
+	FString DialogueDataPath = TEXT("/Script/Engine.DataTable'/Game/PROJECT/BP_CLASS/Blueprints/05_DataBase/DT_QuestDials.DT_QuestDials'");
 	static ConstructorHelpers::FObjectFinder<UDataTable> DT_DialData(*DialogueDataPath);
 	if (DT_DialData.Succeeded())
 	{
@@ -173,6 +173,8 @@ FQuestDataBase* UProjectHGameInstance::GetPQData(int32 QuestNumber)
 
 TArray<FTextNName> UProjectHGameInstance::GetDialData(EDialougeState DialState, int32 QuestNumber)
 {
+	if (DialTable)
+		_DEBUG("SSS");
 	FDialogueStruct* Dial = DialTable->FindRow<FDialogueStruct>(*FString::FromInt(QuestNumber), TEXT(""));
 	if (Dial)
 	{
@@ -180,6 +182,11 @@ TArray<FTextNName> UProjectHGameInstance::GetDialData(EDialougeState DialState, 
 		{
 			return Dial->DialogueMap[DialState].Dialogues;
 		}
+	}
+	else
+	{
+		_DEBUG("QuestNumber %d", QuestNumber);
+		_DEBUG("False DialDate");
 	}
 
 	return TArray<FTextNName>();

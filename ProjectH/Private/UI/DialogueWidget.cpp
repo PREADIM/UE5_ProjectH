@@ -67,6 +67,7 @@ void UDialogueWidget::SetCanQuestList()
 				{
 					SSlot->QuestNumber = Quests.QuestNumber;
 					SSlot->QuestName = Quests.QuestName;
+					SSlot->QuestType = Quests.QuestType;
 
 					// 퀘스트 상태에 따라 다이얼로그를 다르게 해야하기 때문.
 					//FNPCQuest를 그냥 넘겨주기엔 너무 구조체가 크다.
@@ -75,7 +76,7 @@ void UDialogueWidget::SetCanQuestList()
 					else if (Quests.Questing)
 						SSlot->DialougeState = EDialougeState::Questing;
 					else
-						SSlot->DialougeState = EDialougeState::CanAccpet;
+						SSlot->DialougeState = EDialougeState::CanAccept;
 
 					SSlot->Dial = this;
 					SSlot->Num = Cnt++; // NPC의 퀘스트중 몇번째인지 알아야 하기때문.

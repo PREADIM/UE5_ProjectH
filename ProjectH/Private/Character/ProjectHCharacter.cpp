@@ -111,30 +111,33 @@ void AProjectHCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 -----------------*/
 void AProjectHCharacter::Forward(float Value)
 {
-	if (bPlay)
+	if (OwnerController)
 	{
-		//AddMovementInput(FRotationMatrix(GetControlRotation()).GetScaledAxis(EAxis::X), Value);
-		FVector Direction = FRotationMatrix(GetControlRotation()).GetScaledAxis(EAxis::X);
-		Direction.Z = 0.f;
-		Direction.Normalize();
-		AddMovementInput(Direction, Value);
+		if (OwnerController->bShowMouseCursor == true && bPlay)
+			return;
 	}
+
+	//AddMovementInput(FRotationMatrix(GetControlRotation()).GetScaledAxis(EAxis::X), Value);
+	FVector Direction = FRotationMatrix(GetControlRotation()).GetScaledAxis(EAxis::X);
+	Direction.Z = 0.f;
+	Direction.Normalize();
+	AddMovementInput(Direction, Value);	
 }
 
 
 void AProjectHCharacter::MoveRight(float Value)
 {
-	//AddMovementInput(GetActorRightVector() * Value);
-
-	if (bPlay)
+	if (OwnerController)
 	{
-		//AddMovementInput(FRotationMatrix(GetControlRotation()).GetScaledAxis(EAxis::Y), Value);
-		FVector Direction = FRotationMatrix(GetControlRotation()).GetScaledAxis(EAxis::Y);
-		Direction.Z = 0.f;
-		Direction.Normalize();
-		AddMovementInput(Direction, Value);
+		if (OwnerController->bShowMouseCursor == true && bPlay)
+			return;
 	}
-	
+
+	//AddMovementInput(FRotationMatrix(GetControlRotation()).GetScaledAxis(EAxis::Y), Value);
+	FVector Direction = FRotationMatrix(GetControlRotation()).GetScaledAxis(EAxis::Y);
+	Direction.Z = 0.f;
+	Direction.Normalize();
+	AddMovementInput(Direction, Value);	
 }
 
 
@@ -167,11 +170,8 @@ void AProjectHCharacter::InteractKey()
 		{	
 			if (OwnerController)
 			{
-
 				InteractActor->Interact_Implementation(this);
-				//OwnerController->MainQuestUI->CloseInteract();
-				InteractCollisionSetUp();
-				
+				InteractCollisionSetUp();			
 			}
 		}
 	}
