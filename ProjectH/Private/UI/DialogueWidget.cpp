@@ -10,6 +10,8 @@
 #include "AI/QuestNPCBase.h"
 #include "UI/SelectQuestSlot.h"
 #include "UI/MainQuestUI.h"
+#include "UI/QuestingFunctionWidget.h"
+#include "ActorComponent/QuestComponent/QuestingFunction.h"
 
 
 void UDialogueWidget::NPCDialogue()
@@ -50,7 +52,6 @@ void UDialogueWidget::SetNormalDialText(int32 index)
 /* 선택할 수 있는 퀘스트 리스트를 띄우는 것. */
 void UDialogueWidget::SetCanQuestList()
 {
-	
 	SelectBox->ClearChildren();
 	int32 Cnt = 0; // 퀘스트 인덱스
 	if (!OwnerNPC->NPCQuests.Quests.Num())
@@ -87,6 +88,28 @@ void UDialogueWidget::SetCanQuestList()
 			}
 		}
 	}
+
+	SelectBox->SetRenderOpacity(1.0f);
+	SelectBox->SetVisibility(ESlateVisibility::Visible);
+}
+
+void UDialogueWidget::SetQuestingSelectList(UQuestingFunction* QuestingFunction, int32 FlagCnt)
+{
+	SelectBox->ClearChildren();
+
+	for (int32 i = 1; i <= FlagCnt; ++i)
+	{
+		UQuestingFunctionWidget* QFW = CreateWidget<UQuestingFunctionWidget>(GetWorld(), BP_QuestingFunctionWidget);
+		if (QFW)
+		{
+			QFW->FlagText = QuestingFunction->Flag1Text;
+			QFW->Dial = this;
+			QFW->OwnerMainWidget = OwnerMainWidget;
+			QFW->Init(QuestingFunction, i);
+			QFW->SetPadding(FMargin(0.0f, 5.0f, 0.0f, 0.0f));
+			SelectBox->AddChild(QFW);
+		}
+	}
 	SelectBox->SetRenderOpacity(1.0f);
 	SelectBox->SetVisibility(ESlateVisibility::Visible);
 }
@@ -99,18 +122,25 @@ void UDialogueWidget::SetSelectDial(int32 Index)
 	SelectTextIndex = Index;
 	if (SelectText.Num() == SelectTextIndex)
 	{
-		OwnerMainWidget->CloseDialogue(); // 이걸 뒤에 해야한다. OwnerQuestNum을 0으로 만드므로.
-
+		
 		//OwnerQuestNum은 퀘스트 넘버가아니라 해당 NPC의 퀘스트 리스트중에 몇번째 인덱스인지 나타내는 것.
 		if (OwnerNPC->NPCQuests.Quests[OwnerQuestNum].CanSucceed)
 		{
-			//완료한 퀘스트이므로 다른 Info를 띄운다.
-			_DEBUG("Succeed");
+			OwnerMainWidget->CloseDialogue(); // 이걸 뒤에 해야한다. OwnerQuestNum을 0으로 만드므로.
 			OwnerNPC->QuestSucceedInfoOpen(OwnerQuestNum, OwnerController);
 		}
-		else if(!OwnerNPC->NPCQuests.Quests[OwnerQuestNum].Questing)	// 퀘스트 중일 땐 Info를 띄우지 말자.
-			OwnerNPC->QuestInfoOpen(OwnerQuestNum, OwnerController); 
-
+		else if (OwnerNPC->NPCQuests.Quests[OwnerQuestNum].Questing)
+		{
+			if (OwnerNPC->NPCQuests.Quests[OwnerQuestNum].QuestingFunction) // 존재하면 있는것
+			{
+				SetQuestingSelectList(OwnerNPC->NPCQuests.Quests[OwnerQuestNum].QuestingFunction, OwnerNPC->NPCQuests.Quests[OwnerQuestNum].QuestingFunction->FlagCnt);
+			}
+		}
+		else
+		{
+			OwnerMainWidget->CloseDialogue(); // 이걸 뒤에 해야한다. OwnerQuestNum을 0으로 만드므로.
+			OwnerNPC->QuestInfoOpen(OwnerQuestNum, OwnerController);
+		}
 	}
 	else if(SelectText.Num() > SelectTextIndex)
 	{
@@ -147,7 +177,6 @@ void UDialogueWidget::Clear()
 
 	SelectText.Empty(); // 선택한 퀘스트의 텍스트
 	SelectTextIndex = 0;
-
 }
 
 
@@ -168,14 +197,9 @@ FReply UDialogueWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, con
 		{
 			SetSelectDial(SelectTextIndex + 1);
 		}
-		
-		_DEBUG("Mouse Left");
-		
-	}
-	else if (InMouseEvent.IsMouseButtonDown(EKeys::RightMouseButton) == true)
-	{
 	
-		_DEBUG("Mouse Right");
+		//_DEBUG("Mouse Left");
+		
 	}
 
 	return reply.NativeReply;

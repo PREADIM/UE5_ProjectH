@@ -39,7 +39,6 @@ public:
 	//공격 당했는지 판단 하는 함수.
 	virtual bool Hit(bool bBlockingHit) override;
 	virtual void ParringHit(class AARPGUnitBase* InstigatorActor) override;
-
 	virtual void ZeroAP() override; // AP가 제로이다. AP 회복이 잠시 멈춰야됨
 
 	// 죽었을때 무기 시뮬레이트 활성화
@@ -62,6 +61,14 @@ public:
 
 	void SetFPSMeshOwnerNoSee(bool bFlag);
 	void SetTPSMeshOwnerNoSee(bool bFlag);
+
+	UFUNCTION()
+		void BindAttackAPDelegate();
+	UFUNCTION()
+		void BindWeaponDrawDelegate();
+	UFUNCTION()
+		void BindWeaponStowDelegate();
+
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
@@ -128,6 +135,15 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FName IdleSocketName;
+
+	//---------------------------------------------------------------------
+
+	// 죽음 처리 시퀀스 및 리스타트.
+
+	UPROPERTY(EditAnywhere)
+		class ULevelSequence* DeathSequence;
+	UFUNCTION()
+		void CallRestart();
 
 	//---------------------------------------------------------------------
 

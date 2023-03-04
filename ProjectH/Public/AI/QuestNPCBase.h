@@ -149,8 +149,6 @@ public:
 		Public Function
 	--------------------*/
 
-	void AddNPCQuest(FNPCQuest Quest, bool bSucceed); // NPC 퀘스트 만들어서 실시간으로 전달하기 함수.
-
 	virtual void Interact_Implementation(class AProjectHCharacter* OwnerCharacter);
 
 	void QuestInfoOpen(int32 QuestIndex, class AProjectH_PC* OwnerController);

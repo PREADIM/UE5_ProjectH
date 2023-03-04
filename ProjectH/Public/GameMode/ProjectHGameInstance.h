@@ -26,6 +26,17 @@ public:
 
 };
 
+USTRUCT(BlueprintType)
+struct FLevelPath : public FTableRowBase
+{
+	GENERATED_USTRUCT_BODY()
+public:
+	UPROPERTY(EditAnywhere)
+		FString LevelName;
+	UPROPERTY(EditAnywhere)
+		TSoftObjectPtr<class UWorld> Level;
+};
+
 
 UCLASS()
 class PROJECTH_API UProjectHGameInstance : public UGameInstance
@@ -38,17 +49,25 @@ public:
 	virtual void Init() override;
 	// 캐릭터와 NPC의 퀘스트 상태를 저장하는 함수. 각각 캐릭터와 NPC에게서 호출한다.
 
+	UFUNCTION(BlueprintCallable)
+		void OpenLevelStart(FString Levelname);
+
 	/*-- Quest --*/
 	void SetLoadSlot(class UQuestComponent* QuestComponent);
 	void SetSaveSlot(class UQuestComponent* QuestComponent);
+
+	void SetNextQuest(int32 QuestNumber); // 게임 밖 다른 테마에서 퀘스트를 클리어 했을경우 인스턴스 안의 세이브파일에서 퀘스트 완료를 해준다.
 
 	bool SetNPCLoadSlot(class AQuestNPCBase* NPC);
 	void SetNPCSaveSlot(class AQuestNPCBase* NPC);
 	void SetPlayerCanQuest();
 
+	void AddCanQuest(int32 QuestNumber); // 가능한 퀘스트를 추가하는 함수.
+
 	FNPCQuestDataBase* GetNPCQuestData(FString NPCName); // NPC 퀘스트를 가져온다.
 	FQuestDataBase* GetPQData(int32 QuestNumber);
 	TArray<FTextNName> GetDialData(EDialougeState DialState, int32 QuestNumber);
+	FLevelPath* GetLevelPath(FString LevelName);
 
 	void QuestClearNumber(FString NPCName, int32 QuestNumber); // ★★퀘스트 완료시 호출.
 
@@ -80,6 +99,8 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		TArray<int32> FinishedQuests; // 완료한 퀘스트들.
 
+	/*------테이블------*/
+
 	UPROPERTY(VisibleAnywhere)
 		class UDataTable* NPCQBTable; // NPC의 퀘스트들이 넣어져있는 테이블에서 NPC가 스스로 퀘스트 가져오기 위한 테이블.
 
@@ -89,6 +110,13 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		class UDataTable* DialTable;
 
+	UPROPERTY(VisibleAnywhere)
+		class UDataTable* QuestCinematicTable;
+
+	UPROPERTY(VisibleAnywhere)
+		class UDataTable* LevelPathTable;
+
+	/*----------------------------------------------*/
 
 	UPROPERTY(VisibleAnywhere)
 		TMap<FString, class AQuestNPCBase*> NPCAllPtr; // NPC들을 이름으로 저장해둔다.

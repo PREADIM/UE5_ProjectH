@@ -289,14 +289,11 @@ void UMainQuestUI::OpenDialogue()
 void UMainQuestUI::CloseDialogue()
 {
 	Dialogue->SetRenderOpacity(0.0f);
-	//Dialogue->SetVisibility(ESlateVisibility::HitTestInvisible);
 	Dialogue->SetVisibility(ESlateVisibility::Hidden);
 	Dialogue->Clear();
 
 	OwnerController->SetShowMouseCursor(false);
 	OwnerController->SetInputMode(FInputModeGameOnly());
-
-	//OwnerCharacter->QuestCollisionSetUp();
 
 	OwnerCharacter->InteractCollisionSetUp();
 }

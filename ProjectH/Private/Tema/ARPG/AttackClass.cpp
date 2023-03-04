@@ -39,7 +39,8 @@ void UAttackClass::CoolTimeStart()
 	if (bCoolTime)
 	{
 		SetCanThisAttack(false);
-		World->GetTimerManager().SetTimer(CoolTimeHandle, this, &UAttackClass::CoolTimeFunc, 1.f, true);
+		//World->GetTimerManager().SetTimer(CoolTimeHandle, this, &UAttackClass::CoolTimeFunc, 1.f, true);
+		World->GetTimerManager().SetTimer(CoolTimeHandle, this, &UAttackClass::CoolTimeFunc, CoolTime, false);
 	}
 }
 
@@ -48,16 +49,21 @@ void UAttackClass::CoolTimeStart()
 
 void UAttackClass::CoolTimeFunc()
 {
-	if (CoolTime <= CurrentCoolTime)
+	/*if (CoolTime <= CurrentCoolTime)
 	{	
 		CurrentCoolTime = 0.f;
 		SetCanThisAttack(true);
-		World->GetTimerManager().ClearTimer(CoolTimeHandle);
+		if (World)
+		{
+			World->GetTimerManager().ClearTimer(CoolTimeHandle);
+		}
 	}
 	else
 	{
 		CurrentCoolTime += 1.f;
-	}
+	}*/
+
+	SetCanThisAttack(true);
 }
 
 void UAttackClass::SetCanThisAttack(bool bFlag)

@@ -11,15 +11,11 @@ void UARPGWidget_Charge::Init(AARPGUnitBase* Unit)
 	Super::Init(Unit);
 
 	SetRenderOpacity(0.f);
-}
 
-void UARPGWidget_Charge::NativeConstruct()
-{
-	Super::NativeConstruct();
-
-	if(OwnerUnit)
+	if (OwnerUnit)
 		OwnerUnit->OnChargeAttackInit.AddUFunction(this, FName("SetCurrentColor"));
 }
+
 
 void UARPGWidget_Charge::BindCharge(float Ratio)
 {

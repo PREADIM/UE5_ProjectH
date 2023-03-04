@@ -79,6 +79,19 @@ bool UQuestSave::LoadNPC(AQuestNPCBase* NPC)
 	return true;
 }
 
+FQuestStruct* UQuestSave::GetQuests(int32 QuestNumber)
+{
+	for (int32 i = 0; Quests.Num(); ++i)
+	{
+		if (Quests[i].QuestNumber == QuestNumber)
+		{
+			return &Quests[i];
+		}
+	}
+
+	return nullptr;
+}
+
 
 void UQuestSave::SaveSlot()
 {

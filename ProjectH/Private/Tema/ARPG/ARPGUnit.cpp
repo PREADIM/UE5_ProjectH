@@ -8,6 +8,8 @@
 #include "Kismet/KismetmathLibrary.h"
 #include "Tema/ARPG/ARPG_UnitAnimInstance.h"
 #include "Tema/ARPG/ARPGGameMode.h"
+#include <LevelSequencePlayer.h>
+#include <LevelSequenceActor.h>
 
 // Sets default values
 AARPGUnit::AARPGUnit()
@@ -132,23 +134,10 @@ void AARPGUnit::BeginPlay()
 	OnUsingAP.AddUFunction(this, FName("UsingAPFunction"));
 	OnEndAP.AddUFunction(this, FName("EndAPFunction"));
 
-	OnAttackAP.AddLambda([&]() {
-		bAttackAndHitAP = true;
-	});
+	OnAttackAP.AddUFunction(this, FName("BindAttackAPDelegate"));
+	OnWeaponDraw.BindUFunction(this, FName("BindWeaponDrawDelegate"));
+	OnWeaponStow.BindUFunction(this, FName("BindWeaponStowDelegate"));
 
-	OnWeaponDraw.BindLambda([&](){
-		WalkSpeed = BattleSpeed;
-		LMBReleased();
-		bNormalMode = false;
-		GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
-
-	});
-
-	OnWeaponStow.BindLambda([&]() {
-		WalkSpeed = NormalSpeed;
-		bNormalMode = true;
-		GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
-	});
 
 	UnitState.Init(this); // ½ºÅÈ ÃÊ±âÈ­.
 }
@@ -269,6 +258,7 @@ void AARPGUnit::SpecialAttack()
 	SetFPSMeshOwnerNoSee(true);
 	SetTPSMeshOwnerNoSee(false);
 
+	DeathCamera->SetActive(false);
 	FPSCamera->SetActive(false);
 	SpecialAttackCamera->SetActive(true);
 }
@@ -532,22 +522,38 @@ void AARPGUnit::Death()
 	
 	if (DeathCamera)
 	{
+		SpecialAttackCamera->SetActive(false);
 		FPSCamera->SetActive(false);
 		DeathCamera->SetActive(true);
 	}
 
-	FTimerHandle DeathHandle;
-	GetWorld()->GetTimerManager().SetTimer(DeathHandle, FTimerDelegate::CreateLambda([&]()
+	// ¿©±â¼­ Á×´Â ½Ã³×¸¶Æ½ ½ÇÇà.
+
+	float SequenceEndTime = 5.f;
+	ALevelSequenceActor* LQActor;
+	if (DeathSequence)
 	{
-		AARPGGameMode* GM = Cast<AARPGGameMode>(GetWorld()->GetAuthGameMode());
-		if (GM)
+		ULevelSequencePlayer* Player = ULevelSequencePlayer::CreateLevelSequencePlayer(GetWorld(), DeathSequence, FMovieSceneSequencePlaybackSettings(), LQActor);
+		if (Player)
 		{
-			GM->Restart();
+			Player->Play();
+			SequenceEndTime = Player->GetEndTime().AsSeconds();
 		}
+	}
 
-	}), 5.f, false);
-
+	FTimerHandle DeathHandle;
+	GetWorld()->GetTimerManager().SetTimer(DeathHandle, this, &AARPGUnit::CallRestart, SequenceEndTime, false);
 }
+
+void AARPGUnit::CallRestart()
+{
+	if(!GM)
+		GM = Cast<AARPGGameMode>(GetWorld()->GetAuthGameMode());
+
+	if (GM)
+		GM->Restart();
+}
+
 
 void AARPGUnit::EndAttack()
 {
@@ -613,6 +619,26 @@ void AARPGUnit::SetFPSMeshOwnerNoSee(bool bFlag)
 void AARPGUnit::SetTPSMeshOwnerNoSee(bool bFlag)
 {
 	GetMesh()->SetOwnerNoSee(bFlag);
+}
+
+void AARPGUnit::BindAttackAPDelegate()
+{
+	bAttackAndHitAP = true;
+}
+
+void AARPGUnit::BindWeaponDrawDelegate()
+{
+	WalkSpeed = BattleSpeed;
+	LMBReleased();
+	bNormalMode = false;
+	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+}
+
+void AARPGUnit::BindWeaponStowDelegate()
+{
+	WalkSpeed = NormalSpeed;
+	bNormalMode = true;
+	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 }
 
 

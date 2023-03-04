@@ -13,16 +13,17 @@
 DECLARE_MULTICAST_DELEGATE(FOnUpdateQuestList); // 퀘스트를 클리어하거나 새로 추가할때
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnUpdateDescription, int32); // 퀘스트 완료 했을때
 
-USTRUCT()
+
+USTRUCT(BlueprintType)
 struct FActiveQuest
 {
 	GENERATED_USTRUCT_BODY()
 public:
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		FString QuestName;
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		int32 QuestNumber;
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		FString OwnerNPCName;
 
 	FActiveQuest();
@@ -55,6 +56,16 @@ public:
 	
 	FOnUpdateQuestList OnUpdateQuestList; // 퀘스트리스트를업데이트 할때 실행할 델리게이트.
 	FOnUpdateDescription OnUpdateDescription; // 퀘스트 한 단계 클리어시 호출할 델리게이트.
+
+	UPROPERTY(VisibleAnywhere)
+		class AProjectHCharacter* OwnerCharacter;
+
+	UPROPERTY(VisibleAnywhere)
+		class AProjectH_PC* OwnerController;
+
+	UPROPERTY(VisibleAnywhere)
+		class UProjectHGameInstance* GI;
+
 
 public:
 	/* ------------------
@@ -90,11 +101,15 @@ public:
 		Get & Set
 	--------------*/
 
-	FActiveQuest& GetActiveQuest() { return ActiveQuest; }
-	TArray<FQuestStruct> GetQuests() { return Quests; }
-	TSet<int32>* GetHaveQuestNums() { return &HaveQuestNumber; }
-	int32 GetCurrentID() { return CurrentQuestID; }
 
+
+	UFUNCTION(BlueprintCallable)
+		FActiveQuest GetActiveQuest() { return ActiveQuest; }
+	TArray<FQuestStruct> GetQuests() { return Quests; }
+	int32 GetCurrentID() { return CurrentQuestID; }
+	TSet<int32>* GetHaveQuestNums() { return &HaveQuestNumber; }
+
+	void ActiveQuestClear() { ActiveQuest.Clear(); }
 
 private:
 	/* ----------------
@@ -113,11 +128,6 @@ private:
 	UPROPERTY(VisibleAnywhere)
 		  int32 CurrentQuestID = -1; // 현재 퀘스트의 번호
 
-	UPROPERTY(VisibleAnywhere)
-		class AProjectHCharacter* OwnerCharacter;
-
-	UPROPERTY(VisibleAnywhere)
-		class UProjectHGameInstance* GI;
 
 	/* ------------------
 		Private Funtion

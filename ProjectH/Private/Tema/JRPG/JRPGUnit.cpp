@@ -254,7 +254,6 @@ void AJRPGUnit::LMB()
 
 		CallLMB();
 		PlayAnimMontage(LMBAnim); // 배틀 시작 공격 애니메이션 실행.
-		PlayLMBAttack();
 		bIsLMBAttack = true;
 	}
 }

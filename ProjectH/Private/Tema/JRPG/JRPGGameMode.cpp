@@ -40,14 +40,6 @@ AJRPGGameMode::AJRPGGameMode()
 {
 	PlayerControllerClass = AJRPGPlayerController::StaticClass();
 
-
-	/*SetDataTable(FieldTable, FString(TEXT("DataTable'/Game/PROJECT/BP_CLASS/Tema/JRPG/DataBase/BattleFieldList.BattleFieldList'")));
-	SetDataTable(CharListTable, FString(TEXT("DataTable'/Game/PROJECT/BP_CLASS/Tema/JRPG/DataBase/JRPGCharList.JRPGCharList'")));
-	SetDataTable(EnermyListTable, FString(TEXT("DataTable'/Game/PROJECT/BP_CLASS/Tema/JRPG/DataBase/EnermyList.EnermyList'")));
-	SetDataTable(CharStatTablePaths, FString(TEXT("DataTable'/Game/PROJECT/BP_CLASS/Tema/JRPG/DataBase/JRPGCharStatTablePaths.JRPGCharStatTablePaths'")));
-	SetDataTable(FieldEnermyDropTable, FString(TEXT("DataTable'/Game/PROJECT/BP_CLASS/Tema/JRPG/DataBase/FieldEnermyDropTable.FieldEnermyDropTable'")));
-	*/
-
 	FString FieldDataPath = TEXT("DataTable'/Game/PROJECT/BP_CLASS/Tema/JRPG/DataBase/BattleFieldList.BattleFieldList'");
 	static ConstructorHelpers::FObjectFinder<UDataTable> DT_FieldData(*FieldDataPath);
 	if (DT_FieldData.Succeeded())
@@ -103,6 +95,9 @@ void AJRPGGameMode::PostLogin(APlayerController* Login)
 
 	if (Login != nullptr)
 	{
+		Login->SetInputMode(FInputModeGameOnly());
+		Login->SetShowMouseCursor(false);
+
 		OwnerController = Cast<AJRPGPlayerController>(Login);
 		if (OwnerController->IsPlayerController())
 		{

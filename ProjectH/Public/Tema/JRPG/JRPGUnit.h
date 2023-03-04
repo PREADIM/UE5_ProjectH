@@ -142,12 +142,6 @@ public:
 		void TargetAttack(float ATK); // 하나만 때린다.
 	UFUNCTION(BlueprintCallable)
 		void TargetManyAttack(float ATK); // 여러 마리를 때린다.
-
-
-	// LMB 어택일때 블루프린트에서 실행할 것들.
-	UFUNCTION(BlueprintImplementableEvent)
-		void PlayLMBAttack();
-
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		class AJRPGPlayerController* OwnerController;

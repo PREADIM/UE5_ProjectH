@@ -115,6 +115,7 @@ public:
 	---------------------*/
 
 	UQuestComponent* GetQuestComponent() { return QuestComponent; }
+	AProjectH_PC* GetOwnerController() { return OwnerController; }
 
 	UFUNCTION()
 		void QuestCollisionOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
@@ -127,6 +128,11 @@ public:
 
 	void QuestCollisionSetUp(); /* 퀘스트 콜리전의 크기를 줄였다가 다시 늘려서 새로 오버랩 되게하는 트릭*/
 	void InteractCollisionSetUp();
+
+	UFUNCTION()
+		void QuestCollisionRestart();
+	UFUNCTION()
+		void InteractCollisionRestart();
 
 	/*---------------------
 		virtual Function

@@ -17,6 +17,7 @@
 #include "Components/WidgetComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "UI/NormalIconUI.h"
+#include "ActorComponent/QuestComponent/QuestingFunction.h"
 
 
 // Sets default values
@@ -60,7 +61,7 @@ void AQuestNPCBase::BeginPlay()
 		if (AllQuest)
 			NPCQuests = AllQuest->NPCAllQuests;
 
-		//퀘스트 플래그들을 로드한다. ex) 퀘스트중인지, 퀘스트 완료가 있는지. // 해당 플래그들은 곧 수정 예정
+		//퀘스트 플래그들을 로드한다. ex) 퀘스트중인지, 퀘스트 완료가 있는지
 		if (!GI->SetNPCLoadSlot(this))
 			_DEBUG("false LoadNPC");
 
@@ -116,17 +117,9 @@ void AQuestNPCBase::SetQuestIconState(EQuestIconState NewState)
 	Public Function
 --------------------*/
 
-/* 실시간으로 NPC에 퀘스트 추가하는 방법. 완료 퀘스트도 결국엔 퀘스트 이기때문에 이런식으로 추가 가능.*/
-void AQuestNPCBase::AddNPCQuest(FNPCQuest Quest, bool bSucceed)
-{
-	FindCanQuest();
-}
-
 
 void AQuestNPCBase::Interact_Implementation(class AProjectHCharacter* OwnerCharacter)
 {
-	
-	
 }
 
 
@@ -134,7 +127,6 @@ void AQuestNPCBase::QuestInfoOpen(int32 QuestIndex, AProjectH_PC* OwnerControlle
 {
 	//NPCQuests의 Inex 번호로 해당 퀘스트 창을 띄운다.
 	//나중에 텍스트를 넘기고 마지막에 퀘스트를 고르는 ui를 구현하기 위해 나눔. (ex.로스트아크)
-
 	if (!OwnerController && !NPCQuests.Quests.IsValidIndex(QuestIndex))
 		return;
 
@@ -158,15 +150,6 @@ void AQuestNPCBase::NPCQuestSetup()
 	bool bHaveCanQuest = FindCanQuest();
 	SetIconWidget();
 	SaveNPCQuest();
-
-	if (bHaveCanQuest)
-	{
-		_DEBUG("Find Can Quest");
-	}
-	else
-	{
-		_DEBUG("Not Find Can Quest");
-	}
 }
 
 void AQuestNPCBase::SaveNPCQuest()
@@ -249,6 +232,23 @@ bool AQuestNPCBase::FindCanQuest()
 				}
 				else
 				{
+					// 퀘스팅 커스텀 함수가 있는경우
+					if (NPCQuests.Quests[i].BP_QuestingFunction)
+					{
+						if (NPCQuests.Quests[i].QuestingFunction == nullptr)
+						{
+							UQuestingFunction* temp = Cast<UQuestingFunction>(NPCQuests.Quests[i].BP_QuestingFunction->GetDefaultObject());
+							if (temp)
+							{
+								temp->OwnerNPC = this;
+								temp->GI = GI;
+								NPCQuests.Quests[i].QuestingFunction = temp;
+							}
+						}
+						
+					}
+
+
 					// 완료가능한 퀘스트 찾기.		
 					if (int32* SucceedQuestNum = SucceedQuestsNums.Find(NPCQuests.Quests[i].QuestNumber))
 					{

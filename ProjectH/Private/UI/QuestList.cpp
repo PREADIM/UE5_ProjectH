@@ -151,6 +151,6 @@ void UQuestList::ActiveClearButtonClick()
 	// 오히려 이방식이 렉걸린다. 왤까?  
 
 	QuestComponent->GetQuests()[ActiveQuestIndex].QuestSteps[0].Trigger->SetHiddenTriggerWidget(); // 먼저 열려있는 트리거의 틱과 위젯 비활성화.
-	QuestComponent->GetActiveQuest().Clear();
+	QuestComponent->ActiveQuestClear();
 	UpdateQuestList(); // 전체 포문을 돌아서 오히려 이게 더 안좋은 방식인 줄 알았으나, 오히려 이게 렉이 안걸린다.
 }

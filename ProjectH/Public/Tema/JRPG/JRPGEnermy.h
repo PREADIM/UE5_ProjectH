@@ -41,8 +41,13 @@ public:
 	// 죽을때 떨어뜨릴 것들
 
 	//UFUNCTION(BlueprintNativeEvent)
-		void DeadUnit();
-	//virtual void DeadUnit_Implementation();
+	void DeadUnit();
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool bBPBindFunc;
+	UFUNCTION(BlueprintImplementableEvent)
+		void BPBindFunc(); // 블프에서 따로 제작한 함수.
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

@@ -122,4 +122,8 @@ void AJRPGEnermy::DropItem()
 void AJRPGEnermy::DeadUnit()
 {
 	DropItem();
+
+	if(bBPBindFunc)
+		BPBindFunc();
+	//여기에서 따로 호출할 함수 실행.
 }

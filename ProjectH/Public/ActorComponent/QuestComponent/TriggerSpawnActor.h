@@ -20,10 +20,6 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FString TriggerText;
@@ -39,10 +35,13 @@ public:
 	// 이 액터의 할일을 다했을시에 Trigger의 QuestNextStep()을 실행해준다.
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		bool bBPBindFunc; // BPBindFunc를 사용한다면 이걸 True로 해준다.
+		bool bBPBindFunc = true; // BPBindFunc를 사용한다면 이걸 True로 해준다.
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool bCanThisInteract; // 이 액터가 현재 인터랙트 가능한지 여부.
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool bFlag; // 기본적인 On Off를 할때 사용할 변수. 이게 부모에 가지고있어야 편하게 해당 Flag를 보고 Trigger를 Dstroy할수있음.
 
 public:
 	virtual void Interact_Implementation(class AProjectHCharacter* OwnerCharacter);

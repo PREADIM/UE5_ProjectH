@@ -9,6 +9,7 @@
 #include "Character/ProjectHCharacter.h"
 #include "GameMode/ProjectHGameInstance.h"
 #include "AI/QuestNPCBase.h"
+#include "Controller/ProjectH_PC.h"
 
 // Sets default values
 ATriggerEventBase::ATriggerEventBase()
@@ -28,7 +29,7 @@ ATriggerEventBase::ATriggerEventBase()
 	if (BP_SucceedIcon.Succeeded())
 	{
 		Widget->SetWidgetClass(BP_SucceedIcon.Class);
-		Widget->SetDrawSize(FVector2D(100.f, 130.f));
+		Widget->SetDrawSize(FVector2D(100.f, 100.f));
 	}
 
 	Widget->SetVisibility(false);
@@ -42,6 +43,14 @@ void ATriggerEventBase::BeginPlay()
 {
 	Super::BeginPlay();
 	Collision->OnComponentBeginOverlap.AddDynamic(this, &ATriggerEventBase::OverlapTrigger);
+	Collision->OnComponentEndOverlap.AddDynamic(this, &ATriggerEventBase::OverlapEndTrigger);
+
+	if (PlayerController)
+	{
+		PlayerController->OnVisibleWidget.AddUFunction(this, FName("VisibleWidget"));
+		PlayerController->OnHiddenWidget.AddUFunction(this, FName("HiddenWidget"));
+	}
+
 	Widget->InitWidget();
 	SetupCollision();
 }
@@ -84,6 +93,16 @@ void ATriggerEventBase::OverlapTrigger(UPrimitiveComponent* OverlappedComponent,
 	}
 }
 
+void ATriggerEventBase::OverlapEndTrigger(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	if (OtherActor == PlayerCharacter)
+	{
+		_DEBUG("EndTrigger");
+		SetTriggerWidget();
+	}
+
+}
+
 void ATriggerEventBase::SetupCollision()
 {
 	Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -91,7 +110,7 @@ void ATriggerEventBase::SetupCollision()
 	GetWorld()->GetTimerManager().SetTimer(Handle, FTimerDelegate::CreateLambda([&]()
 	{
 		Collision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	}), 0.2, false);
+	}), 0.1, false);
 }
 
 void ATriggerEventBase::TriggerDestroy()
@@ -106,8 +125,12 @@ void ATriggerEventBase::SetTriggerWidget()
 	{
 		if (QuestComponent->GetActiveQuest().QuestNumber == QuestNumber)
 		{
+			if (bBPBindVisibleTriggerFunc)
+				SetVisibleTriggerWidgetBind();
+
 			Widget->SetVisibility(true);
 			SetActorTickEnabled(true);
+			SetupCollision();
 		}
 	}
 
@@ -119,6 +142,9 @@ void ATriggerEventBase::SetHiddenTriggerWidget()
 	{
 		if (QuestComponent->GetActiveQuest().QuestNumber == QuestNumber)
 		{
+			if (bBPBindHiddenTriggerFunc)
+				SetHiddenTriggerWidgetBind();
+
 			Widget->SetVisibility(false);
 			SetActorTickEnabled(false);
 		}
@@ -133,7 +159,8 @@ bool ATriggerEventBase::IsThisTrigger()
 	{
 		if (QuestComponent->GetHaveQuestNums()->Find(QuestNumber))
 		{
-			SetHiddenTriggerWidget(); // 틱과 위젯 끄기. 원신의 퀘스트 트리거를 생각해보자.
+			if (bOverlapHiddenWidget)
+				SetHiddenTriggerWidget(); // 틱과 위젯 끄기. 원신의 퀘스트 트리거를 생각해보자.
 			SetInit();
 			return true;
 		}
@@ -161,7 +188,7 @@ void ATriggerEventBase::BindProgressCnt()
 
 // 퀘스트가 끝나는 시점의 QuestSucceed트리거에서 BeginPlay에서 실행하면 될듯 하다.
 // 퀘스트를 완료한게아니라 완료 가능해졌다는 뜻.
-void ATriggerEventBase::ClearQuest()
+void ATriggerEventBase::CanClearQuest()
 {
 	if (GI && PlayerCharacter)
 	{
@@ -172,4 +199,37 @@ void ATriggerEventBase::ClearQuest()
 		}
 		PlayerCharacter->QuestCollisionSetUp();
 	}
+}
+
+void ATriggerEventBase::VisibleWidget()
+{
+	SetTriggerWidget();
+
+	//if (QuestComponent != nullptr)
+	//{
+	//	if (QuestComponent->GetActiveQuest().QuestNumber == QuestNumber)
+	//	{
+	//		if (!Widget->GetVisibleFlag()) // 꺼져있을시
+	//		{
+	//			Widget->SetVisibility(true);
+	//		}
+	//	}
+	//}
+}
+
+
+void ATriggerEventBase::HiddenWidget()
+{
+	SetHiddenTriggerWidget();
+
+	//if (QuestComponent != nullptr)
+	//{
+	//	if (QuestComponent->GetActiveQuest().QuestNumber == QuestNumber)
+	//	{
+	//		if (Widget->GetVisibleFlag()) // 켜져있을시
+	//		{
+	//			Widget->SetVisibility(false);
+	//		}
+	//	}
+	//}
 }

@@ -11,11 +11,6 @@ void UARPGWidget_BossHPView::Init(AARPGUnitBase* Unit)
 	Super::Init(Unit);
 	MaxDamageRenderDelay = 5.f;
 	LerpHPPercent = 1.f;
-}
-
-void UARPGWidget_BossHPView::NativeConstruct()
-{
-	Super::NativeConstruct();
 
 	if (!OwnerUnit && !BossUnit)
 	{

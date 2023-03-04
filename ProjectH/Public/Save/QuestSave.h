@@ -47,6 +47,8 @@ public:
 	void SaveNPC(FString Name, TSet<int32> QuestingQuests, TSet<int32> SucceedQuests, TSet<int32> EndedQuests);
 	bool LoadNPC(class AQuestNPCBase* NPC);
 
+	FQuestStruct* GetQuests(int32 QuestNumber);
+	void SaveSlot(); // 세이브 파일 저장.
 
 private :
 	UPROPERTY(VisibleAnywhere)
@@ -58,8 +60,4 @@ private :
 		TMap<FString, FNPCAllQuest> NPCQuests;
 	UPROPERTY(VisibleAnywhere)
 		TMap<FString, FNPCQuestingAndSucceedQuests> NPCQuestingAndSucceedQuest;
-
-
-	void SaveSlot(); // 세이브 파일 저장.
-
 };

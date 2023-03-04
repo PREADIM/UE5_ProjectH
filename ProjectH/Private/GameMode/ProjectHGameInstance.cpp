@@ -8,6 +8,7 @@
 #include "ActorComponent/QuestComponent/QuestComponent.h"
 #include "AI/QuestNPCBase.h"
 #include "MainGameSetting.h"
+#include "QuestStruct.h"
 
 FCanQuestNums::FCanQuestNums()
 {
@@ -20,7 +21,7 @@ FCanQuestNums::FCanQuestNums(int32 QuestNumber)
 
 UProjectHGameInstance::UProjectHGameInstance()
 {
-	FString NPCQuestDataPath = TEXT("/Script/Engine.DataTable'/Game/PROJECT/BP_CLASS/Blueprints/05_DataBase/DT_NPCQuestDataBase'");
+	FString NPCQuestDataPath = TEXT("/Script/Engine.DataTable'/Game/PROJECT/BP_CLASS/Blueprints/05_DataBase/DT_NPCQuestDataBase.DT_NPCQuestDataBase'");
 	static ConstructorHelpers::FObjectFinder<UDataTable> DT_NPCQuestData(*NPCQuestDataPath);
 	if (DT_NPCQuestData.Succeeded())
 	{
@@ -41,6 +42,20 @@ UProjectHGameInstance::UProjectHGameInstance()
 	{
 		DialTable = DT_DialData.Object;
 	}
+
+	FString LevelTablePath = TEXT("/Script/Engine.DataTable'/Game/PROJECT/BP_CLASS/Blueprints/05_DataBase/DT_LevelPath.DT_LevelPath'");
+	static ConstructorHelpers::FObjectFinder<UDataTable> DT_LevelPathData(*LevelTablePath);
+	if (DT_LevelPathData.Succeeded())
+	{
+		LevelPathTable = DT_LevelPathData.Object;
+	}
+
+	/*FString QuestCinePath = TEXT("/Script/Engine.DataTable'/Game/PROJECT/BP_CLASS/Blueprints/05_DataBase/DT_QuestDials.DT_QuestDials'");
+	static ConstructorHelpers::FObjectFinder<UDataTable> DT_QuestCine(*QuestCinePath);
+	if (DT_QuestCine.Succeeded())
+	{
+		QuestCinematicTable = DT_QuestCine.Object;
+	}*/
 
 }
 
@@ -92,6 +107,15 @@ void UProjectHGameInstance::Init()
 	/* 지원되는 스크린 저장.*/
 }
 
+void UProjectHGameInstance::OpenLevelStart(FString LevelName)
+{
+	FLevelPath* LevelPath = GetLevelPath(LevelName);
+	if (LevelPath)
+	{
+		UGameplayStatics::OpenLevelBySoftObjectPtr(GetWorld(), LevelPath->Level);
+	}	
+}
+
 void UProjectHGameInstance::SetNPCPtr(FString Name, AQuestNPCBase* NPC)
 {
 	if (!NPCAllPtr.Find(Name))
@@ -100,7 +124,12 @@ void UProjectHGameInstance::SetNPCPtr(FString Name, AQuestNPCBase* NPC)
 
 AQuestNPCBase* UProjectHGameInstance::GetNPCPtr(FString NPCName)
 {
-	return *NPCAllPtr.Find(NPCName);
+	if (NPCAllPtr.Find(NPCName))
+	{
+		return NPCAllPtr[NPCName];
+	}
+	
+	return nullptr;
 }
 
 
@@ -119,6 +148,23 @@ void UProjectHGameInstance::SetSaveSlot(UQuestComponent* QuestComponent)
 	{
 		QuestSave->SaveQuest(QuestComponent->GetQuests(), QuestComponent->GetCurrentID());
 	}
+}
+
+void UProjectHGameInstance::SetNextQuest(int32 QuestNumber)
+{
+	FQuestStruct* Quest = QuestSave->GetQuests(QuestNumber);
+	if (!Quest)
+	{
+		_DEBUG("Null SetNextQuest");
+		return;
+	}
+
+	if (Quest->QuestSteps.Num() > 1)
+	{
+		Quest->QuestSteps.RemoveAt(0);
+	}
+
+	QuestSave->SaveSlot();
 }
 
 bool UProjectHGameInstance::SetNPCLoadSlot(AQuestNPCBase* NPC)
@@ -151,12 +197,44 @@ void UProjectHGameInstance::SetPlayerCanQuest()
 			if (QDB)
 			{
 				if (PlayerCanQuest.Find(QDB->NPCName))
-					PlayerCanQuest[QDB->NPCName].QuestNums.Add(Nums);
+					PlayerCanQuest[QDB->NPCName].QuestNums.Emplace(Nums);
 				else
-					PlayerCanQuest.Add(QDB->NPCName, FCanQuestNums(Nums));
+					PlayerCanQuest.Emplace(QDB->NPCName, FCanQuestNums(Nums));
 			}
 		}
 	}
+}
+
+// 가능해진 퀘스트를 추가한다. (런타임 중 실행하는 함수.)
+void UProjectHGameInstance::AddCanQuest(int32 QuestNumber)
+{
+	QuestNums.Emplace(QuestNumber);
+
+	// 퀘스트 전체리스트에서 해당 NPC이름을 찾아와서 대입.
+	FQuestDataBase* QDB = GetPQData(QuestNumber);
+	if (QDB)
+	{
+		if (PlayerCanQuest.Find(QDB->NPCName))
+			PlayerCanQuest[QDB->NPCName].QuestNums.Emplace(QuestNumber);
+		else
+			PlayerCanQuest.Emplace(QDB->NPCName, FCanQuestNums(QuestNumber));
+	}
+
+	// 여기서 퀘스트에 해당하는 시네마틱을 가지고있는 데이터 테이블을 만들어서
+	// 실행하도록하자.
+
+	/*ALevelSequenceActor* LQActor;
+	if (StartSequence)
+		SequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(GetWorld(), StartSequence, FMovieSceneSequencePlaybackSettings(), LQActor);
+
+	if (SequencePlayer)
+	{
+		BattleUIOnOff(false);
+		SequencePlayer->Play();
+		return SequencePlayer->GetEndTime().AsSeconds();
+	}*/
+
+	PlayerSave->SavePlayerQuest(&QuestNums, &FinishedQuests);
 }
 
 
@@ -173,8 +251,6 @@ FQuestDataBase* UProjectHGameInstance::GetPQData(int32 QuestNumber)
 
 TArray<FTextNName> UProjectHGameInstance::GetDialData(EDialougeState DialState, int32 QuestNumber)
 {
-	if (DialTable)
-		_DEBUG("SSS");
 	FDialogueStruct* Dial = DialTable->FindRow<FDialogueStruct>(*FString::FromInt(QuestNumber), TEXT(""));
 	if (Dial)
 	{
@@ -183,13 +259,17 @@ TArray<FTextNName> UProjectHGameInstance::GetDialData(EDialougeState DialState, 
 			return Dial->DialogueMap[DialState].Dialogues;
 		}
 	}
-	else
-	{
-		_DEBUG("QuestNumber %d", QuestNumber);
-		_DEBUG("False DialDate");
-	}
 
 	return TArray<FTextNName>();
+}
+
+FLevelPath* UProjectHGameInstance::GetLevelPath(FString LevelName)
+{
+	if (LevelPathTable)
+	{
+		return LevelPathTable->FindRow<FLevelPath>(*LevelName, TEXT(""));
+	}
+	return nullptr;
 }
 
 

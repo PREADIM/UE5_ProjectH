@@ -9,24 +9,22 @@ void UARPGWidget_State::Init(AARPGUnitBase* Unit)
 
 	if (!OwnerUnit)
 		return;
-}
-
-void UARPGWidget_State::NativeConstruct()
-{
-	Super::NativeConstruct();
-
 
 	LerpHPPercent = 1.f;
 	HP->SetPercent(1.f);
 	PrevHP->SetPercent(1.f);
 	OwnerUnit->OnDamage.AddUFunction(this, FName("SetHP"));
 
-
 	AP->SetPercent(1.f);
 	PrevAP->SetPercent(0.f);
 	OwnerUnit->OnAttackAP.AddUFunction(this, FName("SetAP"));
-
 	AP->PercentDelegate.BindUFunction(this, FName("RetAP"));
+}
+
+void UARPGWidget_State::NativeConstruct()
+{
+	Super::NativeConstruct();
+
 	AP->SynchronizeProperties();
 }
 

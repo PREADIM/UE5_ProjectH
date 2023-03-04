@@ -2,6 +2,7 @@
 
 FNPCQuest::FNPCQuest() : bCanAccepted(false)
 {
+	ClearNextQuest.Empty();
 }
 
 
@@ -15,4 +16,5 @@ FNPCQuest::FNPCQuest(const FQuestStruct& Quest)
 	OwnerNPCName = Quest.OwnerNPCName;
 	bCanAccepted = false;
 
+	ClearNextQuest = Quest.ClearNextQuest;
 }

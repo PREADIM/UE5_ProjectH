@@ -12,6 +12,11 @@
 /**
  * 
  */
+
+DECLARE_MULTICAST_DELEGATE(FOnHiddenWidget);
+DECLARE_MULTICAST_DELEGATE(FOnVisibleWidget);
+
+
 UCLASS()
 class PROJECTH_API AProjectH_PC : public APlayerController
 {
@@ -59,10 +64,17 @@ public:
 	void SetInteractCollisionSetup();
 	void SetQuestCollisionSetup();
 
+	UFUNCTION()
+		void PlayCinemiceMainUIHidden();
+	UFUNCTION()
+		void PlayCinemiceMainUIVisible();
+
 public:
 	UPROPERTY(VisibleAnywhere)
 		class AProjectHCharacter* OwnerCharacter;
 
+	FOnVisibleWidget OnVisibleWidget; // 시네마틱 연출할때 위젯 켜기.
+	FOnHiddenWidget OnHiddenWidget; // 시네마틱 연출할때 끄기.
 
 public:
 	/*-----------------

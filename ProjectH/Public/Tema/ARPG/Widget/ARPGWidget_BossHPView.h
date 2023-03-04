@@ -16,7 +16,7 @@ class PROJECTH_API UARPGWidget_BossHPView : public UARPGWidgetBase
 
 public:
 	virtual void Init(class AARPGUnitBase* Unit) override;
-	virtual void NativeConstruct() override;
+	//virtual void NativeConstruct() override;
 
 public:
 	UFUNCTION()

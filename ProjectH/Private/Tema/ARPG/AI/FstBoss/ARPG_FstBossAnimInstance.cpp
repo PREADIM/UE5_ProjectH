@@ -355,6 +355,9 @@ void UARPG_FstBossAnimInstance::FootStepPlaySound(int32 SoundNum)
 
 void UARPG_FstBossAnimInstance::AnimNotify_WalkSound()
 {
+	if (!FstBoss)
+		return;
+
 	if (!FstBoss->PhysicalSounds.Sounds.IsValidIndex(0))
 		return;
 
@@ -363,6 +366,9 @@ void UARPG_FstBossAnimInstance::AnimNotify_WalkSound()
 
 void UARPG_FstBossAnimInstance::AnimNotify_SprintSound()
 {
+	if (!FstBoss)
+		return;
+
 	if (!FstBoss->PhysicalSounds.Sounds.IsValidIndex(1))
 		return;
 
@@ -372,6 +378,9 @@ void UARPG_FstBossAnimInstance::AnimNotify_SprintSound()
 
 void UARPG_FstBossAnimInstance::AnimNotify_JumpSound()
 {
+	if (!FstBoss)
+		return;
+
 	if (!FstBoss->PhysicalSounds.Sounds.IsValidIndex(2))
 		return;
 

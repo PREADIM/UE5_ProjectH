@@ -22,6 +22,9 @@ AProjectH_PC::AProjectH_PC()
 void AProjectH_PC::BeginPlay()
 {
 	Super::BeginPlay();
+
+	OnVisibleWidget.AddUFunction(this, FName("PlayCinemiceMainUIHidden"));
+	OnHiddenWidget.AddUFunction(this, FName("PlayCinemiceMainUIVisible"));
 }
 
 void AProjectH_PC::BeginInit()
@@ -68,6 +71,16 @@ void AProjectH_PC::OpenQuestList()
 /* ---------------
 	UI Open KEY
 ------------------*/
+
+void AProjectH_PC::PlayCinemiceMainUIHidden()
+{
+	MainQuestUI->SetRenderOpacity(0.f);
+}
+
+void AProjectH_PC::PlayCinemiceMainUIVisible()
+{
+	MainQuestUI->SetRenderOpacity(1.f);
+}
 
 void AProjectH_PC::OpenESC()
 {

@@ -14,11 +14,7 @@ void UARPGWidget_BattleHP::Init(AARPGUnitBase* Unit)
 	MaxRenderDelay = 10.f; // 체력바 딜레이
 	LerpHPPercent = 1.f;
 	Delay = 0.f;
-}
 
-void UARPGWidget_BattleHP::NativeConstruct()
-{
-	Super::NativeConstruct();
 
 	if (!OwnerUnit)
 	{

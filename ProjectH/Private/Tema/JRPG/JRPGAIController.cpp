@@ -41,20 +41,19 @@ void AJRPGAIController::OnPossess(APawn* InPawn)
 		AJRPGGameMode* GM = Cast<AJRPGGameMode>(GetWorld()->GetAuthGameMode());
 		if (!GM)
 		{
-			_DEBUG("Not AIController GM");
 			return;
 		}
 
 		OwnerCharacter->OwnerAIController = this;
 		BB->SetValueAsObject(FName("GM"), GM);
+
+		RunBehaviorTree(OwnerCharacter->GetBT());
+		SetIsTurn(false);
 	}
 	else
 	{
 		_DEBUG("Blackboard ERROR");
 	}
-
-	RunBehaviorTree(OwnerCharacter->GetBT());
-	SetIsTurn(false);
 
 }
 

@@ -36,6 +36,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FString OwnerNPCName;
 
+	UPROPERTY(EditAnywhere)
+		TArray<int32> ClearNextQuest; // 클리어하면 다음 진행가능한 퀘스트 넘버.
+
 	FQuestStruct();
 	FQuestStruct(const FNPCQuest& Quest);
 

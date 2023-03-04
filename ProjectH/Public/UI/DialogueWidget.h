@@ -31,6 +31,8 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TSubclassOf<class USelectQuestSlot> BP_SelectQuestSlot;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<class UQuestingFunctionWidget> BP_QuestingFunctionWidget;
 
 	UPROPERTY(VisibleAnywhere)
 		class AQuestNPCBase* OwnerNPC;
@@ -55,6 +57,7 @@ public:
 	void NPCDialogue();
 	void SetNormalDialText(int32 index);
 	void SetCanQuestList();
+	void SetQuestingSelectList(class UQuestingFunction* QuestingFunction, int32 FlagNumber); // 퀘스트를 받고 다시 말걸었을때 발생하는 이벤트들을 위한것. ex)어디로 이동할래? 라고 물어보는 등.
 
 	void SetSelectDial(int32 Index);
 	void SetNameText(FText Name);

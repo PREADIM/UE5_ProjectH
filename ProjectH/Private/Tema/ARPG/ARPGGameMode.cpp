@@ -12,6 +12,13 @@ AARPGGameMode::AARPGGameMode()
 void AARPGGameMode::PostLogin(APlayerController* Login)
 {
 	Super::PostLogin(Login);
+
+	if (Login)
+	{
+		Login->SetInputMode(FInputModeGameOnly());
+		Login->SetShowMouseCursor(false);
+	}
+
 }
 
 

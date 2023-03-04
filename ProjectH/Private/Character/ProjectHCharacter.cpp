@@ -63,24 +63,26 @@ AProjectHCharacter::AProjectHCharacter()
 void AProjectHCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
 	ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_WorldStatic));
 	ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_WorldDynamic));
 	ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel4));
 	ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel16));
 	IgnoreActor.Add(this);
 
-	// 게임 인스턴스에서 정보 가져오기
-	if (QuestComponent)
-	{
-		QuestComponent->StartQuestLoad(); // 로드
-		QuestComponent->BeginSetupHaveQuests();
-	}
-
 	OwnerController = Cast<class AProjectH_PC>(GetController());
 	if (OwnerController)
 	{
 		MouseSensitivity = OwnerController->MouseSensitivity;
 		OwnerController->MainQuestUI->InteractWidget->InteractButton->OnClicked.AddDynamic(this, &AProjectHCharacter::InteractKey);
+		// 게임 인스턴스에서 정보 가져오기
+		if (QuestComponent)
+		{
+			QuestComponent->OwnerCharacter = this;
+			QuestComponent->OwnerController = OwnerController;
+			QuestComponent->StartQuestLoad(); // 로드
+			QuestComponent->BeginSetupHaveQuests();
+		}
 	}
 
 	QuestCollision->OnComponentBeginOverlap.AddDynamic(this, &AProjectHCharacter::QuestCollisionOverlap);
@@ -308,6 +310,7 @@ void AProjectHCharacter::InteractCollisionOverlap(UPrimitiveComponent* Overlappe
 
 void AProjectHCharacter::InteractCollisionEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
+	_DEBUG("End");
 	AQuestNPCBase* NPC = Cast<AQuestNPCBase>(OtherActor);
 	if (NPC)
 	{
@@ -338,28 +341,29 @@ void AProjectHCharacter::InteractCollisionEndOverlap(UPrimitiveComponent* Overla
 
 void AProjectHCharacter::QuestCollisionSetUp()
 {
-	_DEBUG("Quest Collision Setup");
 	QuestCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
-	//타이머
 	FTimerHandle Handle;
-	GetWorld()->GetTimerManager().SetTimer(Handle, FTimerDelegate::CreateLambda([&]()
-		{
-			QuestCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-		}), 0.2f, false);
+	GetWorld()->GetTimerManager().SetTimer(Handle, this, &AProjectHCharacter::QuestCollisionRestart, 0.1f, false);
 }
 
 
 void AProjectHCharacter::InteractCollisionSetUp()
+{	
+	InteractCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	FTimerHandle Handle;
+	GetWorld()->GetTimerManager().SetTimer(Handle, this, &AProjectHCharacter::InteractCollisionRestart, 0.1f, false);
+}
+
+void AProjectHCharacter::QuestCollisionRestart()
+{
+	_DEBUG("Quest Collision Setup");
+	QuestCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+}
+
+void AProjectHCharacter::InteractCollisionRestart()
 {
 	_DEBUG("Interact Collision Setup");
-	InteractCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
-	FTimerHandle Handle;
-	GetWorld()->GetTimerManager().SetTimer(Handle, FTimerDelegate::CreateLambda([&]()
-		{
-			InteractCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-		}), 0.2f, false);	
+	InteractCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 }
 
 /*---------------------

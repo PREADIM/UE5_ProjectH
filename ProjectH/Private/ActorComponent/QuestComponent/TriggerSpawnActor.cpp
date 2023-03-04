@@ -10,7 +10,7 @@
 ATriggerSpawnActor::ATriggerSpawnActor()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 }
 
@@ -21,12 +21,6 @@ void ATriggerSpawnActor::BeginPlay()
 	
 }
 
-// Called every frame
-void ATriggerSpawnActor::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
 
 
 void ATriggerSpawnActor::Interact_Implementation(class AProjectHCharacter* OwnerCharacter)

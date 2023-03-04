@@ -38,3 +38,18 @@ public:
 	UPROPERTY(EditAnywhere)
 		FString Description; // 알아보기위한 설명서 
 };
+
+
+
+USTRUCT(BlueprintType)
+struct FQuestCinematic : public FTableRowBase
+{
+	GENERATED_USTRUCT_BODY()
+
+public:
+	UPROPERTY(EditAnywhere)
+		int32 QuestNumber;
+
+	UPROPERTY(EditAnywhere)
+		class ULevelSequence* QuestSequence;
+};

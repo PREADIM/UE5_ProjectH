@@ -15,3 +15,16 @@ AProjectHGameMode::AProjectHGameMode()
 	// use our custom HUD class
 	HUDClass = AProjectHHUD::StaticClass();
 }
+
+void AProjectHGameMode::PostLogin(APlayerController* Login)
+{
+	Super::PostLogin(Login);
+
+	if (Login != nullptr)
+	{
+		Login->SetInputMode(FInputModeGameOnly());
+		Login->SetShowMouseCursor(false);
+	}
+}
+
+
