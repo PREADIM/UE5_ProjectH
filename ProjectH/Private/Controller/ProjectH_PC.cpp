@@ -22,9 +22,9 @@ AProjectH_PC::AProjectH_PC()
 void AProjectH_PC::BeginPlay()
 {
 	Super::BeginPlay();
-
-	OnVisibleWidget.AddUFunction(this, FName("PlayCinemiceMainUIHidden"));
-	OnHiddenWidget.AddUFunction(this, FName("PlayCinemiceMainUIVisible"));
+	
+	OnVisibleWidget.AddUFunction(this, FName("PlayCinemiceMainUIVisible"));
+	OnHiddenWidget.AddUFunction(this, FName("PlayCinemiceMainUIHidden"));
 }
 
 void AProjectH_PC::BeginInit()

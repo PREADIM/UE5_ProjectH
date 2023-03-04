@@ -3,7 +3,7 @@
 #pragma once
 
 #include "ProjectH.h"
-#include "GameFramework/PlayerController.h"
+#include "PlayerControllerBase.h"
 #include "Special/QTE/QTEWidgetPosition.h"
 #include "Special/QTE/CameraTransition.h"
 #include "Special/QTE/KeyEventInfo.h"
@@ -13,12 +13,11 @@
  * 
  */
 
-DECLARE_MULTICAST_DELEGATE(FOnHiddenWidget);
-DECLARE_MULTICAST_DELEGATE(FOnVisibleWidget);
+
 
 
 UCLASS()
-class PROJECTH_API AProjectH_PC : public APlayerController
+class PROJECTH_API AProjectH_PC : public APlayerControllerBase
 {
 	GENERATED_BODY()
 
@@ -29,15 +28,14 @@ public:
 	AProjectH_PC();
 
 
-	virtual void BeginPlay();
-	virtual void OnPossess(APawn* InPawn);
-	virtual void OnUnPossess();
-	virtual void SetupInputComponent();
+	virtual void BeginPlay() override;
+	virtual void OnPossess(APawn* InPawn) override;
+	virtual void OnUnPossess() override;
+	virtual void SetupInputComponent() override;
 
 
 	void BeginInit();
 	
-
 	/* ---------------
 		UI Open KEY 
 	------------------*/
@@ -73,8 +71,6 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		class AProjectHCharacter* OwnerCharacter;
 
-	FOnVisibleWidget OnVisibleWidget; // 시네마틱 연출할때 위젯 켜기.
-	FOnHiddenWidget OnHiddenWidget; // 시네마틱 연출할때 끄기.
 
 public:
 	/*-----------------

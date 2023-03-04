@@ -3,14 +3,14 @@
 #pragma once
 
 #include "ProjectH.h"
-#include "GameFramework/PlayerController.h"
+#include "PlayerControllerBase.h"
 #include "ARPGPlayerController.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECTH_API AARPGPlayerController : public APlayerController
+class PROJECTH_API AARPGPlayerController : public APlayerControllerBase
 {
 	GENERATED_BODY()
 
@@ -71,16 +71,13 @@ public:
 		class UARPGWidget_BossHPView* WidgetBossHP;
 
 
+	UFUNCTION()
+		void BindVisibleWidget();
+	UFUNCTION()
+		void BindHiddenWidget();
 
 	/*------------------------------------------------*/
-	// 시퀀스
-	UPROPERTY()
-		class ULevelSequencePlayer* SequencePlayer;
-	UPROPERTY(EditAnywhere)
-		class ULevelSequence* DeathSequence;
 
-	float PlayDeathSequence();
-	//배틀 종료 후의 시퀀스.
 
 
 };

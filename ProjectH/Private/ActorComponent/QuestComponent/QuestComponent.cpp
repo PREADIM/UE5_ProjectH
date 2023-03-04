@@ -176,8 +176,12 @@ void UQuestComponent::RemoveQuest(int32 RemoveQuestNumber)
 		{
 			if (Quests[QuestIndex].ClearNextQuest.Num())
 			{
-				for(int32& NextQuestNumber : Quests[QuestIndex].ClearNextQuest)
+				for (int32& NextQuestNumber : Quests[QuestIndex].ClearNextQuest)
+				{
 					GI->AddCanQuest(NextQuestNumber); // 다음 퀘스트 추가.
+					GI->PlaySequence(NextQuestNumber, OwnerController);
+				}
+
 			}
 			Quests[QuestIndex].QuestSteps[0].Trigger->TriggerDestroy(); // 마지막 NPC 위치 나타내는 트리거 삭제. 필숨8★
 			SaveQuestNumber(Quests[QuestIndex].OwnerNPCName, RemoveQuestNumber);

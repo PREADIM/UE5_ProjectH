@@ -38,6 +38,20 @@ public:
 };
 
 
+USTRUCT(BlueprintType)
+struct FSequenceActor : public FTableRowBase
+{
+	GENERATED_USTRUCT_BODY()
+public:
+	UPROPERTY(EditAnywhere)
+		int32 SequenceNumber;
+	UPROPERTY(EditAnywhere)
+		TSubclassOf<class APlaySequenceActor> BP_SequenceActor;
+	UPROPERTY(EditAnywhere)
+		FString Description;
+};
+
+
 UCLASS()
 class PROJECTH_API UProjectHGameInstance : public UGameInstance
 {
@@ -51,6 +65,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		void OpenLevelStart(FString Levelname);
+	UFUNCTION(BlueprintCallable)
+		void PlaySequence(int32 SequenceNumber, class APlayerControllerBase* Controller);
 
 	/*-- Quest --*/
 	void SetLoadSlot(class UQuestComponent* QuestComponent);
@@ -68,6 +84,7 @@ public:
 	FQuestDataBase* GetPQData(int32 QuestNumber);
 	TArray<FTextNName> GetDialData(EDialougeState DialState, int32 QuestNumber);
 	FLevelPath* GetLevelPath(FString LevelName);
+	FSequenceActor* GetSequenceActor(int32 SequenceNumber);
 
 	void QuestClearNumber(FString NPCName, int32 QuestNumber); // ★★퀘스트 완료시 호출.
 
@@ -111,10 +128,11 @@ public:
 		class UDataTable* DialTable;
 
 	UPROPERTY(VisibleAnywhere)
-		class UDataTable* QuestCinematicTable;
+		class UDataTable* LevelPathTable;
+
 
 	UPROPERTY(VisibleAnywhere)
-		class UDataTable* LevelPathTable;
+		class UDataTable* SequenceActorTable;
 
 	/*----------------------------------------------*/
 

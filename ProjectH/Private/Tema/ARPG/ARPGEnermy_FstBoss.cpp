@@ -16,7 +16,7 @@ AARPGEnermy_FstBoss::AARPGEnermy_FstBoss()
 	UnitState.NormallyAP = 500.f;
 	EnermyType = EEnermyType::Boss;
 
-	SetActorHiddenInGame(true);
+	SetActorHiddenInGame(true); // 보스는 시네마틱 후에 false로 바꿈.
 }
 
 void AARPGEnermy_FstBoss::BeginPlay()

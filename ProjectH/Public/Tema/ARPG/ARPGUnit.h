@@ -140,9 +140,10 @@ public:
 
 	// 죽음 처리 시퀀스 및 리스타트.
 
-	UPROPERTY(EditAnywhere)
-		class ULevelSequence* DeathSequence;
-	UFUNCTION()
+	/*UPROPERTY(EditAnywhere)
+		class ULevelSequence* DeathSequence;*/
+
+	UFUNCTION(BlueprintCallable)
 		void CallRestart();
 
 	//---------------------------------------------------------------------

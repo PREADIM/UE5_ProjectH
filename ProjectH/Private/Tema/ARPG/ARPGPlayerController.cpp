@@ -41,6 +41,9 @@ void AARPGPlayerController::OnPossess(APawn* InPawn)
 			WidgetMain->AddToViewport();
 		}
 	}
+
+	OnHiddenWidget.AddUFunction(this, FName("BindHiddenWidget"));
+	OnVisibleWidget.AddUFunction(this, FName("BindVisibleWidget"));
 }
 
 
@@ -174,19 +177,33 @@ void AARPGPlayerController::StopSound()
 }
 
 
-float AARPGPlayerController::PlayDeathSequence()
+void AARPGPlayerController::BindVisibleWidget()
 {
-	SequencePlayer = nullptr;
-
-	ALevelSequenceActor* LQActor;
-	if (DeathSequence)
-		SequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(GetWorld(), DeathSequence, FMovieSceneSequencePlaybackSettings(), LQActor);
-
-	if (SequencePlayer)
+	if (WidgetMain)
 	{
-		SequencePlayer->Play();
-		return SequencePlayer->GetEndTime().AsSeconds();
+		if(WidgetMain->GetRenderOpacity() >= 0.5f)
+			WidgetMain->SetRenderOpacity(1.0f);
 	}
 
-	return 0.0f;
+	if (WidgetBossHP)
+	{
+		if (WidgetBossHP->GetRenderOpacity() >= 0.5f)
+			WidgetBossHP->SetRenderOpacity(1.0f);
+	}
+}
+
+
+void AARPGPlayerController::BindHiddenWidget()
+{
+	if (WidgetMain)
+	{
+		if (WidgetMain->GetRenderOpacity() == 1.f)
+			WidgetMain->SetRenderOpacity(0.f);
+	}
+
+	if (WidgetBossHP)
+	{
+		if (WidgetBossHP->GetRenderOpacity() == 1.f)
+			WidgetBossHP->SetRenderOpacity(0.f);
+	}
 }

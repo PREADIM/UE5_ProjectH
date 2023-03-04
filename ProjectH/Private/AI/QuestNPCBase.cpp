@@ -232,7 +232,7 @@ bool AQuestNPCBase::FindCanQuest()
 				}
 				else
 				{
-					// 퀘스팅 커스텀 함수가 있는경우
+					// 퀘스팅 커스텀 함수가 있는경우. 퀘스팅중 이걸 선택하면 어떤 함수를 실행하는 방식.
 					if (NPCQuests.Quests[i].BP_QuestingFunction)
 					{
 						if (NPCQuests.Quests[i].QuestingFunction == nullptr)

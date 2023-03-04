@@ -3,7 +3,7 @@
 #pragma once
 
 #include "ProjectH.h"
-#include "GameFramework/PlayerController.h"
+#include "PlayerControllerBase.h"
 #include "Tema/JRPG/JRPGCharStat.h"
 #include "Tema/JRPG/JRPGUnitUIStruct.h"
 #include "JRPGPlayerController.generated.h"
@@ -26,7 +26,7 @@ enum class EGameModeType : uint8
 
 
 UCLASS()
-class PROJECTH_API AJRPGPlayerController : public APlayerController
+class PROJECTH_API AJRPGPlayerController : public APlayerControllerBase
 {
 	GENERATED_BODY()
 

@@ -142,7 +142,7 @@ void ATriggerEventBase::SetHiddenTriggerWidget()
 	{
 		if (QuestComponent->GetActiveQuest().QuestNumber == QuestNumber)
 		{
-			if (bBPBindHiddenTriggerFunc)
+			if (bBPBindHiddenTriggerFunc) // BP에서 무언가 더 할일이 있다.
 				SetHiddenTriggerWidgetBind();
 
 			Widget->SetVisibility(false);

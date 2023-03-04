@@ -8,8 +8,7 @@
 #include "Kismet/KismetmathLibrary.h"
 #include "Tema/ARPG/ARPG_UnitAnimInstance.h"
 #include "Tema/ARPG/ARPGGameMode.h"
-#include <LevelSequencePlayer.h>
-#include <LevelSequenceActor.h>
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AARPGUnit::AARPGUnit()
@@ -528,21 +527,20 @@ void AARPGUnit::Death()
 	}
 
 	// 여기서 죽는 시네마틱 실행.
+	// 위젯도 실행.
 
-	float SequenceEndTime = 5.f;
-	ALevelSequenceActor* LQActor;
-	if (DeathSequence)
+	if(!GI) // 없으면 바인딩
+		GI = Cast<UProjectHGameInstance>(UGameplayStatics::GetGameInstance(this));
+
+	if (GI)
 	{
-		ULevelSequencePlayer* Player = ULevelSequencePlayer::CreateLevelSequencePlayer(GetWorld(), DeathSequence, FMovieSceneSequencePlaybackSettings(), LQActor);
-		if (Player)
-		{
-			Player->Play();
-			SequenceEndTime = Player->GetEndTime().AsSeconds();
-		}
+		GI->PlaySequence(999, OwnerController);
 	}
-
-	FTimerHandle DeathHandle;
-	GetWorld()->GetTimerManager().SetTimer(DeathHandle, this, &AARPGUnit::CallRestart, SequenceEndTime, false);
+	else
+	{
+		FTimerHandle DeathHandle;
+		GetWorld()->GetTimerManager().SetTimer(DeathHandle, this, &AARPGUnit::CallRestart, 5.f, false);
+	}
 }
 
 void AARPGUnit::CallRestart()

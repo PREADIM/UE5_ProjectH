@@ -9,6 +9,7 @@
 #include "AI/QuestNPCBase.h"
 #include "MainGameSetting.h"
 #include "QuestStruct.h"
+#include "Special/PlaySequenceActor.h"
 
 FCanQuestNums::FCanQuestNums()
 {
@@ -50,12 +51,12 @@ UProjectHGameInstance::UProjectHGameInstance()
 		LevelPathTable = DT_LevelPathData.Object;
 	}
 
-	/*FString QuestCinePath = TEXT("/Script/Engine.DataTable'/Game/PROJECT/BP_CLASS/Blueprints/05_DataBase/DT_QuestDials.DT_QuestDials'");
-	static ConstructorHelpers::FObjectFinder<UDataTable> DT_QuestCine(*QuestCinePath);
-	if (DT_QuestCine.Succeeded())
+	FString SequenceActorPath = TEXT("/Script/Engine.DataTable'/Game/PROJECT/BP_CLASS/Blueprints/05_DataBase/DT_SequenceActor.DT_SequenceActor'");
+	static ConstructorHelpers::FObjectFinder<UDataTable> DT_SequenceActor(*SequenceActorPath);
+	if (DT_SequenceActor.Succeeded())
 	{
-		QuestCinematicTable = DT_QuestCine.Object;
-	}*/
+		SequenceActorTable = DT_SequenceActor.Object;
+	}
 
 }
 
@@ -114,6 +115,25 @@ void UProjectHGameInstance::OpenLevelStart(FString LevelName)
 	{
 		UGameplayStatics::OpenLevelBySoftObjectPtr(GetWorld(), LevelPath->Level);
 	}	
+}
+
+void UProjectHGameInstance::PlaySequence(int32 SequenceNumber, APlayerControllerBase* Controller)
+{
+	// PlaySequenceActor를 소환하면 해당 액터에 바인딩된 함수들이 실행될 것이다.
+	FSequenceActor* SAStruct = GetSequenceActor(SequenceNumber);
+	if (SAStruct)
+	{
+		if (SAStruct->BP_SequenceActor)
+		{
+			APlaySequenceActor* SA = GetWorld()->SpawnActorDeferred<APlaySequenceActor>(SAStruct->BP_SequenceActor, FTransform());
+			if (SA)
+			{
+				SA->GI = this;
+				SA->PCBase = Controller;
+			}
+			SA->FinishSpawning(FTransform());
+		}
+	}
 }
 
 void UProjectHGameInstance::SetNPCPtr(FString Name, AQuestNPCBase* NPC)
@@ -220,20 +240,6 @@ void UProjectHGameInstance::AddCanQuest(int32 QuestNumber)
 			PlayerCanQuest.Emplace(QDB->NPCName, FCanQuestNums(QuestNumber));
 	}
 
-	// 여기서 퀘스트에 해당하는 시네마틱을 가지고있는 데이터 테이블을 만들어서
-	// 실행하도록하자.
-
-	/*ALevelSequenceActor* LQActor;
-	if (StartSequence)
-		SequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(GetWorld(), StartSequence, FMovieSceneSequencePlaybackSettings(), LQActor);
-
-	if (SequencePlayer)
-	{
-		BattleUIOnOff(false);
-		SequencePlayer->Play();
-		return SequencePlayer->GetEndTime().AsSeconds();
-	}*/
-
 	PlayerSave->SavePlayerQuest(&QuestNums, &FinishedQuests);
 }
 
@@ -272,6 +278,15 @@ FLevelPath* UProjectHGameInstance::GetLevelPath(FString LevelName)
 	return nullptr;
 }
 
+FSequenceActor* UProjectHGameInstance::GetSequenceActor(int32 SequenceNumber)
+{
+	if (SequenceActorTable)
+	{
+		return SequenceActorTable->FindRow<FSequenceActor>(*FString::FromInt(SequenceNumber), TEXT(""));
+	}
+	return nullptr;
+}
+
 
 /* 퀘스트를 완료했을때 제거하도록 하자.*/
 void UProjectHGameInstance::QuestClearNumber(FString NPCName, int32 QuestNumber)
@@ -287,6 +302,7 @@ void UProjectHGameInstance::QuestClearNumber(FString NPCName, int32 QuestNumber)
 		}
 	}
 }
+
 
 bool UProjectHGameInstance::SetDefault()
 {

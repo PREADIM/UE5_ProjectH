@@ -16,6 +16,7 @@
 #include "UI/InteractWidget.h"
 #include "UI/MainQuestUI.h"
 #include "Components/Button.h"
+#include "GameMode/ProjectHGameInstance.h"
 #include "ActorComponent/QuestComponent/TriggerSpawnActor.h"
 
 
@@ -81,7 +82,6 @@ void AProjectHCharacter::BeginPlay()
 			QuestComponent->OwnerCharacter = this;
 			QuestComponent->OwnerController = OwnerController;
 			QuestComponent->StartQuestLoad(); // ·Îµå
-			QuestComponent->BeginSetupHaveQuests();
 		}
 	}
 
@@ -90,9 +90,22 @@ void AProjectHCharacter::BeginPlay()
 	InteractCollision->OnComponentBeginOverlap.AddDynamic(this, &AProjectHCharacter::InteractCollisionOverlap);
 	InteractCollision->OnComponentEndOverlap.AddDynamic(this, &AProjectHCharacter::InteractCollisionEndOverlap);
 
+	GI = Cast<UProjectHGameInstance>(UGameplayStatics::GetGameInstance(this));
+	if (GI)
+	{
+		GI->PlaySequence(1, OwnerController);
+	}
+
+	FTimerHandle Handle;
+	GetWorld()->GetTimerManager().SetTimer(Handle, this, &AProjectHCharacter::EndPlaySequence, 4.6f, false);	
+}
+
+void AProjectHCharacter::EndPlaySequence()
+{
 	QuestCollisionSetUp();
 	InteractCollisionSetUp();
 }
+
 
 void AProjectHCharacter::PostInitializeComponents()
 {
