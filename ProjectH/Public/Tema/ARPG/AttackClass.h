@@ -23,7 +23,7 @@ struct FAttackEffect
 
 public:
 	UPROPERTY(EditAnywhere)
-		class UParticleSystem* Effect;
+		class UParticleSystem* Effect = nullptr;
 
 	UPROPERTY(EditAnywhere)
 		FName SocketName;

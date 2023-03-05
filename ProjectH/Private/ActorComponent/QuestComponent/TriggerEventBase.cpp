@@ -49,6 +49,7 @@ void ATriggerEventBase::BeginPlay()
 	{
 		PlayerController->OnVisibleWidget.AddUFunction(this, FName("VisibleWidget"));
 		PlayerController->OnHiddenWidget.AddUFunction(this, FName("HiddenWidget"));
+		_DEBUG("SetupBind");
 	}
 
 	Widget->InitWidget();

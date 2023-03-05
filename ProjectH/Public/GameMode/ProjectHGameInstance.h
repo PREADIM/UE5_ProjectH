@@ -39,16 +39,23 @@ public:
 
 
 USTRUCT(BlueprintType)
-struct FSequenceActor : public FTableRowBase
+struct FSequenceActorTable : public FTableRowBase
 {
 	GENERATED_USTRUCT_BODY()
 public:
 	UPROPERTY(EditAnywhere)
-		int32 SequenceNumber;
+		int32 SequenceNumber = 0;
+
 	UPROPERTY(EditAnywhere)
 		TSubclassOf<class APlaySequenceActor> BP_SequenceActor;
+	
 	UPROPERTY(EditAnywhere)
 		FString Description;
+
+	FSequenceActorTable()
+	{
+
+	}
 };
 
 
@@ -59,9 +66,7 @@ class PROJECTH_API UProjectHGameInstance : public UGameInstance
 
 public:
 	UProjectHGameInstance();
-
 	virtual void Init() override;
-	// 캐릭터와 NPC의 퀘스트 상태를 저장하는 함수. 각각 캐릭터와 NPC에게서 호출한다.
 
 	UFUNCTION(BlueprintCallable)
 		void OpenLevelStart(FString Levelname);
@@ -84,7 +89,7 @@ public:
 	FQuestDataBase* GetPQData(int32 QuestNumber);
 	TArray<FTextNName> GetDialData(EDialougeState DialState, int32 QuestNumber);
 	FLevelPath* GetLevelPath(FString LevelName);
-	FSequenceActor* GetSequenceActor(int32 SequenceNumber);
+	FSequenceActorTable* GetSequenceActor(int32 SequenceNumber);
 
 	void QuestClearNumber(FString NPCName, int32 QuestNumber); // ★★퀘스트 완료시 호출.
 
@@ -130,8 +135,7 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		class UDataTable* LevelPathTable;
 
-
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(EditAnywhere)
 		class UDataTable* SequenceActorTable;
 
 	/*----------------------------------------------*/

@@ -16,8 +16,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FAnchors Anchor;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FVector2D Alignment;
+		FVector2D Alignment = FVector2D(0.f, 0.f);
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FVector2D Position;
+		FVector2D Position = FVector2D(0.f, 0.f);
 };
 

@@ -11,11 +11,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FString SkillName;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float CostMP;
+		float CostMP = 0.f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UTexture2D* SkillImg;
+		class UTexture2D* SkillImg = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float SkillDamage; // 스킬 데미지 계수.
+		float SkillDamage = 0.f; // 스킬 데미지 계수.
 };
 
 
@@ -28,12 +28,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FString ULTName;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float UseULT;
+		float UseULT = 0.f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UTexture2D* ULTImg;
+		class UTexture2D* ULTImg = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UTexture2D* FillULTImg;
+		class UTexture2D* FillULTImg = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float ULTDamage; // 스킬 데미지 계수.
+		float ULTDamage = 0.f; // 스킬 데미지 계수.
 };
 

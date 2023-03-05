@@ -27,11 +27,12 @@ DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
 AProjectHCharacter::AProjectHCharacter()
 {
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
-	Camera->SetupAttachment(GetMesh());
-	Camera->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName("head"));
+	Camera->SetupAttachment(GetMesh(), FName("head"));
+	//Camera->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName("head"));
 
 	QuestCollision = CreateDefaultSubobject<USphereComponent>(TEXT("QuestCollision"));
 	QuestCollision->SetupAttachment(RootComponent);
+
 	InteractCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("InteractCollision"));
 	InteractCollision->SetupAttachment(Camera);
 	InteractCollision->SetBoxExtent(InteractBoxSize);

@@ -10,10 +10,10 @@ struct FEnermys
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int32 EnermyUnits; // 적 유닛만 사용하는 기능, 무슨 유닛을가지고 있는지 판단.
+		int32 EnermyUnits = 0; // 적 유닛만 사용하는 기능, 무슨 유닛을가지고 있는지 판단.
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int32 EnermyLevel;
+		int32 EnermyLevel = 0;
 };
 
 
@@ -21,6 +21,7 @@ public:
 UENUM()
 enum class EDebuffState : uint8
 {
+	NONE UMETA(DisplayName = "NONE"),
 	DEF_DOWN UMETA(DisplayName = "DEF_DOWN"),
 	STUN UMETA(DisplayName = "STUN")
 };
@@ -34,9 +35,9 @@ struct FDebuffStruct
 
 public:
 	UPROPERTY(VisibleAnywhere)
-		EDebuffState DebuffState;
+		EDebuffState DebuffState = EDebuffState::NONE;
 	UPROPERTY(VisibleAnywhere)
-		int32 cnt;
+		int32 cnt = 0;
 };
 
 

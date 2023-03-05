@@ -51,7 +51,8 @@ UProjectHGameInstance::UProjectHGameInstance()
 		LevelPathTable = DT_LevelPathData.Object;
 	}
 
-	FString SequenceActorPath = TEXT("/Script/Engine.DataTable'/Game/PROJECT/BP_CLASS/Blueprints/05_DataBase/DT_SequenceActor.DT_SequenceActor'");
+	// 왜 안되는가?
+	FString SequenceActorPath = TEXT("/Game/PROJECT/BP_CLASS/Blueprints/05_DataBase/DT_SequenceActorTable.DT_SequenceActorTable");
 	static ConstructorHelpers::FObjectFinder<UDataTable> DT_SequenceActor(*SequenceActorPath);
 	if (DT_SequenceActor.Succeeded())
 	{
@@ -120,7 +121,7 @@ void UProjectHGameInstance::OpenLevelStart(FString LevelName)
 void UProjectHGameInstance::PlaySequence(int32 SequenceNumber, APlayerControllerBase* Controller)
 {
 	// PlaySequenceActor를 소환하면 해당 액터에 바인딩된 함수들이 실행될 것이다.
-	FSequenceActor* SAStruct = GetSequenceActor(SequenceNumber);
+	FSequenceActorTable* SAStruct = GetSequenceActor(SequenceNumber);
 	if (SAStruct)
 	{
 		if (SAStruct->BP_SequenceActor)
@@ -278,11 +279,11 @@ FLevelPath* UProjectHGameInstance::GetLevelPath(FString LevelName)
 	return nullptr;
 }
 
-FSequenceActor* UProjectHGameInstance::GetSequenceActor(int32 SequenceNumber)
+FSequenceActorTable* UProjectHGameInstance::GetSequenceActor(int32 SequenceNumber)
 {
 	if (SequenceActorTable)
 	{
-		return SequenceActorTable->FindRow<FSequenceActor>(*FString::FromInt(SequenceNumber), TEXT(""));
+		return SequenceActorTable->FindRow<FSequenceActorTable>(*FString::FromInt(SequenceNumber), TEXT(""));
 	}
 	return nullptr;
 }

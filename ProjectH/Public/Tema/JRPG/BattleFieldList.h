@@ -20,4 +20,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TSubclassOf<class ABattleField> BP_BattleField;
 
+public:
+	FBattleFieldList();
+
 };

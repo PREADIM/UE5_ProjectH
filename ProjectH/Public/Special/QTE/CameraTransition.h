@@ -12,9 +12,9 @@ struct FCameraTransition
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-		class AQTECamera* NewCamera;
+		class AQTECamera* NewCamera = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float BlendTime;
+		float BlendTime = 0.f;
 
 };
 

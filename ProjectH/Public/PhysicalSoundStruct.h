@@ -10,9 +10,9 @@ struct FSoundAndAttenuation
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class USoundBase* Sound;
+		class USoundBase* Sound = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class USoundAttenuation* Attenuation;
+		class USoundAttenuation* Attenuation = nullptr;
 };
 
 
@@ -25,9 +25,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TArray<class USoundBase*> Sounds;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class USoundAttenuation* Attenuation;
+		class USoundAttenuation* Attenuation = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TEnumAsByte<EPhysicalSurface> SurfaceName;
+		TEnumAsByte<EPhysicalSurface> SurfaceName = EPhysicalSurface::SurfaceType_Default;
 };
 
 EPhysicalSurface TracePysicalSurface(AActor* Unit, float EndDistance);

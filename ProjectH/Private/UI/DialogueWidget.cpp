@@ -121,8 +121,7 @@ void UDialogueWidget::SetSelectDial(int32 Index)
 {
 	SelectTextIndex = Index;
 	if (SelectText.Num() == SelectTextIndex)
-	{
-		
+	{	
 		//OwnerQuestNum은 퀘스트 넘버가아니라 해당 NPC의 퀘스트 리스트중에 몇번째 인덱스인지 나타내는 것.
 		if (OwnerNPC->NPCQuests.Quests[OwnerQuestNum].CanSucceed)
 		{
@@ -134,6 +133,11 @@ void UDialogueWidget::SetSelectDial(int32 Index)
 			if (OwnerNPC->NPCQuests.Quests[OwnerQuestNum].QuestingFunction) // 존재하면 있는것
 			{
 				SetQuestingSelectList(OwnerNPC->NPCQuests.Quests[OwnerQuestNum].QuestingFunction, OwnerNPC->NPCQuests.Quests[OwnerQuestNum].QuestingFunction->FlagCnt);
+			}
+			else
+			{
+				// QuestingFunction은 말그대로 Questing시 다시 말걸었을때 무언가 실행해야하는 함수인데, 그게없으면 그냥 닫기.
+				OwnerMainWidget->CloseDialogue();
 			}
 		}
 		else

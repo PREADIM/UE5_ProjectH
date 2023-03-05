@@ -30,7 +30,7 @@ struct FDialogueStruct : public FTableRowBase
 	GENERATED_USTRUCT_BODY()
 public:
 	UPROPERTY(EditAnywhere)
-		int32 QuestNumber;
+		int32 QuestNumber = 0;
 
 	UPROPERTY(EditAnywhere)
 		TMap<EDialougeState, FTextNNameState> DialogueMap;
@@ -48,8 +48,8 @@ struct FQuestCinematic : public FTableRowBase
 
 public:
 	UPROPERTY(EditAnywhere)
-		int32 QuestNumber;
+		int32 QuestNumber = 0;
 
 	UPROPERTY(EditAnywhere)
-		class ULevelSequence* QuestSequence;
+		class ULevelSequence* QuestSequence = nullptr;
 };

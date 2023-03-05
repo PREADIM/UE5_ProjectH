@@ -23,15 +23,15 @@ struct FKeyEventInfo
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		EQTEState State;
+		EQTEState State = EQTEState::NONE;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FKey Key;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FQTEWidgetPosition ScreenPosition;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float TotalTime;
+		float TotalTime = 0.f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float ExpiredTime;
+		float ExpiredTime = 0.f;
 
 
 	void SetValues(EQTEState St, FKey K, FQTEWidgetPosition SP, float TotalTime, float ExpiredTime = 0.0f);

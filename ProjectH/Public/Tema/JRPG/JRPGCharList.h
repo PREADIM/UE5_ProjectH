@@ -12,7 +12,7 @@ struct FJRPGCharList : public FTableRowBase
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int32 CharNum;
+		int32 CharNum = 0;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TSubclassOf<class AJRPGUnit> BP_JRPGCharacter;
 };
