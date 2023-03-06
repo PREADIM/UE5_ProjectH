@@ -25,16 +25,15 @@ public:
 	UPROPERTY(meta = (BindWidget))
 		class UJRPGPriority* JRPGPriorityList;
 
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 		class UJRPGSkillButton* NormalAttack;
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 		class UJRPGSkillButton* SkillButton;
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 		class UJRPGULTButton* ULTButton;
 
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 		class UHorizontalBox* EnermyList;
-
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TSubclassOf<class UEnermyIconButton> BP_EnermyIcon;
@@ -78,7 +77,8 @@ public:
 
 	void SetVisible(bool bFlag);
 	void EnermyTurnHidden(bool bFlag); // 적 차례시 위젯 단순화
-	void SetButtonVisible(bool bFlag);
+
+	//void SetButtonVisible(bool bFlag);
 
 	void SetLockOn(int32 Num = 0); // 락온 UI 띄우기 함수.
 	void HiddenLockOn();

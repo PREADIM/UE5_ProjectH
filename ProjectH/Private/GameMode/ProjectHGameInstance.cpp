@@ -52,12 +52,12 @@ UProjectHGameInstance::UProjectHGameInstance()
 	}
 
 	// 왜 안되는가?
-	FString SequenceActorPath = TEXT("/Game/PROJECT/BP_CLASS/Blueprints/05_DataBase/DT_SequenceActorTable.DT_SequenceActorTable");
+	/*FString SequenceActorPath = TEXT("/Game/PROJECT/BP_CLASS/Blueprints/05_DataBase/DT_SequenceActorTable.DT_SequenceActorTable");
 	static ConstructorHelpers::FObjectFinder<UDataTable> DT_SequenceActor(*SequenceActorPath);
 	if (DT_SequenceActor.Succeeded())
 	{
 		SequenceActorTable = DT_SequenceActor.Object;
-	}
+	}*/
 
 }
 

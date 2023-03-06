@@ -16,6 +16,8 @@
 #include "Tema/JRPG/BattleUI/LockOnWidget.h"
 #include "Components/CanvasPanelSlot.h"
 #include "Components/CanvasPanel.h"
+#include "Components/Image.h"
+#include "Tema/JRPG/BattleUI/LockOnWidget.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
 
 void UJRPGBattleWidget::NativeConstruct()
@@ -30,7 +32,7 @@ void UJRPGBattleWidget::NativeTick(const FGeometry& MyGeometry, const float InDe
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
 
-	if (TargetUnit)
+	if (LockOnIcon && TargetUnit)
 	{	
 		TargetLockOn = TargetUnit->GetMesh()->GetSocketLocation(FName("pelvis"));
 		OwnerController->ProjectWorldLocationToScreen(TargetLockOn, Pos);
@@ -59,9 +61,9 @@ void UJRPGBattleWidget::Init()
 
 	if (BP_LockOnIcon)
 	{
-		//LockOnIcon = CreateWidget<ULockOnWidget>(GetWorld(), BP_LockOnIcon);
-		/*if(LockOnIcon)
-			CanvasSlot = Cast<UCanvasPanelSlot>(LockOnIcon->Image->Slot);*/
+		LockOnIcon = CreateWidget<ULockOnWidget>(GetWorld(), BP_LockOnIcon);
+		if(LockOnIcon)
+			CanvasSlot = Cast<UCanvasPanelSlot>(LockOnIcon->Image->Slot);
 	}
 }
 
@@ -141,7 +143,7 @@ void UJRPGBattleWidget::SetVisible(bool bFlag)
 {
 	if (bFlag)
 	{
-		SetVisibility(ESlateVisibility::Visible);
+		SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	}
 	else
 	{
@@ -154,6 +156,7 @@ void UJRPGBattleWidget::EnermyTurnHidden(bool bFlag)
 {
 	if (bFlag) // Àû Â÷·Ê½Ã
 	{
+		_DEBUG("EnermyTurnHidden true");
 		NormalAttack->SetVisibility(ESlateVisibility::Hidden);
 		SkillButton->SetVisibility(ESlateVisibility::Hidden);
 		ULTButton->SetVisibility(ESlateVisibility::Hidden);
@@ -163,33 +166,16 @@ void UJRPGBattleWidget::EnermyTurnHidden(bool bFlag)
 	}
 	else
 	{
-		NormalAttack->SetVisibility(ESlateVisibility::Visible);
-		SkillButton->SetVisibility(ESlateVisibility::Visible);
-		ULTButton->SetVisibility(ESlateVisibility::Visible);
-		EnermyList->SetVisibility(ESlateVisibility::Visible);
-		LockOnIcon->SetVisibility(ESlateVisibility::Visible);
+		_DEBUG("EnermyTurnHidden false");
+
+		NormalAttack->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		SkillButton->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		ULTButton->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		EnermyList->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		LockOnIcon->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	}
 }
 
-void UJRPGBattleWidget::SetButtonVisible(bool bFlag)
-{
-	if (bFlag)
-	{
-		NormalAttack->SetVisibility(ESlateVisibility::Visible);
-		SkillButton->SetVisibility(ESlateVisibility::Visible);
-		ULTButton->SetVisibility(ESlateVisibility::Visible);
-		SetLockOn(TargetNumber);
-		bButtonVisible = true;
-	}
-	else
-	{
-		NormalAttack->SetVisibility(ESlateVisibility::Hidden);
-		SkillButton->SetVisibility(ESlateVisibility::Hidden);
-		ULTButton->SetVisibility(ESlateVisibility::Hidden);
-		HiddenLockOn();
-		bButtonVisible = false;
-	}
-}
 
 void UJRPGBattleWidget::SetLockOn(int32 Num)
 {
@@ -215,9 +201,7 @@ void UJRPGBattleWidget::SetLockOn(int32 Num)
 void UJRPGBattleWidget::HiddenLockOn()
 {
 	if (LockOnIcon)
-	{
 		LockOnIcon->RemoveFromParent();
-	}
 }
 
 

@@ -99,33 +99,35 @@ void AJRPGGameMode::PostLogin(APlayerController* Login)
 		Login->SetShowMouseCursor(false);
 
 		OwnerController = Cast<AJRPGPlayerController>(Login);
-		if (OwnerController->IsPlayerController())
+		if (OwnerController)
 		{
-			OwnerController->GM = this;
-			if (UGameplayStatics::DoesSaveGameExist(UJRPGSave::SlotName, 0))
+			if (OwnerController->IsPlayerController())
 			{
-				JRPGSave = Cast<UJRPGSave>(UGameplayStatics::LoadGameFromSlot(UJRPGSave::SlotName, 0));
-				KillCnt = JRPGSave->GetKillCnt();
-			}
-			else // 없는경우 (첫 시작)
-			{
-				JRPGSave = Cast<UJRPGSave>(UGameplayStatics::CreateSaveGameObject(UJRPGSave::StaticClass()));
-				JRPGSave->FirstSave();		
+				OwnerController->GM = this;
+				if (UGameplayStatics::DoesSaveGameExist(UJRPGSave::SlotName, 0))
+				{
+					JRPGSave = Cast<UJRPGSave>(UGameplayStatics::LoadGameFromSlot(UJRPGSave::SlotName, 0));
+					KillCnt = JRPGSave->GetKillCnt();
+				}
+				else // 없는경우 (첫 시작)
+				{
+					JRPGSave = Cast<UJRPGSave>(UGameplayStatics::CreateSaveGameObject(UJRPGSave::StaticClass()));
+					JRPGSave->FirstSave();
 
-			}
+				}
 
-			bBattleTutorial = JRPGSave->JRPGFieldEnermy.bTutorial;
-			bPartyTutorial = JRPGSave->JRPGFieldEnermy.bPartyTutorial;
-			AJRPGUnit* DefaultCharacter = GetCharacterSpawn(JRPGSave->JRPGSerial.RepreCharacterNum, JRPGSave->JRPGSerial.FieldLocation);
+				bBattleTutorial = JRPGSave->JRPGFieldEnermy.bTutorial;
+				bPartyTutorial = JRPGSave->JRPGFieldEnermy.bPartyTutorial;
+				AJRPGUnit* DefaultCharacter = GetCharacterSpawn(JRPGSave->JRPGSerial.RepreCharacterNum, JRPGSave->JRPGSerial.FieldLocation);
 
-			if (DefaultCharacter)
-			{
-				OwnerController->OnPossess(Cast<APawn>(DefaultCharacter));
+				if (DefaultCharacter)
+				{
+					OwnerController->OnPossess(Cast<APawn>(DefaultCharacter));
 
-				SetCurrentExpAndNextExp();
-			}
-
-			SetSaveJRPG();
+					SetCurrentExpAndNextExp();
+				}
+				SetSaveJRPG();
+			}		
 		}
 
 	}
@@ -267,6 +269,9 @@ void AJRPGGameMode::BattleStart(int32 FieldNum, TArray<FEnermys> Enermys)
 
 
 	OwnerController->CameraPossess(OwnerUnits[0].Unit->GetActorLocation(), OwnerUnits[0].Unit->GetActorRotation());	// 카메라에 컨트롤러 빙의
+	if (!OwnerController->DynamicCamera)
+		_DEBUG("Not DynamicCamera");
+
 	OwnerController->DynamicCamera->CurrentField = CurrentField;
 	OwnerController->GameType = EGameModeType::Battle;
 
@@ -276,7 +281,7 @@ void AJRPGGameMode::BattleStart(int32 FieldNum, TArray<FEnermys> Enermys)
 		return;
 
 	OwnerController->StartBattleWidget();
-
+	
 	FTimerHandle Timer;
 	GetWorld()->GetTimerManager().SetTimer(Timer, FTimerDelegate::CreateLambda([&]()
 	{
@@ -305,9 +310,7 @@ void AJRPGGameMode::TurnStart()
 		{
 			Unit->OwnerUnitBattleStart();
 			if (!bBattleTutorial) // 튜토리얼 실행
-			{
 				BattleTutorialStart();
-			}
 		}
 		else // 적의 차례
 		{

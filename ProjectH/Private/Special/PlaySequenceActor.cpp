@@ -29,13 +29,14 @@ void APlaySequenceActor::BeginPlay()
 			Player->Play();
 			EndTime = Player->GetEndTime().AsSeconds();
 		}
-	}
 
-	if (PCBase)
-	{
-		PCBase->OnHiddenWidget.Broadcast();
-		FTimerHandle Handle;
-		GetWorld()->GetTimerManager().SetTimer(Handle, this, &APlaySequenceActor::VisibleWidget, EndTime, false);
+		if (PCBase)
+		{
+			PCBase->OnHiddenWidget.Broadcast();
+			FTimerHandle Handle;
+			GetWorld()->GetTimerManager().SetTimer(Handle, this, &APlaySequenceActor::VisibleWidget, EndTime, false);
+		}
+
 	}
 
 	BPBindFunc(EndTime);

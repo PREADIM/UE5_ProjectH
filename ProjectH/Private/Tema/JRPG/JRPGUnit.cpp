@@ -280,7 +280,6 @@ void AJRPGUnit::Skill_ULT()
 // 해당 캐릭터의 턴 이라는 것. true는 오너, false는 적이다.
 void AJRPGUnit::BattleStart(bool bFlag) // 이 함수는 아직 위젯을 보이게 하기전에 먼저 위젯 아이콘을 미리 셋팅해두는 함수.
 {
-	// BattleComponent를 안쓰는 방법.
 	if (OwnerController)
 	{
 		OwnerController->BattleTurnStart(bFlag);
@@ -295,9 +294,9 @@ void AJRPGUnit::OwnerUnitBattleStart()
 		return;
 
 	OwnerController->CameraSetUp(GetActorLocation());
+	OwnerController->SetVisibleBattleWidget(true);
 	OwnerController->EnermyListSetup();
 	OwnerController->SetEnermyTurnWidget(false);
-	OwnerController->SetVisibleBattleWidget(true);
 }
 
 void AJRPGUnit::EnermyBattleStart()

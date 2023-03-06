@@ -47,7 +47,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool bBPBindFunc;
 	UFUNCTION(BlueprintImplementableEvent)
-		void BPBindFunc(); // 블프에서 따로 제작한 함수.
+		void BPBindFunc_DeadUnit(); // 블프에서 따로 제작한 함수.
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -60,7 +60,7 @@ public:
 		bool bDead; // 이 개체가 죽었는지 살았는지 결정한다.
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		class AJRPGGameMode* GM; // 이 개체가 죽었는지 살았는지 결정한다.
+		class AJRPGGameMode* GM;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		class AJRPGPlayerController* OwnerController;

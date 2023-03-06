@@ -99,10 +99,15 @@ void UJRPGSkillButton::SkillSetActive()
 {
 	if (CurrentUnit->CurrentMP < CostMP)
 	{
+		_DEBUG("Set Enable false");
 		SkillButton->SetIsEnabled(false);
 	}
 	else
+	{
+		_DEBUG("Set Enable true");
 		SkillButton->SetIsEnabled(true);
+	}
+		
 }
 
 void UJRPGSkillButton::SetButton(UTexture2D* Tex)

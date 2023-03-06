@@ -10,6 +10,7 @@
 #include "Tema/JRPG/CustomWidget.h"
 #include "Tema/JRPG/BattleUI/DamageWidget.h"
 #include "Tema/JRPG/JRPGUnit.h"
+#include "Tema/JRPG/BattleUI/LockOnWidget.h"
 #include <LevelSequencePlayer.h>
 #include <LevelSequenceActor.h>
 #include <MovieSceneSequencePlayer.h>

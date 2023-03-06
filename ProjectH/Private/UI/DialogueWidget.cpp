@@ -53,34 +53,34 @@ void UDialogueWidget::SetNormalDialText(int32 index)
 void UDialogueWidget::SetCanQuestList()
 {
 	SelectBox->ClearChildren();
-	int32 Cnt = 0; // 퀘스트 인덱스
+	//int32 Cnt = 0; // 퀘스트 인덱스
 	if (!OwnerNPC->NPCQuests.Quests.Num())
 		return;
 
-	for (FNPCQuest& Quests : OwnerNPC->NPCQuests.Quests)
+	for (int32 i = 0; i < OwnerNPC->NPCQuests.Quests.Num(); ++i)
 	{
-		if (Quests.bCanAccepted == true)
+		if (OwnerNPC->NPCQuests.Quests[i].bCanAccepted == true)
 		{
 			if (BP_SelectQuestSlot)
 			{
 				USelectQuestSlot* SSlot = CreateWidget<USelectQuestSlot>(GetWorld(), BP_SelectQuestSlot);
 				if (SSlot)
 				{
-					SSlot->QuestNumber = Quests.QuestNumber;
-					SSlot->QuestName = Quests.QuestName;
-					SSlot->QuestType = Quests.QuestType;
+					SSlot->QuestNumber = OwnerNPC->NPCQuests.Quests[i].QuestNumber;
+					SSlot->QuestName = OwnerNPC->NPCQuests.Quests[i].QuestName;
+					SSlot->QuestType = OwnerNPC->NPCQuests.Quests[i].QuestType;
 
 					// 퀘스트 상태에 따라 다이얼로그를 다르게 해야하기 때문.
 					//FNPCQuest를 그냥 넘겨주기엔 너무 구조체가 크다.
-					if (Quests.CanSucceed)
+					if (OwnerNPC->NPCQuests.Quests[i].CanSucceed)
 						SSlot->DialougeState = EDialougeState::CanSucceed;
-					else if (Quests.Questing)
+					else if (OwnerNPC->NPCQuests.Quests[i].Questing)
 						SSlot->DialougeState = EDialougeState::Questing;
 					else
 						SSlot->DialougeState = EDialougeState::CanAccept;
 
 					SSlot->Dial = this;
-					SSlot->Num = Cnt++; // NPC의 퀘스트중 몇번째인지 알아야 하기때문.
+					SSlot->Num = i; // NPC의 퀘스트중 몇번째인지 알아야 하기때문.
 					SSlot->Init();
 					SSlot->SetPadding(FMargin(0.0f, 5.0f, 0.0f, 0.0f));
 					SelectBox->AddChild(SSlot);
@@ -88,6 +88,39 @@ void UDialogueWidget::SetCanQuestList()
 			}
 		}
 	}
+
+
+	//for (FNPCQuest& Quests : OwnerNPC->NPCQuests.Quests)
+	//{
+	//	if (Quests.bCanAccepted == true)
+	//	{
+	//		if (BP_SelectQuestSlot)
+	//		{
+	//			USelectQuestSlot* SSlot = CreateWidget<USelectQuestSlot>(GetWorld(), BP_SelectQuestSlot);
+	//			if (SSlot)
+	//			{
+	//				SSlot->QuestNumber = Quests.QuestNumber;
+	//				SSlot->QuestName = Quests.QuestName;
+	//				SSlot->QuestType = Quests.QuestType;
+
+	//				// 퀘스트 상태에 따라 다이얼로그를 다르게 해야하기 때문.
+	//				//FNPCQuest를 그냥 넘겨주기엔 너무 구조체가 크다.
+	//				if (Quests.CanSucceed)
+	//					SSlot->DialougeState = EDialougeState::CanSucceed;
+	//				else if (Quests.Questing)
+	//					SSlot->DialougeState = EDialougeState::Questing;
+	//				else
+	//					SSlot->DialougeState = EDialougeState::CanAccept;
+
+	//				SSlot->Dial = this;
+	//				SSlot->Num = Cnt++; // NPC의 퀘스트중 몇번째인지 알아야 하기때문.
+	//				SSlot->Init();
+	//				SSlot->SetPadding(FMargin(0.0f, 5.0f, 0.0f, 0.0f));
+	//				SelectBox->AddChild(SSlot);
+	//			}
+	//		}
+	//	}
+	//}
 
 	SelectBox->SetRenderOpacity(1.0f);
 	SelectBox->SetVisibility(ESlateVisibility::Visible);

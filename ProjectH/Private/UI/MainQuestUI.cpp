@@ -121,8 +121,6 @@ void UMainQuestUI::QuestInfoAnimation(bool IsOpened)
 	}
 	else
 	{
-		/*FTimerHandle Handle;
-		GetWorld()->GetTimerManager().SetTimer(Handle, this, &UMainQuestUI::SetMouseOff, Fade->GetEndTime(), false);*/
 		SetMouseOff();
 	}
 }
@@ -140,8 +138,6 @@ void UMainQuestUI::QuestSucceedInfoAnimation(bool IsOpened)
 	}
 	else
 	{
-		/*FTimerHandle Handle;
-		GetWorld()->GetTimerManager().SetTimer(Handle, this, &UMainQuestUI::SetMouseOff, Fade->GetEndTime(), false);*/
 		SetMouseOff();
 	}
 }

@@ -27,6 +27,8 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 		void BPBindFunc(float EndTime);
 
+
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

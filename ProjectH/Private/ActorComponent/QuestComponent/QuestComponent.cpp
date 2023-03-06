@@ -10,6 +10,7 @@
 #include "GameMode/ProjectHGameInstance.h"
 #include "Save/QuestSave.h"
 #include "Kismet/GameplayStatics.h"
+#include "Controller/ProjectH_PC.h"
 
 
 FActiveQuest::FActiveQuest()
@@ -179,11 +180,11 @@ void UQuestComponent::RemoveQuest(int32 RemoveQuestNumber)
 				for (int32& NextQuestNumber : Quests[QuestIndex].ClearNextQuest)
 				{
 					GI->AddCanQuest(NextQuestNumber); // 다음 퀘스트 추가.
-					GI->PlaySequence(NextQuestNumber, OwnerController);
+					GI->PlaySequence(RemoveQuestNumber, OwnerController);
 				}
 
 			}
-			Quests[QuestIndex].QuestSteps[0].Trigger->TriggerDestroy(); // 마지막 NPC 위치 나타내는 트리거 삭제. 필숨8★
+			Quests[QuestIndex].QuestSteps[0].Trigger->TriggerDestroy(); // 마지막 NPC 위치 나타내는 트리거 삭제. 필수★
 			SaveQuestNumber(Quests[QuestIndex].OwnerNPCName, RemoveQuestNumber);
 			Quests.RemoveAt(QuestIndex);
 

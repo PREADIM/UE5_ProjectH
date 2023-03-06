@@ -177,10 +177,11 @@ public:
 	/*-----------------
 		전투 스테이스
 	-------------------*/
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = JRPGUnit)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = JRPGUnit)
 		bool bIsJRPGUnit = false; // 해당 캐릭터가 JRPG 유닛으로 스폰된 캐릭터인지 확인하는 변수. 
 	// 이 변수로 움직이는 애니메이션을 바꾼다.
 	// 이 변수로 턴제 유닛인 경우 위젯 사이즈 스케일을 변하게 해준다.
+
 	UFUNCTION(BlueprintImplementableEvent)
 		void SetIsJRPGUnit(bool bFlag); // 위 변수를 셋업할 함수. 해당 함수를 통해 애님블프 설정도 바꿈.
 	void ThisUnitBattleUnit(bool bFlag); // c++에서 이걸로 실행

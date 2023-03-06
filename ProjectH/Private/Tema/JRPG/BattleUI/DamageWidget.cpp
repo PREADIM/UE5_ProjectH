@@ -23,6 +23,7 @@ void UDamageWidget::Init(float Damage, FVector TargetLocation)
 		{
 			CanvasSlot->SetPosition(FVector2D(Pos.X / Scale, Pos.Y / Scale));
 		}
+
 		AddToViewport();
 		PlayAnim();
 	}	
