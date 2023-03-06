@@ -27,9 +27,13 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TSubclassOf<class APartySettingField> BP_PartyField;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		class APartySettingField* PartyField;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<class UUserWidget> BP_QuitWidget;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		class UUserWidget* QuitWidget;
 
 	UPROPERTY(VisibleAnywhere)
 		class UJRPGMainWidget* OwnerMainUI;

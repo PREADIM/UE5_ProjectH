@@ -61,10 +61,14 @@ public:
 	void GameEndSpawnCharacter();
 
 	void OpenESC();
-	void MouseOnOff();
 
-	void MouseOn();
-	void MouseOff(); // 이렇게 따로 두는 이유는 필요에따라 계속해서 따로 On Off를 하기 위해서.
+	UFUNCTION(BlueprintCallable)
+		void MouseOnOff();
+
+	UFUNCTION(BlueprintCallable)
+		void MouseOn();
+	UFUNCTION(BlueprintCallable)
+		void MouseOff(); // 이렇게 따로 두는 이유는 필요에따라 계속해서 따로 On Off를 하기 위해서.
 
 
 	void SetSave(); // 게임모드에 접근하여 세이브하기.

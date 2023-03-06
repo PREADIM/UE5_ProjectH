@@ -58,11 +58,15 @@ void UJRPGESCMenu::SpawnPartyField()
 // 테마 나가기.
 void UJRPGESCMenu::QuitTema()
 {
-	if (OwnerMainUI)
-	{
-		OwnerMainUI->ReverseESC();
-		// 여기서 테마를 정말로 나가겠냐고 한번 묻는 창 띄우고, 취소 , 확인에 따라 결정.
-		// 창은 TSubclassOf 형태로 가지고있고 AddToViewPort로 띄우자.
+	if (OwnerMainUI && BP_QuitWidget)
+	{	
+		QuitWidget = CreateWidget<UUserWidget>(GetWorld(), BP_QuitWidget);
+		if (QuitWidget)
+		{
+			OwnerMainUI->ReverseESC();
+			OwnerController->MouseOn();
+			QuitWidget->AddToViewport();
+		}
 	}
 }
 
