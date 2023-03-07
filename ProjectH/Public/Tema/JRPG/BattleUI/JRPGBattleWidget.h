@@ -59,7 +59,7 @@ public:
 	UPROPERTY()
 		bool bButtonVisible; // 버튼이 활성화 되어있는지
 
-	int32 TargetNumber;
+	int32 TargetNumber = 0;
 
 public:
 	virtual void NativeConstruct() override;
@@ -69,7 +69,7 @@ public:
 	void Init();
 	void PlayPriority(); // 배틀이 시작되고 위젯 실행.
 	void SetUnitList(); // 게임할때 Hidden 하고 다시 Visible 하면 애초에 바뀐상태로 UnitList가 되어있음.
-	void EnermyListBeginInit(); // 맨 처음에 현재 존재하는 적 리스트 초기화.
+
 	void EnermyListInit(); // 적 리스트 초기화.
 
 	void TargetToRotation(); // 캐릭터의 회전을 다시 락온쪽으로 돌림.
@@ -78,14 +78,11 @@ public:
 	void SetVisible(bool bFlag);
 	void EnermyTurnHidden(bool bFlag); // 적 차례시 위젯 단순화
 
-	//void SetButtonVisible(bool bFlag);
 
 	void SetLockOn(int32 Num = 0); // 락온 UI 띄우기 함수.
 	void HiddenLockOn();
 
 	// 배틀 턴 시작
 	void BattleTurnInit();
-	void EnermyTurnFirst();
-
 
 };

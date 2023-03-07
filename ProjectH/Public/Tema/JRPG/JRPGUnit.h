@@ -106,6 +106,7 @@ public:
 
 
 	/* 블루프린트에서 실행. */
+	// 캐릭터들 독자적인 스킬 및 공격
 	UFUNCTION(BlueprintImplementableEvent)
 		void CallLMB();
 	UFUNCTION(BlueprintImplementableEvent)
@@ -114,6 +115,7 @@ public:
 		void CallSkill_1();
 	UFUNCTION(BlueprintImplementableEvent)
 		void CallULT();
+
 
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
@@ -128,8 +130,7 @@ public:
 		void UnitTurnEnd();
 
 	UFUNCTION(BlueprintCallable)
-		void AttackEnd(); // 캐릭터의 공격이 끝났을때
-	
+		void AttackEnd(); // 캐릭터의 공격이 끝났을때 위젯히든
 
 public:
 	void BattleStart(bool bFlag);
@@ -139,16 +140,18 @@ public:
 	void InitCurrentStat(); // 현재 체력과 MP를 가져온다.
 
 	UFUNCTION(BlueprintCallable)
-		void TargetAttack(float ATK); // 하나만 때린다.
+		void TargetAttack(float ATK, class UDebuffClass* DebuffClass = nullptr); // 하나만 때린다.
 	UFUNCTION(BlueprintCallable)
-		void TargetManyAttack(float ATK); // 여러 마리를 때린다.
+		void TargetManyAttack(float ATK, class UDebuffClass* DebuffClass = nullptr); // 여러 마리를 때린다.
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		class AJRPGPlayerController* OwnerController;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		class UAnimInstance* AnimInstance;
+		TArray<class UDebuffClass*> DebuffArray;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		class UAnimInstance* AnimInstance;
 
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
 		EPlayerType PlayerType;
@@ -201,7 +204,7 @@ public:
 	// 디버프 클래스를 받아오자.
 
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		FJRPGCharStat CharacterStat; // 해당 캐릭터의 스텟
 	// 플레이어는 Save & Load를 하지만, 적은 블루프린트에서 정해줌.
 
@@ -242,7 +245,7 @@ public:
 	void SetPhysicalSound();
 
 	// 레벨 스타트 몽타주
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UAnimMontage* BattleStartMontage;
 	void PlayStartMontage();
 

@@ -15,12 +15,12 @@ FJRPGSerial::FJRPGSerial()
 
 void FJRPGSerial::SetCharNum(int32 Num)
 {
-	HaveCharList.Add(Num);
-	HaveCharLevels.Add(Num, 1);
-	CharStats.Add(Num, FJRPGCharStat());
+	HaveCharList.Emplace(Num);
+	HaveCharLevels.Emplace(Num, 1);
+	CharStats.Emplace(Num, FJRPGCharStat());
+	CurrentExp.Emplace(Num, 0.0f);
 
-	CurrentExp.Add(Num, 0.0f);
-	NextExp.Add(Num, 0.0f);
+	//NextExp.Add(Num, 0.0f);
 }
 
 
@@ -42,11 +42,11 @@ void UJRPGSave::FirstSave()
 	JRPGSerial.RepreCharacterNum = 101;
 
 	JRPGSerial.CurrentParty.Add(101); // 현재 등록한 파티의 정보.
-	JRPGSerial.CurrentParty.Add(102);
+	//JRPGSerial.CurrentParty.Add(102);
 	//JRPGSerial.CurrentParty.Add(103);
 
 	JRPGSerial.SetCharNum(101); // 가지고있는 캐릭터와, 스텟 저장
-	JRPGSerial.SetCharNum(102);
+	//JRPGSerial.SetCharNum(102);
 	//JRPGSerial.SetCharNum(103);
 
 	JRPGSerial.CurrentFieldNum = 1;
@@ -65,7 +65,7 @@ void UJRPGSave::SetLoadCharacter(AJRPGPlayerController* OwnerController)
 	OwnerController->HaveCharLevels = JRPGSerial.HaveCharLevels;
 	OwnerController->CharStats = JRPGSerial.CharStats;
 
-	OwnerController->NextExp = JRPGSerial.NextExp;
+	//OwnerController->NextExp = JRPGSerial.NextExp;
 	OwnerController->CurrentExp = JRPGSerial.CurrentExp;
 
 	// ★★★ NextExp와 CharStats은 세이브를 하지않고, 게임 시작시 데이터 테이블에서 가져온 스탯값으로 저장한다.
@@ -83,9 +83,7 @@ void UJRPGSave::SetSave(class AJRPGPlayerController* OwnerController)
 	JRPGSerial.HaveCharList = OwnerController->HaveCharList;
 	JRPGSerial.HaveCharLevels = OwnerController->HaveCharLevels;
 	JRPGSerial.CharStats = OwnerController->CharStats;
-
 	JRPGSerial.CurrentExp = OwnerController->CurrentExp;
-	JRPGSerial.NextExp = OwnerController->NextExp;
 
 	SaveSlot();
 }

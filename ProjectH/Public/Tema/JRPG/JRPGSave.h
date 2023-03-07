@@ -24,13 +24,9 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		TArray<int32> CurrentParty; // 현재 선택되어있는 파티리스트
 	UPROPERTY(VisibleAnywhere)
-
 		int32 CurrentFieldNum; // 필드 정보
 	UPROPERTY(VisibleAnywhere)
 		TMap<int32, float> CurrentExp; // 현재 경험치
-	UPROPERTY(VisibleAnywhere)
-		TMap<int32, float> NextExp; // 현재 경험치
-
 
 	UPROPERTY(VisibleAnywhere)
 		TArray<int32> HaveCharList; // 가지고 있는 전체 캐릭터 넘버 (추후 세이브 로드 해야함).

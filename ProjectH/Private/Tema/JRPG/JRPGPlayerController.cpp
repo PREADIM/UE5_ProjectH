@@ -63,12 +63,9 @@ void AJRPGPlayerController::OnPossess(APawn* NewPawn)
 	{
 		RepreCharacter = Cast<AJRPGUnit>(NewPawn);
 		RepreCharacterNum = RepreCharacter->CharNum;
-		// ★★ 원래는 이미 있는 RepreCharacter로 HaveCharStat에서 받아오는 것이지만, 나중에 구현.
 
 		if (GM)
-		{
-			GM->SetControllerInit(); // OnPossess를 하면 왜인지는 모르겠으나, 값이 초기화된다. 그래서 다시 설정.
-		}	
+			GM->SetControllerInit();
 	}	
 }
 
@@ -141,13 +138,10 @@ void AJRPGPlayerController::AddDropChar(int32 CharNum)
 {
 	if (HaveCharList.Find(CharNum) == INDEX_NONE)
 	{
-		HaveCharList.Add(CharNum);
-		HaveCharLevels.Add(CharNum, 1);
-		CharStats.Add(CharNum, GetCharStat(CharNum));
-
-		CurrentExp.Add(CharNum, 0.0f);
-		NextExp.Add(CharNum, CharStats[CharNum].NextEXP);
-
+		HaveCharList.Emplace(CharNum);
+		HaveCharLevels.Emplace(CharNum, 1);
+		CharStats.Emplace(CharNum, GetCharStat(CharNum));
+		CurrentExp.Emplace(CharNum, 0.0f);
 	}
 	SetSave();
 }
@@ -215,9 +209,7 @@ void AJRPGPlayerController::OpenESC()
 				{
 					LastWidget.Top()->SetCloseFunction();
 					if (LastWidget.IsEmpty()) // 이제서야 다 비워졌다면
-					{
 						GameType = EGameModeType::Normal;
-					}
 				}
 				else
 				{
@@ -351,9 +343,9 @@ void AJRPGPlayerController::AddCharExp(int32 CharNum, float DropExp)
 	if (HaveCharLevels[CharNum] == 5)
 		return;
 
-	if (Exp >= NextExp[CharNum])
+	if (Exp >= CharStats[CharNum].NextEXP)
 	{
-		CurrentExp[CharNum] = Exp - NextExp[CharNum]; // 현재 경험치 초기화
+		CurrentExp[CharNum] = Exp - CharStats[CharNum].NextEXP; // 현재 경험치 초기화
 		HaveCharLevels[CharNum] += 1; // 레벨 증가
 		CharStats[CharNum] = GetCharStat(CharNum); // 스탯 재정비
 	}
@@ -377,21 +369,25 @@ void AJRPGPlayerController::StartBattleWidget()
 
 
 // 턴시작시 위젯애니메이션 없이 위젯 갱신하기.
-void AJRPGPlayerController::BattleTurnStart(bool bFlag)
+void AJRPGPlayerController::BattleTurnStart(bool bPlayer)
 {
-	TemaMainUI->BattleTurnStart(bFlag);
+	TemaMainUI->BattleTurnStart(bPlayer);
 }
 
 
+// 락온 아이콘과 BattleWidget의 Visible 처리
 void AJRPGPlayerController::SetVisibleBattleWidget(bool bFlag)
 {
-	TemaMainUI->SetVisibleBattleWidget(bFlag);
+	TemaMainUI->BattleWidget->SetVisible(bFlag);
 }
 
+
+// 적의 차례일때는 BattleWidget은 보이지만, 스킬셋과 적 선택창은 보이면 안된다.
 void AJRPGPlayerController::SetEnermyTurnWidget(bool bFlag)
 {
-	TemaMainUI->EnermyTurnWidget(bFlag);
+	TemaMainUI->BattleWidget->EnermyTurnHidden(bFlag);
 }
+
 
 void AJRPGPlayerController::BattleESC()
 {
@@ -428,24 +424,29 @@ void AJRPGPlayerController::UnitTurnEnd()
 
 void AJRPGPlayerController::EnermyListSetup()
 {
-	TemaMainUI->EnermyListSetup();
+	TemaMainUI->BattleWidget->EnermyListInit();
 }
 
-void AJRPGPlayerController::HiddenRockOn()
+void AJRPGPlayerController::HiddenLockOn()
 {
-	TemaMainUI->HiddenRockOn();
+	TemaMainUI->BattleWidget->HiddenLockOn();
+}
+
+void AJRPGPlayerController::EnermySetupLockOnTargetUnit(AJRPGUnit* Target)
+{
+	TemaMainUI->BattleWidget->TargetUnit = Target;
 }
 
 
 void AJRPGPlayerController::TargetToRotation()
 {
-	TemaMainUI->TargetToRotation();
+	TemaMainUI->BattleWidget->TargetToRotation();
 }
 
 
 void AJRPGPlayerController::EnermyTargetToRotation()
 {
-	TemaMainUI->EnermyTargetToRotation();
+	TemaMainUI->BattleWidget->EnermyTargetToRotation();
 }
 
 float AJRPGPlayerController::BattleStartSequence()
@@ -485,11 +486,12 @@ float AJRPGPlayerController::BattleEndSequence()
 }
 
 
+// 이 함수는 아예 모든 위젯을 껏다 키는 것이다.
 void AJRPGPlayerController::BattleUIOnOff(bool bOnOff)
 {
 	if (bOnOff)
 	{
-		TemaMainUI->BattleWidget->SetRenderOpacity(1.0f);
+		TemaMainUI->BattleWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 		TemaMainUI->BattleWidget->LockOnIcon->SetRenderOpacity(1.0f);
 		for (FPriorityUnit Unit : GM->SetUnitList)
 		{
@@ -498,7 +500,7 @@ void AJRPGPlayerController::BattleUIOnOff(bool bOnOff)
 	}
 	else
 	{
-		TemaMainUI->BattleWidget->SetRenderOpacity(0.0f);
+		TemaMainUI->BattleWidget->SetVisibility(ESlateVisibility::Hidden);
 		TemaMainUI->BattleWidget->LockOnIcon->SetRenderOpacity(0.0f);
 		for (FPriorityUnit Unit : GM->SetUnitList)
 		{
@@ -506,6 +508,7 @@ void AJRPGPlayerController::BattleUIOnOff(bool bOnOff)
 		}
 	}
 }
+
 
 void AJRPGPlayerController::PlayPriority()
 {

@@ -113,7 +113,6 @@ void AJRPGGameMode::PostLogin(APlayerController* Login)
 				{
 					JRPGSave = Cast<UJRPGSave>(UGameplayStatics::CreateSaveGameObject(UJRPGSave::StaticClass()));
 					JRPGSave->FirstSave();
-
 				}
 
 				bBattleTutorial = JRPGSave->JRPGFieldEnermy.bTutorial;
@@ -122,11 +121,8 @@ void AJRPGGameMode::PostLogin(APlayerController* Login)
 
 				if (DefaultCharacter)
 				{
-					OwnerController->OnPossess(Cast<APawn>(DefaultCharacter));
-
-					SetCurrentExpAndNextExp();
+					OwnerController->OnPossess(Cast<APawn>(DefaultCharacter));				
 				}
-				SetSaveJRPG();
 			}		
 		}
 
@@ -136,7 +132,8 @@ void AJRPGGameMode::PostLogin(APlayerController* Login)
 void AJRPGGameMode::SetControllerInit()
 {
 	JRPGSave->SetLoadCharacter(OwnerController);
-	
+	SetControllerInCharacterStat();
+	SetSaveJRPG();
 }
 
 
@@ -184,17 +181,18 @@ FJRPGCharStat AJRPGGameMode::GetCharStat(int32 CharNum, int32 Level)
 	return FJRPGCharStat();	
 }
 
-void AJRPGGameMode::SetCurrentExpAndNextExp()
+void AJRPGGameMode::SetControllerInCharacterStat()
 {
 	for (int32 CharNum : OwnerController->HaveCharList)
 	{
 		FJRPGCharStat Stat = GetCharStat(CharNum, OwnerController->HaveCharLevels[CharNum]);
 		OwnerController->CharStats[CharNum] = Stat;
-		OwnerController->NextExp[CharNum] = Stat.NextEXP;
+
+
+		//OwnerController->NextExp[CharNum] = Stat.NextEXP;
+		// 여기서 CurrentExp는 가져오지않아도 저장된 세이브에서 가져온다.
 	}
 
-	// ★★★ NextExp와 CharStats은 세이브를 하지않고, 게임 시작시 데이터 테이블에서 가져온 스탯값으로 저장한다.
-	// 추후 값이 변경 되는 것을 우려해야하기 때문. 이미 저장되어있으면 데이터가 이상해진다.
 	// ★★ 하지만 어처피 Add를 통해 키값을 저장해야하는 것을 해야하므로 세이브 자체는 해둔다.
 
 }
@@ -275,7 +273,7 @@ void AJRPGGameMode::BattleStart(int32 FieldNum, TArray<FEnermys> Enermys)
 	OwnerController->DynamicCamera->CurrentField = CurrentField;
 	OwnerController->GameType = EGameModeType::Battle;
 
-	float Delay = OwnerController->BattleStartSequence();
+	float Delay = OwnerController->BattleStartSequence() + 2.f; // 2초 추가
 
 	if (SetUnitList.IsEmpty())
 		return;
@@ -304,8 +302,6 @@ void AJRPGGameMode::TurnStart()
 
 	if (Unit)
 	{
-		//if 유닛이 상태이상인가 판단하기.★(미구현)
-
 		if (Unit->PlayerType == EPlayerType::Player)
 		{
 			Unit->OwnerUnitBattleStart();
@@ -439,7 +435,6 @@ void AJRPGGameMode::ReturnWorld()
 
 	OwnerController->OnPossess(Cast<APawn>(OwnerController->RepreCharacter));
 	OwnerController->ReturnMainWidget();
-
 }
 
 /* 오너 유닛 생성 컨트롤러에서 받아온다.*/

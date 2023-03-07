@@ -4,9 +4,4 @@
 #include "Tema/JRPG/DebuffClass.h"
 
 
-void UDebuffClass::Init()
-{
-
-}
-
 

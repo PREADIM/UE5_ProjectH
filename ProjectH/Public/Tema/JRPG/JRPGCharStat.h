@@ -17,30 +17,6 @@ public:
 };
 
 
-// 디버프 상태
-UENUM()
-enum class EDebuffState : uint8
-{
-	NONE UMETA(DisplayName = "NONE"),
-	DEF_DOWN UMETA(DisplayName = "DEF_DOWN"),
-	STUN UMETA(DisplayName = "STUN")
-};
-
-
-// 디버프가 몇 카운트 남았는지 판단.
-USTRUCT()
-struct FDebuffStruct
-{
-	GENERATED_USTRUCT_BODY()
-
-public:
-	UPROPERTY(VisibleAnywhere)
-		EDebuffState DebuffState = EDebuffState::NONE;
-	UPROPERTY(VisibleAnywhere)
-		int32 cnt = 0;
-};
-
-
 USTRUCT(BlueprintType)
 struct FJRPGCharStat : public FTableRowBase
 {
@@ -55,7 +31,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float MaxMP;
-
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float Attack; // 공격력

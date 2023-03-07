@@ -23,7 +23,7 @@
 void UJRPGBattleWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
-	TargetNumber = 0;
+	//TargetNumber = 0;
 }
 
 
@@ -78,11 +78,6 @@ void UJRPGBattleWidget::SetUnitList()
 	JRPGPriorityList->SetUnitList();
 }
 
-void UJRPGBattleWidget::EnermyListBeginInit()
-{
-	EnermyListInit();
-	// 맨처음 실행하는 것이라서, 여기에 애니메이션 실행하는 것도 ㄱㅊ을듯.
-}
 
 void UJRPGBattleWidget::EnermyListInit()
 {
@@ -143,11 +138,19 @@ void UJRPGBattleWidget::SetVisible(bool bFlag)
 {
 	if (bFlag)
 	{
+		if (!LockOnIcon)
+		{
+			LockOnIcon = CreateWidget<ULockOnWidget>(GetWorld(), BP_LockOnIcon);
+			LockOnIcon->AddToViewport();
+		}
+
 		SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		LockOnIcon->SetRenderOpacity(1.0f);
 	}
 	else
 	{
 		SetVisibility(ESlateVisibility::Hidden);
+		LockOnIcon->SetRenderOpacity(0.0f);
 	}
 }
 
@@ -156,23 +159,17 @@ void UJRPGBattleWidget::EnermyTurnHidden(bool bFlag)
 {
 	if (bFlag) // 적 차례시
 	{
-		_DEBUG("EnermyTurnHidden true");
 		NormalAttack->SetVisibility(ESlateVisibility::Hidden);
 		SkillButton->SetVisibility(ESlateVisibility::Hidden);
 		ULTButton->SetVisibility(ESlateVisibility::Hidden);
 		EnermyList->SetVisibility(ESlateVisibility::Hidden);
-		LockOnIcon->SetVisibility(ESlateVisibility::Hidden);
-
 	}
 	else
 	{
-		_DEBUG("EnermyTurnHidden false");
-
 		NormalAttack->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 		SkillButton->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 		ULTButton->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 		EnermyList->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-		LockOnIcon->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	}
 }
 
@@ -212,10 +209,10 @@ void UJRPGBattleWidget::BattleTurnInit()
 	ULTButton->Init();
 }
 
-void UJRPGBattleWidget::EnermyTurnFirst()
-{
-	NormalAttack->EnermyTurnFirstInit();
-	SkillButton->EnermyTurnFirstInit();
-	ULTButton->EnermyTurnFirstInit();
-}
+//void UJRPGBattleWidget::EnermyTurnFirst()
+//{
+//	NormalAttack->EnermyTurnFirstInit();
+//	SkillButton->EnermyTurnFirstInit();
+//	ULTButton->EnermyTurnFirstInit();
+//}
 

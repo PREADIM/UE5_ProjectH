@@ -107,14 +107,11 @@ public:
 	void BattleESC(); // 스킬 취소 및, 나가기 위젯 뛰우기
 	void VisibleDamage(float Damage, FVector TargetLocation); // 데미지 띄우기
 
-
 	void UnitTurnEnd(); // 턴엔드 유닛에서 블루프린트에서 해당 함수를 호출한다.
-
 	void EnermyListSetup(); // 애님이 다 끝나고 턴 시작후에 카메라랑 락온을 변경해야한다.
+	void HiddenLockOn(); // 게임 종료시 제거 용도.
 
-	UFUNCTION(BlueprintCallable)
-		void HiddenRockOn(); // 전체 스킬을 사용할때 락온 위젯이 가려지는 용도.
-
+	void EnermySetupLockOnTargetUnit(class AJRPGUnit* Target); //적이 가리키는 나의 유닛에 락온이 가게 한다.
 
 public:
 	UPROPERTY(VisibleAnywhere)
@@ -152,15 +149,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		TMap<int32, FJRPGCharStat> CharStats; // 가지고 있는 캐릭터의 스텟들.
 	// 게임모드의 포스트 로그인에서 레벨로 데이터 테이블을 검색해서 스탯들을 미리 다 가져온다 .
-
 	UPROPERTY(VisibleAnywhere)
 		TMap<int32, float> CurrentExp; // 현재 경험치
-	UPROPERTY(VisibleAnywhere)
-		TMap<int32, float> NextExp; // 현재 경험치
 
-	// ★★★ NextExp와 CharStats은 세이브를 하지않고, 게임 시작시 데이터 테이블에서 가져온 스탯값으로 저장한다.
-	// 추후 값이 변경 되는 것을 우려해야하기 때문. 이미 저장되어있으면 데이터가 이상해진다.
-	// 하지만 어처피 Add를 통해 키값을 저장해야하는 것을 해야하므로 세이브 자체는 해둔다.
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MainUI)

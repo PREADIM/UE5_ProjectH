@@ -90,7 +90,6 @@ void AJRPGEnermy::DropItem()
 		for (int32 CharNum : OwnerController->CurrentParty)
 		{
 			OwnerController->AddCharExp(CharNum, DropStruct.DropExp);
-			//_DEBUG(" %d Add Exp : %f", CharNum, DropStruct.DropExp);
 		}
 
 		if (OwnerController->DropExpWidget)
@@ -98,8 +97,6 @@ void AJRPGEnermy::DropItem()
 			OwnerController->DropExpWidget->Init(DropStruct.DropExp);
 			OwnerController->DropExpWidget->AddToViewport();
 		}
-
-		_DEBUG("DropStruct Char Num : %d", DropStruct.DropCharNum);
 
 		if (DropStruct.DropCharNum != 0)
 		{
@@ -112,9 +109,7 @@ void AJRPGEnermy::DropItem()
 			}
 
 			if (!GM->bPartyTutorial) // 캐릭터 드랍했으니 파티 설정 해보라는 튜토리얼 실행.
-			{
 				GM->PartyTutorialStart();
-			}
 		}
 	}
 }

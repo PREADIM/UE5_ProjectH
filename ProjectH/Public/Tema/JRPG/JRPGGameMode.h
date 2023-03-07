@@ -123,18 +123,18 @@ public:
 
 	UPROPERTY(BlueprintReadWrite)
 		TArray<FPriorityUnit> OwnerUnits;
-	//UPROPERTY(BlueprintReadWrite)
-		//TArray<FLiveUnit> OwnerList; // 그냥 캐릭터의 리스트 죽으면 체크
 	UPROPERTY(BlueprintReadWrite)
-		TArray<class AJRPGUnit*> OwnerList;
-	// 아군의 실질적인 살아있는 수.
+		TArray<class AJRPGUnit*> OwnerList; // 아군의 실질적인 살아있는 수.
+	
 
 
-	//캐릭터 스텟을 레벨로 검색해서 가져온다.
-	FJRPGCharStat GetCharStat(int32 CharNum, int32 Level);
-	void SetCurrentExpAndNextExp(); // 가지고있는 유닛의 현재 경험치와, 다음렙업에 필요한 경험치를 가져온다.
+	//----------------------------------------------------------
 
+	FJRPGCharStat GetCharStat(int32 CharNum, int32 Level); //캐릭터 스텟을 레벨로 검색해서 가져온다.
 
+	void SetControllerInCharacterStat(); // 가지고있는 유닛의 스탯을 가져온다.
+
+	//----------------------------------------------------------
 
 
 	/* 테마들은 각각 게임모드를 게임 인스턴스처럼 사용해야함. 세이브 파일도 물론 여기에 있다. */

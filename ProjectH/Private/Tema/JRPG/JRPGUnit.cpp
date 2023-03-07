@@ -182,6 +182,8 @@ float AJRPGUnit::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent,
 
 	// 여기서 디버프 상태를 확인한 뒤에 해당 디버프를 계산한다. (방어력 감소등)
 
+
+
 	float DFEDamage = 100 / (100 + CharacterStat.Shelid);
 	float Damage = DamageAmount * DFEDamage;
 
@@ -294,25 +296,24 @@ void AJRPGUnit::OwnerUnitBattleStart()
 		return;
 
 	OwnerController->CameraSetUp(GetActorLocation());
-	OwnerController->SetVisibleBattleWidget(true);
-	OwnerController->EnermyListSetup();
 	OwnerController->SetEnermyTurnWidget(false);
+	OwnerController->SetVisibleBattleWidget(true); // 위젯 보이기
+	OwnerController->EnermyListSetup();
+	
 }
 
 void AJRPGUnit::EnermyBattleStart()
 {
+	// 이 함수를 처리하는 유닛은 적이다. 플레이어가 아니다.
+	// 적도 플레이어의 컨트롤러를 가지고있다. 게임모드에서 생성할때 값을 받아옴.
 	if (!OwnerController)
 		return;
 
-	OwnerController->SetVisibleBattleWidget(true);
 	OwnerController->SetEnermyTurnWidget(true); // 적의 차례니까 위젯을 필요한것만 남긴다.
-
+	OwnerController->SetVisibleBattleWidget(true); // 위젯 보이기
+	
 	if (!OwnerAIController)
-	{
-		_DEBUG("Not AI Controller");
 		return;
-	}
-
 
 	OwnerAIController->SetIsTurn(true); // 턴이다.
 
@@ -338,7 +339,7 @@ void AJRPGUnit::InitCurrentStat()
 	//ULTGage = MaxULTGage; // ★★ 궁극기 테스트
 }
 
-void AJRPGUnit::TargetAttack(float ATK)
+void AJRPGUnit::TargetAttack(float ATK, class UDebuffClass* DebuffClass)
 {
 	if (OwnerController)
 	{
@@ -350,7 +351,7 @@ void AJRPGUnit::TargetAttack(float ATK)
 
 }
 
-void AJRPGUnit::TargetManyAttack(float ATK)
+void AJRPGUnit::TargetManyAttack(float ATK, class UDebuffClass* DebuffClass)
 {
 	if (OwnerController)
 	{

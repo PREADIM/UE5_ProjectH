@@ -40,14 +40,12 @@ void AJRPGAIController::OnPossess(APawn* InPawn)
 
 		AJRPGGameMode* GM = Cast<AJRPGGameMode>(GetWorld()->GetAuthGameMode());
 		if (!GM)
-		{
 			return;
-		}
 
 		OwnerCharacter->OwnerAIController = this;
 		BB->SetValueAsObject(FName("GM"), GM);
 
-		RunBehaviorTree(OwnerCharacter->GetBT());
+		RunBehaviorTree(OwnerCharacter->GetBT()); // 캐릭터마다 무브셋이 다른것도 이런 방식으로 캐릭터 고유의 BT로 처리가능
 		SetIsTurn(false);
 	}
 	else

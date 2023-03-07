@@ -24,6 +24,7 @@ void UJRPGSettingPartySlot::Init()
 		Exit->OnClicked.AddDynamic(this, &UJRPGSettingPartySlot::ExitWidget);
 		Out->OnClicked.AddDynamic(this, &UJRPGSettingPartySlot::SetPartyOut);
 		Select->OnClicked.AddDynamic(this, &UJRPGSettingPartySlot::SetPartyChange);
+
 		//Arrow_L->OnClicked.AddDynamic(this, &UJRPGSettingPartySlot::ArrowLeftClick);
 		//Arrow_R->OnClicked.AddDynamic(this, &UJRPGSettingPartySlot::ArrowRightClick);
 	}
