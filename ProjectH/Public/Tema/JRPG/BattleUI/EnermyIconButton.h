@@ -9,7 +9,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(Meta = (DisalbeNativeTick))
 class PROJECTH_API UEnermyIconButton : public UCustomWidget
 {
 	GENERATED_BODY()

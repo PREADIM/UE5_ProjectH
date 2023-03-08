@@ -17,7 +17,7 @@ enum class EButtonType : uint8
 	SkillAttack UMETA(DisplayName = "Skill")
 };
 
-UCLASS()
+UCLASS(Meta = (DisableNativeTick))
 class PROJECTH_API UJRPGSkillButton : public UCustomWidget
 {
 	GENERATED_BODY()

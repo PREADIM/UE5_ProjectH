@@ -36,14 +36,13 @@ public:
 		float Attack; // 공격력
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float Shelid; // 방어력
+		float Shield; // 방어력
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float MaxULT;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float NextEXP;
-
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		int32 Priority;

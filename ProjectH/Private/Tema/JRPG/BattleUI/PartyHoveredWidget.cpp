@@ -23,7 +23,7 @@ void UPartyHoveredWidget::Init()
 			CharHP->SetText(FText::FromString(FString::FromInt(Stat.MaxHP)));
 			CharMP->SetText(FText::FromString(FString::FromInt(Stat.MaxMP)));
 			CharAttack->SetText(FText::FromString(FString::FromInt(Stat.Attack)));
-			CharShelid->SetText(FText::FromString(FString::FromInt(Stat.Shelid)));
+			CharShelid->SetText(FText::FromString(FString::FromInt(Stat.Shield)));
 			MaxULT->SetText(FText::FromString(FString::FromInt(Stat.MaxULT)));
 			UnitPriority->SetText(FText::FromString(FString::FromInt(Stat.Priority)));
 			CurrentExp->SetText(FText::FromString(FString::FromInt(OwnerController->CurrentExp[CharNum])));

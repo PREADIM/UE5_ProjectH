@@ -43,7 +43,6 @@ public:
 	//UFUNCTION(BlueprintNativeEvent)
 	void DeadUnit();
 
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool bBPBindFunc;
 	UFUNCTION(BlueprintImplementableEvent)

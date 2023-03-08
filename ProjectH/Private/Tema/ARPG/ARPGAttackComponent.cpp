@@ -29,6 +29,7 @@ void UARPGAttackComponent::Init(TArray<TSubclassOf<UAttackClass>> BP_Attacks)
 
 	for (TSubclassOf<UAttackClass> BP_Attack : BP_Attacks)
 	{
+		//UAttackClass* temp = NewObject<UAttackClass>(this, BP_Attack); º¸·ù
 		UAttackClass* temp = Cast<UAttackClass>(BP_Attack->GetDefaultObject());
 		if (temp)
 		{

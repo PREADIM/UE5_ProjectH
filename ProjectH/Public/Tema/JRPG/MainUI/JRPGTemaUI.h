@@ -10,7 +10,7 @@
  * 
  */
 // ★★ 가장 최상위에 위치한 메인 위젯. 여기안에 다들어있음. 메인 UI와 BattleUI등
-UCLASS()
+UCLASS(Meta = (DisableNativeTick))
 class PROJECTH_API UJRPGTemaUI : public UCustomWidget
 {
 	GENERATED_BODY()
@@ -48,4 +48,21 @@ public:
 	//배틀 상황일때
 	void PlayBattleWidget();
 	void BattleTurnStart(bool bFlag);
+
+
+	//-------------------------------
+	/*---------------------------------------------
+		PlayerController->BattlWidget의 인터페이스
+	-----------------------------------------------*/
+
+	void SetVisibleBattleWidget(bool bFlag);
+	void SetEnermyTurnWidget(bool bFlag);
+	void EnermyListSetup();
+	void HiddenLockOn();
+	void EnermySetupLockOnTargetUnit(AJRPGUnit* Target);
+	void TargetToRotation();
+	void EnermyTargetToRotation();
+	void BattleUIOnOff(bool bOnOff);
+	void PlayPriority();
+
 };

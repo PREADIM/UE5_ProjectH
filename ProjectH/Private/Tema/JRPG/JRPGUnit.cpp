@@ -42,7 +42,9 @@ AJRPGUnit::AJRPGUnit()
 	BattleHPComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("BattleHP"));
 	BattleHPComponent->SetupAttachment(RootComponent);
 	BattleHPComponent->SetWidgetSpace(EWidgetSpace::Screen);
-	BattleHPComponent->SetDrawSize(FVector2D(150.f, 35.f));
+	BattleHPComponent->SetDrawSize(FVector2D(190.f, 55.f));
+	BattleHPComponent->SetDrawAtDesiredSize(true);
+	BattleHPComponent->SetTickMode(ETickMode::Automatic);
 
 	Priority = 0;
 
@@ -60,7 +62,7 @@ void AJRPGUnit::BeginPlay()
 	BattleHPWidget = Cast<UJRPGBattleHPWidget>(BattleHPComponent->GetUserWidgetObject());
 	if (BattleHPWidget)
 	{
-		BattleHPWidget->OwnerUnit = this;
+		//BattleHPWidget->OwnerUnit = this;
 		BattleWidgetOnOff(false);
 	}
 
@@ -180,11 +182,9 @@ float AJRPGUnit::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent,
 	float DamageApplied = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
 
-	// 여기서 디버프 상태를 확인한 뒤에 해당 디버프를 계산한다. (방어력 감소등)
+	
 
-
-
-	float DFEDamage = 100 / (100 + CharacterStat.Shelid);
+	float DFEDamage = 100 / (100 + CharacterStat.Shield);
 	float Damage = DamageAmount * DFEDamage;
 
 	if (CurrentHP <= Damage)
@@ -296,11 +296,27 @@ void AJRPGUnit::OwnerUnitBattleStart()
 		return;
 
 	OwnerController->CameraSetUp(GetActorLocation());
-	OwnerController->SetEnermyTurnWidget(false);
+
+	if (bCC) // CC기 상태인 경우 스킵
+	{
+		FTimerHandle Handle;
+		GetWorld()->GetTimerManager().SetTimer(Handle, FTimerDelegate::CreateLambda([&]()
+		{
+				UnitTurnEnd();
+		}), 3.f, false);
+	}
+	else
+	{
+		OwnerController->SetEnermyTurnWidget(false); // 적 차례시 보이면 안되었던 스킬 버튼 및 적 선택 리스트 보이게 하기.
+	}
+	
 	OwnerController->SetVisibleBattleWidget(true); // 위젯 보이기
 	OwnerController->EnermyListSetup();
 	
 }
+
+
+
 
 void AJRPGUnit::EnermyBattleStart()
 {
@@ -334,30 +350,55 @@ void AJRPGUnit::InitCurrentStat()
 	CurrentMP = CharacterStat.MaxMP;
 	Priority = CharacterStat.Priority;
 	MaxULTGage = CharacterStat.MaxULT;
-	BattleHPWidget->Init();
-
-	//ULTGage = MaxULTGage; // ★★ 궁극기 테스트
+	BattleHPWidget->Init(this);
 }
 
-void AJRPGUnit::TargetAttack(float ATK, class UDebuffClass* DebuffClass)
+void AJRPGUnit::TargetAttack(float ATK, TSubclassOf<UDebuffClass> BP_DebuffClass)
 {
 	if (OwnerController)
 	{
-		// 여기서 디버프 계산?
+		if (BP_DebuffClass)
+		{
+			class UDebuffClass* DebuffClass = NewObject<UDebuffClass>(this, BP_DebuffClass);
+			if (DebuffClass)
+			{
+				FDebuffStruct DebuffStruct(CharacterName, DebuffClass);
+				if (!OwnerController->TargetUnit->DebuffSet.Find(DebuffStruct))
+				{
+					OwnerController->TargetUnit->DebuffSet.Emplace(DebuffStruct);
+					DebuffClass->DebuffFunction(OwnerController->TargetUnit);
+					OwnerController->TargetUnit->BattleHPWidget->SetBuffIcon();
+				}
+			}
+		}
 
 		FDamageEvent DamageEvent;
 		OwnerController->TargetUnit->TakeDamage(ATK, DamageEvent, OwnerController, this);
 	}
-
 }
 
-void AJRPGUnit::TargetManyAttack(float ATK, class UDebuffClass* DebuffClass)
+void AJRPGUnit::TargetManyAttack(float ATK, TSubclassOf<UDebuffClass> BP_DebuffClass)
 {
 	if (OwnerController)
 	{
 		for (AJRPGUnit* Unit : OwnerController->TargetUnits)
 		{
-			// 여기서 디버프 계산?
+			if (BP_DebuffClass)
+			{
+				class UDebuffClass* DebuffClass = Cast<UDebuffClass>(BP_DebuffClass->GetDefaultObject());
+				if (DebuffClass)
+				{
+					FDebuffStruct DebuffStruct(CharacterName, DebuffClass);
+					if (!Unit->DebuffSet.Find(DebuffStruct))
+					{
+						Unit->DebuffSet.Emplace(DebuffStruct);
+						DebuffClass->DebuffFunction(Unit);
+						Unit->BattleHPWidget->SetBuffIcon();
+					}
+
+				}
+
+			}
 
 			FDamageEvent DamageEvent;
 			Unit->TakeDamage(ATK, DamageEvent, OwnerController, this);
@@ -393,7 +434,7 @@ void AJRPGUnit::AddMPAndULT()
 {
 	AJRPGUnit* Unit = OwnerController->TargetUnit;
 	Unit->CurrentMP = FMath::Clamp(Unit->CurrentMP + 10.f, 0.0f, Unit->CharacterStat.MaxMP); // 맞은 유닛은 마나가 차게한다.
-	Unit->ULTGage = FMath::Clamp(Unit->ULTGage + 10.f, 0.0f, Unit->MaxULTGage); // 맞은 유닛은 궁게가 차게한다.
+	Unit->CurrentULTGage = FMath::Clamp(Unit->CurrentULTGage + 10.f, 0.0f, Unit->MaxULTGage); // 맞은 유닛은 궁게가 차게한다.
 }
 
 void AJRPGUnit::AddManyMPAndULT()
@@ -401,7 +442,7 @@ void AJRPGUnit::AddManyMPAndULT()
 	for (AJRPGUnit* Unit : OwnerController->TargetUnits)
 	{
 		Unit->CurrentMP = FMath::Clamp(Unit->CurrentMP + 10.f, 0.0f, Unit->CharacterStat.MaxMP); // 맞은 유닛은 마나가 차게한다.
-		Unit->ULTGage = FMath::Clamp(Unit->ULTGage + 10.f, 0.0f, Unit->MaxULTGage); // 맞은 유닛은 궁게가 차게한다.
+		Unit->CurrentULTGage = FMath::Clamp(Unit->CurrentULTGage + 10.f, 0.0f, Unit->MaxULTGage); // 맞은 유닛은 궁게가 차게한다.
 	}	
 }
 
@@ -409,18 +450,28 @@ void AJRPGUnit::AddManyMPAndULT()
 void AJRPGUnit::OwnerAddMPAndULT()
 {
 	CurrentMP = FMath::Clamp(CurrentMP + 20.f, 0.0f, CharacterStat.MaxMP);
-	ULTGage = FMath::Clamp(ULTGage + 20.f, 0.0f, MaxULTGage);
+	CurrentULTGage = FMath::Clamp(CurrentULTGage + 20.f, 0.0f, MaxULTGage);
 }
 
 void AJRPGUnit::OwnerAddULT()
 {
-	ULTGage = FMath::Clamp(ULTGage + 20.f, 0.0f, MaxULTGage);
+	CurrentULTGage = FMath::Clamp(CurrentULTGage + 20.f, 0.0f, MaxULTGage);
 }
 
 void AJRPGUnit::UnitTurnEnd()
 {
 	if (OwnerController)
 	{
+		for (FDebuffStruct Debuff : DebuffSet)
+		{
+			if (Debuff.DebuffClass->SetupCnt())
+			{
+				Debuff.DebuffClass->DebuffTurnEndFunction(this);
+				DebuffSet.Remove(Debuff);
+			}
+			BattleHPWidget->SetBuffIcon();
+		}
+
 		OwnerController->UnitTurnEnd();
 	}
 }
@@ -430,15 +481,6 @@ void AJRPGUnit::AttackEnd()
 {
 	OwnerController->SetVisibleBattleWidget(false);
 }
-
-
-
-void AJRPGUnit::CallAIAttackEnd()
-{
-	OnAIAttackEnd.Broadcast();
-}
-
-
 
 void AJRPGUnit::SetPhysicalSound()
 {
@@ -458,4 +500,31 @@ void AJRPGUnit::PlayStartMontage()
 	{
 		AnimInstance->Montage_Play(BattleStartMontage);
 	}
+}
+
+
+void AJRPGUnit::SetCCState(ECCType CCType, bool bFlag)
+{
+	if (bFlag)
+		bCC = true; // 이건 CC 애니메이션들이 마지막 END때 노티파이로 끌 예정.
+
+	switch (CCType)
+	{
+	case ECCType::NONE:
+		break;
+	case ECCType::STUN:
+		CCState.bStun = bFlag;
+		break;
+	}
+}
+
+
+void AJRPGUnit::SetStatDEF(float DEF)
+{
+	CharacterStat.Shield = DEF;
+}
+
+void AJRPGUnit::SetStatATK(float ATK)
+{
+	CharacterStat.Attack = ATK;
 }

@@ -10,7 +10,7 @@
  * 
  */
 // ★★ 배틀 상태가 아닌 평상시의 위젯의 총책임자.
-UCLASS()
+UCLASS(Meta = (DisableNativeTick))
 class PROJECTH_API UJRPGMainWidget : public UCustomWidget
 {
 	GENERATED_BODY()

@@ -27,13 +27,22 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 		class UTextBlock* CharLevel;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+		class UWrapBox* BuffIconWrapBox;
+
+	UPROPERTY(EditAnywhere)
+		TSubclassOf<class UJRPGBuffWidget> BP_BuffWidget;
+	UPROPERTY()
+		TArray<class UJRPGBuffWidget*> BuffWidgets;
+
 	UPROPERTY()
 		class AJRPGUnit* OwnerUnit;
 
 public:
 	virtual void NativeConstruct() override;
 
-	void Init();
+	void Init(class AJRPGUnit* Unit);
+	void SetBuffIcon();
 
 	UFUNCTION(BlueprintCallable)
 		float RetHP();

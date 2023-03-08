@@ -31,6 +31,7 @@ void UJRPGPriority::PlayInit()
 
 						if (UnitUI)
 						{
+							Icon->SetDebuffIcon(Unit.Unit->DebuffSet);
 							Icon->Init(UnitUI->CharTex, UnitUI->CharName);
 							Icon->SetPadding(FMargin(0.f, 0.f, 0.f, 5.f));
 							UnitList->AddChild(Icon);
@@ -71,6 +72,7 @@ void UJRPGPriority::SetUnitList()
 
 			if (UnitUI)
 			{
+				Icon->SetDebuffIcon(Unit.Unit->DebuffSet);
 				Icon->Init(UnitUI->CharTex, UnitUI->CharName);
 				Icon->SetPadding(FMargin(0.f, 0.f, 0.f, 5.f));
 				UnitList->AddChild(Icon);

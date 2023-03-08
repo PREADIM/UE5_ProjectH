@@ -9,14 +9,10 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(Meta = (DisableNativeTick))
 class PROJECTH_API ULockOnWidget : public UUserWidget
 {
 	GENERATED_BODY()
-
-
-public:
-	virtual void NativeConstruct() override;
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))

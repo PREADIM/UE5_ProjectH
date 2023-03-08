@@ -13,7 +13,7 @@ void UJRPGULTButton::Init()
 	if (GM)
 	{
 		CurrentUnit = GM->SetUnitList[0].Unit;
-		ULTGage = CurrentUnit->ULTGage;
+		ULTGage = CurrentUnit->CurrentULTGage;
 		MaxULTGage = CurrentUnit->MaxULTGage;
 		FProgressBarStyle Style;
 		FSlateBrush SlateWidget = UWidgetBlueprintLibrary::MakeBrushFromTexture(CurrentUnit->UnitSkills.ULT.ULTImg);
@@ -58,7 +58,7 @@ void UJRPGULTButton::EnermyTurnFirstInit()
 	if (GM)
 	{
 		CurrentUnit = GM->OwnerUnits.HeapTop().Unit;
-		ULTGage = CurrentUnit->ULTGage;
+		ULTGage = CurrentUnit->CurrentULTGage;
 		FProgressBarStyle Style;
 		FSlateBrush SlateWidget = UWidgetBlueprintLibrary::MakeBrushFromTexture(CurrentUnit->UnitSkills.ULT.ULTImg);
 		FSlateBrush FillWidget = UWidgetBlueprintLibrary::MakeBrushFromTexture(CurrentUnit->UnitSkills.ULT.FillULTImg);

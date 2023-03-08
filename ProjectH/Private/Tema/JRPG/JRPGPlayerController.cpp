@@ -10,11 +10,9 @@
 #include "Tema/JRPG/CustomWidget.h"
 #include "Tema/JRPG/BattleUI/DamageWidget.h"
 #include "Tema/JRPG/JRPGUnit.h"
-#include "Tema/JRPG/BattleUI/LockOnWidget.h"
 #include <LevelSequencePlayer.h>
 #include <LevelSequenceActor.h>
 #include <MovieSceneSequencePlayer.h>
-#include "Tema/JRPG/BattleUI/JRPGBattleWidget.h"
 #include "Tema/JRPG/BattleUI/DropItemWidget.h"
 #include "Tema/JRPG/BattleUI/DropExpWidget.h"
 
@@ -375,20 +373,6 @@ void AJRPGPlayerController::BattleTurnStart(bool bPlayer)
 }
 
 
-// 락온 아이콘과 BattleWidget의 Visible 처리
-void AJRPGPlayerController::SetVisibleBattleWidget(bool bFlag)
-{
-	TemaMainUI->BattleWidget->SetVisible(bFlag);
-}
-
-
-// 적의 차례일때는 BattleWidget은 보이지만, 스킬셋과 적 선택창은 보이면 안된다.
-void AJRPGPlayerController::SetEnermyTurnWidget(bool bFlag)
-{
-	TemaMainUI->BattleWidget->EnermyTurnHidden(bFlag);
-}
-
-
 void AJRPGPlayerController::BattleESC()
 {
 	
@@ -422,31 +406,52 @@ void AJRPGPlayerController::UnitTurnEnd()
 	}
 }
 
+
+
+/*--------------------------------------------------
+	PlayerController->TemaMainUI->BattlWidget의 인터페이스
+---------------------------------------------------*/
+
+// 락온 아이콘과 BattleWidget의 Visible 처리
+void AJRPGPlayerController::SetVisibleBattleWidget(bool bFlag)
+{
+	TemaMainUI->SetVisibleBattleWidget(bFlag);
+}
+
+
+// 적의 차례일때는 BattleWidget은 보이지만, 스킬셋과 적 선택창은 보이면 안된다.
+void AJRPGPlayerController::SetEnermyTurnWidget(bool bFlag)
+{
+	TemaMainUI->SetEnermyTurnWidget(bFlag);
+}
+
+
+
 void AJRPGPlayerController::EnermyListSetup()
 {
-	TemaMainUI->BattleWidget->EnermyListInit();
+	TemaMainUI->EnermyListSetup();
 }
 
 void AJRPGPlayerController::HiddenLockOn()
 {
-	TemaMainUI->BattleWidget->HiddenLockOn();
+	TemaMainUI->HiddenLockOn();
 }
 
 void AJRPGPlayerController::EnermySetupLockOnTargetUnit(AJRPGUnit* Target)
 {
-	TemaMainUI->BattleWidget->TargetUnit = Target;
+	TemaMainUI->EnermySetupLockOnTargetUnit(Target);
 }
 
 
 void AJRPGPlayerController::TargetToRotation()
 {
-	TemaMainUI->BattleWidget->TargetToRotation();
+	TemaMainUI->TargetToRotation();
 }
 
 
 void AJRPGPlayerController::EnermyTargetToRotation()
 {
-	TemaMainUI->BattleWidget->EnermyTargetToRotation();
+	TemaMainUI->EnermyTargetToRotation();
 }
 
 float AJRPGPlayerController::BattleStartSequence()
@@ -489,10 +494,13 @@ float AJRPGPlayerController::BattleEndSequence()
 // 이 함수는 아예 모든 위젯을 껏다 키는 것이다.
 void AJRPGPlayerController::BattleUIOnOff(bool bOnOff)
 {
-	if (bOnOff)
+	TemaMainUI->BattleUIOnOff(bOnOff);
+	for (FPriorityUnit Unit : GM->SetUnitList)
+		Unit.Unit->BattleWidgetOnOff(bOnOff);
+
+	/*if (bOnOff)
 	{
-		TemaMainUI->BattleWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-		TemaMainUI->BattleWidget->LockOnIcon->SetRenderOpacity(1.0f);
+		TemaMainUI->BattleUIOnOff(bOnOff);
 		for (FPriorityUnit Unit : GM->SetUnitList)
 		{
 			Unit.Unit->BattleWidgetOnOff(true);
@@ -500,19 +508,17 @@ void AJRPGPlayerController::BattleUIOnOff(bool bOnOff)
 	}
 	else
 	{
-		TemaMainUI->BattleWidget->SetVisibility(ESlateVisibility::Hidden);
-		TemaMainUI->BattleWidget->LockOnIcon->SetRenderOpacity(0.0f);
+		TemaMainUI->BattleUIOnOff(bOnOff);
 		for (FPriorityUnit Unit : GM->SetUnitList)
 		{
 			Unit.Unit->BattleWidgetOnOff(false);
-		}
-	}
+	}*/
 }
 
 
 void AJRPGPlayerController::PlayPriority()
 {
-	TemaMainUI->BattleWidget->PlayPriority();
+	TemaMainUI->PlayPriority();
 }
 
 

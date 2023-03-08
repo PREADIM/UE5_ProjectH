@@ -10,7 +10,7 @@
  * 
  */
 // 메인 위젯의 파티 리스트를 표현하기위한 하나의 슬롯. 
-UCLASS()
+UCLASS(Meta = (DisalbeNativeTick))
 class PROJECTH_API UJRPGPartySlot : public UCustomWidget
 {
 	GENERATED_BODY()

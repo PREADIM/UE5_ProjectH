@@ -180,9 +180,7 @@ void UJRPGBattleWidget::SetLockOn(int32 Num)
 	if (LockOnIcon)
 	{
 		if (!LockOnIcon->IsInViewport())
-		{
 			LockOnIcon->AddToViewport();
-		}
 
 		if (GM->EnermyList.IsValidIndex(Num))
 		{

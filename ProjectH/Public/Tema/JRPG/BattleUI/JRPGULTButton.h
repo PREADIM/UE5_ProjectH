@@ -9,7 +9,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(Meta = (DisableNativeTick))
 class PROJECTH_API UJRPGULTButton : public UCustomWidget
 {
 	GENERATED_BODY()

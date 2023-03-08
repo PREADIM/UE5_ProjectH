@@ -15,22 +15,15 @@ EBTNodeResult::Type UJRPG_AttackTask::ExecuteTask(UBehaviorTreeComponent& OwnerC
 
 	AJRPGUnit* SelfUnit = Cast<AJRPGUnit>(OwnerComp.GetAIOwner()->GetPawn());
 
-	/*SelfUnit->OnAIAttackEnd.Clear();
-	SelfUnit->OnAIAttackEnd.AddLambda([this, &OwnerComp]()->void
-		{
-			OwnerComp.GetBlackboardComponent()->SetValueAsEnum(FName("ActiveType"), 4U);
-		});*/
-
-
 	switch ((EJRPGAttackState)OwnerComp.GetBlackboardComponent()->GetValueAsEnum(FName("ActiveType")))
 	{
-	case EJRPGAttackState::NormalAttack : // Normal
+	case EJRPGAttackState::NormalAttack : 
 		SelfUnit->NormalAttack();
 		break;
-	case EJRPGAttackState::SkillAttack :// Skill
+	case EJRPGAttackState::SkillAttack :
 		SelfUnit->Skill_1();
 		break;
-	case EJRPGAttackState::ULTAttack : // ULT
+	case EJRPGAttackState::ULTAttack :
 		SelfUnit->Skill_ULT();
 		break;
 	default:

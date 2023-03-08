@@ -21,19 +21,17 @@ void USelectQuestSlot::SetupQuestStateImg()
 	switch (DialougeState)
 	{
 	case EDialougeState::CanSucceed:
-		Brush.SetResourceObject(SucceedTex);
-		Brush.SetImageSize(FVector2D(64.f, 64.f));
+		Brush.SetResourceObject(SucceedTex);		
 		break;
 	case EDialougeState::Questing:
 		Brush.SetResourceObject(QuestingTex);
-		Brush.SetImageSize(FVector2D(64.f, 64.f));
 		break;
 	case EDialougeState::CanAccept:
 		Brush.SetResourceObject(CanAcceptTex);
-		Brush.SetImageSize(FVector2D(64.f, 64.f));
 		break;
 	}
 
+	Brush.SetImageSize(FVector2D(64.f, 64.f));
 	if (QuestType == EQuestType::Main)
 		Brush.TintColor = FSlateColor(MainQuestColor);
 	else
@@ -50,8 +48,6 @@ void USelectQuestSlot::BindQuestStartButton()
 	UProjectHGameInstance* GI = Cast<UProjectHGameInstance>(UGameplayStatics::GetGameInstance(this));
 	if (GI)
 	{
-		//★ 여기서 진행중인지 아닌지 판단해서 다이얼로그도 새롭게 주면될듯하다.
-
 		// DialougeState로 현재 퀘스트의 진행정도에 따라 다른 다이얼로그를 가져다 준다.
 		Dial->SelectText = GI->GetDialData(DialougeState, QuestNumber);
 		Dial->OwnerQuestNum = Num;

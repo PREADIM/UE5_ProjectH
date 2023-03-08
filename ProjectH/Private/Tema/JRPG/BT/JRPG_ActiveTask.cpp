@@ -53,11 +53,11 @@ EBTNodeResult::Type UJRPG_ActiveTask::ExecuteTask(UBehaviorTreeComponent& OwnerC
 
 
 
-	if (AIUnit->ULTGage >= AIUnit->MaxULTGage)
+	if (AIUnit->CurrentULTGage >= AIUnit->MaxULTGage)
 	{
 		if (AIUnit->CurrentMP >= AIUnit->UnitSkills.Skill_1.CostMP)
 		{
-			float DFEDamage = 100 / (100 + TargetAttackUnit->CharacterStat.Shelid);
+			float DFEDamage = 100 / (100 + TargetAttackUnit->CharacterStat.Shield);
 			float SkillDamage = AIUnit->UnitSkills.Skill_1.SkillDamage * AIUnit->CharacterStat.Attack;
 			float Damage = SkillDamage * DFEDamage;
 		

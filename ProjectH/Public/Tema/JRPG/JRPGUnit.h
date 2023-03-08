@@ -6,10 +6,9 @@
 #include "Tema/JRPG/JRPGCharStat.h"
 #include "Tema/JRPG/JRPGUnitSkill.h"
 #include "PhysicalSoundStruct.h"
+#include "Tema/JRPG/DebuffClass.h"
 #include "JRPGUnit.generated.h"
 
-
-DECLARE_MULTICAST_DELEGATE(FAIAttackEnd);
 
 UENUM(BlueprintType)
 enum class EPlayerType : uint8
@@ -24,30 +23,26 @@ class PROJECTH_API AJRPGUnit : public ACharacter
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this character's properties
 	AJRPGUnit();
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = SpringArm, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = SpringArm)
 		USpringArmComponent* SpringArm;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Camera3P, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Camera3P)
 		UCameraComponent* Camera;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = CharacterName)
+		FString CharacterName;
 
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:	
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void PostInitializeComponents() override;
-
-	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
 	/*----------------------
@@ -64,12 +59,7 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		class AJRPGGameMode* GM;
 
-	FAIAttackEnd OnAIAttackEnd; // BT에서 공격이 완료되면 호출될 델리게이트.
-
-	UFUNCTION(BlueprintCallable)
-		void CallAIAttackEnd(); // AI 델리게이트 호출.
-
-	//----------
+	//--------------------------------------------------
 
 
 	UFUNCTION(BlueprintCallable)
@@ -140,15 +130,14 @@ public:
 	void InitCurrentStat(); // 현재 체력과 MP를 가져온다.
 
 	UFUNCTION(BlueprintCallable)
-		void TargetAttack(float ATK, class UDebuffClass* DebuffClass = nullptr); // 하나만 때린다.
+		void TargetAttack(float ATK, TSubclassOf<class UDebuffClass> BP_DebuffClass = nullptr); // 하나만 때린다.
 	UFUNCTION(BlueprintCallable)
-		void TargetManyAttack(float ATK, class UDebuffClass* DebuffClass = nullptr); // 여러 마리를 때린다.
+		void TargetManyAttack(float ATK, TSubclassOf<class UDebuffClass> BP_DebuffClass = nullptr); // 여러 마리를 때린다.
+
+
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		class AJRPGPlayerController* OwnerController;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		TArray<class UDebuffClass*> DebuffArray;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		class UAnimInstance* AnimInstance;
@@ -187,52 +176,64 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent)
 		void SetIsJRPGUnit(bool bFlag); // 위 변수를 셋업할 함수. 해당 함수를 통해 애님블프 설정도 바꿈.
+
 	void ThisUnitBattleUnit(bool bFlag); // c++에서 이걸로 실행
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Widget)
-		class UWidgetComponent* BattleHPComponent;
-
-	UPROPERTY()
-		class UJRPGBattleHPWidget* BattleHPWidget;
 
 	void BattleWidgetOnOff(bool bOnOff);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BattlePriority)
+
+	//---------------------------------------------------------
+	/*-------------------------
+			중요 스테이터스
+	--------------------------*/
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Widget)
+		class UWidgetComponent* BattleHPComponent;
+	UPROPERTY()
+		class UJRPGBattleHPWidget* BattleHPWidget;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = CharacterStat)
 		int32 Priority; // 우선순위
 
-	//★★★★
-	// 디버프 클래스를 받아오자.
-
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = CharacterStat)
 		FJRPGCharStat CharacterStat; // 해당 캐릭터의 스텟
-	// 플레이어는 Save & Load를 하지만, 적은 블루프린트에서 정해줌.
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = CharacterStat)
 		float CurrentHP; 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = CharacterStat)
 		float CurrentMP; 
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite, Category = CharacterStat)
 		float CurrentExp;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float ULTGage; // 궁극기 게이지.
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = CharacterStat)
+		float CurrentULTGage; // 궁극기 게이지.
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = CharacterStat)
 		float MaxULTGage; // 최대 궁극기 게이지.
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = CharacterStat)
 		bool bIsLMBAttack;
-
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UAnimMontage* DeadAnim;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UAnimMontage* HitAnim;
 
+	//-----------------------------------------------
+	/*-----------------------------------
+		스탯 관련 버프 및 디버프 변경 함수
+	----------------------------------*/
+	UFUNCTION(BlueprintCallable)
+		void SetStatDEF(float DEF);
+	UFUNCTION(BlueprintCallable)
+		void SetStatATK(float ATK);
 
-	// 피지컬 머터리얼 사운드
+
+	//-------------------------------------------
+	/*-----------------------
+			피지컬 사운드
+	------------------------*/
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TMap<TEnumAsByte<EPhysicalSurface>, FPhysicalSoundStruct> PhysicalAllSounds;
@@ -241,12 +242,31 @@ public:
 		FPhysicalSoundStruct PhysicalSounds;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float SurfaceDistance = 150.f; // 땅끝의 거리
-
 	void SetPhysicalSound();
 
-	// 레벨 스타트 몽타주
+	//-------------------------------------------
+	/*-----------------------
+		레벨 스타트 몽타주
+	------------------------*/
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UAnimMontage* BattleStartMontage;
 	void PlayStartMontage();
 
+
+	/*-----------------------
+		CC기 및 디버프 상태
+	------------------------*/
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		TSet<FDebuffStruct> DebuffSet;
+
+	UFUNCTION(BlueprintCallable)
+		void SetCCState(ECCType CCType, bool bFlag);
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		bool bCC;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		FCCState CCState;
 };

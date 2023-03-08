@@ -72,45 +72,6 @@ void UQuestList::UpdateQuestList()
 			SlotArr.Emplace(QSlot);
 		}
 	}
-
-
-	/*for (FQuestStruct& Quest : QuestComponent->GetQuests())
-	{
-		// 액티브 퀘스트는 따로 추가.
-		if (Quest.QuestNumber == QuestComponent->GetActiveQuest().QuestNumber)
-		{
-			AQSlot = CreateWidget<UActiveQuestSlot>(GetWorld(), BP_ActiveQuestSlot);
-			if (AQSlot)
-			{
-				AQSlot->QuestName = Quest.QuestName;
-				AQSlot->QuestDescription = Quest.QuestSteps[0].Description;
-				AQSlot->QuestComponent = QuestComponent;
-				AQSlot->Init();
-				AQSlot->SetPadding(FMargin(120.f, 0.f, 0.f, 120.f));
-				CurrentQuest->AddChild(AQSlot);
-			}
-		}
-	
-		UQuestSlot* QSlot = CreateWidget<UQuestSlot>(GetWorld(), BP_QuestSlot);
-		if (QSlot)
-		{
-			QSlot->QuestName = Quest.QuestName;
-			QSlot->QuestDescription = Quest.QuestSteps[0].Description;
-			QSlot->QuestComponent = QuestComponent;
-			QSlot->Init();
-			QSlot->SetPadding(FMargin(120.f, 0.f, 0.f, 120.f));
-			switch (Quest.QuestType)
-			{
-			case EQuestType::Main :
-				MainQuest->AddChild(QSlot);
-				break;
-			case EQuestType::Normal :
-				OtherQuests->AddChild(QSlot);
-				break;
-			}
-			SlotArr.Emplace(QSlot);
-		}
-	}*/
 }
 
 

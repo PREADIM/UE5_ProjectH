@@ -10,7 +10,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(Meta = (DisableNativeTick))
 class PROJECTH_API UJRPGPriority : public UCustomWidget
 {
 	GENERATED_BODY()

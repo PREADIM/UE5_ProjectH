@@ -15,20 +15,6 @@
 struct FEnermys;
 
 USTRUCT(BlueprintType)
-struct FLiveUnit
-{
-	GENERATED_USTRUCT_BODY()
-public:
-	FLiveUnit();
-	FLiveUnit(class AJRPGUnit* U, bool b);
-
-	class AJRPGUnit* Unit;
-	bool bLive;
-
-};
-
-
-USTRUCT(BlueprintType)
 struct FPriorityUnit
 {
 	GENERATED_USTRUCT_BODY()
@@ -53,6 +39,17 @@ struct PriorityUnitFunc
 };
 
 
+USTRUCT(BlueprintType)
+struct FBuffIconStruct : public FTableRowBase
+{
+	GENERATED_USTRUCT_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FString IconName;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UTexture2D* IconTexture;
+};
 
 
 
@@ -61,30 +58,23 @@ class PROJECTH_API AJRPGGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
 
-
-// 배틀 시작 -> 캐릭터가 공격을 했거나, 받았을시에 JRPG상태로 들어가기 위한 함수.
-// ㄴ 리스트 초기화 -> 모든 유닛에 대한 순서 초기화. (배틀 시작시에 딱 한번 사용)
-// ㄴ 턴 시작 -> 리스트의 가장 위에있는 유닛의 턴 시작.
-// ㄴ 컴포넌트 배틀시작 -> 각 유닛이 가지고 있는 컴포넌트의 배틀 시작 함수 실행.
-
-// 턴 종료 -> 게임 모드의 턴 종료는 컴포넌트에서 호출한다. 리스트 맨위를 맨 아래로 넣는다.
-// ㄴ 다시 턴 시작 함수를 호출한다. 
-
-// 예외상황
-// ㄴ 해당 순서의 유닛이 죽어있는 경우 -> 해당 캐릭터로 리스트를 for range로 찾아서 삭제. 위젯에서도 삭제
-// ㄴ 해당 순서의 유닛이 상태이상인 경우 -> 턴시작 함수에서 공격가능한 상태인지 판별한다.
-// ㄴ 적이 다 죽었거나, 아군이 다 죽었을 경우 -> 유닛의 공격 당한 함수에서 팀이 다죽었는지 판별. 그리고 끝내기.
 public:
 	AJRPGGameMode();
-	void SetDataTable(UDataTable*& Table, FString TablePath); // 데이터 테이블 적용 함수.
 	virtual void PostLogin(APlayerController* Login) override;
 
-
-
 public:
+
+
 	class AJRPGUnit* GetCharacterSpawn(int32 CharacterNum, FTransform UnitLocation);
 	class AJRPGUnit* GetEnermySpawn(int32 CharacterNum, FTransform UnitLocation);
 	bool GetBattleField(int32 FieldNum);
+	FBuffIconStruct* GetBuffIcon(FString IconName);
+
+
+	/*------------------------------
+		JRPG 게임 흐름 함수들
+	-------------------------------*/
+
 	void BattleStart(int32 FieldNum, TArray<FEnermys> Enermys);
 	void TurnStart();
 
@@ -94,7 +84,6 @@ public:
 	void TurnListInit();
 	void SetUnitListArray(); // 힙 정렬로 우선순위 정렬 한 것을 큐로 저장.
 	void TurnListSet();
-
 	void GameEnd(bool bWinner); // 아군이나 적이 다 죽었을 경우 해당 게임을 끝내기.
 	// true는 플레이어가 승자, false는 적이 승리.
 
@@ -148,6 +137,8 @@ public:
 		class UDataTable* CharStatTablePaths; // 캐릭터 스탯이 있는 테이블들의 경로들.
 	UPROPERTY(VisibleAnywhere)
 		class UDataTable* FieldEnermyDropTable; // 필드 적의 떨구는 경험치 및 아이템.
+	UPROPERTY(VisibleAnywhere)
+		class UDataTable* IconTextureTable; // 각종 버프 아이콘 테이블
 
 
 

@@ -10,8 +10,7 @@
 /**
  * 
  */
-// ★★ 파티 셋팅을 하는 UI
-UCLASS()
+UCLASS(Meta = (DisalbeNativeTick))
 class PROJECTH_API UJRPGPartySettingUI : public UCustomWidget
 {
 	GENERATED_BODY()

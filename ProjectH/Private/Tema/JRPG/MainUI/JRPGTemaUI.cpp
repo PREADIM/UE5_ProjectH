@@ -7,6 +7,8 @@
 #include "Tema/JRPG/JRPGGameMode.h"
 #include "Tema/JRPG/BattleUI/JRPGBattleWidget.h"
 #include "Tema/JRPG/JRPGUnit.h"
+#include "Tema/JRPG/BattleUI/JRPGBattleWidget.h"
+#include "Tema/JRPG/BattleUI/LockOnWidget.h"
 
 void UJRPGTemaUI::Init()
 {
@@ -149,3 +151,71 @@ void UJRPGTemaUI::BattleTurnStart(bool bPlayer)
 }
 
 
+/*---------------------------------------------
+	PlayerController->BattlWidget의 인터페이스
+-----------------------------------------------*/
+
+
+// 락온 아이콘과 BattleWidget의 Visible 처리
+void UJRPGTemaUI::SetVisibleBattleWidget(bool bFlag)
+{
+	BattleWidget->SetVisible(bFlag);
+}
+
+
+// 적의 차례일때는 BattleWidget은 보이지만, 스킬셋과 적 선택창은 보이면 안된다.
+void UJRPGTemaUI::SetEnermyTurnWidget(bool bFlag)
+{
+	BattleWidget->EnermyTurnHidden(bFlag);
+}
+
+void UJRPGTemaUI::EnermyListSetup()
+{
+	BattleWidget->EnermyListInit();
+}
+
+void UJRPGTemaUI::HiddenLockOn()
+{
+	BattleWidget->HiddenLockOn();
+}
+
+void UJRPGTemaUI::EnermySetupLockOnTargetUnit(AJRPGUnit* Target)
+{
+	BattleWidget->TargetUnit = Target;
+}
+
+
+void UJRPGTemaUI::TargetToRotation()
+{
+	BattleWidget->TargetToRotation();
+}
+
+
+void UJRPGTemaUI::EnermyTargetToRotation()
+{
+	BattleWidget->EnermyTargetToRotation();
+}
+
+
+
+// 이 함수는 아예 모든 위젯을 껏다 키는 것이다.
+void UJRPGTemaUI::BattleUIOnOff(bool bOnOff)
+{
+	if (bOnOff)
+	{
+		BattleWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		BattleWidget->LockOnIcon->SetRenderOpacity(1.0f);
+		
+	}
+	else
+	{
+		BattleWidget->SetVisibility(ESlateVisibility::Hidden);
+		BattleWidget->LockOnIcon->SetRenderOpacity(0.0f);		
+	}
+}
+
+
+void UJRPGTemaUI::PlayPriority()
+{
+	BattleWidget->PlayPriority();
+}

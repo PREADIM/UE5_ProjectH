@@ -15,15 +15,6 @@
 #include "Blueprint/UserWidget.h"
 
 
-FLiveUnit::FLiveUnit()
-{
-}
-
-FLiveUnit::FLiveUnit(AJRPGUnit* U, bool b) : Unit(U), bLive(b)
-{
-}
-
-
 
 FPriorityUnit::FPriorityUnit()
 {
@@ -32,8 +23,6 @@ FPriorityUnit::FPriorityUnit()
 FPriorityUnit::FPriorityUnit(class AJRPGUnit* Char) : Unit(Char), Priority(Char->Priority)
 {
 }
-
-
 
 
 AJRPGGameMode::AJRPGGameMode()
@@ -77,15 +66,13 @@ AJRPGGameMode::AJRPGGameMode()
 		FieldEnermyDropTable = DT_FieldDropTable.Object;
 	}
 
-}
-
-void AJRPGGameMode::SetDataTable(UDataTable*& Table, FString TablePath)
-{
-	static ConstructorHelpers::FObjectFinder<UDataTable> DT_Table(*TablePath);
-	if (DT_Table.Succeeded())
+	FString IconTextureTablePath = TEXT("DataTable'/Game/PROJECT/BP_CLASS/Tema/JRPG/DataBase/DT_BuffIconStructTable.DT_BuffIconStructTable'");
+	static ConstructorHelpers::FObjectFinder<UDataTable> DT_IconTextureTable(*IconTextureTablePath);
+	if (DT_IconTextureTable.Succeeded())
 	{
-		Table = DT_Table.Object;
+		IconTextureTable = DT_IconTextureTable.Object;
 	}
+
 }
 
 
@@ -254,6 +241,12 @@ bool AJRPGGameMode::GetBattleField(int32 FieldNum)
 }
 
 
+FBuffIconStruct* AJRPGGameMode::GetBuffIcon(FString IconName)
+{
+	return IconTextureTable->FindRow<FBuffIconStruct>(*IconName, TEXT(""));
+}
+
+
 /* 실질적인 JRPG 시작. */
 void AJRPGGameMode::BattleStart(int32 FieldNum, TArray<FEnermys> Enermys)
 {
@@ -348,7 +341,7 @@ void AJRPGGameMode::SetUnitListArray()
 	{
 		FPriorityUnit HeapTop;
 		UnitList.HeapPop(HeapTop, PriorityUnitFunc());
-		SetUnitList.Add(HeapTop);
+		SetUnitList.Emplace(HeapTop);
 	}
 }
 
@@ -383,7 +376,7 @@ void AJRPGGameMode::TurnListSet()
 	{
 		FPriorityUnit Unit = SetUnitList[0];
 		SetUnitList.RemoveAt(0);
-		SetUnitList.Add(Unit);
+		SetUnitList.Emplace(Unit);
 
 		if (SetUnitList[0].Unit->PlayerType == EPlayerType::Player)
 		{

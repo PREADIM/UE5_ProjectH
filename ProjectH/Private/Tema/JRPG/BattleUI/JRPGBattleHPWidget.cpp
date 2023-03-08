@@ -5,24 +5,45 @@
 #include "Components/ProgressBar.h"
 #include "Tema/JRPG/JRPGUnit.h"
 #include "Components/TextBlock.h"
+#include "Components/WrapBox.h"
+#include "Tema/JRPG/BattleUI/JRPGBuffWidget.h"
 
 void UJRPGBattleHPWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	HP->PercentDelegate.BindUFunction(this, "RetHP");
-	MP->PercentDelegate.BindUFunction(this, "RetMP");
-	ULT->PercentDelegate.BindUFunction(this, "RetULT");
 	HP->SynchronizeProperties();
 	MP->SynchronizeProperties();
 	ULT->SynchronizeProperties();
 
 }
 
-void UJRPGBattleHPWidget::Init()
+void UJRPGBattleHPWidget::Init(AJRPGUnit* Unit)
 {
+	OwnerUnit = Unit;
+	HP->PercentDelegate.BindUFunction(this, "RetHP");
+	MP->PercentDelegate.BindUFunction(this, "RetMP");
+	ULT->PercentDelegate.BindUFunction(this, "RetULT");
 	CharLevel->SetText(FText::FromString(FString::FromInt(OwnerUnit->CharacterStat.CharLevel)));
+	
 }
+
+void UJRPGBattleHPWidget::SetBuffIcon()
+{
+	BuffWidgets.Empty();
+	BuffIconWrapBox->ClearChildren();
+	for (FDebuffStruct DebuffStruct : OwnerUnit->DebuffSet)
+	{
+		UJRPGBuffWidget* BuffWidget = CreateWidget<UJRPGBuffWidget>(GetWorld(), BP_BuffWidget);
+		if (BuffWidget)
+		{
+			BuffWidget->Init(DebuffStruct.DebuffClass, EIconSizeType::Mini);
+			BuffWidget->SetPadding(FMargin(0.f, 0.f, 3.f, 3.f));
+			BuffIconWrapBox->AddChild(BuffWidget);
+		}
+	}
+}
+
 
 float UJRPGBattleHPWidget::RetHP()
 {
@@ -46,5 +67,5 @@ float UJRPGBattleHPWidget::RetULT()
 	if (!OwnerUnit)
 		return 0.0f;
 
-	return  OwnerUnit->ULTGage / OwnerUnit->MaxULTGage;
+	return  OwnerUnit->CurrentULTGage / OwnerUnit->MaxULTGage;
 }

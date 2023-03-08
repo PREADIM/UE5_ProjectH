@@ -11,7 +11,7 @@
  * 
  */
 // ¡Ú¡Ú MainUI »óÅÂÀÇ ESC UI
-UCLASS()
+UCLASS(Meta = (DisableNativeTick))
 class PROJECTH_API UJRPGESCMenu : public UCustomWidget
 {
 	GENERATED_BODY()
