@@ -164,56 +164,23 @@ void AJRPGUnit::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("TestKey", IE_Pressed, this, &AJRPGUnit::TestKey);
 }
 
-
-
-float AJRPGUnit::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+void AJRPGUnit::TakeDamageCalculator(float DamageAmount)
 {
-	float DamageApplied = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-
-
-	
-
 	float DFEDamage = 100 / (100 + CharacterStat.Shield);
 	float Damage = DamageAmount * DFEDamage;
 
 	if (CurrentHP <= Damage)
 	{
-		CurrentHP = 0;
-		
-		if (PlayerType == EPlayerType::Player)
-		{
-			// 캐릭터 생사여부를 위한 지우기. 적이 공격할 아군을 찾기위한 배열.
-			TArray<AJRPGUnit*>& OwnerList = GM->OwnerList;
-			for (int32 i = 0; i < OwnerList.Num(); i++)
-			{
-				if (OwnerList[i] == this)
-				{
-					OwnerList.RemoveAt(i);
-					break;
-				}
-			}
-		}
-		else
-		{
-			// 적 선택 리스트 UI를 위해 지우기.
-			TArray<AJRPGUnit*>& EnermyList = GM->EnermyList;
-			for (int32 i = 0; i < EnermyList.Num(); i++)
-			{
-				if (EnermyList[i] == this)
-				{
-					EnermyList.RemoveAt(i);
-				}
-			}
+		CurrentHP = 0;	
 
-		}
+		//죽으면 플레이어나 적별로 알아서 게임모드의 리스트에서 삭제하기.
+		DeadBattleListRemove();
 
 		TArray<FPriorityUnit>& SetUnitList = GM->SetUnitList;
 		for (int32 i = 0; i < SetUnitList.Num(); ++i)
 		{
 			if (SetUnitList[i].Unit == this)
-			{
 				SetUnitList.RemoveAt(i);
-			}
 		}
 
 		BattleWidgetOnOff(false);
@@ -226,13 +193,11 @@ float AJRPGUnit::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent,
 	{
 		CurrentHP -= Damage;
 		PlayAnimMontage(HitAnim);
-	}
-	
-	
+	}	
 	OwnerController->VisibleDamage(Damage, GetActorLocation());
 
-	return DamageApplied;
 }
+
 
 void AJRPGUnit::NormalAttack()
 {
@@ -248,77 +213,6 @@ void AJRPGUnit::Skill_1()
 void AJRPGUnit::Skill_ULT()
 {
 	CallULT();
-}
-
-
-// 해당 캐릭터의 턴 이라는 것. true는 오너, false는 적이다.
-void AJRPGUnit::BattleStart(bool bFlag) // 이 함수는 아직 위젯을 보이게 하기전에 먼저 위젯 아이콘을 미리 셋팅해두는 함수.
-{
-	if (OwnerController)
-		OwnerController->BattleTurnStart(bFlag);
-	// UI에 모든 정보를 초기화 해두고, UI에서 실행.
-}
-
-void AJRPGUnit::OwnerUnitBattleStart()
-{
-	if (!OwnerController)
-		return;
-
-	OwnerController->CameraSetUp(GetActorLocation());
-
-	if (bCC) // CC기 상태인 경우 스킵
-	{
-		FTimerHandle Handle;
-		GetWorld()->GetTimerManager().SetTimer(Handle, FTimerDelegate::CreateLambda([&]()
-		{
-			UnitTurnEnd();
-		}), 3.f, false);
-	}
-	else
-	{
-		OwnerController->SetEnermyTurnWidget(false); // 적 차례시 보이면 안되었던 스킬 버튼 및 적 선택 리스트 보이게 하기.
-	}
-	
-	OwnerController->SetVisibleBattleWidget(true); // 위젯 보이기
-	OwnerController->EnermyListSetup();	
-}
-
-
-
-
-void AJRPGUnit::EnermyBattleStart()
-{
-	// 이 함수를 처리하는 유닛은 적이다. 플레이어가 아니다.
-	// 적도 플레이어의 컨트롤러를 가지고있다. 게임모드에서 생성할때 값을 받아옴.
-	if (!OwnerController)
-		return;
-
-	OwnerController->SetEnermyTurnWidget(true); // 적의 차례니까 위젯을 필요한것만 남긴다.
-	OwnerController->SetVisibleBattleWidget(true); // 위젯 보이기
-	
-	if (!OwnerAIController)
-		return;
-
-	if (bCC) // CC기 상태인 경우 스킵
-	{
-		FTimerHandle Handle;
-		GetWorld()->GetTimerManager().SetTimer(Handle, FTimerDelegate::CreateLambda([&]()
-			{
-				UnitTurnEnd();
-			}), 3.f, false);
-	}
-	else
-	{
-		OwnerAIController->SetIsTurn(true); // 턴이다.
-	}
-	
-	// 적이 취할 행동 설정.
-	// 적이 때릴 내 캐릭터 타겟 설정.
-	// 타겟을 정했으면 해당 타겟으로 카메라 이동. 
-	// (해당 캐릭터가 그 적을 보고있어야하므로, 그 적을 향해서 카메라가 회전해야한다.)
-	// (FindLookAtRotation) 을 활용하면 될듯.
-	// 적 행동을 실행.
-	// BT로 구현
 }
 
 
@@ -351,7 +245,7 @@ void AJRPGUnit::TargetAttack(float ATK, TSubclassOf<UDebuffClass> BP_DebuffClass
 		}
 
 		FDamageEvent DamageEvent;
-		OwnerController->TargetUnit->TakeDamage(ATK, DamageEvent, OwnerController, this);
+		OwnerController->TargetUnit->TakeDamageCalculator(ATK);
 	}
 }
 
@@ -379,7 +273,7 @@ void AJRPGUnit::TargetManyAttack(float ATK, TSubclassOf<UDebuffClass> BP_DebuffC
 			}
 
 			FDamageEvent DamageEvent;
-			Unit->TakeDamage(ATK, DamageEvent, OwnerController, this);
+			Unit->TakeDamageCalculator(ATK);
 		}
 	}
 
@@ -438,19 +332,29 @@ void AJRPGUnit::UnitTurnEnd()
 {
 	if (OwnerController)
 	{
+		TSet<FDebuffStruct> RemoveDebuff;
 		for (FDebuffStruct& Debuff : DebuffSet)
 		{
 			if (Debuff.DebuffClass->SetupCnt())
 			{
 				Debuff.DebuffClass->DebuffTurnEndFunction(this);
-				DebuffSet.Remove(Debuff);
-			}
-			BattleHPWidget->SetBuffIcon();
+				RemoveDebuff.Emplace(Debuff);
+			}	
 		}
 
+		// 반복중에 컨테이너를 지우는 것은 좋지않으므로 미리 받아와서 삭제
+		if (RemoveDebuff.Num())
+		{
+			for (FDebuffStruct& Debuff : RemoveDebuff)
+				DebuffSet.Remove(Debuff);
+		}
+
+		BattleHPWidget->SetBuffIcon();
 		OwnerController->UnitTurnEnd();
 	}
 }
+
+
 
 void AJRPGUnit::AttackEnd()
 {
@@ -462,11 +366,10 @@ void AJRPGUnit::BattleStartCollisionBeginOverlap(UPrimitiveComponent* Overlapped
 	if (OwnerController && OwnerController->GetBattleING())
 		return;
 
-	class AJRPGEnermy* CurrentOverlapFieldEnermy = Cast<class AJRPGEnermy>(OtherActor);
+	class AJRPGFieldEnermy* CurrentOverlapFieldEnermy = Cast<class AJRPGFieldEnermy>(OtherActor);
 	if (CurrentOverlapFieldEnermy)
 		OwnerController->PlayBattleMode(CurrentOverlapFieldEnermy);
 }
-
 
 void AJRPGUnit::SetPhysicalSound()
 {
@@ -483,9 +386,7 @@ void AJRPGUnit::SetPhysicalSound()
 void AJRPGUnit::PlayStartMontage()
 {
 	if (AnimInstance && BattleStartMontage)
-	{
 		AnimInstance->Montage_Play(BattleStartMontage);
-	}
 }
 
 
@@ -494,15 +395,17 @@ void AJRPGUnit::SetCCState(ECCType CCType, bool bFlag)
 	if (bFlag)
 		bCC = true; // 이건 CC 애니메이션들이 마지막 END때 노티파이로 끌 예정.
 
-	switch (CCType)
-	{
-	case ECCType::NONE:
-		break;
-	case ECCType::STUN:
-		CCState.bStun = bFlag;
-		break;
-	}
+	CCState.SetCCType(CCType, bFlag);
 }
+
+void AJRPGUnit::UnitTurnEndCCState()
+{
+	OwnerController->SetTurnEndDebuffWidget(CCState.LastCCType);
+	FTimerHandle Handle;
+	GetWorld()->GetTimerManager().SetTimer(Handle, this, &AJRPGUnit::UnitTurnEnd, 2.f, false);
+}
+
+
 
 
 void AJRPGUnit::SetStatDEF(float DEF)

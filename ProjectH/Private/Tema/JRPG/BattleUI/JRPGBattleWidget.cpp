@@ -166,6 +166,7 @@ void UJRPGBattleWidget::EnermyTurnHidden(bool bFlag)
 	}
 	else
 	{
+		_DEBUG("Player");
 		NormalAttack->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 		SkillButton->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 		ULTButton->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
@@ -202,6 +203,7 @@ void UJRPGBattleWidget::HiddenLockOn()
 
 void UJRPGBattleWidget::BattleTurnInit()
 {
+	_DEBUG("BattleTurnInit");
 	NormalAttack->Init();
 	SkillButton->Init();
 	ULTButton->Init();

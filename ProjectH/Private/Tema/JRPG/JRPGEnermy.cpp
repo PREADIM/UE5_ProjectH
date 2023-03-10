@@ -6,7 +6,7 @@
 #include "Tema/JRPG/JRPGGameMode.h"
 
 // Sets default values
-AJRPGEnermy::AJRPGEnermy()
+AJRPGFieldEnermy::AJRPGFieldEnermy()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
@@ -17,7 +17,7 @@ AJRPGEnermy::AJRPGEnermy()
 }
 
 // Called when the game starts or when spawned
-void AJRPGEnermy::BeginPlay()
+void AJRPGFieldEnermy::BeginPlay()
 {
 	Super::BeginPlay();
 	GM = Cast<AJRPGGameMode>(GetWorld()->GetAuthGameMode());
@@ -34,17 +34,19 @@ void AJRPGEnermy::BeginPlay()
 
 
 
-void AJRPGEnermy::FieldEnermyDead()
+void AJRPGFieldEnermy::FieldEnermyDead()
 {
 	DeadUnit();
 	bDead = true;
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	GM->SetSaveEnermyUnits(this);
-	PlayAnimMontage(DeadMontage);	
+	PlayAnimMontage(DeadMontage);
+	OwnerAIController->OnUnPossess();
 }
 
 
-void AJRPGEnermy::DeadUnit()
+void AJRPGFieldEnermy::DeadUnit()
 {
 	if(bBPBindFunc)
 		BPBindFunc_DeadUnit();
@@ -52,21 +54,21 @@ void AJRPGEnermy::DeadUnit()
 }
 
 
-void AJRPGEnermy::ReturnToField()
+void AJRPGFieldEnermy::ReturnToField()
 {
 	if(OwnerAIController)
 		OwnerAIController->ReturnToField();
 }
 
 
-void AJRPGEnermy::BattleStart()
+void AJRPGFieldEnermy::BattleStart()
 {
 	if (OwnerAIController)
 		OwnerAIController->BattleStart();
 }
 
 
-class UBehaviorTree* AJRPGEnermy::GetBT()
+class UBehaviorTree* AJRPGFieldEnermy::GetBT()
 {
 	if (BT)
 		return BT;

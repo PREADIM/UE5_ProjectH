@@ -21,9 +21,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class USoundBase* NormalSound;
 
-	UPROPERTY(VisibleAnywhere)
-		class USoundBase* PrevSound;
-
 public:
 	AARPGPlayerController();
 	virtual void OnPossess(APawn* InPawn) override;

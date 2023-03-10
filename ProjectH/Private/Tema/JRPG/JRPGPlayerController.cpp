@@ -16,7 +16,7 @@
 #include <MovieSceneSequencePlayer.h>
 #include "Tema/JRPG/BattleUI/DropItemWidget.h"
 #include "Tema/JRPG/BattleUI/DropExpWidget.h"
-#include "Tema/JRPG/BattleUI/CustomAnimWidget.h"
+#include "UI/Custom/CAWTextAnimWidget.h"
 
 
 
@@ -197,7 +197,7 @@ void AJRPGPlayerController::SetupDropExpWidget(int32 DropExp)
 }
 
 /* 배틀 시작할때 이것을 실행. */
-bool AJRPGPlayerController::PlayBattleMode(AJRPGEnermy* CurrentFieldEnermy)
+bool AJRPGPlayerController::PlayBattleMode(AJRPGFieldEnermy* CurrentFieldEnermy)
 {
 	if (GM)
 	{
@@ -227,7 +227,6 @@ void AJRPGPlayerController::WinGame()
 {
 	DropItem();
 	CurrentOverlapFieldEnermy->FieldEnermyDead();
-	bBattleING = false;
 }
 
 
@@ -469,9 +468,7 @@ void AJRPGPlayerController::VisibleDamage(float Damage, FVector TargetLocation)
 void AJRPGPlayerController::UnitTurnEnd()
 {
 	if (GM)
-	{
 		GM->TurnEnd();
-	}
 }
 
 
@@ -578,18 +575,35 @@ void AJRPGPlayerController::CreateBattleStartWidget()
 {
 	if (BP_BattleStartWidget)
 	{
-		float EndTime = 1.8f;
 		UCustomAnimWidget* BattleStartWidget = CreateWidget<UCustomAnimWidget>(GetWorld(), BP_BattleStartWidget);
 		if (BattleStartWidget)
 		{
+			BattleStartWidget->AddToViewport();
 			BattleStartWidget->PlayCustomAnimation();
-			FTimerHandle Timer;
-			GetWorld()->GetTimerManager().SetTimer(Timer, FTimerDelegate::CreateLambda([&]()
-				{
-					BattleStartWidget->RemoveFromParent();
-				}), EndTime, false);
 		}
 	}
+}
+
+
+void AJRPGPlayerController::SetTurnEndDebuffWidget(ECCType LastCCType)
+{
+	if (!BP_TurnEndCCStateWidget)
+		return;
+
+	UCAWTextAnimWidget* TurnEndCCStateWidget = CreateWidget<UCAWTextAnimWidget>(GetWorld(), BP_TurnEndCCStateWidget);
+	if (TurnEndCCStateWidget)
+	{
+		switch (LastCCType)
+		{
+		case ECCType::STUN:
+			TurnEndCCStateWidget->SetCAWText("S T U N");
+			break;
+		}
+
+		TurnEndCCStateWidget->AddToViewport();
+		TurnEndCCStateWidget->PlayCustomAnimation();
+	}
+	
 }
 
 

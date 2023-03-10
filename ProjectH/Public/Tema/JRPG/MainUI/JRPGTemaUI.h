@@ -59,7 +59,7 @@ public:
 	void SetEnermyTurnWidget(bool bFlag);
 	void EnermyListSetup();
 	void HiddenLockOn();
-	void EnermySetupLockOnTargetUnit(AJRPGUnit* Target);
+	void EnermySetupLockOnTargetUnit(class AJRPGUnit* Target);
 	void TargetToRotation();
 	void EnermyTargetToRotation();
 	void BattleUIOnOff(bool bOnOff);

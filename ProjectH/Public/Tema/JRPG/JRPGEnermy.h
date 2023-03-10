@@ -11,12 +11,12 @@
 
 
 UCLASS()
-class PROJECTH_API AJRPGEnermy : public ACharacter
+class PROJECTH_API AJRPGFieldEnermy : public ACharacter
 {
 	GENERATED_BODY()
 
 public:
-	AJRPGEnermy();
+	AJRPGFieldEnermy();
 
 protected:
 	virtual void BeginPlay() override;
@@ -57,7 +57,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UAnimMontage* DeadMontage; 
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere)
 		FJRPGDropStruct DropStruct;
 
 };

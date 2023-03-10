@@ -165,7 +165,7 @@ public:
 
 	void SetSaveJRPG();
 
-	void SetSaveEnermyUnits(class AJRPGEnermy* FieldEnermy);
+	void SetSaveEnermyUnits(class AJRPGFieldEnermy* FieldEnermy);
 	bool GetSaveEnermyUnits(int32 EnermyUnitNum); 
 	// 이 둘은 필드의 적이 죽엇는지 살았는지 세이브하는 함수들.
 

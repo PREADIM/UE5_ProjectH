@@ -24,7 +24,7 @@ void FJRPGSerial::SetCharNum(int32 Num)
 }
 
 
-FJRPGFieldEnermy::FJRPGFieldEnermy()
+FJRPGFieldEnermySave::FJRPGFieldEnermySave()
 {
 
 }
@@ -89,48 +89,48 @@ void UJRPGSave::SetSave(class AJRPGPlayerController* OwnerController)
 }
 
 
-void UJRPGSave::SetFieldEnermy(class AJRPGEnermy* FieldEnermy, int32 KillCnt)
+void UJRPGSave::SetFieldEnermy(class AJRPGFieldEnermy* FieldEnermy, int32 KillCnt)
 {
-	if (JRPGFieldEnermy.FieldEnermyIsLive.Find(FieldEnermy->FieldEnermyNumber))
+	if (JRPGFieldEnermySave.FieldEnermyIsLive.Find(FieldEnermy->FieldEnermyNumber))
 	{
-		JRPGFieldEnermy.FieldEnermyIsLive[FieldEnermy->FieldEnermyNumber] = FieldEnermy->bDead;
+		JRPGFieldEnermySave.FieldEnermyIsLive[FieldEnermy->FieldEnermyNumber] = FieldEnermy->bDead;
 	}
 	else
 	{
-		JRPGFieldEnermy.FieldEnermyIsLive.Add(FieldEnermy->FieldEnermyNumber, FieldEnermy->bDead);
+		JRPGFieldEnermySave.FieldEnermyIsLive.Add(FieldEnermy->FieldEnermyNumber, FieldEnermy->bDead);
 	}
 
-	JRPGFieldEnermy.KillCnt = KillCnt;
+	JRPGFieldEnermySave.KillCnt = KillCnt;
 	SaveSlot();
 }
 
 
 bool UJRPGSave::GetFieldEnermy(int32 FieldEnermyNum)
 {
-	if (JRPGFieldEnermy.FieldEnermyIsLive.Find(FieldEnermyNum))
+	if (JRPGFieldEnermySave.FieldEnermyIsLive.Find(FieldEnermyNum))
 	{
-		return JRPGFieldEnermy.FieldEnermyIsLive[FieldEnermyNum];
+		return JRPGFieldEnermySave.FieldEnermyIsLive[FieldEnermyNum];
 	}
 	else
 	{
-		JRPGFieldEnermy.FieldEnermyIsLive.Add(FieldEnermyNum, false);
+		JRPGFieldEnermySave.FieldEnermyIsLive.Add(FieldEnermyNum, false);
 		return false;
 	}
 }
 
 float UJRPGSave::GetKillCnt()
 {
-	return JRPGFieldEnermy.KillCnt;
+	return JRPGFieldEnermySave.KillCnt;
 }
 
 void UJRPGSave::SetBattleTutorial()
 {
-	JRPGFieldEnermy.bTutorial = true;
+	JRPGFieldEnermySave.bTutorial = true;
 }
 
 void UJRPGSave::SetPartyTutorial()
 {
-	JRPGFieldEnermy.bPartyTutorial = true;
+	JRPGFieldEnermySave.bPartyTutorial = true;
 }
 
 

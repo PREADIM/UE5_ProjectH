@@ -6,6 +6,7 @@
 #include "PlayerControllerBase.h"
 #include "Tema/JRPG/JRPGCharStat.h"
 #include "Tema/JRPG/JRPGUnitUIStruct.h"
+#include "Tema/JRPG/DebuffClass.h"
 #include "JRPGPlayerController.generated.h"
 
 /**
@@ -104,7 +105,7 @@ public:
 		bool bBattleING; // 배틀 상태 확인.
 	bool GetBattleING() { return bBattleING; }
 
-	bool PlayBattleMode(class AJRPGEnermy* CurrentFieldEnermy); // 배틀 시작.
+	bool PlayBattleMode(class AJRPGFieldEnermy* CurrentFieldEnermy); // 배틀 시작.
 	void ReturnMainWidget(); // 배틀 종료후 위젯 초기화.
 	void WinGame();
 	void RetrunToField(); // 배틀 종료후 처리
@@ -144,7 +145,7 @@ public:
 		class AJRPGUnit* RepreCharacter;
 
 	UPROPERTY(VisibleAnywhere)
-		class AJRPGEnermy* CurrentOverlapFieldEnermy;
+		class AJRPGFieldEnermy* CurrentOverlapFieldEnermy;
 
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
@@ -165,8 +166,6 @@ public:
 
 	UPROPERTY(VisibleAnywhere)
 		class UDataTable* UnitUITable;
-
-
 
 	/*------------------------------
 				Widget
@@ -190,7 +189,7 @@ public:
 
 	UPROPERTY()
 		TArray<class UCustomWidget*> LastWidget; // 마지막 Widget을 스택처럼 저장하는 배열.
-	// AddToViewport 를 사용하는 UI만 저장한다. Animation을 가지고있는 이미 할당되어있는 UI는 제외.
+	// UCustomWidget중 AddToViewport 를 사용하는 UI만 저장한다. 이미 할당되어있는 UI는 제외.
 
 	UPROPERTY(VisibleAnywhere)
 		class AJRPGUnit* CurrentUnit; // ESC를 할 Unit 스킬을 실행 중이면 취소하고 , 아무것도 실행중이지 않으면 나가기 창을 띄운다.
@@ -237,11 +236,17 @@ public:
 	void PartyTutorialStart();
 
 	//-----------------------------------------------------------
+	/*------------------------------------
+			배틀 관련 휘발성 애니메이션 위젯
+	------------------------------------*/
 
 	UPROPERTY(EditAnywhere)
 		TSubclassOf<class UCustomAnimWidget> BP_BattleStartWidget;
-
 	void CreateBattleStartWidget();
+
+	UPROPERTY(EditAnywhere)
+		TSubclassOf<class UCAWTextAnimWidget> BP_TurnEndCCStateWidget; // 턴 종료때 CC상태를 나타내는 위젯 뜨게하기.
+	void SetTurnEndDebuffWidget(ECCType CCState);
 	
 	//-----------------------------------------------------------
 

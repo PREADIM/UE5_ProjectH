@@ -2,21 +2,21 @@
 
 #pragma once
 
-#include "ProjectH.h"
+#include "CoreMinimal.h"
 #include "Tema/JRPG/JRPGUnit.h"
-#include "JRPGPlayerUnit.generated.h"
+#include "JRPGEnermyUnit.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECTH_API AJRPGPlayerUnit : public AJRPGUnit
+class PROJECTH_API AJRPGEnermyUnit : public AJRPGUnit
 {
 	GENERATED_BODY()
 
 protected:
 	virtual void BeginPlay() override;
-	
+
 public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void PossessedBy(AController* NewController) override;
@@ -26,4 +26,5 @@ public:
 	virtual void BattleTurnStart() override;
 	virtual void UnitBattleStart() override;
 	virtual void DeadBattleListRemove() override;
+	
 };

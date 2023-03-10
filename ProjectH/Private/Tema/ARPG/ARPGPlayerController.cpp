@@ -154,9 +154,8 @@ void AARPGPlayerController::SetPlaySound(USoundBase* Sound)
 
 	if (Sound == nullptr)
 	{
-		// nullptr일 경우 전의 음악을 재생함.
-		if(PrevSound)
-			AudioComponent->SetSound(PrevSound);
+		// nullptr일 경우 기본 음악 재생
+		AudioComponent->SetSound(NormalSound);
 	}	
 	else
 	{
@@ -164,7 +163,6 @@ void AARPGPlayerController::SetPlaySound(USoundBase* Sound)
 	}
 
 	AudioComponent->Play();
-	PrevSound = NormalSound;
 }
 
 void AARPGPlayerController::StopSound()

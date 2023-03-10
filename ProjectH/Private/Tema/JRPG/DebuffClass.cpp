@@ -9,6 +9,20 @@ uint32 GetTypeHash(const FDebuffStruct& DebuffStruct)
 }
 
 
+void FCCState::SetCCType(ECCType CCType, bool bFlag)
+{
+	switch (CCType)
+	{
+	case ECCType::NONE:
+		break;
+	case ECCType::STUN:
+		bStun = bFlag;
+		LastCCType = CCType;
+		break;
+	}
+}
+
+
 FDebuffStruct::FDebuffStruct(FString AttackUnitName, class UDebuffClass* AttackDebuff)
 	: InstigatorUnitName(AttackUnitName), DebuffClass(AttackDebuff)
 {

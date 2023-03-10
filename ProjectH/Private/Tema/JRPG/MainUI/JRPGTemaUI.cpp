@@ -129,8 +129,8 @@ void UJRPGTemaUI::PlayBattleWidget()
 {
 	if (BattleWidget)
 	{
-		if (GM->SetUnitList[0].Unit->PlayerType == EPlayerType::Player)
-			BattleWidget->BattleTurnInit();
+		//if (GM->SetUnitList[0].Unit->PlayerType == EPlayerType::Player)
+		BattleWidget->BattleTurnInit();
 	}
 }
 
@@ -139,7 +139,7 @@ void UJRPGTemaUI::PlayBattleWidget()
 void UJRPGTemaUI::BattleTurnStart(bool bPlayer)
 {
 	if (bPlayer) // 오너 유닛
-	{
+	{		
 		BattleWidget->BattleTurnInit(); // 스킬 Init
 		BattleWidget->SetUnitList(); // PlayPriority가 아닌 단순한 유닛 리스트
 	}

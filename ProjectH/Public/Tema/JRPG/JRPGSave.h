@@ -45,7 +45,7 @@ public:
 
 
 USTRUCT(BlueprintType)
-struct FJRPGFieldEnermy
+struct FJRPGFieldEnermySave
 {
 	GENERATED_USTRUCT_BODY()
 
@@ -59,7 +59,7 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		bool bPartyTutorial = false;
 
-	FJRPGFieldEnermy();
+	FJRPGFieldEnermySave();
 
 };
 
@@ -82,13 +82,13 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		FJRPGSerial JRPGSerial;
 	UPROPERTY(VisibleAnywhere)
-		FJRPGFieldEnermy JRPGFieldEnermy;
+		FJRPGFieldEnermySave JRPGFieldEnermySave;
 
 public:
 	void SetLoadCharacter(class AJRPGPlayerController* OwnerController);
 	void SetSave(class AJRPGPlayerController* OwnerController);
 
-	void SetFieldEnermy(class AJRPGEnermy* FieldEnermy, int32 KillCnt);
+	void SetFieldEnermy(class AJRPGFieldEnermy* FieldEnermy, int32 KillCnt);
 	bool GetFieldEnermy(int32 FieldEnermyNum);
 	float GetKillCnt();
 	void SetBattleTutorial(); // Æ©Åä¸®¾ó ³¡.

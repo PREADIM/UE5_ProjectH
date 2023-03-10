@@ -101,8 +101,8 @@ void AJRPGGameMode::PostLogin(APlayerController* Login)
 					JRPGSave->FirstSave();
 				}
 
-				bBattleTutorial = JRPGSave->JRPGFieldEnermy.bTutorial;
-				bPartyTutorial = JRPGSave->JRPGFieldEnermy.bPartyTutorial;
+				bBattleTutorial = JRPGSave->JRPGFieldEnermySave.bTutorial;
+				bPartyTutorial = JRPGSave->JRPGFieldEnermySave.bPartyTutorial;
 				AJRPGUnit* DefaultCharacter = GetCharacterSpawn(JRPGSave->JRPGSerial.RepreCharacterNum, JRPGSave->JRPGSerial.FieldLocation);
 
 				if (DefaultCharacter)
@@ -297,19 +297,7 @@ void AJRPGGameMode::TurnStart()
 	OwnerController->CurrentUnit = Unit;
 
 	if (Unit)
-	{
-		if (Unit->PlayerType == EPlayerType::Player)
-		{
-			Unit->OwnerUnitBattleStart();
-			if (!bBattleTutorial) // 튜토리얼 실행
-				OwnerController->BattleTutorialStart();
-		}
-		else // 적의 차례
-		{
-			// 적이 타겟팅한 캐릭터에 카메라가 위치해 있는다.
-			Unit->EnermyBattleStart();
-		}
-	}
+		Unit->UnitBattleStart();
 }
 
 
@@ -379,14 +367,8 @@ void AJRPGGameMode::TurnListSet()
 		SetUnitList.RemoveAt(0);
 		SetUnitList.Emplace(Unit);
 
-		if (SetUnitList[0].Unit->PlayerType == EPlayerType::Player)
-		{
-			Unit.Unit->BattleStart(true);
-		}
-		else
-		{
-			Unit.Unit->BattleStart(false);
-		}
+
+		SetUnitList[0].Unit->BattleTurnStart();
 	}
 }
 
@@ -427,6 +409,7 @@ void AJRPGGameMode::ReturnWorld()
 	OwnerController->OnPossess(Cast<APawn>(OwnerController->RepreCharacter));
 	OwnerController->ReturnMainWidget();
 	OwnerController->RetrunToField();
+	OwnerController->bBattleING = false;
 }
 
 /* 오너 유닛 생성 컨트롤러에서 받아온다.*/
@@ -536,7 +519,7 @@ void AJRPGGameMode::SetSaveJRPG()
 	JRPGSave->SetSave(OwnerController);
 }
 
-void AJRPGGameMode::SetSaveEnermyUnits(class AJRPGEnermy* FieldEnermy)
+void AJRPGGameMode::SetSaveEnermyUnits(class AJRPGFieldEnermy* FieldEnermy)
 {
 	JRPGSave->SetFieldEnermy(FieldEnermy, KillCnt);
 }

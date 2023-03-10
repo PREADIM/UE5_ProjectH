@@ -58,6 +58,10 @@ struct FCCState // CC기 상태를 별도로 가지고있음.
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		bool bStun; // 애님 블프에서 사용.
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		ECCType LastCCType;
+
+	void SetCCType(ECCType CCType, bool bFlag);
 };
 
 

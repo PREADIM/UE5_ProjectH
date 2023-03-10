@@ -24,9 +24,12 @@ public:
 	void BattleStart();
 	void ReturnToField();
 
+	UFUNCTION()
+		void RestartBT();
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
 		class UBlackboardComponent* BB;
 	UPROPERTY()
-		class AJRPGEnermy* FieldUnit;
+		class AJRPGFieldEnermy* FieldUnit;
 	
 };

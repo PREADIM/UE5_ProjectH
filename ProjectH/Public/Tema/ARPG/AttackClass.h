@@ -67,7 +67,7 @@ public:
 	// 해당 클래스는 월드에 스폰되지않는 실체가 없는 클래스 이기때문에 GetWorld가 불가능하다.
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		bool bCoolTime; // 쿨타임이 존재하는 스킬인가? (온오프로 해두면 노쿨도 가능할듯)
+		bool bAttackCoolTime; // 쿨타임이 존재하는 스킬인가? (온오프로 해두면 노쿨도 가능할듯)
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float CoolTime;

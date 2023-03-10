@@ -18,7 +18,7 @@ AJRPGFieldAIController::AJRPGFieldAIController()
 void AJRPGFieldAIController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
-	FieldUnit = Cast<AJRPGEnermy>(InPawn);
+	FieldUnit = Cast<AJRPGFieldEnermy>(InPawn);
 	if (FieldUnit)
 	{
 		FieldUnit->OwnerAIController = this;
@@ -39,6 +39,12 @@ void AJRPGFieldAIController::BattleStart()
 }
 
 void AJRPGFieldAIController::ReturnToField()
+{
+	FTimerHandle Handle;
+	GetWorld()->GetTimerManager().SetTimer(Handle, this, &AJRPGFieldAIController::RestartBT, 1.5f, false);
+}
+
+void AJRPGFieldAIController::RestartBT()
 {
 	BrainComponent->RestartLogic();
 }

@@ -39,15 +39,18 @@ public:
 
 
 protected:
-	virtual void BeginPlay() override;
+	virtual void BeginPlay();
 
 public:	
-	virtual void Tick(float DeltaTime) override;
-	virtual void PossessedBy(AController* NewController) override;
-	virtual void PostInitializeComponents() override;
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+	virtual void Tick(float DeltaTime);
+	virtual void PossessedBy(AController* NewController);
+	virtual void PostInitializeComponents();
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent);
+	virtual void BattleTurnStart() {}
+	virtual void UnitBattleStart() {}
+	virtual void DeadBattleListRemove() {}
 
+	void TakeDamageCalculator(float DamageAmount);
 	/*----------------------
 			AI & BT
 	------------------------*/
@@ -118,22 +121,17 @@ public:
 		void UnitTurnEnd();
 	UFUNCTION(BlueprintCallable)
 		void AttackEnd(); // 캐릭터의 공격이 끝났을때 위젯히든
-
 	UFUNCTION()
 		void BattleStartCollisionBeginOverlap(class UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodtIndex, bool bFromSweep, const FHitResult& HitResult);
 
-
 public:
-	void BattleStart(bool bFlag);
-	void OwnerUnitBattleStart();
-	void EnermyBattleStart();
-
 	void InitCurrentStat(); // 현재 체력과 MP를 가져온다.
 
 	UFUNCTION(BlueprintCallable)
 		void TargetAttack(float ATK, TSubclassOf<class UDebuffClass> BP_DebuffClass = nullptr); // 하나만 때린다.
 	UFUNCTION(BlueprintCallable)
 		void TargetManyAttack(float ATK, TSubclassOf<class UDebuffClass> BP_DebuffClass = nullptr); // 여러 마리를 때린다.
+
 
 
 public:
@@ -166,14 +164,11 @@ public:
 		bool bIsJRPGUnit = false; // 해당 캐릭터가 JRPG 유닛으로 스폰된 캐릭터인지 확인하는 변수. 
 	// 이 변수로 움직이는 애니메이션을 바꾼다.
 	// 이 변수로 턴제 유닛인 경우 위젯 사이즈 스케일을 변하게 해준다.
-
 	UFUNCTION(BlueprintImplementableEvent)
 		void SetIsJRPGUnit(bool bFlag); // 위 변수를 셋업할 함수. 해당 함수를 통해 애님블프 설정도 바꿈.
 
 	void ThisUnitBattleUnit(bool bFlag); // c++에서 이걸로 실행
-
 	void BattleWidgetOnOff(bool bOnOff);
-
 
 	//---------------------------------------------------------
 	/*-------------------------
@@ -253,6 +248,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		void SetCCState(ECCType CCType, bool bFlag);
+
+	void UnitTurnEndCCState(); // UnitTurnEnd인 시점에서 CC기에 걸려 유닛 턴 종료를 해야하는 경우.
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		bool bCC;

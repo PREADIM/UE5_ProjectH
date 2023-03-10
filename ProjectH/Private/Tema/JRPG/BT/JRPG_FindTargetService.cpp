@@ -19,7 +19,7 @@ void UJRPG_FindTargetService::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 {
 	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
 
-	AJRPGEnermy* OwnerEnermy = Cast<AJRPGEnermy>(OwnerComp.GetAIOwner()->GetPawn());
+	AJRPGFieldEnermy* OwnerEnermy = Cast<AJRPGFieldEnermy>(OwnerComp.GetAIOwner()->GetPawn());
 	if (!OwnerEnermy)
 		return;
 
@@ -33,7 +33,6 @@ void UJRPG_FindTargetService::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 	{
 		for (AActor* Actor : OutActors)
 		{
-			_DEBUG("Find");
 			class AJRPGUnit* TargetUnit = Cast<class AJRPGUnit>(Actor);
 			if (TargetUnit)
 			{
