@@ -8,7 +8,6 @@
 #include "Tema/JRPG/JRPGCharList.h"
 #include "Tema/JRPG/BattleField.h"
 #include "Tema/JRPG/JRPGSave.h"
-#include "Tema/JRPG/JRPGEnermy.h"
 #include "Tema/JRPG/JRPGUnit.h"
 #include "Tema/JRPG/JRPGCharStat.h"
 #include "Tema/JRPG/JRPGCharStatTablePaths.h"
@@ -248,10 +247,10 @@ FBuffIconStruct* AJRPGGameMode::GetBuffIcon(FString IconName)
 
 
 /* 실질적인 JRPG 시작. */
-void AJRPGGameMode::BattleStart(int32 FieldNum, TArray<FEnermys> Enermys)
+bool AJRPGGameMode::BattleStart(int32 FieldNum, TArray<FEnermys> Enermys)
 {
 	if (!GetBattleField(FieldNum)) // 필드 생성.
-		return;
+		return false;
 
 	SetUnitList.Empty();
 	SetOwnerUnits(); // 오너 컨트롤러에 있는 파티 리스트 캐릭터 생성.
@@ -261,15 +260,15 @@ void AJRPGGameMode::BattleStart(int32 FieldNum, TArray<FEnermys> Enermys)
 
 	OwnerController->CameraPossess(OwnerUnits[0].Unit->GetActorLocation(), OwnerUnits[0].Unit->GetActorRotation());	// 카메라에 컨트롤러 빙의
 	if (!OwnerController->DynamicCamera)
-		_DEBUG("Not DynamicCamera");
-
+		return false;
+		
 	OwnerController->DynamicCamera->CurrentField = CurrentField;
 	OwnerController->GameType = EGameModeType::Battle;
 
-	float Delay = OwnerController->BattleStartSequence() + 2.f; // 2초 추가
+	float Delay = OwnerController->BattleStartSequence();
 
 	if (SetUnitList.IsEmpty())
-		return;
+		return false;
 
 	OwnerController->StartBattleWidget();
 	
@@ -277,9 +276,13 @@ void AJRPGGameMode::BattleStart(int32 FieldNum, TArray<FEnermys> Enermys)
 	GetWorld()->GetTimerManager().SetTimer(Timer, FTimerDelegate::CreateLambda([&]()
 	{
 			OwnerController->BattleUIOnOff(true);
-			OwnerController->PlayPriority(); // 우선순위로 짜여진 캐릭터 리스트 위젯 애님 실행.				
+			OwnerController->PlayPriority(); // 우선순위로 짜여진 캐릭터 리스트 위젯 애님 실행.
+			OwnerController->CreateBattleStartWidget();
 	}), Delay, false);
+
+	return true;
 }
+
 
 
 void AJRPGGameMode::TurnStart()
@@ -299,7 +302,7 @@ void AJRPGGameMode::TurnStart()
 		{
 			Unit->OwnerUnitBattleStart();
 			if (!bBattleTutorial) // 튜토리얼 실행
-				BattleTutorialStart();
+				OwnerController->BattleTutorialStart();
 		}
 		else // 적의 차례
 		{
@@ -357,7 +360,6 @@ void AJRPGGameMode::TurnListSet()
 		FTimerHandle Handle;
 		GetWorld()->GetTimerManager().SetTimer(Handle, FTimerDelegate::CreateLambda([&]()
 		{
-
 			GameEnd(false); // 적이 승.
 		}), Delay, false);
 	}
@@ -368,7 +370,6 @@ void AJRPGGameMode::TurnListSet()
 		FTimerHandle Handle;
 		GetWorld()->GetTimerManager().SetTimer(Handle, FTimerDelegate::CreateLambda([&]()
 		{
-
 			GameEnd(true); // 플레이어 승.
 		}), Delay, false);	
 	}
@@ -393,8 +394,7 @@ void AJRPGGameMode::TurnListSet()
 
 void AJRPGGameMode::GameEnd(bool bWinner)
 {
-	OwnerController->UnPossess();
-
+	OwnerController->OnUnPossess();
 	for (FPriorityUnit& Unit : EnermyUnits)
 	{
 		if(IsValid(Unit.Unit))
@@ -407,18 +407,16 @@ void AJRPGGameMode::GameEnd(bool bWinner)
 			Unit.Unit->Destroy();
 	}
 
-	 /*캐릭터 전부 삭제*/
 	/* 원래 전장으로 복귀 */
 	ReturnWorld();
-
 	if (bWinner)
 	{
 		KillCnt++;
-		CurrentBattleEnermy->FieldEnermyDead(); // 플레이어가 승리.	
+		OwnerController->WinGame();	
 	}
+	
 
 }
-
 
 void AJRPGGameMode::ReturnWorld()
 {
@@ -428,6 +426,7 @@ void AJRPGGameMode::ReturnWorld()
 
 	OwnerController->OnPossess(Cast<APawn>(OwnerController->RepreCharacter));
 	OwnerController->ReturnMainWidget();
+	OwnerController->RetrunToField();
 }
 
 /* 오너 유닛 생성 컨트롤러에서 받아온다.*/
@@ -522,44 +521,20 @@ void AJRPGGameMode::SetEnermyUnits(TArray<FEnermys> Enermys)
 	}
 }
 
-
-
-void AJRPGGameMode::BattleTutorialStart()
+void AJRPGGameMode::SetSaveBattleTutorial()
 {
-	if (BP_BattleTutorialWidget)
-	{
-		UUserWidget* BattleTT = CreateWidget<UUserWidget>(GetWorld(), BP_BattleTutorialWidget);
-		if (BattleTT)
-		{
-			BattleTT->AddToViewport();
-			bBattleTutorial = true;
-			JRPGSave->SetBattleTutorial();
-		}
-	}
+	JRPGSave->SetBattleTutorial();
 }
 
-void AJRPGGameMode::PartyTutorialStart()
+void AJRPGGameMode::SetSavePartyTutorial()
 {
-	if (BP_PartyTutorialWidget)
-	{
-		UUserWidget* PartyTT = CreateWidget<UUserWidget>(GetWorld(), BP_PartyTutorialWidget);
-		if (PartyTT)
-		{
-			PartyTT->AddToViewport();
-			bPartyTutorial = true;
-			JRPGSave->SetPartyTutorial();
-		}
-
-	}
-
+	JRPGSave->SetPartyTutorial();
 }
 
 void AJRPGGameMode::SetSaveJRPG()
 {
 	JRPGSave->SetSave(OwnerController);
 }
-
-
 
 void AJRPGGameMode::SetSaveEnermyUnits(class AJRPGEnermy* FieldEnermy)
 {

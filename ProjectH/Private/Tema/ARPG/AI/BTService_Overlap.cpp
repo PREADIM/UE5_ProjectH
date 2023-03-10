@@ -21,10 +21,7 @@ void UBTService_Overlap::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* Node
 
 	AARPGEnermy* OwnerPawn = Cast<AARPGEnermy>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(FName("CurrentUnit")));
 	if (!OwnerPawn)
-	{
-		_DEBUG("OwnerPawn Fail");
 		return;
-	}
 
 	UWorld* World = OwnerPawn->GetWorld();
 	FVector Center = OwnerPawn->GetActorLocation();

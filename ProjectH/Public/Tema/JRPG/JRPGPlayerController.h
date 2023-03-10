@@ -39,6 +39,7 @@ public:
 
 	virtual void BeginPlay();
 	virtual void OnPossess(APawn* NewPawn) override;
+	virtual void OnUnPossess() override;
 
 	void SetupInputComponent();
 
@@ -72,7 +73,6 @@ public:
 
 
 	void SetSave(); // 게임모드에 접근하여 세이브하기.
-
 	void SetPartyChange(); // 파티 변경했으니 위젯에서 파티 변경.
 
 	void SetParty_First();
@@ -87,17 +87,27 @@ public:
 	//게임 모드에 있는 GetCharStat을 컨트롤러에서 받아오는 방법. 위젯에서 쓸모 있음.
 	// 결국엔 Char의 레벨을 가지고있는 이 컨트롤러이니 여기서 받아오는 것도 괜찮을듯
 
+
+	//--------------------------------------
+	/*------------------------------------
+			Drop Exp Or Character
+	-------------------------------------*/
+
+	void DropItem();
 	void AddCharExp(int32 CharNum, float DropExp);
-	//★★ 필드 에너미에서 캐릭터 번호를 가져와서 해당 캐릭터의 경험치를 증가시킨다.
-	// 경험치가 다음 경험치를 넘기는 경우 레벨업을 시키고, 새롭게 스탯을 가져와야한다.
+	void AddDropChar(int32 CharNum); 
 
-
-	void AddDropChar(int32 CharNum); // 만일 캐릭터를 얻을때의 경우 추가하는 함수. ★★
-	
+	//--------------------------------------
 
 	// 배틀 
-	void PlayBattleMode(TArray<FEnermys> EnermyUnits); // 배틀 시작.
-	void ReturnMainWidget(); // 배틀 종료후 돌아가기.
+	UPROPERTY(VisibleAnywhere)
+		bool bBattleING; // 배틀 상태 확인.
+	bool GetBattleING() { return bBattleING; }
+
+	bool PlayBattleMode(class AJRPGEnermy* CurrentFieldEnermy); // 배틀 시작.
+	void ReturnMainWidget(); // 배틀 종료후 위젯 초기화.
+	void WinGame();
+	void RetrunToField(); // 배틀 종료후 처리
 
 	void StartBattleWidget();
 	void BattleTurnStart(bool bFlag);
@@ -133,6 +143,9 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		class AJRPGUnit* RepreCharacter;
 
+	UPROPERTY(VisibleAnywhere)
+		class AJRPGEnermy* CurrentOverlapFieldEnermy;
+
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		TArray<int32> CurrentParty; // 현재 선택되어있는 파티리스트
@@ -143,25 +156,27 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		TArray<int32> HaveCharList; // 가지고 있는 전체 캐릭터 넘버 (추후 세이브 로드 해야함).
-	// 나중에 퀘스트 넘버처럼 번호와 BP 패스를 가지고 해당 넘버만 저장하고 불러오는 형식으로 만들어도될듯.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)	
 		TMap<int32, int32> HaveCharLevels; // 가지고 있는 캐릭터의 레벨들. (레벨로 스탯을 데이터테이블에서 검색해서 가져옴)
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		TMap<int32, FJRPGCharStat> CharStats; // 가지고 있는 캐릭터의 스텟들.
-	// 게임모드의 포스트 로그인에서 레벨로 데이터 테이블을 검색해서 스탯들을 미리 다 가져온다 .
 	UPROPERTY(VisibleAnywhere)
 		TMap<int32, float> CurrentExp; // 현재 경험치
-
-
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MainUI)
-		TSubclassOf<class UJRPGTemaUI> BP_TemaMainUI;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MainUI)
-		class UJRPGTemaUI* TemaMainUI;
 
 	UPROPERTY(VisibleAnywhere)
 		class UDataTable* UnitUITable;
 
+
+
+	/*------------------------------
+				Widget
+	-------------------------------*/
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MainUI)
+		TSubclassOf<class UJRPGTemaUI> BP_TemaMainUI;
+	UPROPERTY()
+		class UJRPGTemaUI* TemaMainUI;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TSubclassOf<class UDropItemWidget> BP_DropItemWidget;
@@ -173,11 +188,9 @@ public:
 	UPROPERTY()
 		class UDropExpWidget* DropExpWidget;
 
-
 	UPROPERTY()
 		TArray<class UCustomWidget*> LastWidget; // 마지막 Widget을 스택처럼 저장하는 배열.
 	// AddToViewport 를 사용하는 UI만 저장한다. Animation을 가지고있는 이미 할당되어있는 UI는 제외.
-
 
 	UPROPERTY(VisibleAnywhere)
 		class AJRPGUnit* CurrentUnit; // ESC를 할 Unit 스킬을 실행 중이면 취소하고 , 아무것도 실행중이지 않으면 나가기 창을 띄운다.
@@ -195,6 +208,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TSubclassOf<class UDamageWidget> BP_DamageSkin;
 
+	/*--------------------------------
+					시퀀스
+	---------------------------------*/
+
 	UPROPERTY()
 		class ULevelSequencePlayer* SequencePlayer;
 	UPROPERTY(EditAnywhere)
@@ -202,13 +219,36 @@ public:
 	UPROPERTY(EditAnywhere)
 		class ULevelSequence* EndSequence;
 
-	
 	float BattleStartSequence();
 	// 배틀 시작할때 위젯 인비지블 및 시퀀서 실행
 	float BattleEndSequence();
 	//배틀 종료 후의 시퀀스.
 
+	/*--------------------------------
+			튜토리얼 위젯
+	---------------------------------*/
+
+	UPROPERTY(EditAnywhere)
+		TSubclassOf<class UUserWidget> BP_BattleTutorialWidget;
+	UPROPERTY(EditAnywhere)
+		TSubclassOf<class UUserWidget> BP_PartyTutorialWidget;
+
+	void BattleTutorialStart();
+	void PartyTutorialStart();
+
+	//-----------------------------------------------------------
+
+	UPROPERTY(EditAnywhere)
+		TSubclassOf<class UCustomAnimWidget> BP_BattleStartWidget;
+
+	void CreateBattleStartWidget();
+	
+	//-----------------------------------------------------------
+
 	void BattleUIOnOff(bool bOnOff); // UI 켜기 끄기.
 	void PlayPriority();
 
+	void SetupDropCharWidget(int32 DropCharNum);
+	void SetupDropExpWidget(int32 DropExp);
 };
+

@@ -31,29 +31,6 @@ void UJRPGSkillButton::Init()
 	}
 }
 
-//void UJRPGSkillButton::EnermyTurnFirstInit()
-//{
-//	if (GM)
-//	{
-//		FSlateBrush Icon;
-//
-//		switch (ButtonType)
-//		{
-//		case EButtonType::NormalAttack:
-//			CurrentUnit = GM->OwnerUnits.HeapTop().Unit;
-//			CostMP = 0;
-//			SetButton(CurrentUnit->UnitSkills.NormalAttack.SkillImg);
-//			break;
-//		case EButtonType::SkillAttack:
-//			CurrentUnit = GM->OwnerUnits.HeapTop().Unit;
-//			CostMP = CurrentUnit->UnitSkills.Skill_1.CostMP;
-//			SetButton(CurrentUnit->UnitSkills.Skill_1.SkillImg);
-//			SkillSetActive();
-//			break;
-//		}
-//	}
-//}
-
 void UJRPGSkillButton::UseSkill()
 {
 	if (CurrentUnit)
@@ -99,12 +76,10 @@ void UJRPGSkillButton::SkillSetActive()
 {
 	if (CurrentUnit->CurrentMP < CostMP)
 	{
-		_DEBUG("Set Enable false");
 		SkillButton->SetIsEnabled(false);
 	}
 	else
 	{
-		_DEBUG("Set Enable true");
 		SkillButton->SetIsEnabled(true);
 	}
 		

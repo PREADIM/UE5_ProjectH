@@ -16,32 +16,18 @@ class PROJECTH_API AJRPGEnermy : public ACharacter
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this character's properties
 	AJRPGEnermy();
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-
-	UFUNCTION(BlueprintCallable)
-		void EnermyCollisionOverlap(class AJRPGPlayerController* PC); // 플레이어가 공격함
-
-	UFUNCTION(BlueprintCallable)
-		void PlayerCollisionOverlap(class AJRPGUnit* PlayerUnit); // 적이 공격함.
+	//virtual void Tick(float DeltaTime) override;
 
 	void FieldEnermyDead(); // 죽음 처리 함수.
-
-	UFUNCTION()
-		void DropItem();
-	// 죽을때 떨어뜨릴 것들
-
-	//UFUNCTION(BlueprintNativeEvent)
 	void DeadUnit();
+	void ReturnToField();
+	void BattleStart();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool bBPBindFunc;
@@ -55,14 +41,18 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TArray<FEnermys> EnermyUnits; // 적 유닛만 사용하는 기능, 무슨 유닛을가지고 있는지 판단.
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		bool bDead; // 이 개체가 죽었는지 살았는지 결정한다.
+	UPROPERTY(VisibleAnywhere)
+		bool bDead;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		class AJRPGGameMode* GM;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		class AJRPGPlayerController* OwnerController;
+	UPROPERTY(VisibleAnywhere)
+		class AJRPGFieldAIController* OwnerAIController;
+
+	UPROPERTY(EditAnywhere)
+		class UBehaviorTree* BT;
+	class UBehaviorTree* GetBT();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UAnimMontage* DeadMontage; 

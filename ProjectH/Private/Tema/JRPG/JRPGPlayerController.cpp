@@ -4,6 +4,7 @@
 #include "Tema/JRPG/JRPGPlayerController.h"
 #include "Tema/JRPG/JRPGCamera.h"
 #include "Tema/JRPG/JRPGGameMode.h"
+#include "Tema/JRPG/JRPGEnermy.h"
 #include "Tema/JRPG/MainUI/JRPGTemaUI.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Tema/JRPG/MainUI/PartySettingField.h"
@@ -15,6 +16,7 @@
 #include <MovieSceneSequencePlayer.h>
 #include "Tema/JRPG/BattleUI/DropItemWidget.h"
 #include "Tema/JRPG/BattleUI/DropExpWidget.h"
+#include "Tema/JRPG/BattleUI/CustomAnimWidget.h"
 
 
 
@@ -68,6 +70,12 @@ void AJRPGPlayerController::OnPossess(APawn* NewPawn)
 }
 
 
+void AJRPGPlayerController::OnUnPossess()
+{
+	Super::OnUnPossess();
+}
+
+
 /* 캐릭터에 해당하는 파티 프로필, UI에 들어갈 캐릭터 이름이 저장되어 있는 곳.*/
 FJRPGUnitUIStruct* AJRPGPlayerController::GetUnitUI(int32 CharacterNum)
 {
@@ -97,7 +105,7 @@ void AJRPGPlayerController::CameraPossess(FVector Location, FRotator Rotation)
 		DynamicCamera = GetWorld()->SpawnActor<AJRPGCamera>(BP_Camera, FTransform(Location));
 		DynamicCamera->TargetLocation = Location;
 		DynamicCamera->TargetRotation = Rotation;	
-		UnPossess();
+		OnUnPossess();
 		OnPossess(DynamicCamera);
 		DynamicCamera->OwnerController = this;
 		SetShowMouseCursor(true);
@@ -121,7 +129,7 @@ void AJRPGPlayerController::CameraRotSetUp(FRotator Rotation)
 
 void AJRPGPlayerController::ExitCamera()
 {
-	UnPossess();
+	OnUnPossess();
 	OnPossess(Cast<APawn>(RepreCharacter));
 }
 
@@ -144,22 +152,70 @@ void AJRPGPlayerController::AddDropChar(int32 CharNum)
 	SetSave();
 }
 
-/* 유닛에서 공격을 받던 공격을 하던 배틀 시작할때 이것을 실행. */
-void AJRPGPlayerController::PlayBattleMode(TArray<FEnermys> EnermyUnits)
+void AJRPGPlayerController::DropItem()
 {
-	// 에너미 유닛은 추후에 캐릭터가 공격했을때 닿은 적이 가지고있는 것으르 가져온다.
+	if (CurrentOverlapFieldEnermy)
+	{
+		FJRPGDropStruct DropStruct = CurrentOverlapFieldEnermy->DropStruct;
+
+		for (int32 CharNum : CurrentParty)
+			AddCharExp(CharNum, DropStruct.DropExp);
+
+		SetupDropExpWidget(DropStruct.DropExp);
+
+		if (DropStruct.DropCharNum != 0)
+		{
+			SetupDropCharWidget(DropStruct.DropCharNum);
+
+			if (!GM->bPartyTutorial) // 캐릭터 드랍했으니 파티 설정 해보라는 튜토리얼 실행.
+				PartyTutorialStart();
+		}
+	}
+}
+
+
+void AJRPGPlayerController::SetupDropCharWidget(int32 DropCharNum)
+{
+	if (DropCharWidget)
+	{
+		AddDropChar(DropCharNum);
+		FString DropCharName = GetUnitUI(DropCharNum)->CharName;
+		DropCharWidget->Init(DropCharName);
+		DropCharWidget->AddToViewport();
+	}
+
+}
+
+
+void AJRPGPlayerController::SetupDropExpWidget(int32 DropExp)
+{
+	if (DropExpWidget)
+	{
+		DropExpWidget->Init(DropExp);
+		DropExpWidget->AddToViewport();
+	}
+}
+
+/* 배틀 시작할때 이것을 실행. */
+bool AJRPGPlayerController::PlayBattleMode(AJRPGEnermy* CurrentFieldEnermy)
+{
 	if (GM)
 	{
 		if (RepreCharacter)
 		{
-			RepreCharacter->bIsLMBAttack = true;
+			CurrentOverlapFieldEnermy = CurrentFieldEnermy;
 			FieldLocation = RepreCharacter->GetActorTransform();
 			GM->SetSaveJRPG();
-
 			TemaMainUI->StartBattleWidget();		
 		}
-		GM->BattleStart(CurrentFieldNum, EnermyUnits);
+		bBattleING = GM->BattleStart(CurrentFieldNum, CurrentOverlapFieldEnermy->EnermyUnits);
+		if (bBattleING)
+			CurrentOverlapFieldEnermy->BattleStart();
+
+		return bBattleING;
 	}
+
+	return false;
 }
 
 void AJRPGPlayerController::ReturnMainWidget()
@@ -167,6 +223,18 @@ void AJRPGPlayerController::ReturnMainWidget()
 	TemaMainUI->StartMainWidget();
 }
 
+void AJRPGPlayerController::WinGame()
+{
+	DropItem();
+	CurrentOverlapFieldEnermy->FieldEnermyDead();
+	bBattleING = false;
+}
+
+
+void AJRPGPlayerController::RetrunToField()
+{
+	CurrentOverlapFieldEnermy->ReturnToField();
+}
 
 
 void AJRPGPlayerController::GameEndSpawnCharacter()
@@ -497,22 +565,6 @@ void AJRPGPlayerController::BattleUIOnOff(bool bOnOff)
 	TemaMainUI->BattleUIOnOff(bOnOff);
 	for (FPriorityUnit Unit : GM->SetUnitList)
 		Unit.Unit->BattleWidgetOnOff(bOnOff);
-
-	/*if (bOnOff)
-	{
-		TemaMainUI->BattleUIOnOff(bOnOff);
-		for (FPriorityUnit Unit : GM->SetUnitList)
-		{
-			Unit.Unit->BattleWidgetOnOff(true);
-		}
-	}
-	else
-	{
-		TemaMainUI->BattleUIOnOff(bOnOff);
-		for (FPriorityUnit Unit : GM->SetUnitList)
-		{
-			Unit.Unit->BattleWidgetOnOff(false);
-	}*/
 }
 
 
@@ -522,7 +574,51 @@ void AJRPGPlayerController::PlayPriority()
 }
 
 
+void AJRPGPlayerController::CreateBattleStartWidget()
+{
+	if (BP_BattleStartWidget)
+	{
+		float EndTime = 1.8f;
+		UCustomAnimWidget* BattleStartWidget = CreateWidget<UCustomAnimWidget>(GetWorld(), BP_BattleStartWidget);
+		if (BattleStartWidget)
+		{
+			BattleStartWidget->PlayCustomAnimation();
+			FTimerHandle Timer;
+			GetWorld()->GetTimerManager().SetTimer(Timer, FTimerDelegate::CreateLambda([&]()
+				{
+					BattleStartWidget->RemoveFromParent();
+				}), EndTime, false);
+		}
+	}
+}
 
 
 
 
+void AJRPGPlayerController::BattleTutorialStart()
+{
+	if (BP_BattleTutorialWidget)
+	{
+		UUserWidget* BattleTT = CreateWidget<UUserWidget>(GetWorld(), BP_BattleTutorialWidget);
+		if (BattleTT)
+		{
+			BattleTT->AddToViewport();
+			GM->bBattleTutorial = true;
+			GM->SetSaveBattleTutorial();		
+		}
+	}
+}
+
+void AJRPGPlayerController::PartyTutorialStart()
+{
+	if (BP_PartyTutorialWidget)
+	{
+		UUserWidget* PartyTT = CreateWidget<UUserWidget>(GetWorld(), BP_PartyTutorialWidget);
+		if (PartyTT)
+		{
+			PartyTT->AddToViewport();
+			GM->bPartyTutorial = true;
+			GM->SetSavePartyTutorial();
+		}
+	}
+}

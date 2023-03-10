@@ -31,6 +31,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Camera3P)
 		UCameraComponent* Camera;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = BattleCollision)
+		class USphereComponent* OverlapBattleStartCollision;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = CharacterName)
 		FString CharacterName;
 
@@ -61,7 +64,6 @@ public:
 
 	//--------------------------------------------------
 
-
 	UFUNCTION(BlueprintCallable)
 		void AddMPAndULT(); // 맞은 대상의 MP와 ULT 게이지가 찬다.
 	// 연타 기술을 대비해서 함수로 따로만들어서 한번만 호출하게 한다.
@@ -85,8 +87,6 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 		void TestKey();
 
-	void LMB();
-
 	UFUNCTION(BlueprintCallable)
 		void NormalAttack();
 	UFUNCTION(BlueprintCallable)
@@ -97,8 +97,6 @@ public:
 
 	/* 블루프린트에서 실행. */
 	// 캐릭터들 독자적인 스킬 및 공격
-	UFUNCTION(BlueprintImplementableEvent)
-		void CallLMB();
 	UFUNCTION(BlueprintImplementableEvent)
 		void CallNormalAttack();
 	UFUNCTION(BlueprintImplementableEvent)
@@ -118,9 +116,12 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		void UnitTurnEnd();
-
 	UFUNCTION(BlueprintCallable)
 		void AttackEnd(); // 캐릭터의 공격이 끝났을때 위젯히든
+
+	UFUNCTION()
+		void BattleStartCollisionBeginOverlap(class UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodtIndex, bool bFromSweep, const FHitResult& HitResult);
+
 
 public:
 	void BattleStart(bool bFlag);
@@ -145,9 +146,6 @@ public:
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
 		EPlayerType PlayerType;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UAnimMontage* LMBAnim;
-
 
 	UPROPERTY(VisibleAnywhere)
 		float MouseSensitivity;
@@ -159,12 +157,7 @@ public:
 		int32 EnermyLevel = 1; // (적 유닛 한정) 적의 레벨. 데이터 테이블에 검색해서 스탯을 가져오기 위함이다.
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FJRPGUnitSkill UnitSkills;
-
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float WalkSpeed;
-	
+		FJRPGUnitSkill UnitSkills;	
 
 	/*-----------------
 		전투 스테이스
@@ -211,9 +204,6 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = CharacterStat)
 		float MaxULTGage; // 최대 궁극기 게이지.
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = CharacterStat)
-		bool bIsLMBAttack;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UAnimMontage* DeadAnim;

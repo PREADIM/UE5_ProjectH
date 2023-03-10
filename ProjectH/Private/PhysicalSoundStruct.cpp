@@ -14,9 +14,7 @@ EPhysicalSurface TracePysicalSurface(AActor* Unit, float EndDistance)
 
 		bool bHit = Unit->GetWorld()->LineTraceSingleByChannel(HitResult, Location, Location - FVector(0.f, 0.f, EndDistance), ECollisionChannel::ECC_GameTraceChannel11, Param);
 		if (bHit)
-		{
 			return UGameplayStatics::GetSurfaceType(HitResult);
-		}
 
 	}
 	

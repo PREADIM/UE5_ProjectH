@@ -26,9 +26,7 @@ void AARPGAIController::OnPossess(APawn* InPawn)
 	if (OwnerUnit)
 	{
 		if (!BB->InitializeBlackboard(*(OwnerUnit->GetBT()->BlackboardAsset)))
-		{
-			_DEBUG("Not Init BB");
-		}
+			return;
 
 		OwnerUnit->OwnerAIController = this;
 

@@ -75,7 +75,7 @@ public:
 		JRPG 게임 흐름 함수들
 	-------------------------------*/
 
-	void BattleStart(int32 FieldNum, TArray<FEnermys> Enermys);
+	bool BattleStart(int32 FieldNum, TArray<FEnermys> Enermys);
 	void TurnStart();
 
 	UFUNCTION(BlueprintCallable)
@@ -140,22 +140,10 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		class UDataTable* IconTextureTable; // 각종 버프 아이콘 테이블
 
-
-
 	UPROPERTY(BlueprintReadOnly)
 		class ABattleField* CurrentField;
 	FVector FieldLocation;
 	// 배틀필드 클래스를 가져오기. 배틀필드 또한 지역 넘버를 가지고있고 해당 위치를 데이터베이스에서 가져옴.
-
-
-	UPROPERTY(EditAnywhere)
-		TSubclassOf<class UUserWidget> BP_BattleTutorialWidget;
-	UPROPERTY(EditAnywhere)
-		TSubclassOf<class UUserWidget> BP_PartyTutorialWidget;
-
-
-	void BattleTutorialStart();
-	void PartyTutorialStart();
 
 	/*------------------
 	
@@ -168,6 +156,8 @@ public:
 
 	bool bBattleTutorial = false; // 튜토리얼을 했는지 안했는지 알아오는 것.
 	bool bPartyTutorial = false; // 튜토리얼을 했는지 안했는지 알아오는 것.
+	void SetSaveBattleTutorial();
+	void SetSavePartyTutorial();
 
 	UPROPERTY(EditAnywhere)
 		int32 MaxCharCnt; // 이 게임이 가지는 최대 캐릭터 수
@@ -180,11 +170,7 @@ public:
 	// 이 둘은 필드의 적이 죽엇는지 살았는지 세이브하는 함수들.
 
 	FJRPGDropStruct GetFieldEnermyDropStruct(int32 EnermyUnitNum);
-	// 필드 적이 죽을 때 남길 아이템.
-
-	UPROPERTY()
-		class AJRPGEnermy* CurrentBattleEnermy; // 현재 싸우는 필드 유닛을 저장.
-	// 게임이 끝나고 죽었는지 살았는지 알아야 하기때문.
+	// 필드 적이 죽을 때 남길 아이템.	
 	
 	UPROPERTY(BlueprintReadOnly)
 		int32 KillCnt; // 추후 기믹을 위해. 카운트

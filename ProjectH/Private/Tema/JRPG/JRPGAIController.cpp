@@ -20,7 +20,6 @@ AJRPGAIController::AJRPGAIController()
 void AJRPGAIController::BeginPlay()
 {
 	Super::BeginPlay();
-
 }
 
 
@@ -52,13 +51,12 @@ void AJRPGAIController::OnPossess(APawn* InPawn)
 	{
 		_DEBUG("Blackboard ERROR");
 	}
-
 }
 
 
 void AJRPGAIController::OnUnPossess()
 {
-	Destroy();
+	Super::OnUnPossess();
 }
 
 

@@ -33,7 +33,6 @@ AARPGUnit::AARPGUnit()
 
 	DeathCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("DeathCamera"));
 	DeathCamera->SetupAttachment(GetMesh(), FName("HeadSocket"));
-	//DeathCamera->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, "HeadSocket");
 	DeathCamera->SetActive(false);
 
 	NormalSpeed = 250.f;

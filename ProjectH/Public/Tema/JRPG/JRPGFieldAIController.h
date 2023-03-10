@@ -4,34 +4,29 @@
 
 #include "ProjectH.h"
 #include "AIController.h"
-#include "JRPGAIController.generated.h"
+#include "JRPGFieldAIController.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECTH_API AJRPGAIController : public AAIController
+class PROJECTH_API AJRPGFieldAIController : public AAIController
 {
 	GENERATED_BODY()
 
 public:
-
-	AJRPGAIController();
-
-public:
-	/*-------------------
-		Virtual Function
-	---------------------*/
-	virtual void BeginPlay() override;
 	virtual void OnPossess(APawn* InPawn) override;
 	virtual void OnUnPossess() override;
 
-	void SetIsTurn(bool bFlag);
-
 public:
+	AJRPGFieldAIController();
+
+	void BattleStart();
+	void ReturnToField();
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
 		class UBlackboardComponent* BB;
 	UPROPERTY()
-		class AJRPGUnit* OwnerCharacter;
-
+		class AJRPGEnermy* FieldUnit;
+	
 };

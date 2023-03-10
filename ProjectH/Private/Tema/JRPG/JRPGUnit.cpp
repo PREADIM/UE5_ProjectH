@@ -17,7 +17,6 @@
 // Sets default values
 AJRPGUnit::AJRPGUnit()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	bUseControllerRotationPitch = false;
@@ -26,18 +25,19 @@ AJRPGUnit::AJRPGUnit()
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 520.f, 0.f);
-
-	//3인칭을 표현 할 스프링암
+	
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArm->SetupAttachment(RootComponent);
 	SpringArm->bUsePawnControlRotation = true;
 	SpringArm->bDoCollisionTest = true;
 
-
-	//3인칭 카메라
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera3P"));
 	Camera->SetupAttachment(SpringArm);
 	Camera->bUsePawnControlRotation = false;
+
+	OverlapBattleStartCollision = CreateDefaultSubobject<USphereComponent>(TEXT("OverlapBattleStartCollision"));
+	OverlapBattleStartCollision->SetupAttachment(RootComponent);
+	OverlapBattleStartCollision->SetSphereRadius(150.f);
 
 	BattleHPComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("BattleHP"));
 	BattleHPComponent->SetupAttachment(RootComponent);
@@ -47,13 +47,8 @@ AJRPGUnit::AJRPGUnit()
 	BattleHPComponent->SetTickMode(ETickMode::Automatic);
 
 	Priority = 0;
-
-	WalkSpeed = 450.f; // AIMoveTo하는 유닛은 이걸 넣어주기.
-
-	bIsLMBAttack = false;
 }
 
-// Called when the game starts or when spawned
 void AJRPGUnit::BeginPlay()
 {
 	Super::BeginPlay();
@@ -68,10 +63,9 @@ void AJRPGUnit::BeginPlay()
 
 	UProjectHGameInstance* GI = Cast<UProjectHGameInstance>(UGameplayStatics::GetGameInstance(this));
 	if (GI)
-	{
 		MouseSensitivity = GI->MS;
-	}
 
+	OverlapBattleStartCollision->OnComponentBeginOverlap.AddDynamic(this, &AJRPGUnit::BattleStartCollisionBeginOverlap);
 }
 
 // Called every frame
@@ -103,8 +97,6 @@ void AJRPGUnit::PossessedBy(AController* NewController)
 		{
 			OwnerController->RepreCharacterNum = CharNum; // 다시 빙의해야하는 캐릭터 저장.
 			OwnerController->RepreCharacter = this;
-
-			//★ 대표 캐릭터 변경로직 실행시 여기서 해당 캐릭터의 정보를 위젯에 초기화하는 작업 수행.
 		}
 	}
 }
@@ -112,7 +104,6 @@ void AJRPGUnit::PossessedBy(AController* NewController)
 void AJRPGUnit::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
-
 	AnimInstance = Cast<UAnimInstance>(GetMesh()->GetAnimInstance());
 }
 
@@ -122,7 +113,7 @@ void AJRPGUnit::PostInitializeComponents()
 -----------------*/
 void AJRPGUnit::Forward(float Value)
 {
-	if (!bIsLMBAttack && OwnerController->GameType != EGameModeType::UI)
+	if (OwnerController->GameType != EGameModeType::UI)
 	{
 		FVector Direction = FRotationMatrix(GetControlRotation()).GetScaledAxis(EAxis::X);
 		Direction.Z = 0.f;
@@ -134,7 +125,7 @@ void AJRPGUnit::Forward(float Value)
 
 void AJRPGUnit::MoveRight(float Value)
 {
-	if (!bIsLMBAttack && OwnerController->GameType != EGameModeType::UI)
+	if (OwnerController->GameType != EGameModeType::UI)
 	{
 		FVector Direction = FRotationMatrix(GetControlRotation()).GetScaledAxis(EAxis::Y);
 		Direction.Z = 0.f;
@@ -166,8 +157,6 @@ void AJRPGUnit::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAxis("MoveRight", this, &AJRPGUnit::MoveRight);
 	PlayerInputComponent->BindAxis("LookUp", this, &AJRPGUnit::LookUp);
 	PlayerInputComponent->BindAxis("LookRight", this, &AJRPGUnit::LookRight);
-
-	PlayerInputComponent->BindAction("LMB", IE_Pressed, this, &AJRPGUnit::LMB);
 
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
@@ -245,21 +234,6 @@ float AJRPGUnit::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent,
 	return DamageApplied;
 }
 
-
-
-void AJRPGUnit::LMB()
-{
-	if (LMBAnim && !GetCharacterMovement()->IsFalling())
-	{
-		if (bIsLMBAttack || OwnerController->GameType == EGameModeType::UI)
-			return;
-
-		CallLMB();
-		PlayAnimMontage(LMBAnim); // 배틀 시작 공격 애니메이션 실행.
-		bIsLMBAttack = true;
-	}
-}
-
 void AJRPGUnit::NormalAttack()
 {
 	CallNormalAttack();
@@ -277,16 +251,11 @@ void AJRPGUnit::Skill_ULT()
 }
 
 
-
-
 // 해당 캐릭터의 턴 이라는 것. true는 오너, false는 적이다.
 void AJRPGUnit::BattleStart(bool bFlag) // 이 함수는 아직 위젯을 보이게 하기전에 먼저 위젯 아이콘을 미리 셋팅해두는 함수.
 {
 	if (OwnerController)
-	{
 		OwnerController->BattleTurnStart(bFlag);
-	}
-
 	// UI에 모든 정보를 초기화 해두고, UI에서 실행.
 }
 
@@ -302,7 +271,7 @@ void AJRPGUnit::OwnerUnitBattleStart()
 		FTimerHandle Handle;
 		GetWorld()->GetTimerManager().SetTimer(Handle, FTimerDelegate::CreateLambda([&]()
 		{
-				UnitTurnEnd();
+			UnitTurnEnd();
 		}), 3.f, false);
 	}
 	else
@@ -311,8 +280,7 @@ void AJRPGUnit::OwnerUnitBattleStart()
 	}
 	
 	OwnerController->SetVisibleBattleWidget(true); // 위젯 보이기
-	OwnerController->EnermyListSetup();
-	
+	OwnerController->EnermyListSetup();	
 }
 
 
@@ -331,9 +299,19 @@ void AJRPGUnit::EnermyBattleStart()
 	if (!OwnerAIController)
 		return;
 
-	OwnerAIController->SetIsTurn(true); // 턴이다.
-
-
+	if (bCC) // CC기 상태인 경우 스킵
+	{
+		FTimerHandle Handle;
+		GetWorld()->GetTimerManager().SetTimer(Handle, FTimerDelegate::CreateLambda([&]()
+			{
+				UnitTurnEnd();
+			}), 3.f, false);
+	}
+	else
+	{
+		OwnerAIController->SetIsTurn(true); // 턴이다.
+	}
+	
 	// 적이 취할 행동 설정.
 	// 적이 때릴 내 캐릭터 타겟 설정.
 	// 타겟을 정했으면 해당 타겟으로 카메라 이동. 
@@ -421,9 +399,7 @@ void AJRPGUnit::ThisUnitBattleUnit(bool bFlag)
 void AJRPGUnit::BattleWidgetOnOff(bool bOnOff)
 {
 	if (bOnOff)
-	{
 		BattleHPWidget->SetRenderOpacity(1.0f);
-	}
 	else
 	{
 		BattleHPWidget->SetRenderOpacity(0.0f);
@@ -462,7 +438,7 @@ void AJRPGUnit::UnitTurnEnd()
 {
 	if (OwnerController)
 	{
-		for (FDebuffStruct Debuff : DebuffSet)
+		for (FDebuffStruct& Debuff : DebuffSet)
 		{
 			if (Debuff.DebuffClass->SetupCnt())
 			{
@@ -476,11 +452,21 @@ void AJRPGUnit::UnitTurnEnd()
 	}
 }
 
-
 void AJRPGUnit::AttackEnd()
 {
 	OwnerController->SetVisibleBattleWidget(false);
 }
+
+void AJRPGUnit::BattleStartCollisionBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodtIndex, bool bFromSweep, const FHitResult& HitResult)
+{
+	if (OwnerController && OwnerController->GetBattleING())
+		return;
+
+	class AJRPGEnermy* CurrentOverlapFieldEnermy = Cast<class AJRPGEnermy>(OtherActor);
+	if (CurrentOverlapFieldEnermy)
+		OwnerController->PlayBattleMode(CurrentOverlapFieldEnermy);
+}
+
 
 void AJRPGUnit::SetPhysicalSound()
 {
