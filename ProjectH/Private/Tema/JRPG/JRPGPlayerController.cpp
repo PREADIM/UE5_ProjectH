@@ -508,6 +508,7 @@ void AJRPGPlayerController::SetVisibleBattleWidget(bool bFlag)
 void AJRPGPlayerController::SetEnermyTurnWidget(bool bFlag)
 {
 	TemaMainUI->SetEnermyTurnWidget(bFlag);
+	_DEBUG("Skill Visible");
 }
 
 

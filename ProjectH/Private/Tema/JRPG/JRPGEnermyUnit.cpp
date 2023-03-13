@@ -44,6 +44,8 @@ void AJRPGEnermyUnit::BattleTurnStart()
 
 void AJRPGEnermyUnit::UnitBattleStart()
 {
+	Super::UnitBattleStart();
+
 	if (!OwnerController)
 		return;
 
@@ -56,9 +58,7 @@ void AJRPGEnermyUnit::UnitBattleStart()
 	if (bCC) // CC기 상태인 경우 스킵
 		UnitTurnEndCCState();
 	else
-	{
 		BattleAIController->SetIsTurn(true); // 턴이다.
-	}
 
 	// 적이 취할 행동 설정.
 	// 적이 때릴 내 캐릭터 타겟 설정.

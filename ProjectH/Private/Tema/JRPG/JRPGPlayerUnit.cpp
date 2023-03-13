@@ -44,19 +44,22 @@ void AJRPGPlayerUnit::BattleTurnStart()
 
 void AJRPGPlayerUnit::UnitBattleStart()
 {
+	Super::UnitBattleStart();
+
 	if (!OwnerController)
 		return;
 
 	OwnerController->CameraSetUp(GetActorLocation());
 	OwnerController->EnermyListSetup();
 	OwnerController->SetVisibleBattleWidget(true); // 위젯 보이기
-	
 	if (bCC) // CC기 상태인 경우 턴 종료.
-		UnitTurnEndCCState();
-	else
 	{
+		OwnerController->SetEnermyTurnWidget(true);
+		UnitTurnEndCCState();		
+	}		
+	else
 		OwnerController->SetEnermyTurnWidget(false); // 적 차례시 보이면 안되었던 스킬 버튼 및 적 선택 리스트 보이게 하기.
-	}
+		
 
 	if (!GM->bBattleTutorial) // 튜토리얼 실행
 		OwnerController->BattleTutorialStart();

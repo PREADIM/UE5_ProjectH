@@ -67,7 +67,7 @@ void AJRPGUnit::BeginPlay()
 	if (GI)
 		MouseSensitivity = GI->MS;
 
-	BattleDefaultLoaction = GetActorLocation();
+	BattleDefaultLocation = GetActorLocation();
 
 	OverlapBattleStartCollision->OnComponentBeginOverlap.AddDynamic(this, &AJRPGUnit::BattleStartCollisionBeginOverlap);
 }
@@ -290,6 +290,12 @@ void AJRPGUnit::TargetManyAttack(float ATK, TSubclassOf<UDebuffClass> BP_DebuffC
 
 }
 
+void AJRPGUnit::UnitBattleStart()
+{
+	if (GetActorLocation() != BattleDefaultLocation)
+		SetActorLocation(BattleDefaultLocation);
+}
+
 
 void AJRPGUnit::ThisUnitBattleUnit(bool bFlag)
 {
@@ -401,7 +407,7 @@ void AJRPGUnit::MoveToDefaultLocation()
 {
 	BattleAIController->ReceiveMoveCompleted.RemoveDynamic(this, &AJRPGUnit::MoveToPlayMontage);
 	BattleAIController->ReceiveMoveCompleted.AddDynamic(this, &AJRPGUnit::MoveToDefaultLocationEnded);
-	UAIBlueprintHelperLibrary::CreateMoveToProxyObject(this, this, BattleDefaultLoaction, nullptr, 5.f, false);
+	UAIBlueprintHelperLibrary::CreateMoveToProxyObject(this, this, BattleDefaultLocation, nullptr, 5.f, false);
 }
 
 void AJRPGUnit::MoveToDefaultLocationEnded(FAIRequestID RequestID, EPathFollowingResult::Type Result)
@@ -425,6 +431,30 @@ void AJRPGUnit::MoveToDefaultLocationEnded(FAIRequestID RequestID, EPathFollowin
 void AJRPGUnit::AttackEnd()
 {
 	OwnerController->SetVisibleBattleWidget(false);
+}
+
+void AJRPGUnit::TargetAttackDamageProxy(EAttackType AttackType, bool bOnce, int32 AttackCnt, TSubclassOf<class UDebuffClass> BP_DebuffClass)
+{
+	float Damage = 0.f;
+
+	switch (AttackType)
+	{
+	case EAttackType::Normal:
+		Damage = UnitSkills.NormalAttack.SkillDamage * CharacterStat.Attack;
+		break;
+	case EAttackType::Skill:
+		Damage = UnitSkills.Skill_1.SkillDamage * CharacterStat.Attack;
+		break;
+	case EAttackType::ULT:
+		Damage = UnitSkills.ULT.ULTDamage * CharacterStat.Attack;
+		break;
+	}
+
+	if (bOnce)
+		TargetAttack(Damage / AttackCnt, BP_DebuffClass);
+	else
+		TargetManyAttack(Damage / AttackCnt, BP_DebuffClass);
+
 }
 
 
