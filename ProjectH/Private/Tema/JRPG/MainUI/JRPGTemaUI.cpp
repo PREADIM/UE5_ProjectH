@@ -73,7 +73,6 @@ void UJRPGTemaUI::CreateBattleWidget()
 		BattleWidget->GM = GM;
 		BattleWidget->Init();
 	}
-
 }
 
 
@@ -128,10 +127,7 @@ bool UJRPGTemaUI::BattleIsInViewport()
 void UJRPGTemaUI::PlayBattleWidget()
 {
 	if (BattleWidget)
-	{
-		//if (GM->SetUnitList[0].Unit->PlayerType == EPlayerType::Player)
 		BattleWidget->BattleTurnInit();
-	}
 }
 
 
@@ -179,11 +175,6 @@ void UJRPGTemaUI::HiddenLockOn()
 	BattleWidget->HiddenLockOn();
 }
 
-void UJRPGTemaUI::EnermySetupLockOnTargetUnit(AJRPGUnit* Target)
-{
-	BattleWidget->TargetUnit = Target;
-}
-
 
 void UJRPGTemaUI::TargetToRotation()
 {
@@ -204,8 +195,7 @@ void UJRPGTemaUI::BattleUIOnOff(bool bOnOff)
 	if (bOnOff)
 	{
 		BattleWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-		BattleWidget->LockOnIcon->SetRenderOpacity(1.0f);
-		
+		BattleWidget->LockOnIcon->SetRenderOpacity(1.0f);	
 	}
 	else
 	{

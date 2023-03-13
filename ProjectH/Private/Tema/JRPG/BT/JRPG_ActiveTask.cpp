@@ -95,10 +95,10 @@ EBTNodeResult::Type UJRPG_ActiveTask::ExecuteTask(UBehaviorTreeComponent& OwnerC
 		OwnerComp.GetBlackboardComponent()->SetValueAsEnum(FName("ActiveType"), EnumValue);
 	}
 
-	if (TargetAttackUnit->OwnerController)
-		TargetAttackUnit->OwnerController->EnermySetupLockOnTargetUnit(TargetAttackUnit);
-	
-	OwnerComp.GetBlackboardComponent()->SetValueAsObject(FName("TargetUnit"), TargetAttackUnit);
+	AJRPGPlayerController* OwnerController = GM->OwnerController;
+	if(OwnerController)
+		OwnerController->EnermySetupLockOnTargetUnit(TargetAttackUnit);
 
+	OwnerComp.GetBlackboardComponent()->SetValueAsObject(FName("TargetUnit"), TargetAttackUnit);
 	return EBTNodeResult::Succeeded;
 }

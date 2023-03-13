@@ -45,20 +45,14 @@ public:
 		TSubclassOf<class ULockOnWidget> BP_LockOnIcon;
 	UPROPERTY()
 		class ULockOnWidget* LockOnIcon;
-
 	UPROPERTY()
 		class UCanvasPanelSlot* CanvasSlot;
 
 	FVector TargetLockOn;
 	FVector2D Pos;
 
-
-	UPROPERTY()
-		class AJRPGUnit* TargetUnit; // 현재 바라보는 타겟 유닛. ★★
-
 	UPROPERTY()
 		bool bButtonVisible; // 버튼이 활성화 되어있는지
-
 	int32 TargetNumber = 0;
 
 public:

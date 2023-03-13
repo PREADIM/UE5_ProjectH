@@ -14,6 +14,7 @@
 #include "Animation/AnimInstance.h"
 
 
+
 // Sets default values
 AJRPGUnit::AJRPGUnit()
 {
@@ -25,6 +26,7 @@ AJRPGUnit::AJRPGUnit()
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 520.f, 0.f);
+	GetCharacterMovement()->MaxWalkSpeed = NormalWalkSpeed;
 	
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArm->SetupAttachment(RootComponent);
@@ -64,6 +66,8 @@ void AJRPGUnit::BeginPlay()
 	UProjectHGameInstance* GI = Cast<UProjectHGameInstance>(UGameplayStatics::GetGameInstance(this));
 	if (GI)
 		MouseSensitivity = GI->MS;
+
+	BattleDefaultLoaction = GetActorLocation();
 
 	OverlapBattleStartCollision->OnComponentBeginOverlap.AddDynamic(this, &AJRPGUnit::BattleStartCollisionBeginOverlap);
 }
@@ -201,17 +205,27 @@ void AJRPGUnit::TakeDamageCalculator(float DamageAmount)
 
 void AJRPGUnit::NormalAttack()
 {
+	InitSFX();
+	AttackEnd();
+	OwnerAddMPAndULT();
 	CallNormalAttack();
 }
 
 void AJRPGUnit::Skill_1()
 {
+	InitSFX();
+	AttackEnd();
+	CurrentMP = FMath::Clamp(CurrentMP - UnitSkills.Skill_1.CostMP, 0.f, CharacterStat.MaxMP);
+	OwnerAddULT();
 	CallSkill_1();
 }
 
 
 void AJRPGUnit::Skill_ULT()
 {
+	InitSFX();
+	AttackEnd();
+	CurrentULTGage = 0.f;
 	CallULT();
 }
 
@@ -267,11 +281,8 @@ void AJRPGUnit::TargetManyAttack(float ATK, TSubclassOf<UDebuffClass> BP_DebuffC
 						DebuffClass->DebuffFunction(Unit);
 						Unit->BattleHPWidget->SetBuffIcon();
 					}
-
 				}
-
 			}
-
 			FDamageEvent DamageEvent;
 			Unit->TakeDamageCalculator(ATK);
 		}
@@ -300,14 +311,14 @@ void AJRPGUnit::BattleWidgetOnOff(bool bOnOff)
 	}
 }
 
-void AJRPGUnit::AddMPAndULT()
+void AJRPGUnit::TargetAddMPAndULT()
 {
 	AJRPGUnit* Unit = OwnerController->TargetUnit;
 	Unit->CurrentMP = FMath::Clamp(Unit->CurrentMP + 10.f, 0.0f, Unit->CharacterStat.MaxMP); // 맞은 유닛은 마나가 차게한다.
 	Unit->CurrentULTGage = FMath::Clamp(Unit->CurrentULTGage + 10.f, 0.0f, Unit->MaxULTGage); // 맞은 유닛은 궁게가 차게한다.
 }
 
-void AJRPGUnit::AddManyMPAndULT()
+void AJRPGUnit::ManyTargetsAddMPAndULT()
 {
 	for (AJRPGUnit* Unit : OwnerController->TargetUnits)
 	{
@@ -328,6 +339,111 @@ void AJRPGUnit::OwnerAddULT()
 	CurrentULTGage = FMath::Clamp(CurrentULTGage + 20.f, 0.0f, MaxULTGage);
 }
 
+void AJRPGUnit::MoveToAttack(float MoveSpeed, EAttackType AttackType)
+{
+	if (!BattleAIController)
+		return;
+		
+	BattleAIController->ReceiveMoveCompleted.RemoveDynamic(this, &AJRPGUnit::MoveToDefaultLocationEnded);
+	BattleAIController->ReceiveMoveCompleted.AddDynamic(this, &AJRPGUnit::MoveToPlayMontage);
+
+	MoveToAttackType = AttackType;
+	GetCharacterMovement()->MaxWalkSpeed = MoveSpeed;
+	UAIBlueprintHelperLibrary::CreateMoveToProxyObject(this, this, FVector(0.f, 0.f, 0.f), OwnerController->TargetUnit, 5.f, false);
+}
+
+void AJRPGUnit::MoveToPlayMontage(FAIRequestID RequestID, EPathFollowingResult::Type Result)
+{
+	AttackMontagePlay();
+
+	/*switch (Result)
+	{
+	case EPathFollowingResult::Success:
+		break;
+	case EPathFollowingResult::Blocked:
+		break;
+	case EPathFollowingResult::OffPath:
+		break;
+	case EPathFollowingResult::Aborted:
+		break;
+	case EPathFollowingResult::Skipped_DEPRECATED:
+		break;
+	case EPathFollowingResult::Invalid:
+		break;
+	}*/	
+}
+
+void AJRPGUnit::AttackMontagePlay()
+{
+	UAnimMontage* AttackMontage = nullptr;
+
+	switch (MoveToAttackType)
+	{
+	case EAttackType::Normal:
+		AttackMontage = NormalAttackMontage;
+		break;
+	case EAttackType::Skill:
+		AttackMontage = SkillMontage;
+		break;
+	case EAttackType::ULT:
+		AttackMontage = ULTMontage;
+		break;
+	}
+
+	AnimInstance->Montage_Play(AttackMontage);
+	FOnMontageEnded AttackMontageEnded;
+	AttackMontageEnded.BindUFunction(this, FName("MoveToDefaultLocation"));
+	AnimInstance->Montage_SetEndDelegate(AttackMontageEnded, AttackMontage);
+}
+
+
+void AJRPGUnit::MoveToDefaultLocation()
+{
+	BattleAIController->ReceiveMoveCompleted.RemoveDynamic(this, &AJRPGUnit::MoveToPlayMontage);
+	BattleAIController->ReceiveMoveCompleted.AddDynamic(this, &AJRPGUnit::MoveToDefaultLocationEnded);
+	UAIBlueprintHelperLibrary::CreateMoveToProxyObject(this, this, BattleDefaultLoaction, nullptr, 5.f, false);
+}
+
+void AJRPGUnit::MoveToDefaultLocationEnded(FAIRequestID RequestID, EPathFollowingResult::Type Result)
+{
+	GetCharacterMovement()->MaxWalkSpeed = NormalWalkSpeed;
+	switch (PlayerType)
+	{
+	case EPlayerType::Player:
+		OwnerController->TargetToRotation();
+		break;
+	case EPlayerType::Enermy:
+		OwnerController->EnermyTargetToRotation();
+		break;
+	}
+	
+	FTimerHandle Handle;
+	GetWorld()->GetTimerManager().SetTimer(Handle, this, &AJRPGUnit::UnitTurnEnd, 0.7f, false);
+}
+
+
+void AJRPGUnit::AttackEnd()
+{
+	OwnerController->SetVisibleBattleWidget(false);
+}
+
+
+void AJRPGUnit::DamagedTurnEnd(bool bOnce, bool bTurnEnd, float Delay)
+{
+	if (bOnce)
+		TargetAddMPAndULT();
+	else
+		ManyTargetsAddMPAndULT();
+
+	/* 이동해서 공격하는 유닛의 경우 자리로 돌아가야하기 때문에, 턴종료를 여기서 하지않는다. */
+	if (bTurnEnd)
+	{
+		FTimerHandle Handle;
+		GetWorld()->GetTimerManager().SetTimer(Handle, this, &AJRPGUnit::UnitTurnEnd, Delay, false);
+	}	
+}
+
+
 void AJRPGUnit::UnitTurnEnd()
 {
 	if (OwnerController)
@@ -339,7 +455,7 @@ void AJRPGUnit::UnitTurnEnd()
 			{
 				Debuff.DebuffClass->DebuffTurnEndFunction(this);
 				RemoveDebuff.Emplace(Debuff);
-			}	
+			}
 		}
 
 		// 반복중에 컨테이너를 지우는 것은 좋지않으므로 미리 받아와서 삭제
@@ -352,13 +468,6 @@ void AJRPGUnit::UnitTurnEnd()
 		BattleHPWidget->SetBuffIcon();
 		OwnerController->UnitTurnEnd();
 	}
-}
-
-
-
-void AJRPGUnit::AttackEnd()
-{
-	OwnerController->SetVisibleBattleWidget(false);
 }
 
 void AJRPGUnit::BattleStartCollisionBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodtIndex, bool bFromSweep, const FHitResult& HitResult)
@@ -407,6 +516,22 @@ void AJRPGUnit::UnitTurnEndCCState()
 
 
 
+void AJRPGUnit::InitSFX()
+{
+	SFXCnt = 0;
+}
+
+void AJRPGUnit::PlaySFX(EAttackType AttackType)
+{
+	if (AttackSFXs.Find(AttackType))
+	{
+		if (AttackSFXs[AttackType].AttackSounds.IsValidIndex(SFXCnt))
+		{
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), AttackSFXs[AttackType].AttackSounds[SFXCnt], GetActorLocation());
+			SFXCnt++;
+		}		
+	}
+}
 
 void AJRPGUnit::SetStatDEF(float DEF)
 {

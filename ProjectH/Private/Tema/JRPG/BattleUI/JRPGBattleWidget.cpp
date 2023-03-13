@@ -23,7 +23,6 @@
 void UJRPGBattleWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
-	//TargetNumber = 0;
 }
 
 
@@ -32,15 +31,16 @@ void UJRPGBattleWidget::NativeTick(const FGeometry& MyGeometry, const float InDe
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
 
-	if (LockOnIcon && TargetUnit)
+	if(!OwnerController)
+		return;
+
+	if (LockOnIcon && OwnerController->TargetUnit)
 	{	
-		TargetLockOn = TargetUnit->GetMesh()->GetSocketLocation(FName("pelvis"));
+		TargetLockOn = OwnerController->TargetUnit->GetMesh()->GetSocketLocation(FName("pelvis"));
 		OwnerController->ProjectWorldLocationToScreen(TargetLockOn, Pos);
 		float Scale = UWidgetLayoutLibrary::GetViewportScale(GetWorld()->GetGameViewport());
 		if (CanvasSlot)
-		{
 			CanvasSlot->SetPosition(FVector2D(Pos.X / Scale, (Pos.Y / Scale) - 30.f));
-		}
 	}
 
 }
@@ -62,6 +62,7 @@ void UJRPGBattleWidget::Init()
 	if (BP_LockOnIcon)
 	{
 		LockOnIcon = CreateWidget<ULockOnWidget>(GetWorld(), BP_LockOnIcon);
+		LockOnIcon->AddToViewport();
 		if(LockOnIcon)
 			CanvasSlot = Cast<UCanvasPanelSlot>(LockOnIcon->Image->Slot);
 	}
@@ -184,11 +185,7 @@ void UJRPGBattleWidget::SetLockOn(int32 Num)
 			LockOnIcon->AddToViewport();
 
 		if (GM->EnermyList.IsValidIndex(Num))
-		{
-			TargetUnit = GM->EnermyList[Num];
-			OwnerController->TargetUnit = TargetUnit;
-		}
-
+			OwnerController->TargetUnit = GM->EnermyList[Num];
 		TargetNumber = Num;
 	}
 	

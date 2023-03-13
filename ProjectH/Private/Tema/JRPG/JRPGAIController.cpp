@@ -32,24 +32,22 @@ void AJRPGAIController::OnPossess(APawn* InPawn)
 	// 팀전인 경우는 애초에 Red, Blue 태그를 하면 될듯
 
 	OwnerCharacter = Cast<AJRPGUnit>(InPawn);
-	if (OwnerCharacter && OwnerCharacter->GetBT())
+	if (OwnerCharacter)
 	{
-		if (!BB->InitializeBlackboard(*(OwnerCharacter->GetBT()->BlackboardAsset))) // BT에 있는 블랙보드를 적용
-			_DEBUG("InitializeBlackboard ERROR");
-
 		AJRPGGameMode* GM = Cast<AJRPGGameMode>(GetWorld()->GetAuthGameMode());
 		if (!GM)
 			return;
 
-		OwnerCharacter->OwnerAIController = this;
-		BB->SetValueAsObject(FName("GM"), GM);
+		if (OwnerCharacter->GetBT())
+		{
+			if (!BB->InitializeBlackboard(*(OwnerCharacter->GetBT()->BlackboardAsset))) // BT에 있는 블랙보드를 적용
+				_DEBUG("InitializeBlackboard ERROR");
+			BB->SetValueAsObject(FName("GM"), GM);
+			RunBehaviorTree(OwnerCharacter->GetBT()); // 캐릭터마다 무브셋이 다른것도 이런 방식으로 캐릭터 고유의 BT로 처리가능	
+		}
 
-		RunBehaviorTree(OwnerCharacter->GetBT()); // 캐릭터마다 무브셋이 다른것도 이런 방식으로 캐릭터 고유의 BT로 처리가능
+		OwnerCharacter->BattleAIController = this;
 		SetIsTurn(false);
-	}
-	else
-	{
-		_DEBUG("Blackboard ERROR");
 	}
 }
 
@@ -63,7 +61,6 @@ void AJRPGAIController::OnUnPossess()
 void AJRPGAIController::SetIsTurn(bool bFlag)
 {
 	if (BB->GetBlackboardAsset() != nullptr)
-	{
 		BB->SetValueAsBool(FName("IsTurn"), bFlag);
-	}
 }
+

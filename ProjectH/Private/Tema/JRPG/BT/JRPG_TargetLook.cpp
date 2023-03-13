@@ -23,20 +23,15 @@ EBTNodeResult::Type UJRPG_TargetLook::ExecuteTask(UBehaviorTreeComponent& OwnerC
 
 	AJRPGGameMode* GM = Cast<AJRPGGameMode>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(FName("GM")));
 	if (!GM)
-	{
 		return EBTNodeResult::Failed;
-	}
 
 	AJRPGPlayerController* OwnerController = GM->OwnerController;
-
 	if (!OwnerController)
-	{
 		return EBTNodeResult::Failed;
-	}
 
 	AJRPGUnit* TargetUnit = Cast<AJRPGUnit>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(FName("TargetUnit")));
 	AJRPGUnit* SelfUnit = Cast<AJRPGUnit>(OwnerComp.GetAIOwner()->GetPawn());
-	OwnerController->TargetUnit = TargetUnit;
+	//OwnerController->TargetUnit = TargetUnit;
 
 	FVector TargetLocation = TargetUnit->GetActorLocation();
 	FVector SelfLocation = SelfUnit->GetActorLocation();

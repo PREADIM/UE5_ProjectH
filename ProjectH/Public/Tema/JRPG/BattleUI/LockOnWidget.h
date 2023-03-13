@@ -19,5 +19,4 @@ public:
 		class UCanvasPanel* Canvas;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 		class UImage* Image;
-
 };

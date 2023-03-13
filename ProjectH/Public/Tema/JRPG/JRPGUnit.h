@@ -7,6 +7,8 @@
 #include "Tema/JRPG/JRPGUnitSkill.h"
 #include "PhysicalSoundStruct.h"
 #include "Tema/JRPG/DebuffClass.h"
+#include "Blueprint/AIBlueprintHelperLibrary.h"
+#include "Blueprint/AIAsyncTaskBlueprintProxy.h"
 #include "JRPGUnit.generated.h"
 
 
@@ -15,6 +17,25 @@ enum class EPlayerType : uint8
 {
 	Player UMETA(DisplayName = "Player"),
 	Enermy UMETA(DisplayName = "Enermy")
+};
+
+UENUM(BlueprintType)
+enum class EAttackType : uint8
+{
+	NONE UMETA(DisplayName = "NONE"),
+	Normal UMETA(DisplayName = "Normal"),
+	Skill UMETA(DisplayName = "Skill"),
+	ULT UMETA(DisplayName = "ULT")
+};
+
+USTRUCT(BlueprintType)
+struct FAttackSFX
+{
+	GENERATED_USTRUCT_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TArray<class USoundBase*> AttackSounds;
 };
 
 UCLASS()
@@ -27,16 +48,14 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = SpringArm)
 		USpringArmComponent* SpringArm;
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Camera3P)
 		UCameraComponent* Camera;
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = BattleCollision)
 		class USphereComponent* OverlapBattleStartCollision;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = CharacterName)
 		FString CharacterName;
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = WalkSpeed)
+		float NormalWalkSpeed = 450.f; 
 
 protected:
 	virtual void BeginPlay();
@@ -55,12 +74,12 @@ public:
 			AI & BT
 	------------------------*/
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		class AJRPGAIController* BattleAIController;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UBehaviorTree* BT; 
 	class UBehaviorTree* GetBT() { return BT; }
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		class AJRPGAIController* OwnerAIController;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		class AJRPGGameMode* GM;
@@ -68,10 +87,10 @@ public:
 	//--------------------------------------------------
 
 	UFUNCTION(BlueprintCallable)
-		void AddMPAndULT(); // 맞은 대상의 MP와 ULT 게이지가 찬다.
+		void TargetAddMPAndULT(); // 맞은 대상의 MP와 ULT 게이지가 찬다.
 	// 연타 기술을 대비해서 함수로 따로만들어서 한번만 호출하게 한다.
 	UFUNCTION(BlueprintCallable)
-		void AddManyMPAndULT(); // 다수 공격
+		void ManyTargetsAddMPAndULT(); // 다수 공격
 	UFUNCTION(BlueprintCallable)
 		void OwnerAddMPAndULT(); // 공격한 사람도 마나와 궁극기 게이지가 차긴 해야한다.
 	// 궁극기를 사용한 경우에는 차지 않음. // 일반 공격일때 만 사용.
@@ -90,6 +109,12 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 		void TestKey();
 
+
+	//-------------------------------------------------
+	/*--------------------------------
+			공격 관련 인터페이스
+	----------------------------------*/
+
 	UFUNCTION(BlueprintCallable)
 		void NormalAttack();
 	UFUNCTION(BlueprintCallable)
@@ -107,20 +132,42 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 		void CallULT();
 
-
-
+	/* 이 함수들은 캐릭마다 데미지 계산이 다르므로 블루 프린트에서 계산해줌. */
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 		void NormalAttackDamage();
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 		void SkillAttackDamage();
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 		void ULTAttackDamage();
-	/* 이 함수들은 캐릭마다 데미지 계산이 다르므로 블루 프린트에서 계산해줌. */
 
+	
+
+	/* 이동해서 공격하는 공격류 들을 위한 함수. */
+
+	EAttackType MoveToAttackType;
 	UFUNCTION(BlueprintCallable)
-		void UnitTurnEnd();
+		void MoveToAttack(float MoveSpeed, EAttackType AttackType); // 움직여서 공격해야하는 캐릭터의 경우 이 함수를 실행.
+	UFUNCTION()
+		void MoveToPlayMontage(FAIRequestID RequestID, EPathFollowingResult::Type Result);
+	UFUNCTION()
+		void AttackMontagePlay();
+	UFUNCTION()
+		void MoveToDefaultLocation();
+	UFUNCTION()
+		void MoveToDefaultLocationEnded(FAIRequestID RequestID, EPathFollowingResult::Type Result);
+
+
+	/* 턴 종료 관련 */
+	
 	UFUNCTION(BlueprintCallable)
 		void AttackEnd(); // 캐릭터의 공격이 끝났을때 위젯히든
+	UFUNCTION(BlueprintCallable)
+		void DamagedTurnEnd(bool bOnce, bool bTurnEnd, float Delay = 0.5f); // 데미지를 입힌 후 턴 종료하는 것 (하나인지 여러명인지, 턴종료 딜레이, 턴종료를 할지 안할지)
+	UFUNCTION(BlueprintCallable)
+		void UnitTurnEnd(); // 턴 종료
+
+	//------------------------------------------------------
+
 	UFUNCTION()
 		void BattleStartCollisionBeginOverlap(class UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodtIndex, bool bFromSweep, const FHitResult& HitResult);
 
@@ -170,12 +217,15 @@ public:
 	void ThisUnitBattleUnit(bool bFlag); // c++에서 이걸로 실행
 	void BattleWidgetOnOff(bool bOnOff);
 
+
+	FVector BattleDefaultLoaction; // 첫 자리
+
 	//---------------------------------------------------------
 	/*-------------------------
 			중요 스테이터스
 	--------------------------*/
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Widget)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BattleWidget)
 		class UWidgetComponent* BattleHPComponent;
 	UPROPERTY()
 		class UJRPGBattleHPWidget* BattleHPWidget;
@@ -200,15 +250,40 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = CharacterStat)
 		float MaxULTGage; // 최대 궁극기 게이지.
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+
+	/*------------------
+			몽타주
+	--------------------*/
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Montage)
 		class UAnimMontage* DeadAnim;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Montage)
 		class UAnimMontage* HitAnim;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AttackMontage)
+		class UAnimMontage* NormalAttackMontage;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AttackMontage)
+		class UAnimMontage* SkillMontage;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AttackMontage)
+		class UAnimMontage* ULTMontage;
+
+	/*---------------------
+			스킬 사운드
+	-----------------------*/
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AttackSFX)
+		TMap<EAttackType, FAttackSFX> AttackSFXs;
+	int32 SFXCnt = 0;
+
+	UFUNCTION(BlueprintCallable)
+		void InitSFX();
+	UFUNCTION(BlueprintCallable)
+		void PlaySFX(EAttackType AttackType);
 
 	//-----------------------------------------------
 	/*-----------------------------------
 		스탯 관련 버프 및 디버프 변경 함수
-	----------------------------------*/
+	-------------------------------------*/
 	UFUNCTION(BlueprintCallable)
 		void SetStatDEF(float DEF);
 	UFUNCTION(BlueprintCallable)
@@ -220,12 +295,12 @@ public:
 			피지컬 사운드
 	------------------------*/
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PhysicalSound)
 		TMap<TEnumAsByte<EPhysicalSurface>, FPhysicalSoundStruct> PhysicalAllSounds;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = PhysicalSound)
 		FPhysicalSoundStruct PhysicalSounds;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PhysicalSound)
 		float SurfaceDistance = 150.f; // 땅끝의 거리
 	void SetPhysicalSound();
 
@@ -243,17 +318,17 @@ public:
 		CC기 및 디버프 상태
 	------------------------*/
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Debuff)
 		TSet<FDebuffStruct> DebuffSet;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Debuff)
+		bool bCC;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Debuff)
+		FCCState CCState;
 
 	UFUNCTION(BlueprintCallable)
 		void SetCCState(ECCType CCType, bool bFlag);
 
 	void UnitTurnEndCCState(); // UnitTurnEnd인 시점에서 CC기에 걸려 유닛 턴 종료를 해야하는 경우.
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		bool bCC;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		FCCState CCState;
 };

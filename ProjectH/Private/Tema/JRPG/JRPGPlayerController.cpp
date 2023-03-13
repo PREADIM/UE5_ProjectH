@@ -22,6 +22,9 @@
 
 AJRPGPlayerController::AJRPGPlayerController()
 {
+
+	AudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("Audio"));
+
 	FString UnitUIDataPath = TEXT("DataTable'/Game/PROJECT/BP_CLASS/Tema/JRPG/DataBase/JRPGUnitUIState.JRPGUnitUIState'");
 	static ConstructorHelpers::FObjectFinder<UDataTable> DT_UnitUI(*UnitUIDataPath);
 	if (DT_UnitUI.Succeeded())
@@ -66,6 +69,9 @@ void AJRPGPlayerController::OnPossess(APawn* NewPawn)
 
 		if (GM)
 			GM->SetControllerInit();
+
+		if (NormalSound)
+			SetPlaySound(NormalSound);
 	}	
 }
 
@@ -194,6 +200,20 @@ void AJRPGPlayerController::SetupDropExpWidget(int32 DropExp)
 		DropExpWidget->Init(DropExp);
 		DropExpWidget->AddToViewport();
 	}
+}
+
+void AJRPGPlayerController::SetPlaySound(USoundBase* Sound)
+{
+	if (!AudioComponent)
+		return;
+
+	if (!Sound)
+		AudioComponent->SetSound(NormalSound);
+	else
+	{
+		AudioComponent->SetSound(Sound);
+	}
+	AudioComponent->Play();
 }
 
 /* 배틀 시작할때 이것을 실행. */
@@ -504,8 +524,10 @@ void AJRPGPlayerController::HiddenLockOn()
 
 void AJRPGPlayerController::EnermySetupLockOnTargetUnit(AJRPGUnit* Target)
 {
-	TemaMainUI->EnermySetupLockOnTargetUnit(Target);
+	//TemaMainUI->EnermySetupLockOnTargetUnit(Target);
+	TargetUnit = Target;
 }
+
 
 
 void AJRPGPlayerController::TargetToRotation()
@@ -531,6 +553,13 @@ float AJRPGPlayerController::BattleStartSequence()
 	{
 		BattleUIOnOff(false);
 		SequencePlayer->Play();
+		SetPlaySound(BattleStartSound);	
+
+		FTimerHandle Handle;
+		FTimerDelegate TimerDelegate;
+		TimerDelegate.BindUFunction(this, FName("SetPlaySound"), BattleSound);
+		GetWorld()->GetTimerManager().SetTimer(Handle, TimerDelegate, 9.f, false);
+
 		return SequencePlayer->GetEndTime().AsSeconds();
 	}
 

@@ -42,9 +42,7 @@ void UJRPGSkillButton::UseSkill()
 			break;
 		case EButtonType::SkillAttack:
 			if (CurrentUnit->CurrentMP >= CostMP)
-			{
 				CurrentUnit->Skill_1();
-			}
 			break;
 		}
 	}

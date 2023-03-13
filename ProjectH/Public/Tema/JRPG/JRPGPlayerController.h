@@ -127,6 +127,8 @@ public:
 public:
 	UPROPERTY(VisibleAnywhere)
 		class AJRPGGameMode* GM;
+	UPROPERTY(VisibleAnywhere)
+		class UAudioComponent* AudioComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		EGameModeType GameType;
@@ -143,7 +145,6 @@ public:
 		int32 RepreCharacterNum; // 대표캐릭터
 	UPROPERTY(VisibleAnywhere)
 		class AJRPGUnit* RepreCharacter;
-
 	UPROPERTY(VisibleAnywhere)
 		class AJRPGFieldEnermy* CurrentOverlapFieldEnermy;
 
@@ -237,7 +238,7 @@ public:
 
 	//-----------------------------------------------------------
 	/*------------------------------------
-			배틀 관련 휘발성 애니메이션 위젯
+		배틀 관련 휘발성 애니메이션 위젯
 	------------------------------------*/
 
 	UPROPERTY(EditAnywhere)
@@ -255,5 +256,21 @@ public:
 
 	void SetupDropCharWidget(int32 DropCharNum);
 	void SetupDropExpWidget(int32 DropExp);
+
+
+	//-----------------------------------------------------------
+	/*------------------------------------
+				오디오
+	------------------------------------*/
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class USoundBase* NormalSound;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class USoundBase* BattleStartSound;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class USoundBase* BattleSound;
+
+	UFUNCTION()
+		void SetPlaySound(USoundBase* Sound);
 };
 

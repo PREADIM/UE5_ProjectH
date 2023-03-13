@@ -19,8 +19,6 @@ void FJRPGSerial::SetCharNum(int32 Num)
 	HaveCharLevels.Emplace(Num, 1);
 	CharStats.Emplace(Num, FJRPGCharStat());
 	CurrentExp.Emplace(Num, 0.0f);
-
-	//NextExp.Add(Num, 0.0f);
 }
 
 
@@ -42,12 +40,12 @@ void UJRPGSave::FirstSave()
 	JRPGSerial.RepreCharacterNum = 101;
 
 	JRPGSerial.CurrentParty.Add(101); // 현재 등록한 파티의 정보.
-	//JRPGSerial.CurrentParty.Add(102);
-	//JRPGSerial.CurrentParty.Add(103);
+	JRPGSerial.CurrentParty.Add(102);
+	JRPGSerial.CurrentParty.Add(103);
 
 	JRPGSerial.SetCharNum(101); // 가지고있는 캐릭터와, 스텟 저장
-	//JRPGSerial.SetCharNum(102);
-	//JRPGSerial.SetCharNum(103);
+	JRPGSerial.SetCharNum(102);
+	JRPGSerial.SetCharNum(103);
 
 	JRPGSerial.CurrentFieldNum = 1;
 

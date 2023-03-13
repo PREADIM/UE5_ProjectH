@@ -152,7 +152,7 @@ void AARPGPlayerController::SetPlaySound(USoundBase* Sound)
 	if (!AudioComponent)
 		return;
 
-	if (Sound == nullptr)
+	if (!Sound)
 	{
 		// nullptr일 경우 기본 음악 재생
 		AudioComponent->SetSound(NormalSound);
