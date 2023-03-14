@@ -157,7 +157,9 @@ FJRPGCharStat AJRPGGameMode::GetCharStat(int32 CharNum, int32 Level)
 		if (StatTable)
 		{
 			FJRPGCharStat* Stat = StatTable->FindRow<FJRPGCharStat>(*FString::FromInt(Level), TEXT(""));
-			return *Stat;
+			if (Stat)
+				return *Stat;
+			else nullptr;
 		}
 		else
 			return FJRPGCharStat();

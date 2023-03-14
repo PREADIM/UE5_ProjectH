@@ -191,7 +191,7 @@ void AJRPGUnit::TakeDamageCalculator(float DamageAmount)
 		GetCharacterMovement()->DisableMovement();
 		PlayAnimMontage(DeadAnim);
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);	
 	}
 	else
 	{
@@ -248,7 +248,7 @@ void AJRPGUnit::TargetAttack(float ATK, TSubclassOf<UDebuffClass> BP_DebuffClass
 			class UDebuffClass* DebuffClass = NewObject<UDebuffClass>(this, BP_DebuffClass);
 			if (DebuffClass)
 			{
-				FDebuffStruct DebuffStruct(CharacterName, DebuffClass);
+				FDebuffStruct DebuffStruct(CharacterName, DebuffClass); // 중복 방지를 위해 가해자 캐릭터 이름으로 저장.
 				if (!OwnerController->TargetUnit->DebuffSet.Find(DebuffStruct))
 				{
 					OwnerController->TargetUnit->DebuffSet.Emplace(DebuffStruct);
@@ -528,12 +528,19 @@ void AJRPGUnit::PlayStartMontage()
 		AnimInstance->Montage_Play(BattleStartMontage);
 }
 
+void AJRPGUnit::PlayCharacterChangeMontage()
+{
+	if (AnimInstance && BattleStartMontage)
+		AnimInstance->Montage_Play(CharacterChangeMontage);
+}
+
 
 void AJRPGUnit::SetCCState(ECCType CCType, bool bFlag)
 {
 	if (bFlag)
-		bCC = true; // 이건 CC 애니메이션들이 마지막 END때 노티파이로 끌 예정.
+		bAnimCCEnd = true; // 이건 CC 애니메이션들이 마지막 END때 노티파이로 끌 예정.
 
+	bCC = bFlag;
 	CCState.SetCCType(CCType, bFlag);
 }
 

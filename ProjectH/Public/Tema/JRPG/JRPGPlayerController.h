@@ -236,7 +236,6 @@ public:
 	void BattleTutorialStart();
 	void PartyTutorialStart();
 
-	//-----------------------------------------------------------
 	/*------------------------------------
 		배틀 관련 휘발성 애니메이션 위젯
 	------------------------------------*/
@@ -249,7 +248,7 @@ public:
 		TSubclassOf<class UCAWTextAnimWidget> BP_TurnEndCCStateWidget; // 턴 종료때 CC상태를 나타내는 위젯 뜨게하기.
 	void SetTurnEndDebuffWidget(ECCType CCState);
 	
-	//-----------------------------------------------------------
+	//-------------------------------------------
 
 	void BattleUIOnOff(bool bOnOff); // UI 켜기 끄기.
 	void PlayPriority();
@@ -258,7 +257,6 @@ public:
 	void SetupDropExpWidget(int32 DropExp);
 
 
-	//-----------------------------------------------------------
 	/*------------------------------------
 				오디오
 	------------------------------------*/

@@ -24,12 +24,6 @@ public:
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 		class UButton* Select; // 선택하기 버튼
 
-	/*UPROPERTY(EditAnywhere, meta = (BindWidget))
-		class UButton* Arrow_L;
-	UPROPERTY(EditAnywhere, meta = (BindWidget))
-		class UButton* Arrow_R;*/
-
-
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 		class UTextBlock* WarningText;
 

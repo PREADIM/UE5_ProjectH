@@ -663,10 +663,7 @@ bool AARPGUnit::Hit(bool bBlockingHit)
 			//TPSMeshAnimInstance->Hit(EUnitMode::BattleMode);
 
 			if (bAttacking)
-			{
 				WeaponOverlapEnd();
-				//AttackEnd();
-			}
 
 			PlayCameraShake(BP_BattleMode_CS);
 		}

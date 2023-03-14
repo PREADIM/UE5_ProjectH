@@ -54,8 +54,10 @@ void AJRPGPlayerController::BeginPlay()
 		DropCharWidget->OwnerController = this;
 	}
 
-	GameType = EGameModeType::Normal;
+	if (NormalSound)
+		SetPlaySound(NormalSound);
 
+	GameType = EGameModeType::Normal;
 }
 
 void AJRPGPlayerController::OnPossess(APawn* NewPawn)
@@ -70,8 +72,6 @@ void AJRPGPlayerController::OnPossess(APawn* NewPawn)
 		if (GM)
 			GM->SetControllerInit();
 
-		if (NormalSound)
-			SetPlaySound(NormalSound);
 	}	
 }
 
@@ -252,6 +252,7 @@ void AJRPGPlayerController::WinGame()
 
 void AJRPGPlayerController::RetrunToField()
 {
+	SetPlaySound(NormalSound);
 	CurrentOverlapFieldEnermy->ReturnToField();
 }
 
@@ -390,8 +391,12 @@ void AJRPGPlayerController::SetRepreCharacterSpawn(int32 index)
 		RepreCharacter->SetActorLocation(Loc);
 		SetControlRotation(Rot);
 		CurrentPartyIndex = index;
+
+		RepreCharacter ->PlayCharacterChangeMontage();
 	}
 }
+
+
 
 
 void AJRPGPlayerController::SetRepreCharacterSpawnUI(int32 index)
@@ -508,7 +513,6 @@ void AJRPGPlayerController::SetVisibleBattleWidget(bool bFlag)
 void AJRPGPlayerController::SetEnermyTurnWidget(bool bFlag)
 {
 	TemaMainUI->SetEnermyTurnWidget(bFlag);
-	_DEBUG("Skill Visible");
 }
 
 

@@ -54,6 +54,7 @@ void AJRPGPlayerUnit::UnitBattleStart()
 	OwnerController->SetVisibleBattleWidget(true); // 위젯 보이기
 	if (bCC) // CC기 상태인 경우 턴 종료.
 	{
+		_DEBUG("Char Name : %s", *CharacterName);
 		OwnerController->SetEnermyTurnWidget(true);
 		UnitTurnEndCCState();		
 	}		

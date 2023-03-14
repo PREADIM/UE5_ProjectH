@@ -34,9 +34,7 @@ void UJRPGESCMenu::PartySet()
 					OwnerController->MouseOn();
 					OwnerController->GameType = EGameModeType::UI;
 				}
-
 				OwnerMainUI->SetVisibility(ESlateVisibility::Hidden);
-				UE_LOG(LogTemp, Warning, TEXT("PartySet"));
 			}
 		}
 	}

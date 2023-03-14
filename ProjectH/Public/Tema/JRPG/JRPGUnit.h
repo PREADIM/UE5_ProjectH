@@ -61,6 +61,10 @@ protected:
 	virtual void BeginPlay();
 
 public:	
+	/*----------------------
+			virtual 
+	------------------------*/
+
 	virtual void Tick(float DeltaTime);
 	virtual void PossessedBy(AController* NewController);
 	virtual void PostInitializeComponents();
@@ -69,7 +73,10 @@ public:
 	virtual void UnitBattleStart();
 	virtual void DeadBattleListRemove() {}
 
-	void TakeDamageCalculator(float DamageAmount);
+	/*---------------------------------------------*/
+
+	void TakeDamageCalculator(float DamageAmount); // 데미지 계산
+
 	/*----------------------
 			AI & BT
 	------------------------*/
@@ -109,8 +116,6 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 		void TestKey();
 
-
-	//-------------------------------------------------
 	/*--------------------------------
 			공격 관련 인터페이스
 	----------------------------------*/
@@ -226,7 +231,6 @@ public:
 
 	FVector BattleDefaultLocation; // 첫 자리
 
-	//---------------------------------------------------------
 	/*-------------------------
 			중요 스테이터스
 	--------------------------*/
@@ -286,7 +290,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void PlaySFX(EAttackType AttackType);
 
-	//-----------------------------------------------
 	/*-----------------------------------
 		스탯 관련 버프 및 디버프 변경 함수
 	-------------------------------------*/
@@ -295,8 +298,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void SetStatATK(float ATK);
 
-
-	//-------------------------------------------
 	/*-----------------------
 			피지컬 사운드
 	------------------------*/
@@ -310,14 +311,17 @@ public:
 		float SurfaceDistance = 150.f; // 땅끝의 거리
 	void SetPhysicalSound();
 
-	//-------------------------------------------
 	/*-----------------------
-		레벨 스타트 몽타주
+		캐릭터 고유 몽타주
 	------------------------*/
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= Montage)
 		class UAnimMontage* BattleStartMontage;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Montage)
+		class UAnimMontage* CharacterChangeMontage;
+
 	void PlayStartMontage();
+	void PlayCharacterChangeMontage();
 
 
 	/*-----------------------
@@ -328,6 +332,9 @@ public:
 		TSet<FDebuffStruct> DebuffSet;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Debuff)
+		bool bAnimCCEnd; // 애니메이션 용
+
+	UPROPERTY(VisibleAnywhere, Category = Debuff)
 		bool bCC;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Debuff)

@@ -167,7 +167,6 @@ void UJRPGBattleWidget::EnermyTurnHidden(bool bFlag)
 	}
 	else
 	{
-		_DEBUG("Player");
 		NormalAttack->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 		SkillButton->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 		ULTButton->SetVisibility(ESlateVisibility::SelfHitTestInvisible);

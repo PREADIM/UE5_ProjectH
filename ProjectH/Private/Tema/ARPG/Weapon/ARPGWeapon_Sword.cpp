@@ -122,14 +122,6 @@ void AARPGWeapon_Sword::SwordBeginOverlap(UPrimitiveComponent* OverlappedComp, A
 	if (OtherActor != OwnerUnit && OtherActor->GetOwner() != OwnerUnit->GetOwner())
 	{
 		TArray<AActor*> OutActors;
-
-		/*bool bOverlap = UKismetSystemLibrary::SphereOverlapActors(GetWorld(), GetActorLocation(), SphereRadius, ObjectType, nullptr, IgnoreActor, OutActors);
-		DrawDebugSphere(GetWorld(), GetActorLocation(), SphereRadius, 20, bOverlap ? FColor::Green : FColor::Red, false, 4.0f);
-		if (bOverlap)
-		{
-			
-		}*/
-
 		if (OtherComp->GetCollisionObjectType() == ARPGUnitChannel)
 		{
 			// 공통 분모
