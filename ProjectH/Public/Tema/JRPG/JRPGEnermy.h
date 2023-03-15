@@ -3,16 +3,14 @@
 #pragma once
 
 #include "ProjectH.h"
-#include "GameFramework/Character.h"
-#include "Tema/JRPG/JRPGCharStat.h"
+#include "Tema/JRPG/JRPGUnitBase.h"
 #include "Tema/JRPG/JRPGDropStruct.h"
-#include "PhysicalSoundStruct.h"
 #include "JRPGEnermy.generated.h"
 
 
 
 UCLASS()
-class PROJECTH_API AJRPGFieldEnermy : public ACharacter
+class PROJECTH_API AJRPGFieldEnermy : public AJRPGUnitBase
 {
 	GENERATED_BODY()
 
@@ -63,18 +61,5 @@ public:
 
 	UPROPERTY(VisibleAnywhere)
 		FJRPGDropStruct DropStruct;
-
-	/*-----------------------
-			피지컬 사운드
-	------------------------*/
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PhysicalSound)
-		TMap<TEnumAsByte<EPhysicalSurface>, FPhysicalSoundStruct> PhysicalAllSounds;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = PhysicalSound)
-		FPhysicalSoundStruct PhysicalSounds;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PhysicalSound)
-		float SurfaceDistance = 300.f; // 땅끝의 거리
-	void SetPhysicalSound();
 
 };

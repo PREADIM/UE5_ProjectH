@@ -8,6 +8,7 @@
 #include "Dialogue/TextNAnim.h"
 #include "Dialogue/DialogueStruct.h"
 #include "Engine/DataTable.h"
+#include "UObject/UObjectGlobals.h"
 #include "ProjectHGameInstance.generated.h"
 
 /**
@@ -54,7 +55,6 @@ public:
 
 	FSequenceActorTable()
 	{
-
 	}
 };
 
@@ -68,12 +68,38 @@ public:
 	UProjectHGameInstance();
 	virtual void Init() override;
 
+	UPROPERTY()
+		class ULevelSequencePlayer* SequencePlayer;
+
+	/*-------------------------
+			Open Level
+	-------------------------*/
 	UFUNCTION(BlueprintCallable)
 		void OpenLevelStart(FString Levelname);
+
+	void OpenLevelSepuenceEnd();
+
+	UFUNCTION()
+		void AsyncLodedMap();
+	UFUNCTION()
+		void LodeMap();
+	FLevelPath LevelPath;
+
+	UPROPERTY(EditAnywhere)
+		TSubclassOf<class UUserWidget> BP_LoadingScreen;
+	UPROPERTY(EditAnywhere)
+		class ULevelSequence* OpenLevelSequence;
+
+	/*-----------------------------
+			Sequence Actor
+	------------------------------*/
 	UFUNCTION(BlueprintCallable)
 		void PlaySequence(int32 SequenceNumber, class APlayerControllerBase* Controller);
 
-	/*-- Quest --*/
+
+	/*-------------------
+			Quest
+	----------------------*/
 	void SetLoadSlot(class UQuestComponent* QuestComponent);
 	void SetSaveSlot(class UQuestComponent* QuestComponent);
 
@@ -82,7 +108,6 @@ public:
 	bool SetNPCLoadSlot(class AQuestNPCBase* NPC);
 	void SetNPCSaveSlot(class AQuestNPCBase* NPC);
 	void SetPlayerCanQuest();
-
 	void AddCanQuest(int32 QuestNumber); // 가능한 퀘스트를 추가하는 함수.
 
 	FNPCQuestDataBase* GetNPCQuestData(FString NPCName); // NPC 퀘스트를 가져온다.
@@ -94,7 +119,9 @@ public:
 	void QuestClearNumber(FString NPCName, int32 QuestNumber); // ★★퀘스트 완료시 호출.
 
 
-	/*-- Setting --*/
+	/*-------------------
+			Setting
+	----------------------*/
 	bool SetDefault();
 	void SetDefaultGameSetting();
 	void GetDefaultGameSetting(FString& Resolution, int32& Anti, int32& ShadowQuality, int32& TextureQuality, float& MouseSensitivity);
@@ -121,7 +148,10 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		TArray<int32> FinishedQuests; // 완료한 퀘스트들.
 
-	/*------테이블------*/
+
+	/*-------------------
+			DataTable
+	----------------------*/
 
 	UPROPERTY(VisibleAnywhere)
 		class UDataTable* NPCQBTable; // NPC의 퀘스트들이 넣어져있는 테이블에서 NPC가 스스로 퀘스트 가져오기 위한 테이블.
@@ -147,7 +177,6 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		class AQuestNPCBase* GetNPCPtr(FString NPCName);
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		TArray<FString> ResolutionArr; // 지원되는 해상도 저장.
 

@@ -2,7 +2,7 @@
 #pragma once
 
 #include "ProjectH.h"
-#include "GameFramework/Character.h"
+#include "Tema/JRPG/JRPGUnitBase.h"
 #include "Tema/JRPG/JRPGCharStat.h"
 #include "Tema/JRPG/JRPGUnitSkill.h"
 #include "PhysicalSoundStruct.h"
@@ -39,7 +39,7 @@ public:
 };
 
 UCLASS()
-class PROJECTH_API AJRPGUnit : public ACharacter
+class PROJECTH_API AJRPGUnit : public AJRPGUnitBase
 {
 	GENERATED_BODY()
 
@@ -202,15 +202,13 @@ public:
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
 		EPlayerType PlayerType;
 
-
-	UPROPERTY(VisibleAnywhere)
-		float MouseSensitivity;
+	float MouseSensitivity;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		int32 CharNum; // 해당 캐릭터의 넘버
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int32 EnermyLevel = 1; // (적 유닛 한정) 적의 레벨. 데이터 테이블에 검색해서 스탯을 가져오기 위함이다.
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	//	int32 EnermyLevel = 1; // (적 유닛 한정) 적의 레벨. 데이터 테이블에 검색해서 스탯을 가져오기 위함이다.
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FJRPGUnitSkill UnitSkills;	
@@ -227,7 +225,6 @@ public:
 
 	void ThisUnitBattleUnit(bool bFlag); // c++에서 이걸로 실행
 	void BattleWidgetOnOff(bool bOnOff);
-
 
 	FVector BattleDefaultLocation; // 첫 자리
 
@@ -249,7 +246,7 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = CharacterStat)
 		float CurrentHP; 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = CharacterStat)
-		float CurrentMP; 
+		float CurrentMP;
 
 	UPROPERTY(BlueprintReadWrite, Category = CharacterStat)
 		float CurrentExp;
@@ -297,19 +294,6 @@ public:
 		void SetStatDEF(float DEF);
 	UFUNCTION(BlueprintCallable)
 		void SetStatATK(float ATK);
-
-	/*-----------------------
-			피지컬 사운드
-	------------------------*/
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PhysicalSound)
-		TMap<TEnumAsByte<EPhysicalSurface>, FPhysicalSoundStruct> PhysicalAllSounds;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = PhysicalSound)
-		FPhysicalSoundStruct PhysicalSounds;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PhysicalSound)
-		float SurfaceDistance = 300.f; // 땅끝의 거리
-	void SetPhysicalSound();
 
 	/*-----------------------
 		캐릭터 고유 몽타주

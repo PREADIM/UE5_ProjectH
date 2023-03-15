@@ -491,7 +491,7 @@ void AJRPGGameMode::SetEnermyUnits(TArray<FEnermys> Enermys)
 		if (Unit != nullptr)
 		{
 			Unit->OwnerController = OwnerController;
-			Unit->EnermyLevel = Enermys[i].EnermyLevel;
+			//Unit->EnermyLevel = Enermys[i].EnermyLevel;
 			Unit->CharacterStat = GetCharStat(Enermys[i].EnermyUnits, Enermys[i].EnermyLevel);
 			Unit->ThisUnitBattleUnit(true);
 			Unit->InitCurrentStat();

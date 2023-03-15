@@ -38,21 +38,7 @@ void AJRPGFieldEnermy::BeginPlay()
 void AJRPGFieldEnermy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	SetPhysicalSound();
 }
-
-
-void AJRPGFieldEnermy::SetPhysicalSound()
-{
-	TEnumAsByte<EPhysicalSurface> PS = TracePysicalSurface(this, SurfaceDistance);
-
-	if (!PhysicalAllSounds.Find(PS))
-		return;
-		
-	PhysicalSounds = PhysicalAllSounds[PS]; // 해당하는 표면의 사운드 가져오기
-}
-
 
 void AJRPGFieldEnermy::FieldEnermyDead()
 {

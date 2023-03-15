@@ -77,8 +77,6 @@ void AJRPGUnit::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	SetPhysicalSound();
-
 	if (bIsJRPGUnit) // 턴제 유닛으로 소환된 경우.
 	{
 		if (OwnerController->TargetUnit)
@@ -510,16 +508,6 @@ void AJRPGUnit::BattleStartCollisionBeginOverlap(UPrimitiveComponent* Overlapped
 		OwnerController->PlayBattleMode(CurrentOverlapFieldEnermy);
 }
 
-void AJRPGUnit::SetPhysicalSound()
-{
-	TEnumAsByte<EPhysicalSurface> PS = TracePysicalSurface(this, SurfaceDistance);
-
-	if (!PhysicalAllSounds.Find(PS))
-		return;
-
-	PhysicalSounds = PhysicalAllSounds[PS]; // 해당하는 표면의 사운드 가져오기
-
-}
 
 
 void AJRPGUnit::PlayStartMontage()

@@ -4,6 +4,7 @@
 
 #include "ProjectH.h"
 #include "GameFramework/Character.h"
+#include "PhysicalSoundStruct.h"
 #include "JRPGUnitBase.generated.h"
 
 UCLASS()
@@ -12,18 +13,26 @@ class PROJECTH_API AJRPGUnitBase : public ACharacter
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this character's properties
 	AJRPGUnitBase();
 
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+	virtual void BeginPlay();
 
 public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	virtual void Tick(float DeltaTime);
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent);
 
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	/*-----------------------
+			피지컬 사운드
+	------------------------*/
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PhysicalSound)
+		TMap<TEnumAsByte<EPhysicalSurface>, FPhysicalSoundStruct> PhysicalAllSounds;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = PhysicalSound)
+		FPhysicalSoundStruct PhysicalSounds;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PhysicalSound)
+		float SurfaceDistance = 300.f; // 땅끝의 거리
+	void SetPhysicalSound();
 
 };

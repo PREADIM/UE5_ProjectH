@@ -9,7 +9,10 @@
 #include "AI/QuestNPCBase.h"
 #include "MainGameSetting.h"
 #include "QuestStruct.h"
+#include "Blueprint/UserWidget.h"
 #include "Special/PlaySequenceActor.h"
+#include <LevelSequencePlayer.h>
+#include <LevelSequenceActor.h>
 
 FCanQuestNums::FCanQuestNums()
 {
@@ -66,14 +69,9 @@ void UProjectHGameInstance::Init()
 	Super::Init();
 
 	if(UGameplayStatics::DoesSaveGameExist(UQuestSave::SlotName, 0)) // 퀘스트 슬롯이 있는가?
-	{
 		QuestSave = Cast<UQuestSave>(UGameplayStatics::LoadGameFromSlot(UQuestSave::SlotName, 0));
-	}
 	else // 없을경우
-	{
 		QuestSave = Cast<UQuestSave>(UGameplayStatics::CreateSaveGameObject(UQuestSave::StaticClass()));
-
-	}
 
 	if (UGameplayStatics::DoesSaveGameExist(UPlayerStateSave::SlotName, 0))
 	{
@@ -111,11 +109,61 @@ void UProjectHGameInstance::Init()
 
 void UProjectHGameInstance::OpenLevelStart(FString LevelName)
 {
-	FLevelPath* LevelPath = GetLevelPath(LevelName);
-	if (LevelPath)
+	FLevelPath* LevelPathTemp = GetLevelPath(LevelName);
+	if (LevelPathTemp)
+		return;
+
+	/* 예외 */
+	if (!BP_LoadingScreen)
 	{
-		UGameplayStatics::OpenLevelBySoftObjectPtr(GetWorld(), LevelPath->Level);
+		LodeMap();
+		return;
+	}
+
+	LevelPath = *LevelPathTemp;	
+
+	SequencePlayer = nullptr;
+	ALevelSequenceActor* LQActor;
+	if (OpenLevelSequence)
+		SequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(GetWorld(), OpenLevelSequence, FMovieSceneSequencePlaybackSettings(), LQActor);
+
+	float EndTime = 1.f;
+	if (SequencePlayer)
+	{
+		SequencePlayer->Play();
+		EndTime = SequencePlayer->GetEndTime().AsSeconds();
+
+		FTimerHandle Handle;
+		GetWorld()->GetTimerManager().SetTimer(Handle, this, &UProjectHGameInstance::OpenLevelSepuenceEnd, EndTime, false);
+	}
+	else
+	{
+		/* 예외 */
+		OpenLevelSepuenceEnd();
 	}	
+}
+
+void UProjectHGameInstance::OpenLevelSepuenceEnd()
+{
+	UUserWidget* LoadingScreen = CreateWidget<UUserWidget>(GetWorld(), BP_LoadingScreen);
+	LoadingScreen->AddToViewport();
+
+	LoadPackageAsync(LevelPath.Level.ToSoftObjectPath().ToString(), FLoadPackageAsyncDelegate::CreateLambda([=](const FName& PackageName, UPackage* Package, EAsyncLoadingResult::Type Result)
+		{
+			if (Result == EAsyncLoadingResult::Succeeded)
+				AsyncLodedMap();
+		}), 0, PKG_ContainsMap);
+}
+
+void UProjectHGameInstance::AsyncLodedMap()
+{
+	FTimerHandle Handle;
+	GetWorld()->GetTimerManager().SetTimer(Handle, this, &UProjectHGameInstance::LodeMap, 3.f, false);
+}
+
+void UProjectHGameInstance::LodeMap()
+{
+	UGameplayStatics::OpenLevelBySoftObjectPtr(GetWorld(), LevelPath.Level, true);
 }
 
 void UProjectHGameInstance::PlaySequence(int32 SequenceNumber, APlayerControllerBase* Controller)
