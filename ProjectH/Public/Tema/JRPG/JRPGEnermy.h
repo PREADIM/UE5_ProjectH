@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "Tema/JRPG/JRPGCharStat.h"
 #include "Tema/JRPG/JRPGDropStruct.h"
+#include "PhysicalSoundStruct.h"
 #include "JRPGEnermy.generated.h"
 
 

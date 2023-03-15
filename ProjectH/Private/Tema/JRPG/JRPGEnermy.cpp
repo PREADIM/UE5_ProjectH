@@ -9,7 +9,7 @@
 AJRPGFieldEnermy::AJRPGFieldEnermy()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 480.f, 0.f);
@@ -49,9 +49,8 @@ void AJRPGFieldEnermy::SetPhysicalSound()
 
 	if (!PhysicalAllSounds.Find(PS))
 		return;
-
+		
 	PhysicalSounds = PhysicalAllSounds[PS]; // 해당하는 표면의 사운드 가져오기
-
 }
 
 
