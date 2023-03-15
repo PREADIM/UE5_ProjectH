@@ -109,7 +109,7 @@ void UARPG_EnermyAnimInstance::AnimNotify_PlayEffect()
 		return;
 
 	// ÀÌÆåÆ® ½ÇÇà
-	UGameplayStatics::SpawnEmitterAttached(CurrentEffects[CurrentEffectIndex].Effect, OwnerUnit->GetMesh(), CurrentEffects[CurrentEffectIndex].SocketName);
+	UGameplayStatics::SpawnEmitterAttached(CurrentEffects[CurrentEffectIndex].Effect, OwnerUnit->GetMesh(), CurrentEffects[CurrentEffectIndex].SocketName, FVector::ZeroVector, FRotator::ZeroRotator, FVector(1.f, 1.f, 1.f), EAttachLocation::SnapToTargetIncludingScale, false, EPSCPoolMethod::AutoRelease, true);
 	++CurrentEffectIndex;
 }
 

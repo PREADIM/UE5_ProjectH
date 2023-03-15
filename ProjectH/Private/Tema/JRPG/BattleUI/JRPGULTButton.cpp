@@ -8,6 +8,12 @@
 #include "Tema/JRPG/JRPGUnit.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
 
+void UJRPGULTButton::NativeConstruct()
+{
+	Super::NativeConstruct();
+	PB_ULT->SynchronizeProperties();
+}
+
 void UJRPGULTButton::Init()
 {
 	if (GM)
@@ -23,27 +29,29 @@ void UJRPGULTButton::Init()
 
 		PB_ULT->SetWidgetStyle(Style);
 		PB_ULT->PercentDelegate.BindUFunction(this, "BindULTGage");
-		PB_ULT->SynchronizeProperties();
+		//PB_ULT->SynchronizeProperties();
 
+		ULTButtonSetActive();
 		if (!ULTButton->OnClicked.IsBound())
-		{
 			ULTButton->OnClicked.AddDynamic(this, &UJRPGULTButton::UseSkill);
-		}
 
 	}
+}
+
+
+void UJRPGULTButton::ULTButtonSetActive()
+{
+	if (CurrentUnit->MaxULTGage <= ULTGage)
+		ULTButton->SetIsEnabled(true);
+	else
+		ULTButton->SetIsEnabled(false);
 }
 
 
 void UJRPGULTButton::UseSkill()
 {
 	if (CurrentUnit)
-	{
-		if (CurrentUnit->MaxULTGage <= ULTGage)
-		{
-			CurrentUnit->Skill_ULT();
-		}
-	}
-
+		CurrentUnit->Skill_ULT();
 }
 
 float UJRPGULTButton::BindULTGage()
@@ -53,22 +61,22 @@ float UJRPGULTButton::BindULTGage()
 
 
 
-void UJRPGULTButton::EnermyTurnFirstInit()
-{
-	if (GM)
-	{
-		CurrentUnit = GM->OwnerUnits.HeapTop().Unit;
-		ULTGage = CurrentUnit->CurrentULTGage;
-		FProgressBarStyle Style;
-		FSlateBrush SlateWidget = UWidgetBlueprintLibrary::MakeBrushFromTexture(CurrentUnit->UnitSkills.ULT.ULTImg);
-		FSlateBrush FillWidget = UWidgetBlueprintLibrary::MakeBrushFromTexture(CurrentUnit->UnitSkills.ULT.FillULTImg);
-		Style.SetBackgroundImage(SlateWidget);
-		Style.SetFillImage(SlateWidget);
-
-		PB_ULT->SetWidgetStyle(Style);
-
-		ULTButton->OnClicked.AddDynamic(this, &UJRPGULTButton::UseSkill);
-	}
-}
+//void UJRPGULTButton::EnermyTurnFirstInit()
+//{
+//	if (GM)
+//	{
+//		CurrentUnit = GM->OwnerUnits.HeapTop().Unit;
+//		ULTGage = CurrentUnit->CurrentULTGage;
+//		FProgressBarStyle Style;
+//		FSlateBrush SlateWidget = UWidgetBlueprintLibrary::MakeBrushFromTexture(CurrentUnit->UnitSkills.ULT.ULTImg);
+//		FSlateBrush FillWidget = UWidgetBlueprintLibrary::MakeBrushFromTexture(CurrentUnit->UnitSkills.ULT.FillULTImg);
+//		Style.SetBackgroundImage(SlateWidget);
+//		Style.SetFillImage(SlateWidget);
+//
+//		PB_ULT->SetWidgetStyle(Style);
+//
+//		ULTButton->OnClicked.AddDynamic(this, &UJRPGULTButton::UseSkill);
+//	}
+//}
 
 

@@ -22,7 +22,7 @@ protected:
 	virtual void BeginPlay() override;
 
 public:	
-	//virtual void Tick(float DeltaTime) override;
+	virtual void Tick(float DeltaTime) override;
 
 	void FieldEnermyDead(); // 죽음 처리 함수.
 	void DeadUnit();
@@ -35,6 +35,9 @@ public:
 		void BPBindFunc_DeadUnit(); // 블프에서 따로 제작한 함수.
 
 public:
+	UPROPERTY(VisibleAnywhere)
+		FTransform DefaultTransform;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		int32 FieldEnermyNumber; // Save파일에서 이걸로 검색한다.
 
@@ -59,5 +62,18 @@ public:
 
 	UPROPERTY(VisibleAnywhere)
 		FJRPGDropStruct DropStruct;
+
+	/*-----------------------
+			피지컬 사운드
+	------------------------*/
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PhysicalSound)
+		TMap<TEnumAsByte<EPhysicalSurface>, FPhysicalSoundStruct> PhysicalAllSounds;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = PhysicalSound)
+		FPhysicalSoundStruct PhysicalSounds;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PhysicalSound)
+		float SurfaceDistance = 300.f; // 땅끝의 거리
+	void SetPhysicalSound();
 
 };

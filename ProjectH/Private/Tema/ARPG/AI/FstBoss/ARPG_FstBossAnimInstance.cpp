@@ -133,7 +133,7 @@ void UARPG_FstBossAnimInstance::AnimNotify_PlayEffect()
 		return;
 
 	// 이펙트 실행
-	UGameplayStatics::SpawnEmitterAttached(CurrentEffects[CurrentEffectIndex].Effect, FstBoss->GetMesh(), CurrentEffects[CurrentEffectIndex].SocketName);
+	UGameplayStatics::SpawnEmitterAttached(CurrentEffects[CurrentEffectIndex].Effect, FstBoss->GetMesh(), CurrentEffects[CurrentEffectIndex].SocketName, FVector::ZeroVector, FRotator::ZeroRotator, FVector(1.f, 1.f, 1.f), EAttachLocation::SnapToTargetIncludingScale, false, EPSCPoolMethod::AutoRelease, true);
 	++CurrentEffectIndex;
 }
 
@@ -151,10 +151,8 @@ void UARPG_FstBossAnimInstance::AnimNotify_PlaySound()
 
 	// 사운드 실행 이미 실행되고있는 사운드가 있으면 실행하지 않도록 하자.
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), CurrentSounds[CurrentSoundIndex].Sound, FstBoss->GetActorLocation(), FstBoss->GetActorRotation(), 1.f, 1.f, 1.f, CurrentSounds[CurrentSoundIndex].Attenuation);
-
 	bPlayedSound = true;
 	GetWorld()->GetTimerManager().SetTimer(SoundHandle, this, &UARPG_FstBossAnimInstance::PlayedSoundFunc, 4.f, false);
-
 	++CurrentSoundIndex;
 }
 

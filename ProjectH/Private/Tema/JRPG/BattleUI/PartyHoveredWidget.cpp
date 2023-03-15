@@ -17,7 +17,6 @@ void UPartyHoveredWidget::Init()
 
 			FJRPGCharStat Stat = OwnerController->CharStats[CharNum];
 
-
 			CharName->SetText(FText::FromString(OwnerController->GetUnitUI(CharNum)->CharName));
 			CharLevel->SetText(FText::FromString(FString::FromInt(Stat.CharLevel)));
 			CharHP->SetText(FText::FromString(FString::FromInt(Stat.MaxHP)));
@@ -30,28 +29,6 @@ void UPartyHoveredWidget::Init()
 			NextExp->SetText(FText::FromString(FString::FromInt(Stat.NextEXP)));
 
 		}
-	
-
-	
-		/*if (OwnerController->HaveCharLevels.Find(CharNum) != nullptr)
-		{
-
-			FJRPGCharStat Stat = OwnerController->GetCharStat(CharNum);
-
-
-			CharName->SetText(FText::FromString(OwnerController->GetUnitUI(CharNum)->CharName));
-			CharLevel->SetText(FText::FromString(FString::FromInt(Stat.CharLevel)));
-			CharHP->SetText(FText::FromString(FString::FromInt(Stat.MaxHP)));
-			CharMP->SetText(FText::FromString(FString::FromInt(Stat.MaxMP)));
-			CharAttack->SetText(FText::FromString(FString::FromInt(Stat.Attack)));
-			CharShelid->SetText(FText::FromString(FString::FromInt(Stat.Shelid)));
-			MaxULT->SetText(FText::FromString(FString::FromInt(Stat.MaxULT)));
-			UnitPriority->SetText(FText::FromString(FString::FromInt(Stat.Priority)));
-			CurrentExp->SetText(FText::FromString(FString::FromInt(OwnerController->CurrentExp[CharNum])));
-			NextExp->SetText(FText::FromString(FString::FromInt(Stat.NextEXP)));
-
-		}*/
-	
 	}
 }
 

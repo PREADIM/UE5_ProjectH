@@ -304,11 +304,11 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PhysicalSound)
 		TMap<TEnumAsByte<EPhysicalSurface>, FPhysicalSoundStruct> PhysicalAllSounds;
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = PhysicalSound)
 		FPhysicalSoundStruct PhysicalSounds;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PhysicalSound)
-		float SurfaceDistance = 150.f; // 顶场狼 芭府
+		float SurfaceDistance = 300.f; // 顶场狼 芭府
 	void SetPhysicalSound();
 
 	/*-----------------------
