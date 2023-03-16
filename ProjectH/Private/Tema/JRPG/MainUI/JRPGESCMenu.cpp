@@ -11,6 +11,7 @@
 
 void UJRPGESCMenu::Init()
 {
+	Resome->OnClicked.AddDynamic(this, &UJRPGESCMenu::ResomeFunc);
 	PartySetting->OnClicked.AddDynamic(this, &UJRPGESCMenu::PartySet);
 	Quit->OnClicked.AddDynamic(this, &UJRPGESCMenu::QuitTema);
 }
@@ -29,15 +30,25 @@ void UJRPGESCMenu::PartySet()
 				if (PartyField)
 				{
 					PartyField->SetCurrentParty();
-					//OwnerMainUI->ReverseESC();
 					OwnerController->OnPossess(Cast<APawn>(PartyField));
 					OwnerController->MouseOn();
-					OwnerController->GameType = EGameModeType::UI;
-				}
-				OwnerMainUI->SetVisibility(ESlateVisibility::Hidden);
+					OwnerMainUI->SetVisibility(ESlateVisibility::Hidden);
+				}			
 			}
 		}
 	}
+}
+
+void UJRPGESCMenu::SetCloseFunction()
+{
+	OwnerMainUI->ReverseESC();
+}
+
+
+void UJRPGESCMenu::ResomeFunc()
+{
+	OwnerMainUI->ReverseESC();
+	OwnerController->LastWidget.Pop();
 }
 
 void UJRPGESCMenu::SpawnPartyField()
@@ -49,7 +60,6 @@ void UJRPGESCMenu::SpawnPartyField()
 		PartyField = GetWorld()->SpawnActor<APartySettingField>(BP_PartyField, FTransform(FVector(7441.f, -14870.f, 9812.f)), SpawnParameters);
 		PartyField->OwnerController = OwnerController;
 		PartyField->Init(OwnerMainUI);
-		UE_LOG(LogTemp, Warning, TEXT("SpawnPartyField"));
 	}
 }
 

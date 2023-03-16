@@ -60,6 +60,7 @@ void UJRPGTemaUI::StartBattleWidget()
 	if (MainWidget->IsInViewport())
 	{
 		MainWidget->RemoveFromParent();
+		OwnerController->LastWidget.Empty();
 	}
 
 	BattleWidget->AddToViewport();
@@ -76,7 +77,6 @@ void UJRPGTemaUI::StartMainWidget()
 	}
 
 	OwnerController->SetInputMode(FInputModeGameOnly());
-	OwnerController->GameType = EGameModeType::Normal;
 	OwnerController->SetShowMouseCursor(false);
 	MainWidget->AddToViewport();
 }

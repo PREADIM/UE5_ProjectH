@@ -112,8 +112,7 @@ void UJRPGSettingPartySlot::SetVisibilitySelectButton(bool bFlag)
 void UJRPGSettingPartySlot::ExitWidget()
 {
 	if (OwnerField)
-	{
-		RemoveFromParent();
+	{	
 		if (HoveredWidget)
 		{
 			if (HoveredWidget->IsInViewport())
@@ -122,7 +121,7 @@ void UJRPGSettingPartySlot::ExitWidget()
 				HoveredWidget = nullptr;
 			}
 		}
-		//OwnerController->LastWidget.Pop();
+		RemoveFromParent();
 		OwnerField->ResomeUI();
 	}
 }
@@ -168,24 +167,6 @@ void UJRPGSettingPartySlot::SetPartyChange()
 	OwnerField->SpawnCharacter(); // 다시 새롭게 스폰.
 	SetCurrentPartySave();
 }
-
-void UJRPGSettingPartySlot::ArrowLeftClick()
-{
-	if (OwnerField)
-	{
-		OwnerField->NextChar(-1);
-	}
-
-}
-
-void UJRPGSettingPartySlot::ArrowRightClick()
-{
-	if (OwnerField)
-	{
-		OwnerField->NextChar(1);
-	}
-}
-
 
 void UJRPGSettingPartySlot::SetCurrentPartySave()
 {

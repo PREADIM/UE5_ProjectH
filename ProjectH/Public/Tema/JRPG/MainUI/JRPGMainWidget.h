@@ -23,8 +23,6 @@ public:
 	UPROPERTY(meta = (BindWidget))
 		class UJRPGMainPartyUI* MainPartyUI;
 
-	bool bESCFlag;
-
 public:
 	virtual void SetCloseFunction() {}
 

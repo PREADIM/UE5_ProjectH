@@ -257,7 +257,6 @@ bool AJRPGGameMode::BattleStart(int32 FieldNum, TArray<FEnermys> Enermys)
 		return false;
 		
 	OwnerController->DynamicCamera->CurrentField = CurrentField;
-	OwnerController->GameType = EGameModeType::Battle;
 
 	float Delay = OwnerController->BattleStartSequence();
 

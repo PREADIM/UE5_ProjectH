@@ -100,8 +100,6 @@ public:
 	UFUNCTION()
 		void LMB();
 
-	void NextChar(int32 Number); // 캐릭터 세팅에서 옆으로 넘기기 함수.	
-
 	void SetCurrentParty();
 	void SpawnCharacter();
 	void SetSpawnUnit(int32 Number, int32 CharNum);

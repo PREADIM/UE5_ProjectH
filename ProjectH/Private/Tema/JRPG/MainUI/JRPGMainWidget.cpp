@@ -5,7 +5,6 @@
 #include "Tema/JRPG/MainUI/JRPGESCMenu.h"
 #include "Tema/JRPG/JRPGPlayerController.h"
 #include "Tema/JRPG/MainUI/JRPGMainPartyUI.h"
-#include "Components/Button.h"
 #include "Tema/JRPG/CustomWidget.h"
 
 
@@ -14,7 +13,6 @@ void UJRPGMainWidget::Init()
 	ESCMenu->OwnerController = OwnerController;
 	ESCMenu->OwnerMainUI = this;
 	ESCMenu->Init();
-	ESCMenu->Resome->OnClicked.AddDynamic(this, &UJRPGMainWidget::ReverseESC);
 
 	MainPartyUI->OwnerController = OwnerController;
 	MainPartyUI->Init();
@@ -31,39 +29,24 @@ void UJRPGMainWidget::PlayESCAnim(bool bPlay)
 			OwnerController->MouseOnOff();
 
 		MainPartyUI->SetVisibility(ESlateVisibility::Hidden);
-		OwnerController->GameType = EGameModeType::UI;
 	}
 	else
 	{
 		MainPartyUI->SetVisibility(ESlateVisibility::Visible);
 		SetMouseOff();
-		OwnerController->GameType = EGameModeType::Normal;
 	}
 
 }
 
 void UJRPGMainWidget::PlayESC()
 {
-	if (bESCFlag)
+	if (ESCMenu->GetRenderOpacity() <= 0.1f)
 	{
-		bESCFlag = false;
-		PlayESCAnim(false);
-		_DEBUG("false");
-	}
-	else
-	{
-		bESCFlag = true;
 		PlayESCAnim(true);
+		OwnerController->LastWidget.AddUnique(ESCMenu);
 		_DEBUG("true");
 	}
-
 }
-
-
-//void UJRPGMainWidget::PlayESC()
-//{
-//	PlayESCAnim(true);
-//}
 
 
 void UJRPGMainWidget::ReverseESC()

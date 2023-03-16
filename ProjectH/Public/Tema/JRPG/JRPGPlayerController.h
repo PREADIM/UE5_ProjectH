@@ -15,17 +15,6 @@
 
 struct FEnermy;
 
-UENUM(BlueprintType)
-enum class EGameModeType : uint8
-{
-
-	Normal UMETA(DisplayName = "Normal"),
-	Battle UMETA(DisplayName = "Battle"),
-	UI UMETA(DisplayName = "UI")
-};
-
-
-
 UCLASS()
 class PROJECTH_API AJRPGPlayerController : public APlayerControllerBase
 {
@@ -130,9 +119,6 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		class UAudioComponent* AudioComponent;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		EGameModeType GameType;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TSubclassOf<class AJRPGCamera> BP_Camera;
 	UPROPERTY(VisibleAnywhere)
@@ -189,8 +175,7 @@ public:
 		class UDropExpWidget* DropExpWidget;
 
 	UPROPERTY()
-		TArray<class UCustomWidget*> LastWidget; // 마지막 Widget을 스택처럼 저장하는 배열.
-	// UCustomWidget중 AddToViewport 를 사용하는 UI만 저장한다. 이미 할당되어있는 UI는 제외.
+		TArray<class UCustomWidget*> LastWidget; // 마지막 Widget을 큐처럼 저장하는 배열.
 
 	UPROPERTY(VisibleAnywhere)
 		class AJRPGUnit* CurrentUnit; // ESC를 할 Unit 스킬을 실행 중이면 취소하고 , 아무것도 실행중이지 않으면 나가기 창을 띄운다.

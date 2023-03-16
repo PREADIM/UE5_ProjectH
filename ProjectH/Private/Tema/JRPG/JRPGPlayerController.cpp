@@ -56,8 +56,6 @@ void AJRPGPlayerController::BeginPlay()
 
 	if (NormalSound)
 		SetPlaySound(NormalSound);
-
-	GameType = EGameModeType::Normal;
 }
 
 void AJRPGPlayerController::OnPossess(APawn* NewPawn)
@@ -285,37 +283,17 @@ void AJRPGPlayerController::OpenESC()
 	{
 		if (TemaMainUI->MainIsInViewport())
 		{
-			/*if (GameType == EGameModeType::Normal)
-				TemaMainUI->OpenESCMenu();
-			else if (GameType == EGameModeType::UI)
-			{
-				if (!LastWidget.IsEmpty())
-				{
-					LastWidget.Top()->SetCloseFunction();
-					if (LastWidget.IsEmpty()) // 이제서야 다 비워졌다면
-						GameType = EGameModeType::Normal;
-				}
-				else
-				{
-					TemaMainUI->CloseESCMenu();
-				}
-
-			}*/
-
 			if (!LastWidget.IsEmpty())
 			{
 				LastWidget.Top()->SetCloseFunction();
 				LastWidget.Pop();
 			}
 			else
-			{
 				TemaMainUI->OpenESCMenu();
-			}
+
 		}
 		else if (TemaMainUI->BattleIsInViewport())
-		{
 			BattleESC();
-		}
 	}
 }
 

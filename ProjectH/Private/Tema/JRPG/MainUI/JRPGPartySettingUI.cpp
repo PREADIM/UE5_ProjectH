@@ -34,25 +34,21 @@ void UJRPGPartySettingUI::ExitWidget()
 	{
 		for (int32 i = 0; i < 3; i++)
 		{
-			if (PartyField->SpawnChars[i] != nullptr)
+			if (PartyField->SpawnChars.IsValidIndex(i))
 			{
-				PartyField->SpawnChars[i]->Destroy();
-				PartyField->SpawnChars[i] = nullptr;
+				if (PartyField->SpawnChars[i] != nullptr)
+				{
+					PartyField->SpawnChars[i]->Destroy();
+					PartyField->SpawnChars[i] = nullptr;
+				}
 			}
-
 		}
 
 		PartyField->SpawnChars.Empty();
 		PartyField->SettingUI->OwnerField = nullptr;
 		PartyField->Destroy();
 		OwnerController->SetRepreCharacterSpawnUI(OwnerController->CurrentPartyIndex);
-		OwnerController->MouseOff();
 		OwnerMainUI->SetVisibility(ESlateVisibility::Visible);
-
-		// ★ 이 두개는 꼭 해야한다.
 		RemoveFromParent();
-		//OwnerController->LastWidget.Pop();
-
-		OwnerController->GameType = EGameModeType::Normal;
 	}
 }

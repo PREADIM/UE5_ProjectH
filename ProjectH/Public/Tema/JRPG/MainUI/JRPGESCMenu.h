@@ -34,17 +34,17 @@ public:
 		TSubclassOf<class UUserWidget> BP_QuitWidget;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		class UUserWidget* QuitWidget;
-
 	UPROPERTY(VisibleAnywhere)
 		class UJRPGMainWidget* OwnerMainUI;
 
 
 
 public:
-	virtual void SetCloseFunction() {}
-
+	virtual void SetCloseFunction() override;
 	void Init();
 
+	UFUNCTION()
+		void ResomeFunc();
 	UFUNCTION()
 		void PartySet();
 	UFUNCTION()

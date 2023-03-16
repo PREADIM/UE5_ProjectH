@@ -51,8 +51,6 @@ void APartySettingField::BeginPlay()
 {
 	Super::BeginPlay();
 
-
-
 }
 
 // Called every frame
@@ -141,13 +139,9 @@ void APartySettingField::SpawnCharacter()
 		}
 
 		if (CurrentParty.IsValidIndex(i))
-		{
 			SpawnChars[i] = GM->GetCharacterSpawn(CurrentParty[i], UnitLocation);
-		}
 		else
-		{
 			SpawnChars[i] = GM->GetCharacterSpawn(0, UnitLocation);
-		}
 
 	}
 }
@@ -177,11 +171,8 @@ void APartySettingField::SetSpawnUnit(int32 Number, int32 CharNum)
 		// 컨트롤러의 CurrentParty는 건들지않음.
 	}
 	else
-	{
 		SpawnChars[Number] = GM->GetCharacterSpawn(CharNum, UnitLocation);
-	}
 	
-
 }
 
 
@@ -203,8 +194,6 @@ void APartySettingField::SetPartyList(int32 CharNum, UJRPGSettingPartyIcon* Owne
 					bCan = false; // 이미 있으므로 하지 말것
 					SettingUI->PlayWarningText();
 					//여기서 이미 존재한다고 경고창 띄우기.
-					// 
-					// OwnerController->LastWidget에 넣기.
 					break;
 				}
 			}
@@ -375,38 +364,6 @@ void APartySettingField::LMB()
 			}	
 		}
 	}
-}
-
-void APartySettingField::NextChar(int32 Number)
-{
-	// 문제점, 옆으로 넘겼을때 SettingUI에도 당연히 SelectFieldNumber 전해줘야함.
-	// 해제하기 편성하기가 해당 칸에 이동하면 떠야함.
-	// 때문에 그냥 원신처럼 옆으로 이동못하게 하는것이 나을수도 있다.
-	int32 MaxCnt = 3;
-
-	int32 i = SelectNumber + Number; // +1 or -1
-
-	if (i < 0 || i > MaxCnt)
-		return;
-	// CurrentParty와 >=으로 한 이유는 한칸 옆이 빈칸이라면 그 해당 칸까지는 가야하기 때문.
-
-	switch (i)
-	{
-	case 0:
-		TargetLocation = Unit1_CameraTransform;
-		break;
-	case 1:
-		TargetLocation = Unit2_CameraTransform;
-		break;
-	case 2:
-		TargetLocation = Unit3_CameraTransform;
-		break;
-	}
-
-	SelectNumber = i; // 이걸 기억하고있어야 캐릭터 아이콘을 선택했을때 해당 칸을 변경가능	
-	SettingUI->SelectFieldNumber = SelectNumber;
-	// 아예 SettingUI에서 SelectFieldNumber를 뺴고 OnwerField->SelctNumber 에서 직접 가져와서 사용하면 해결가능.
-	
 }
 
 
