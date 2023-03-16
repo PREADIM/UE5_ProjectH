@@ -41,7 +41,7 @@ void AJRPGFieldAIController::BattleStart()
 void AJRPGFieldAIController::ReturnToField()
 {
 	FTimerHandle Handle;
-	GetWorld()->GetTimerManager().SetTimer(Handle, this, &AJRPGFieldAIController::RestartBT, 1.5f, false);
+	GetWorld()->GetTimerManager().SetTimer(Handle, this, &AJRPGFieldAIController::RestartBT, 1.0f, false);
 }
 
 void AJRPGFieldAIController::RestartBT()

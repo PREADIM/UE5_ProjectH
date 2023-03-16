@@ -6,7 +6,6 @@
 #include "Tema/JRPG/JRPGCharStat.h"
 #include "Tema/JRPG/JRPGUnitSkill.h"
 #include "PhysicalSoundStruct.h"
-#include "Tema/JRPG/DebuffClass.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "Blueprint/AIAsyncTaskBlueprintProxy.h"
 #include "JRPGUnit.generated.h"
@@ -207,9 +206,6 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		int32 CharNum; // 해당 캐릭터의 넘버
 
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	//	int32 EnermyLevel = 1; // (적 유닛 한정) 적의 레벨. 데이터 테이블에 검색해서 스탯을 가져오기 위함이다.
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FJRPGUnitSkill UnitSkills;	
 
@@ -218,10 +214,10 @@ public:
 	-------------------*/
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = JRPGUnit)
 		bool bIsJRPGUnit = false; // 해당 캐릭터가 JRPG 유닛으로 스폰된 캐릭터인지 확인하는 변수. 
-	// 이 변수로 움직이는 애니메이션을 바꾼다.
+	// 이 변수로 애님블프에서 걷는 로코모션 애니메이션을 바꾼다.
 	// 이 변수로 턴제 유닛인 경우 위젯 사이즈 스케일을 변하게 해준다.
 	UFUNCTION(BlueprintImplementableEvent)
-		void SetIsJRPGUnit(bool bFlag); // 위 변수를 셋업할 함수. 해당 함수를 통해 애님블프 설정도 바꿈.
+		void SetIsJRPGUnit(bool bFlag); // 블루 프린트 상에서 위 변수를 셋업할 함수.
 
 	void ThisUnitBattleUnit(bool bFlag); // c++에서 이걸로 실행
 	void BattleWidgetOnOff(bool bOnOff);
@@ -307,7 +303,6 @@ public:
 	void PlayStartMontage();
 	void PlayCharacterChangeMontage();
 
-
 	/*-----------------------
 		CC기 및 디버프 상태
 	------------------------*/
@@ -316,16 +311,17 @@ public:
 		TSet<FDebuffStruct> DebuffSet;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Debuff)
-		bool bAnimCCEnd; // 애니메이션 용
-
-	UPROPERTY(VisibleAnywhere, Category = Debuff)
-		bool bCC;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Debuff)
 		FCCState CCState;
 
 	UFUNCTION(BlueprintCallable)
 		void SetCCState(ECCType CCType, bool bFlag);
 
 	void UnitTurnEndCCState(); // UnitTurnEnd인 시점에서 CC기에 걸려 유닛 턴 종료를 해야하는 경우.
+
+	/*-------------------------------
+		배틀 시작 시 사운드 출력 여부
+	---------------------------------*/
+
+	UPROPERTY(BlueprintReadOnly)
+		bool bPlayBattleStartSound = false;
 };

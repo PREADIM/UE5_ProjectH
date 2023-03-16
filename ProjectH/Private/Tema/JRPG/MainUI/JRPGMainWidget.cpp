@@ -44,8 +44,26 @@ void UJRPGMainWidget::PlayESCAnim(bool bPlay)
 
 void UJRPGMainWidget::PlayESC()
 {
-	PlayESCAnim(true);
+	if (bESCFlag)
+	{
+		bESCFlag = false;
+		PlayESCAnim(false);
+		_DEBUG("false");
+	}
+	else
+	{
+		bESCFlag = true;
+		PlayESCAnim(true);
+		_DEBUG("true");
+	}
+
 }
+
+
+//void UJRPGMainWidget::PlayESC()
+//{
+//	PlayESCAnim(true);
+//}
 
 
 void UJRPGMainWidget::ReverseESC()

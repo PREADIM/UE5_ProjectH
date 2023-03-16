@@ -106,7 +106,6 @@ void APartySettingField::SetCurrentParty()
 
 		OwnerController->LastWidget.AddUnique(PartySettingUI);
 		PartySettingUI->AddToViewport();
-		//UE_LOG(LogTemp, Warning, TEXT("SetCurrentParty"));
 	}
 
 }
@@ -366,10 +365,8 @@ void APartySettingField::LMB()
 				PartySettingUI->SetVisibility(ESlateVisibility::Hidden);
 				OwnerController->LastWidget.AddUnique(SettingUI);
 
-				if (!SettingUI->IsInViewport())
-				{					
+				if (!SettingUI->IsInViewport())			
 					SettingPartySlot();			
-				}
 
 				SettingUI->SelectFieldNumber = SelectNumber;
 

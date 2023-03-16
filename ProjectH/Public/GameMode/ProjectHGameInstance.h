@@ -90,6 +90,8 @@ public:
 	UPROPERTY(EditAnywhere)
 		class ULevelSequence* OpenLevelSequence;
 
+	bool bOpeningLevel = false;
+
 	/*-----------------------------
 			Sequence Actor
 	------------------------------*/

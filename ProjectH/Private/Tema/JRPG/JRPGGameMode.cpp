@@ -123,14 +123,13 @@ void AJRPGGameMode::SetControllerInit()
 }
 
 
-// ★★ 캐릭터 스탯 테이블을 가져와서 그 테이블에서 레벨로 검색해서 스텟을 가져오기.
+//캐릭터 스탯 테이블을 가져와서 그 테이블에서 레벨로 검색해서 스텟을 가져오기.
 FJRPGCharStat AJRPGGameMode::GetCharStat(int32 CharNum, int32 Level)
 {
 	FJRPGCharStatTablePaths* CharStatTablePath = CharStatTablePaths->FindRow<FJRPGCharStatTablePaths>(*FString::FromInt(CharNum), TEXT(""));
 	if (CharStatTablePath != nullptr)
 	{
-
-		//★★ 데이터 테이블 런타임에서 가져오는 방법.
+		/* 데이터 테이블 런타임에서 가져오는 방법. */
 		UDataTable* StatTable;
 
 		// ★ 첫번째 방법.
@@ -175,14 +174,7 @@ void AJRPGGameMode::SetControllerInCharacterStat()
 	{
 		FJRPGCharStat Stat = GetCharStat(CharNum, OwnerController->HaveCharLevels[CharNum]);
 		OwnerController->CharStats[CharNum] = Stat;
-
-
-		//OwnerController->NextExp[CharNum] = Stat.NextEXP;
-		// 여기서 CurrentExp는 가져오지않아도 저장된 세이브에서 가져온다.
 	}
-
-	// ★★ 하지만 어처피 Add를 통해 키값을 저장해야하는 것을 해야하므로 세이브 자체는 해둔다.
-
 }
 
 
@@ -280,6 +272,7 @@ bool AJRPGGameMode::BattleStart(int32 FieldNum, TArray<FEnermys> Enermys)
 			OwnerController->BattleUIOnOff(true);
 			OwnerController->PlayPriority(); // 우선순위로 짜여진 캐릭터 리스트 위젯 애님 실행.
 			OwnerController->CreateBattleStartWidget();
+			OwnerController->bBattleBeginning = false;
 	}), Delay, false);
 
 	return true;
@@ -290,12 +283,10 @@ bool AJRPGGameMode::BattleStart(int32 FieldNum, TArray<FEnermys> Enermys)
 void AJRPGGameMode::TurnStart()
 {
 	//여기서 리스트 맨위의 캐릭터의 컴포넌트에 접근하여, 해당 캐릭터의 정보를 위젯에 초기화.
-
 	if (SetUnitList.IsEmpty())
 		return;
 
 	AJRPGUnit* Unit = SetUnitList[0].Unit;
-
 	OwnerController->CurrentUnit = Unit;
 
 	if (Unit)
@@ -312,7 +303,6 @@ void AJRPGGameMode::TurnEnd()
 void AJRPGGameMode::TurnListInit()
 {
 	// 내 캐릭터들과, 적 캐릭터들의 목록 추가하기.
-
 	for (FPriorityUnit Units : OwnerUnits)
 	{
 		UnitList.HeapPush(FPriorityUnit(Units.Unit), PriorityUnitFunc());
@@ -341,8 +331,7 @@ void AJRPGGameMode::SetUnitListArray()
 
 void AJRPGGameMode::TurnListSet()
 {
-	// ★★ 캐릭터나 적이 죽었을경우에는 죽은 캐릭터를 Find하여 지운뒤, 이 함수를 실행.
-
+	//캐릭터나 적이 죽었을경우에는 죽은 캐릭터를 Find하여 지운뒤, 이 함수를 실행.
 	if (OwnerList.Num() <= 0)
 	{
 		//여기서 게임이 끝났다는 시간을 인지하게하고 돌아가야한다.	
@@ -355,7 +344,6 @@ void AJRPGGameMode::TurnListSet()
 	}
 	else if(EnermyList.Num() <= 0)
 	{
-		//여기서 게임이 끝났다는 시간을 인지하게하고 돌아가야한다.
 		float Delay = OwnerController->BattleEndSequence();
 		FTimerHandle Handle;
 		GetWorld()->GetTimerManager().SetTimer(Handle, FTimerDelegate::CreateLambda([&]()
@@ -368,13 +356,14 @@ void AJRPGGameMode::TurnListSet()
 		FPriorityUnit Unit = SetUnitList[0];
 		SetUnitList.RemoveAt(0);
 		SetUnitList.Emplace(Unit);
-
-
 		SetUnitList[0].Unit->BattleTurnStart();
 	}
 }
 
-
+void AJRPGGameMode::WidgetCallGameEndProxy()
+{
+	GameEnd(false);
+}
 
 void AJRPGGameMode::GameEnd(bool bWinner)
 {
@@ -455,7 +444,6 @@ void AJRPGGameMode::SetOwnerUnits()
 			}
 			
 			OwnerUnits.HeapPush(FPriorityUnit(Unit), PriorityUnitFunc());
-
 			Unit->PlayStartMontage();
 			// 레벨 스타트 몽타주 실행하기.
 		}
@@ -487,11 +475,9 @@ void AJRPGGameMode::SetEnermyUnits(TArray<FEnermys> Enermys)
 		}
 
 		AJRPGUnit* Unit = GetEnermySpawn(Enermys[i].EnermyUnits, UnitLocation); // 없는 넘버는 nullptr 빈공간
-
 		if (Unit != nullptr)
 		{
 			Unit->OwnerController = OwnerController;
-			//Unit->EnermyLevel = Enermys[i].EnermyLevel;
 			Unit->CharacterStat = GetCharStat(Enermys[i].EnermyUnits, Enermys[i].EnermyLevel);
 			Unit->ThisUnitBattleUnit(true);
 			Unit->InitCurrentStat();
@@ -503,6 +489,9 @@ void AJRPGGameMode::SetEnermyUnits(TArray<FEnermys> Enermys)
 			// 레벨 스타트 몽타주 실행하기.
 		}
 
+		int Index = FMath::RandRange(0, Enermys.Num());
+		if (EnermyList.IsValidIndex(Index))
+			EnermyList[Index]->bPlayBattleStartSound = true;
 	}
 }
 

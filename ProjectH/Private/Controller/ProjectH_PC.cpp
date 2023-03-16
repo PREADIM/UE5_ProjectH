@@ -33,6 +33,7 @@ void AProjectH_PC::BeginInit()
 	if (GI)
 	{
 		MouseSensitivity = GI->MS;
+		GI->PlaySequence(1, this);
 	}
 
 	if (BP_MainQuestUI && OwnerCharacter)

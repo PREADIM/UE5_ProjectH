@@ -21,35 +21,13 @@ void UJRPGTemaUI::Init()
 void UJRPGTemaUI::OpenESCMenu()
 {
 	if (MainWidget->IsInViewport())
-	{
 		MainWidget->PlayESC();
-		_DEBUG("Play");
-	}
 }
 
 void UJRPGTemaUI::CloseESCMenu()
 {
 	if (MainWidget->GetESCRenderOpacity() >= 0.1f)
-	{
 		MainWidget->ReverseESC();
-		_DEBUG("Reverse");
-	}
-}
-
-
-void UJRPGTemaUI::OpenBattleESCMenu()
-{
-	if (BattleWidget->IsInViewport())
-	{
-		/*if (BattleWidget->GetESCRenderOpacity() >= 0.1f)
-		{
-			BattleWidget->ReverseESC();
-		}
-		else
-		{
-			BattleWidget->PlayESC();
-		}*/
-	}
 }
 
 
@@ -85,6 +63,7 @@ void UJRPGTemaUI::StartBattleWidget()
 	}
 
 	BattleWidget->AddToViewport();
+	BattleWidget->VisibleLockOn();
 }
 
 

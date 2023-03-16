@@ -49,11 +49,10 @@ void UJRPGPartySettingUI::ExitWidget()
 		OwnerController->MouseOff();
 		OwnerMainUI->SetVisibility(ESlateVisibility::Visible);
 
-		// ★★ 이 두개는 꼭 해야한다.
+		// ★ 이 두개는 꼭 해야한다.
 		RemoveFromParent();
-		OwnerController->LastWidget.Pop();
+		//OwnerController->LastWidget.Pop();
 
 		OwnerController->GameType = EGameModeType::Normal;
-		UE_LOG(LogTemp, Warning, TEXT("ExitWidget"));
 	}
 }

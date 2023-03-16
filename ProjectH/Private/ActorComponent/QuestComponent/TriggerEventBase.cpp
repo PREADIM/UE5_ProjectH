@@ -196,6 +196,7 @@ void ATriggerEventBase::CanClearQuest()
 		AQuestNPCBase* NPC = GI->GetNPCPtr(OwnerNPCName);
 		if (NPC)
 		{
+			SetActorLocation(NPC->GetActorLocation());
 			NPC->SucceedQuestsNums.Emplace(QuestNumber);
 		}
 		PlayerCharacter->QuestCollisionSetUp();

@@ -12,7 +12,6 @@ class PROJECTH_API APartySettingField : public APawn
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this pawn's properties
 	APartySettingField();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Root)
@@ -101,13 +100,13 @@ public:
 	UFUNCTION()
 		void LMB();
 
-	void NextChar(int32 Number); // 캐릭터 세팅에서 옆으로 넘기기 함수.
-	
+	void NextChar(int32 Number); // 캐릭터 세팅에서 옆으로 넘기기 함수.	
 
 	void SetCurrentParty();
 	void SpawnCharacter();
 	void SetSpawnUnit(int32 Number, int32 CharNum);
 	void SetPartyList(int32 CharNum, class UJRPGSettingPartyIcon* OwnerIcon); // 파티 캐릭터의 목록이 변경되었으므로, 다시 설정
+
 	UFUNCTION()
 		void SetPartyChar(); // 파티 캐릭터의 목록이 변경되었으므로, 캐릭터 위치 재설정.
 	void SwapIconColor(); // 아이콘 컬러 바꾸기.

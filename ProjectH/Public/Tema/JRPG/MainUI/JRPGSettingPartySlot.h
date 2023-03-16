@@ -49,15 +49,15 @@ public:
 	// 해당 위젯의 위치를 Tick으로 움직인다.
 
 public:
+	virtual void NativeTick(const FGeometry& MyGeometry, const float InDeltaTime) override;
+	virtual void SetCloseFunction();
+
 	void Init();
 	void SetList();
-
-	virtual void NativeTick(const FGeometry& MyGeometry, const float InDeltaTime) override;
 
 	UFUNCTION()
 		void ExitWidget();
 
-	virtual void SetCloseFunction();
 
 	void SetVisibilityOutButton(bool bFlag); // 해제하기 버튼 비지빌리티 설정.
 	void SetVisibilitySelectButton(bool bFlag); // 선택하기 버튼 비지빌리티 설정.

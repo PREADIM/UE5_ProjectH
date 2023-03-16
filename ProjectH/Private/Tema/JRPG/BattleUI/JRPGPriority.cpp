@@ -97,9 +97,7 @@ void UJRPGPriority::PlayTurnStart()
 void UJRPGPriority::PlayCurrentUnit()
 {
 	if (Icons.IsValidIndex(0))
-	{
-		Icons[0]->PlayCurrentAnim();	
-	}
+		Icons[0]->PlayCurrentAnim();
 }
 
 

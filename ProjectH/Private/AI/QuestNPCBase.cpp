@@ -204,7 +204,7 @@ void AQuestNPCBase::HiddenIcon()
 bool AQuestNPCBase::FindCanQuest()
 {
 	// 게임 인스턴스 조회는 NPC 이름으로 하면 될듯하다.
-	/*게임 인스턴스 같은 곳에서 캐릭터가 수행가능한 퀘스트 목록을 퀘스트 이름으로 저장하고
+	/*  게임 인스턴스 같은 곳에서 캐릭터가 수행가능한 퀘스트 목록을 퀘스트 이름으로 저장하고
 		여기서 그 목록을 조회해 해당 NPC가 수행가능한 퀘스트를 가지고 있으면 해당 퀘스트의
 		bCanAccepted를 true하고 NPC 클래스의 bCanInteractQuest를 true로 바꾼다.
 		해당 NPC 클래스의 bCanInteractQuest는 하나라도 수락 가능한 퀘스트가 있다는 뜻이고,
@@ -237,7 +237,8 @@ bool AQuestNPCBase::FindCanQuest()
 					{
 						if (NPCQuests.Quests[i].QuestingFunction == nullptr)
 						{
-							UQuestingFunction* temp = Cast<UQuestingFunction>(NPCQuests.Quests[i].BP_QuestingFunction->GetDefaultObject());
+							UQuestingFunction* temp = NewObject<UQuestingFunction>(this, NPCQuests.Quests[i].BP_QuestingFunction);
+							//UQuestingFunction* temp = Cast<UQuestingFunction>(NPCQuests.Quests[i].BP_QuestingFunction->GetDefaultObject());
 							if (temp)
 							{
 								temp->OwnerNPC = this;

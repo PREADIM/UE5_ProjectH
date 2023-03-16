@@ -39,3 +39,4 @@ void AJRPGUnitBase::SetPhysicalSound()
 
 	PhysicalSounds = PhysicalAllSounds[PS]; // 해당하는 표면의 사운드 가져오기
 }
+

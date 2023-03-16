@@ -84,9 +84,12 @@ public:
 	void TurnListInit();
 	void SetUnitListArray(); // 힙 정렬로 우선순위 정렬 한 것을 큐로 저장.
 	void TurnListSet();
+
+	UFUNCTION(BlueprintCallable)
+		void WidgetCallGameEndProxy(); // 위젯에서 GameEnd를 호출한 경우.
+
 	void GameEnd(bool bWinner); // 아군이나 적이 다 죽었을 경우 해당 게임을 끝내기.
 	// true는 플레이어가 승자, false는 적이 승리.
-
 
 	void ReturnWorld(); // 게임끝나고 원래 전장으로 돌아가기
 

@@ -89,39 +89,6 @@ void UDialogueWidget::SetCanQuestList()
 		}
 	}
 
-
-	//for (FNPCQuest& Quests : OwnerNPC->NPCQuests.Quests)
-	//{
-	//	if (Quests.bCanAccepted == true)
-	//	{
-	//		if (BP_SelectQuestSlot)
-	//		{
-	//			USelectQuestSlot* SSlot = CreateWidget<USelectQuestSlot>(GetWorld(), BP_SelectQuestSlot);
-	//			if (SSlot)
-	//			{
-	//				SSlot->QuestNumber = Quests.QuestNumber;
-	//				SSlot->QuestName = Quests.QuestName;
-	//				SSlot->QuestType = Quests.QuestType;
-
-	//				// 퀘스트 상태에 따라 다이얼로그를 다르게 해야하기 때문.
-	//				//FNPCQuest를 그냥 넘겨주기엔 너무 구조체가 크다.
-	//				if (Quests.CanSucceed)
-	//					SSlot->DialougeState = EDialougeState::CanSucceed;
-	//				else if (Quests.Questing)
-	//					SSlot->DialougeState = EDialougeState::Questing;
-	//				else
-	//					SSlot->DialougeState = EDialougeState::CanAccept;
-
-	//				SSlot->Dial = this;
-	//				SSlot->Num = Cnt++; // NPC의 퀘스트중 몇번째인지 알아야 하기때문.
-	//				SSlot->Init();
-	//				SSlot->SetPadding(FMargin(0.0f, 5.0f, 0.0f, 0.0f));
-	//				SelectBox->AddChild(SSlot);
-	//			}
-	//		}
-	//	}
-	//}
-
 	SelectBox->SetRenderOpacity(1.0f);
 	SelectBox->SetVisibility(ESlateVisibility::Visible);
 }
@@ -164,9 +131,7 @@ void UDialogueWidget::SetSelectDial(int32 Index)
 		else if (OwnerNPC->NPCQuests.Quests[OwnerQuestNum].Questing)
 		{
 			if (OwnerNPC->NPCQuests.Quests[OwnerQuestNum].QuestingFunction) // 존재하면 있는것
-			{
 				SetQuestingSelectList(OwnerNPC->NPCQuests.Quests[OwnerQuestNum].QuestingFunction, OwnerNPC->NPCQuests.Quests[OwnerQuestNum].QuestingFunction->FlagCnt);
-			}
 			else
 			{
 				// QuestingFunction은 말그대로 Questing시 다시 말걸었을때 무언가 실행해야하는 함수인데, 그게없으면 그냥 닫기.

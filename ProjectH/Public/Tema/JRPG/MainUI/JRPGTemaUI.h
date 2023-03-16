@@ -32,7 +32,6 @@ public:
 	void Init();
 	void OpenESCMenu();
 	void CloseESCMenu();
-	void OpenBattleESCMenu();
 
 	void CreateMainWidget();
 	void CreateBattleWidget();

@@ -247,6 +247,12 @@ public:
 	UPROPERTY(EditAnywhere)
 		TSubclassOf<class UCAWTextAnimWidget> BP_TurnEndCCStateWidget; // 턴 종료때 CC상태를 나타내는 위젯 뜨게하기.
 	void SetTurnEndDebuffWidget(ECCType CCState);
+
+	UPROPERTY(EditAnywhere)
+		TSubclassOf<class UCustomAnimWidget> BP_BattleESCWidget;
+	UPROPERTY()
+		class UCustomAnimWidget* BattleESCWidget;
+	bool bBattleBeginning = false; /* 배틀 시퀀스가 실행되는 동안은 게임에서 나갈수 없게 한다.*/
 	
 	//-------------------------------------------
 

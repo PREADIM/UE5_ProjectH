@@ -5,6 +5,7 @@
 #include "ProjectH.h"
 #include "GameFramework/Character.h"
 #include "PhysicalSoundStruct.h"
+#include "Tema/JRPG/DebuffClass.h"
 #include "JRPGUnitBase.generated.h"
 
 UCLASS()
@@ -35,4 +36,14 @@ public:
 		float SurfaceDistance = 300.f; // 땅끝의 거리
 	void SetPhysicalSound();
 
+
+	/*-----------------------
+			CC기 변수
+	------------------------*/
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Debuff)
+		bool bAnimCC; // 애니메이션 용
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Debuff)
+		bool bCC = false;
 };

@@ -229,12 +229,12 @@ bool AJRPGPlayerController::PlayBattleMode(AJRPGFieldEnermy* CurrentFieldEnermy)
 			TemaMainUI->StartBattleWidget();		
 		}
 		bBattleING = GM->BattleStart(CurrentFieldNum, CurrentOverlapFieldEnermy->EnermyUnits);
+		bBattleBeginning = bBattleING;
 		if (bBattleING)
 			CurrentOverlapFieldEnermy->BattleStart();
 
 		return bBattleING;
 	}
-
 	return false;
 }
 
@@ -285,10 +285,8 @@ void AJRPGPlayerController::OpenESC()
 	{
 		if (TemaMainUI->MainIsInViewport())
 		{
-			if (GameType == EGameModeType::Normal)
+			/*if (GameType == EGameModeType::Normal)
 				TemaMainUI->OpenESCMenu();
-			else if (GameType == EGameModeType::Battle)
-				TemaMainUI->OpenBattleESCMenu();
 			else if (GameType == EGameModeType::UI)
 			{
 				if (!LastWidget.IsEmpty())
@@ -302,14 +300,22 @@ void AJRPGPlayerController::OpenESC()
 					TemaMainUI->CloseESCMenu();
 				}
 
+			}*/
+
+			if (!LastWidget.IsEmpty())
+			{
+				LastWidget.Top()->SetCloseFunction();
+				LastWidget.Pop();
+			}
+			else
+			{
+				TemaMainUI->OpenESCMenu();
 			}
 		}
 		else if (TemaMainUI->BattleIsInViewport())
 		{
 			BattleESC();
 		}
-
-
 	}
 }
 
@@ -448,27 +454,42 @@ void AJRPGPlayerController::AddCharExp(int32 CharNum, float DropExp)
 }
 
 
-// 맨처음 위젯애니메이션 효과주기
+// 배틀 시작 맨 처음 위젯애니메이션 효과주기
 void AJRPGPlayerController::StartBattleWidget()
 {
 	if (TemaMainUI)
-	{
 		TemaMainUI->PlayBattleWidget();
-	}
 }
 
 
-// 턴시작시 위젯애니메이션 없이 위젯 갱신하기.
+// 턴시작시 위젯 갱신하기.
 void AJRPGPlayerController::BattleTurnStart(bool bPlayer)
 {
 	TemaMainUI->BattleTurnStart(bPlayer);
 }
 
 
+/* 배틀 중 나가기 위젯 */
 void AJRPGPlayerController::BattleESC()
 {
-	
-	// 나가기 위젯 띄우기
+	if (BP_BattleESCWidget)
+	{
+		if (BattleESCWidget)
+		{
+			if (BattleESCWidget->IsInViewport())
+			{
+				BattleESCWidget->RemoveFromParent();
+				return;
+			}			
+		}
+
+		BattleESCWidget = CreateWidget<UCustomAnimWidget>(GetWorld(), BP_BattleESCWidget);
+		if (BattleESCWidget)
+		{
+			BattleESCWidget->AddToViewport();
+			BattleESCWidget->PlayCustomAnimation();
+		}		
+	}
 }
 
 

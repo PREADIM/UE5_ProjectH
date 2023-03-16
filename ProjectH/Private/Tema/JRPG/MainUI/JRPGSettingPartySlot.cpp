@@ -122,7 +122,7 @@ void UJRPGSettingPartySlot::ExitWidget()
 				HoveredWidget = nullptr;
 			}
 		}
-		OwnerController->LastWidget.Pop();
+		//OwnerController->LastWidget.Pop();
 		OwnerField->ResomeUI();
 	}
 }

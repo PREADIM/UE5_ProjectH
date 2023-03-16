@@ -50,9 +50,6 @@ protected:
 		class AProjectH_PC* OwnerController;
 
 	UPROPERTY(VisibleAnywhere)
-		class UProjectHGameInstance* GI;
-
-	UPROPERTY(VisibleAnywhere)
 		class UProjectHAnimInstance* AnimInstance;
 
 	//-------------------------------------------------------------

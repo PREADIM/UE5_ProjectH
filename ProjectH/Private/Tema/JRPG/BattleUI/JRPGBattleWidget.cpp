@@ -62,7 +62,6 @@ void UJRPGBattleWidget::Init()
 	if (BP_LockOnIcon)
 	{
 		LockOnIcon = CreateWidget<ULockOnWidget>(GetWorld(), BP_LockOnIcon);
-		LockOnIcon->AddToViewport();
 		if(LockOnIcon)
 			CanvasSlot = Cast<UCanvasPanelSlot>(LockOnIcon->Image->Slot);
 	}
@@ -190,6 +189,14 @@ void UJRPGBattleWidget::SetLockOn(int32 Num)
 	
 }
 
+void UJRPGBattleWidget::VisibleLockOn()
+{
+	if (LockOnIcon)
+		LockOnIcon->AddToViewport();
+}
+
+
+
 void UJRPGBattleWidget::HiddenLockOn()
 {
 	if (LockOnIcon)
@@ -199,16 +206,8 @@ void UJRPGBattleWidget::HiddenLockOn()
 
 void UJRPGBattleWidget::BattleTurnInit()
 {
-	_DEBUG("BattleTurnInit");
 	NormalAttack->Init();
 	SkillButton->Init();
 	ULTButton->Init();
 }
-
-//void UJRPGBattleWidget::EnermyTurnFirst()
-//{
-//	NormalAttack->EnermyTurnFirstInit();
-//	SkillButton->EnermyTurnFirstInit();
-//	ULTButton->EnermyTurnFirstInit();
-//}
 

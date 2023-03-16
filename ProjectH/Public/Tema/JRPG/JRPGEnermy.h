@@ -46,6 +46,16 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		bool bDead;
 
+	/*------------------------------
+		배틀 종료 후 필드의 적 쿨타임
+	------------------------------*/
+
+	void SetFieldEnermyCC(); // 필드 캐릭터는 배틀이 끝나고 돌아왔을시에 CC기로 바로 플레이어를 쫒는것을 방지한다.
+	UFUNCTION()
+		void StunEnd();
+
+	//-----------------------------------------------
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		class AJRPGGameMode* GM;
 

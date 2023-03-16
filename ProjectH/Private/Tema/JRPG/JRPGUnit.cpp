@@ -301,6 +301,7 @@ void AJRPGUnit::ThisUnitBattleUnit(bool bFlag)
 		BattleWidgetOnOff(true);
 	else
 		BattleWidgetOnOff(false);
+	bPlayBattleStartSound = false;
 	bIsJRPGUnit = bFlag;
 	SetIsJRPGUnit(bFlag);
 }
@@ -315,19 +316,21 @@ void AJRPGUnit::BattleWidgetOnOff(bool bOnOff)
 	}
 }
 
+
+/* 맞은 유닛은 ULT 게이지와 마나가 차게 한다.*/
 void AJRPGUnit::TargetAddMPAndULT()
 {
 	AJRPGUnit* Unit = OwnerController->TargetUnit;
-	Unit->CurrentMP = FMath::Clamp(Unit->CurrentMP + 10.f, 0.0f, Unit->CharacterStat.MaxMP); // 맞은 유닛은 마나가 차게한다.
-	Unit->CurrentULTGage = FMath::Clamp(Unit->CurrentULTGage + 10.f, 0.0f, Unit->MaxULTGage); // 맞은 유닛은 궁게가 차게한다.
+	Unit->CurrentMP = FMath::Clamp(Unit->CurrentMP + 10.f, 0.0f, Unit->CharacterStat.MaxMP);
+	Unit->CurrentULTGage = FMath::Clamp(Unit->CurrentULTGage + 10.f, 0.0f, Unit->MaxULTGage);
 }
 
 void AJRPGUnit::ManyTargetsAddMPAndULT()
 {
 	for (AJRPGUnit* Unit : OwnerController->TargetUnits)
 	{
-		Unit->CurrentMP = FMath::Clamp(Unit->CurrentMP + 10.f, 0.0f, Unit->CharacterStat.MaxMP); // 맞은 유닛은 마나가 차게한다.
-		Unit->CurrentULTGage = FMath::Clamp(Unit->CurrentULTGage + 10.f, 0.0f, Unit->MaxULTGage); // 맞은 유닛은 궁게가 차게한다.
+		Unit->CurrentMP = FMath::Clamp(Unit->CurrentMP + 10.f, 0.0f, Unit->CharacterStat.MaxMP);
+		Unit->CurrentULTGage = FMath::Clamp(Unit->CurrentULTGage + 10.f, 0.0f, Unit->MaxULTGage);
 	}	
 }
 
@@ -523,15 +526,6 @@ void AJRPGUnit::PlayCharacterChangeMontage()
 }
 
 
-void AJRPGUnit::SetCCState(ECCType CCType, bool bFlag)
-{
-	if (bFlag)
-		bAnimCCEnd = true; // 이건 CC 애니메이션들이 마지막 END때 노티파이로 끌 예정.
-
-	bCC = bFlag;
-	CCState.SetCCType(CCType, bFlag);
-}
-
 void AJRPGUnit::UnitTurnEndCCState()
 {
 	OwnerController->SetTurnEndDebuffWidget(CCState.LastCCType);
@@ -539,7 +533,14 @@ void AJRPGUnit::UnitTurnEndCCState()
 	GetWorld()->GetTimerManager().SetTimer(Handle, this, &AJRPGUnit::UnitTurnEnd, 2.f, false);
 }
 
+void AJRPGUnit::SetCCState(ECCType CCType, bool bFlag)
+{
+	if (bFlag)
+		bAnimCC = true; // CC애니메이션들이 마지막 END때 노티파이로 끄면서 애니메이션 복귀
 
+	bCC = bFlag;
+	CCState.SetCCType(CCType, bFlag);
+}
 
 void AJRPGUnit::InitSFX()
 {

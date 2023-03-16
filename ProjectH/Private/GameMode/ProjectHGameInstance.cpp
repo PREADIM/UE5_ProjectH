@@ -109,8 +109,11 @@ void UProjectHGameInstance::Init()
 
 void UProjectHGameInstance::OpenLevelStart(FString LevelName)
 {
+	if (bOpeningLevel)
+		return;
+
 	FLevelPath* LevelPathTemp = GetLevelPath(LevelName);
-	if (LevelPathTemp)
+	if (!LevelPathTemp)
 		return;
 
 	/* 예외 */
@@ -120,6 +123,7 @@ void UProjectHGameInstance::OpenLevelStart(FString LevelName)
 		return;
 	}
 
+	bOpeningLevel = true; /* 중복 방지 */
 	LevelPath = *LevelPathTemp;	
 
 	SequencePlayer = nullptr;
@@ -163,6 +167,7 @@ void UProjectHGameInstance::AsyncLodedMap()
 
 void UProjectHGameInstance::LodeMap()
 {
+	bOpeningLevel = false;
 	UGameplayStatics::OpenLevelBySoftObjectPtr(GetWorld(), LevelPath.Level, true);
 }
 

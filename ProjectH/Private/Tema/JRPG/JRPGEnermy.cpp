@@ -64,7 +64,7 @@ void AJRPGFieldEnermy::ReturnToField()
 {
 	if (OwnerAIController)
 	{
-		OwnerAIController->ReturnToField();
+		SetFieldEnermyCC();
 		SetActorTransform(DefaultTransform);
 	}
 }
@@ -83,4 +83,22 @@ class UBehaviorTree* AJRPGFieldEnermy::GetBT()
 		return BT;
 	else
 		return nullptr;
+}
+
+
+void AJRPGFieldEnermy::SetFieldEnermyCC()
+{
+	bAnimCC = true;
+	bCC = true;
+	GetCapsuleComponent()->SetGenerateOverlapEvents(false);
+	FTimerHandle Handle;
+	GetWorld()->GetTimerManager().SetTimer(Handle, this, &AJRPGFieldEnermy::StunEnd, 4.f, false);
+}
+
+void AJRPGFieldEnermy::StunEnd()
+{
+	bCC = false;
+	GetCapsuleComponent()->SetGenerateOverlapEvents(true);
+	OwnerAIController->ReturnToField();
+	/* 애님 블프에서 노티파이로 bAnimCC를 false해주며 애니메이션 종료 */
 }

@@ -9,26 +9,19 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "ActorComponent/QuestComponent/QuestComponent.h"
 #include "AI/QuestNPCBase.h"
-#include "GameMode/ProjectHGameInstance.h"
 #include "Controller/ProjectH_PC.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "UI/InteractWidget.h"
 #include "UI/MainQuestUI.h"
 #include "Components/Button.h"
-#include "GameMode/ProjectHGameInstance.h"
 #include "ActorComponent/QuestComponent/TriggerSpawnActor.h"
-
-
-
-DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
 
 
 AProjectHCharacter::AProjectHCharacter()
 {
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(GetMesh(), FName("head"));
-	//Camera->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName("head"));
 
 	QuestCollision = CreateDefaultSubobject<USphereComponent>(TEXT("QuestCollision"));
 	QuestCollision->SetupAttachment(RootComponent);
@@ -51,9 +44,7 @@ AProjectHCharacter::AProjectHCharacter()
 
 	QuestComponent = CreateDefaultSubobject<class UQuestComponent>(TEXT("Quest"));
 	
-	//RunningSpeed = 500.f;
 	WalkSpeed = 150.f;	
-
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 
 	//오버랩 되었을때 벽 뒤에 있는지 판단하기 위한 것.
@@ -90,12 +81,6 @@ void AProjectHCharacter::BeginPlay()
 	QuestCollision->OnComponentEndOverlap.AddDynamic(this, &AProjectHCharacter::QuestCollisionEndOverlap);
 	InteractCollision->OnComponentBeginOverlap.AddDynamic(this, &AProjectHCharacter::InteractCollisionOverlap);
 	InteractCollision->OnComponentEndOverlap.AddDynamic(this, &AProjectHCharacter::InteractCollisionEndOverlap);
-
-	GI = Cast<UProjectHGameInstance>(UGameplayStatics::GetGameInstance(this));
-	if (GI)
-	{
-		GI->PlaySequence(1, OwnerController);
-	}
 
 	FTimerHandle Handle;
 	GetWorld()->GetTimerManager().SetTimer(Handle, this, &AProjectHCharacter::EndPlaySequence, 4.6f, false);	

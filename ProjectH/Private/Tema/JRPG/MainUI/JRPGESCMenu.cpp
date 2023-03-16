@@ -29,7 +29,7 @@ void UJRPGESCMenu::PartySet()
 				if (PartyField)
 				{
 					PartyField->SetCurrentParty();
-					OwnerMainUI->ReverseESC();
+					//OwnerMainUI->ReverseESC();
 					OwnerController->OnPossess(Cast<APawn>(PartyField));
 					OwnerController->MouseOn();
 					OwnerController->GameType = EGameModeType::UI;

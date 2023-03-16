@@ -34,10 +34,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TSubclassOf<class UQuestingFunctionWidget> BP_QuestingFunctionWidget;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY()
 		class AQuestNPCBase* OwnerNPC;
-	UPROPERTY(VisibleAnywhere)
-		int32 OwnerQuestNum = 0;
+	int32 OwnerQuestNum = 0;
 
 	UPROPERTY()
 		class UMainQuestUI* OwnerMainWidget;
