@@ -102,7 +102,7 @@ UTexture2D* AJRPGPlayerController::GetPartySettingIcon(int32 CharacterNum)
 }
 
 
-void AJRPGPlayerController::CameraPossess(FVector Location, FRotator Rotation)
+void AJRPGPlayerController::CameraPossess(FVector Location, FRotator Rotation, FTransform AllTargetTransform)
 {
 	if (BP_Camera)
 	{
@@ -115,6 +115,8 @@ void AJRPGPlayerController::CameraPossess(FVector Location, FRotator Rotation)
 		SetShowMouseCursor(true);
 		SetInputMode(FInputModeGameAndUI());
 		// 다이나믹 카메라가 빙의된거면 배틀 시작이 되었다는 뜻.
+
+		AllTargetCameraTransform = AllTargetTransform;
 	}
 }
 
@@ -282,12 +284,15 @@ void AJRPGPlayerController::OpenESC()
 	if (TemaMainUI)
 	{
 		if (TemaMainUI->MainIsInViewport())
-		{
+		{			
+			while (!LastWidget.IsEmpty() && !LastWidget.Top()->IsInViewport())
+				LastWidget.Pop();
+
 			if (!LastWidget.IsEmpty())
 			{
 				LastWidget.Top()->SetCloseFunction();
 				LastWidget.Pop();
-			}
+			}				
 			else
 				TemaMainUI->OpenESCMenu();
 
@@ -300,15 +305,10 @@ void AJRPGPlayerController::OpenESC()
 
 void AJRPGPlayerController::MouseOnOff()
 {
-	
 	if (bShowMouseCursor)
-	{
 		MouseOff();
-	}
 	else
-	{
 		MouseOn();
-	}
 }
 
 
@@ -509,9 +509,9 @@ void AJRPGPlayerController::SetVisibleBattleWidget(bool bFlag)
 
 
 // 적의 차례일때는 BattleWidget은 보이지만, 스킬셋과 적 선택창은 보이면 안된다.
-void AJRPGPlayerController::SetEnermyTurnWidget(bool bFlag)
+void AJRPGPlayerController::SkillAndListButtonHidden(bool bFlag)
 {
-	TemaMainUI->SetEnermyTurnWidget(bFlag);
+	TemaMainUI->SkillAndListButtonHidden(bFlag);
 }
 
 
@@ -528,22 +528,54 @@ void AJRPGPlayerController::HiddenLockOn()
 
 void AJRPGPlayerController::EnermySetupLockOnTargetUnit(AJRPGUnit* Target)
 {
-	//TemaMainUI->EnermySetupLockOnTargetUnit(Target);
 	TargetUnit = Target;
 }
 
 
-
 void AJRPGPlayerController::TargetToRotation()
 {
-	TemaMainUI->TargetToRotation();
+	switch (CurrentTurnUnit->PlayerType)
+	{
+		case EPlayerType::Player:
+			OwnerUnitTurnToTarget();
+			break;
+		case EPlayerType::Enermy:
+			EnermyUnitTurnToTarget();
+			break;
+	}
 }
 
 
-void AJRPGPlayerController::EnermyTargetToRotation()
+void AJRPGPlayerController::AllTargetRoation()
 {
-	TemaMainUI->EnermyTargetToRotation();
+	CameraSetUp(AllTargetCameraTransform.GetLocation());
+	CameraRotSetUp(AllTargetCameraTransform.GetRotation().Rotator());
 }
+
+void AJRPGPlayerController::OwnerUnitTurnToTarget()
+{
+	if (TargetUnit == nullptr)
+		TargetUnit = GM->EnermyList[0];
+
+	FRotator UnitRot = UKismetMathLibrary::FindLookAtRotation(CurrentTurnUnit->GetActorLocation(), TargetUnit->GetActorLocation());
+	CurrentTurnUnit->SetActorRotation(UnitRot);
+	CameraRotSetUp(UnitRot);	
+}
+
+void AJRPGPlayerController::EnermyUnitTurnToTarget()
+{
+	if (TargetUnit == nullptr)
+		TargetUnit = GM->OwnerList[0];
+
+	FRotator UnitRot = UKismetMathLibrary::FindLookAtRotation(CurrentTurnUnit->GetActorLocation(), TargetUnit->GetActorLocation());
+	FRotator TargetRot = UKismetMathLibrary::FindLookAtRotation(TargetUnit->GetActorLocation(), CurrentTurnUnit->GetActorLocation());
+	CurrentTurnUnit->SetActorRotation(UnitRot);
+
+	CameraSetUp(TargetUnit->GetActorLocation());
+	CameraRotSetUp(TargetRot);
+}
+
+
 
 float AJRPGPlayerController::BattleStartSequence()
 {

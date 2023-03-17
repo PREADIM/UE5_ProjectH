@@ -36,9 +36,6 @@ public:
 
 	float GetESCRenderOpacity();
 
-	void SetMouseOff();
-	void MouseOff();
-
 	void SetPartyChange(); // 파티셋팅에서 파티가 변경되었으니 MainUI에서도 변경.
 	
 };

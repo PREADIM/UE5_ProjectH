@@ -92,6 +92,8 @@ void APartySettingField::Init(class UJRPGMainWidget* OwnerMainUI)
 			SettingUI->GM = GM;
 			SettingUI->OwnerField = this;
 			SettingUI->Init();
+
+			SetCurrentParty();
 		}
 	}
 }
@@ -101,7 +103,6 @@ void APartySettingField::SetCurrentParty()
 	if (PartySettingUI && OwnerController)
 	{
 		SpawnCharacter();
-
 		OwnerController->LastWidget.AddUnique(PartySettingUI);
 		PartySettingUI->AddToViewport();
 	}
@@ -114,9 +115,7 @@ void APartySettingField::SpawnCharacter()
 	for(int32 i = 0; i < 3; i++)
 	{
 		if (SpawnChars[i] != nullptr)
-		{
 			SpawnChars[i]->Destroy();
-		}
 	}
 
 

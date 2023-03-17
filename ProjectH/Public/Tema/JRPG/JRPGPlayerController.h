@@ -39,8 +39,7 @@ public:
 
 public:
 	// 메인 위젯이 두개이다. 평상시 위젯과, JRPG때의 위젯. 서로 다른 위젯이고 배틀일때 달라진다.
-
-	void CameraPossess(FVector Location, FRotator Rotation);
+	void CameraPossess(FVector Location, FRotator Rotation, FTransform AllTargetTransform);
 
 	UFUNCTION(BlueprintCallable)
 		void CameraSetUp(FVector Location);
@@ -78,7 +77,6 @@ public:
 	// 결국엔 Char의 레벨을 가지고있는 이 컨트롤러이니 여기서 받아오는 것도 괜찮을듯
 
 
-	//--------------------------------------
 	/*------------------------------------
 			Drop Exp Or Character
 	-------------------------------------*/
@@ -102,7 +100,7 @@ public:
 	void StartBattleWidget();
 	void BattleTurnStart(bool bFlag);
 	void SetVisibleBattleWidget(bool bFlag); // 배틀위젯 숨기거나 켜기.
-	void SetEnermyTurnWidget(bool bFlag); // 적 턴에서 필요한 위젯만 키기
+	void SkillAndListButtonHidden(bool bFlag); // 적 턴에서 필요한 위젯만 키기
 
 	void BattleESC(); // 스킬 취소 및, 나가기 위젯 뛰우기
 	void VisibleDamage(float Damage, FVector TargetLocation); // 데미지 띄우기
@@ -124,7 +122,6 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		class AJRPGCamera* DynamicCamera;
 
-
 	UPROPERTY(VisibleAnywhere)
 		FTransform FieldLocation;
 	UPROPERTY(VisibleAnywhere)
@@ -141,6 +138,7 @@ public:
 		int32 CurrentFieldNum; // 필드 정보
 	UPROPERTY(VisibleAnywhere)
 		int32 CurrentPartyIndex = 0; // 현재 몇번째 인덱스인지.
+	FTransform AllTargetCameraTransform;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		TArray<int32> HaveCharList; // 가지고 있는 전체 캐릭터 넘버 (추후 세이브 로드 해야함).
@@ -175,20 +173,28 @@ public:
 		class UDropExpWidget* DropExpWidget;
 
 	UPROPERTY()
-		TArray<class UCustomWidget*> LastWidget; // 마지막 Widget을 큐처럼 저장하는 배열.
+		TArray<class UCustomWidget*> LastWidget; // 마지막 Widget을 스택처럼 저장하는 배열.
+
+	/*----------------------
+		전투시 공격할  타겟
+	-----------------------*/
 
 	UPROPERTY(VisibleAnywhere)
-		class AJRPGUnit* CurrentUnit; // ESC를 할 Unit 스킬을 실행 중이면 취소하고 , 아무것도 실행중이지 않으면 나가기 창을 띄운다.
-
+		class AJRPGUnit* CurrentTurnUnit; /* 현재 턴중인 타겟 */
 	UPROPERTY(BlueprintReadWrite)
 		class AJRPGUnit* TargetUnit; // BattleWidget에서 정한 현재 공격할 TargetUnit;
 	UPROPERTY(BlueprintReadWrite)
-		TArray<class AJRPGUnit*> TargetUnits;
-	UFUNCTION(BlueprintCallable)
-		void TargetToRotation();
-	UFUNCTION(BlueprintCallable)
-		void EnermyTargetToRotation();
+		TArray<class AJRPGUnit*> TargetUnits; /* 전체 공격용 타켓 */
 
+	UFUNCTION(BlueprintCallable)
+		void TargetToRotation(); /* 블루 프린트에서 TargetToRatation을 사용해야 할 경우 */
+	UFUNCTION(BlueprintCallable)
+		void AllTargetRoation(); /* 전체 공격을 위한 필드 AllShot 카메라에 위치 조정 */
+
+	void OwnerUnitTurnToTarget(); /* 아군 유닛을 타겟에게 회전과 동시에 다이나믹 카메라 회전 */
+	void EnermyUnitTurnToTarget(); /* 적 유닛을 타겟에게 회전과 동시에 다이나믹 카메라 회전 */
+
+	/*-------------------------------------------*/
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TSubclassOf<class UDamageWidget> BP_DamageSkin;

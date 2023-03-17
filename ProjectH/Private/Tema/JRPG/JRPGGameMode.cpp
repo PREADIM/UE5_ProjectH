@@ -251,12 +251,10 @@ bool AJRPGGameMode::BattleStart(int32 FieldNum, TArray<FEnermys> Enermys)
 	SetEnermyUnits(Enermys); // 적 생성.
 	TurnListInit(); // 리스트 맨처음 초기화.
 
-
-	OwnerController->CameraPossess(OwnerUnits[0].Unit->GetActorLocation(), OwnerUnits[0].Unit->GetActorRotation());	// 카메라에 컨트롤러 빙의
+	/* 카메라에 컨트롤러 빙의 */
+	OwnerController->CameraPossess(OwnerUnits[0].Unit->GetActorLocation(), OwnerUnits[0].Unit->GetActorRotation(), CurrentField->AllShotLocation->GetComponentTransform());	
 	if (!OwnerController->DynamicCamera)
 		return false;
-		
-	OwnerController->DynamicCamera->CurrentField = CurrentField;
 
 	float Delay = OwnerController->BattleStartSequence();
 
@@ -281,12 +279,11 @@ bool AJRPGGameMode::BattleStart(int32 FieldNum, TArray<FEnermys> Enermys)
 
 void AJRPGGameMode::TurnStart()
 {
-	//여기서 리스트 맨위의 캐릭터의 컴포넌트에 접근하여, 해당 캐릭터의 정보를 위젯에 초기화.
 	if (SetUnitList.IsEmpty())
 		return;
 
 	AJRPGUnit* Unit = SetUnitList[0].Unit;
-	OwnerController->CurrentUnit = Unit;
+	OwnerController->CurrentTurnUnit = Unit;
 
 	if (Unit)
 		Unit->UnitBattleStart();
@@ -296,6 +293,40 @@ void AJRPGGameMode::TurnStart()
 void AJRPGGameMode::TurnEnd()
 {
 	TurnListSet();
+}
+
+
+
+
+void AJRPGGameMode::TurnListSet()
+{
+	//캐릭터나 적이 죽었을경우에는 죽은 캐릭터를 Find하여 지운뒤, 이 함수를 실행.
+	if (OwnerList.Num() <= 0)
+	{
+		//여기서 게임이 끝났다는 시간을 인지하게하고 돌아가야한다.	
+		float Delay = OwnerController->BattleEndSequence();
+		FTimerHandle Handle;
+		GetWorld()->GetTimerManager().SetTimer(Handle, FTimerDelegate::CreateLambda([&]()
+			{
+				GameEnd(false); // 적이 승.
+			}), Delay, false);
+	}
+	else if (EnermyList.Num() <= 0)
+	{
+		float Delay = OwnerController->BattleEndSequence();
+		FTimerHandle Handle;
+		GetWorld()->GetTimerManager().SetTimer(Handle, FTimerDelegate::CreateLambda([&]()
+			{
+				GameEnd(true); // 플레이어 승.
+			}), Delay, false);
+	}
+	else
+	{
+		FPriorityUnit Unit = SetUnitList[0];
+		SetUnitList.RemoveAt(0);
+		SetUnitList.Emplace(Unit);
+		SetUnitList[0].Unit->BattleTurnStart();
+	}
 }
 
 
@@ -327,37 +358,6 @@ void AJRPGGameMode::SetUnitListArray()
 	}
 }
 
-
-void AJRPGGameMode::TurnListSet()
-{
-	//캐릭터나 적이 죽었을경우에는 죽은 캐릭터를 Find하여 지운뒤, 이 함수를 실행.
-	if (OwnerList.Num() <= 0)
-	{
-		//여기서 게임이 끝났다는 시간을 인지하게하고 돌아가야한다.	
-		float Delay = OwnerController->BattleEndSequence();
-		FTimerHandle Handle;
-		GetWorld()->GetTimerManager().SetTimer(Handle, FTimerDelegate::CreateLambda([&]()
-		{
-			GameEnd(false); // 적이 승.
-		}), Delay, false);
-	}
-	else if(EnermyList.Num() <= 0)
-	{
-		float Delay = OwnerController->BattleEndSequence();
-		FTimerHandle Handle;
-		GetWorld()->GetTimerManager().SetTimer(Handle, FTimerDelegate::CreateLambda([&]()
-		{
-			GameEnd(true); // 플레이어 승.
-		}), Delay, false);	
-	}
-	else
-	{
-		FPriorityUnit Unit = SetUnitList[0];
-		SetUnitList.RemoveAt(0);
-		SetUnitList.Emplace(Unit);
-		SetUnitList[0].Unit->BattleTurnStart();
-	}
-}
 
 void AJRPGGameMode::WidgetCallGameEndProxy()
 {
@@ -486,12 +486,12 @@ void AJRPGGameMode::SetEnermyUnits(TArray<FEnermys> Enermys)
 
 			Unit->PlayStartMontage();
 			// 레벨 스타트 몽타주 실행하기.
-		}
-
-		int Index = FMath::RandRange(0, Enermys.Num());
-		if (EnermyList.IsValidIndex(Index))
-			EnermyList[Index]->bPlayBattleStartSound = true;
+		}	
 	}
+
+	int Index = FMath::RandRange(0, Enermys.Num());
+	if (EnermyList.IsValidIndex(Index))
+		EnermyList[Index]->bPlayBattleStartSound = true;
 }
 
 void AJRPGGameMode::SetSaveBattleTutorial()

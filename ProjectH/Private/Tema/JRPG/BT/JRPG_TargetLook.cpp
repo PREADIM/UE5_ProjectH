@@ -31,9 +31,10 @@ EBTNodeResult::Type UJRPG_TargetLook::ExecuteTask(UBehaviorTreeComponent& OwnerC
 
 	AJRPGUnit* TargetUnit = Cast<AJRPGUnit>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(FName("TargetUnit")));
 	AJRPGUnit* SelfUnit = Cast<AJRPGUnit>(OwnerComp.GetAIOwner()->GetPawn());
-	//OwnerController->TargetUnit = TargetUnit;
 
-	FVector TargetLocation = TargetUnit->GetActorLocation();
+	OwnerController->EnermyUnitTurnToTarget();
+
+	/*FVector TargetLocation = TargetUnit->GetActorLocation();
 	FVector SelfLocation = SelfUnit->GetActorLocation();
 	FRotator Rot = UKismetMathLibrary::FindLookAtRotation(TargetLocation, SelfLocation);
 	FRotator EnermyRot = UKismetMathLibrary::FindLookAtRotation(SelfLocation, TargetLocation);
@@ -41,7 +42,7 @@ EBTNodeResult::Type UJRPG_TargetLook::ExecuteTask(UBehaviorTreeComponent& OwnerC
 	OwnerController->CameraSetUp(TargetLocation);
 	OwnerController->CameraRotSetUp(Rot);
 	
-	SelfUnit->SetActorRotation(EnermyRot);
+	SelfUnit->SetActorRotation(EnermyRot);*/
 
 
 	return EBTNodeResult::Succeeded;

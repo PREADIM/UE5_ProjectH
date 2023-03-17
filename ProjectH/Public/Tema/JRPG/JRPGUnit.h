@@ -212,6 +212,7 @@ public:
 	/*-----------------
 		전투 스테이스
 	-------------------*/
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = JRPGUnit)
 		bool bIsJRPGUnit = false; // 해당 캐릭터가 JRPG 유닛으로 스폰된 캐릭터인지 확인하는 변수. 
 	// 이 변수로 애님블프에서 걷는 로코모션 애니메이션을 바꾼다.
@@ -222,7 +223,8 @@ public:
 	void ThisUnitBattleUnit(bool bFlag); // c++에서 이걸로 실행
 	void BattleWidgetOnOff(bool bOnOff);
 
-	FVector BattleDefaultLocation; // 첫 자리
+	UPROPERTY(BlueprintReadOnly)
+		FVector BattleDefaultLocation; // 첫 자리
 
 	/*-------------------------
 			중요 스테이터스
@@ -286,6 +288,7 @@ public:
 	/*-----------------------------------
 		스탯 관련 버프 및 디버프 변경 함수
 	-------------------------------------*/
+
 	UFUNCTION(BlueprintCallable)
 		void SetStatDEF(float DEF);
 	UFUNCTION(BlueprintCallable)

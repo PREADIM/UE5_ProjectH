@@ -55,11 +55,9 @@ public:
 	-----------------------------------------------*/
 
 	void SetVisibleBattleWidget(bool bFlag);
-	void SetEnermyTurnWidget(bool bFlag);
+	void SkillAndListButtonHidden(bool bFlag);
 	void EnermyListSetup();
 	void HiddenLockOn();
-	void TargetToRotation();
-	void EnermyTargetToRotation();
 	void BattleUIOnOff(bool bOnOff);
 	void PlayPriority();
 

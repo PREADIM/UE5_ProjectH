@@ -86,9 +86,7 @@ void UJRPGTemaUI::StartMainWidget()
 void UJRPGTemaUI::SetPartyChange()
 {
 	if (MainWidget && BattleWidget)
-	{
 		MainWidget->SetPartyChange();
-	}
 }
 
 
@@ -119,9 +117,7 @@ void UJRPGTemaUI::BattleTurnStart(bool bPlayer)
 		BattleWidget->SetUnitList(); // PlayPriority가 아닌 단순한 유닛 리스트
 	}
 	else
-	{
 		BattleWidget->SetUnitList();
-	}
 	
 }
 
@@ -139,9 +135,9 @@ void UJRPGTemaUI::SetVisibleBattleWidget(bool bFlag)
 
 
 // 적의 차례일때는 BattleWidget은 보이지만, 스킬셋과 적 선택창은 보이면 안된다.
-void UJRPGTemaUI::SetEnermyTurnWidget(bool bFlag)
+void UJRPGTemaUI::SkillAndListButtonHidden(bool bFlag)
 {
-	BattleWidget->EnermyTurnHidden(bFlag);
+	BattleWidget->SkillAndListButtonHidden(bFlag);
 }
 
 void UJRPGTemaUI::EnermyListSetup()
@@ -152,18 +148,6 @@ void UJRPGTemaUI::EnermyListSetup()
 void UJRPGTemaUI::HiddenLockOn()
 {
 	BattleWidget->HiddenLockOn();
-}
-
-
-void UJRPGTemaUI::TargetToRotation()
-{
-	BattleWidget->TargetToRotation();
-}
-
-
-void UJRPGTemaUI::EnermyTargetToRotation()
-{
-	BattleWidget->EnermyTargetToRotation();
 }
 
 

@@ -25,15 +25,15 @@ void UJRPGMainWidget::PlayESCAnim(bool bPlay)
 	ESCMenu->SetVisibility(bPlay ? ESlateVisibility::Visible : ESlateVisibility::HitTestInvisible);
 	if (bPlay)
 	{
-		if(!OwnerController->bShowMouseCursor)
-			OwnerController->MouseOnOff();
+		MainPartyUI->SetVisibility(ESlateVisibility::Hidden); /* 평상시 메인메뉴 아이콘 가리기 */
 
-		MainPartyUI->SetVisibility(ESlateVisibility::Hidden);
+		if (!OwnerController->bShowMouseCursor)
+			OwnerController->MouseOn();
 	}
 	else
 	{
 		MainPartyUI->SetVisibility(ESlateVisibility::Visible);
-		SetMouseOff();
+		OwnerController->MouseOff();
 	}
 
 }
@@ -41,11 +41,9 @@ void UJRPGMainWidget::PlayESCAnim(bool bPlay)
 void UJRPGMainWidget::PlayESC()
 {
 	if (ESCMenu->GetRenderOpacity() <= 0.1f)
-	{
-		PlayESCAnim(true);
-		OwnerController->LastWidget.AddUnique(ESCMenu);
-		_DEBUG("true");
-	}
+		PlayESCAnim(true);		
+	else
+		PlayESCAnim(false);
 }
 
 
@@ -57,20 +55,6 @@ void UJRPGMainWidget::ReverseESC()
 float UJRPGMainWidget::GetESCRenderOpacity()
 {
 	return ESCMenu->GetRenderOpacity();
-}
-
-void UJRPGMainWidget::SetMouseOff()
-{
-	MouseOff();
-}
-
-void UJRPGMainWidget::MouseOff()
-{
-	if (OwnerController)
-	{
-		OwnerController->SetShowMouseCursor(false);
-		OwnerController->SetInputMode(FInputModeGameOnly());
-	}
 }
 
 

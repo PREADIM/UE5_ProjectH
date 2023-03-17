@@ -55,7 +55,6 @@ void AJRPGCamera::Tick(float DeltaTime)
 
 }
 
-// Called to bind functionality to input
 void AJRPGCamera::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);

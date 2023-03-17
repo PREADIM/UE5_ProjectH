@@ -20,23 +20,11 @@ void UJRPGESCMenu::Init()
 // 파티설정 UI키기
 void UJRPGESCMenu::PartySet()
 {
-	if (OwnerController)
-	{
-		if (BP_PartyField)
-		{
-			if (OwnerMainUI)
-			{
-				SpawnPartyField();
-				if (PartyField)
-				{
-					PartyField->SetCurrentParty();
-					OwnerController->OnPossess(Cast<APawn>(PartyField));
-					OwnerController->MouseOn();
-					OwnerMainUI->SetVisibility(ESlateVisibility::Hidden);
-				}			
-			}
-		}
-	}
+	if (!OwnerController || !BP_PartyField)
+		return;
+
+	if (OwnerMainUI)
+		SpawnPartyField();
 }
 
 void UJRPGESCMenu::SetCloseFunction()
@@ -48,7 +36,6 @@ void UJRPGESCMenu::SetCloseFunction()
 void UJRPGESCMenu::ResomeFunc()
 {
 	OwnerMainUI->ReverseESC();
-	OwnerController->LastWidget.Pop();
 }
 
 void UJRPGESCMenu::SpawnPartyField()
@@ -58,8 +45,14 @@ void UJRPGESCMenu::SpawnPartyField()
 		FActorSpawnParameters SpawnParameters;
 		SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 		PartyField = GetWorld()->SpawnActor<APartySettingField>(BP_PartyField, FTransform(FVector(7441.f, -14870.f, 9812.f)), SpawnParameters);
-		PartyField->OwnerController = OwnerController;
-		PartyField->Init(OwnerMainUI);
+		if (PartyField)
+		{
+			PartyField->OwnerController = OwnerController;
+			PartyField->Init(OwnerMainUI);
+			OwnerController->OnPossess(Cast<APawn>(PartyField));
+			OwnerController->MouseOn();
+			OwnerMainUI->SetVisibility(ESlateVisibility::Hidden);
+		}
 	}
 }
 

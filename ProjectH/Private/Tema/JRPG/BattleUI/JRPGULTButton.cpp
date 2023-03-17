@@ -11,7 +11,7 @@
 void UJRPGULTButton::NativeConstruct()
 {
 	Super::NativeConstruct();
-	PB_ULT->SynchronizeProperties();
+	
 }
 
 void UJRPGULTButton::Init()
@@ -29,7 +29,7 @@ void UJRPGULTButton::Init()
 
 		PB_ULT->SetWidgetStyle(Style);
 		PB_ULT->PercentDelegate.BindUFunction(this, "BindULTGage");
-		//PB_ULT->SynchronizeProperties();
+		PB_ULT->SynchronizeProperties();
 
 		ULTButtonSetActive();
 		if (!ULTButton->OnClicked.IsBound())

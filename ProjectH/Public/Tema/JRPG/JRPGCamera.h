@@ -57,9 +57,4 @@ public:
 
 	UPROPERTY(VisibleAnywhere)
 		class AJRPGPlayerController* OwnerController;
-	UPROPERTY(VisibleAnywhere)
-		class ABattleField* CurrentField;
-	
-
-
 };

@@ -50,7 +50,7 @@ void AJRPGEnermyUnit::UnitBattleStart()
 		return;
 
 	OwnerController->SetVisibleBattleWidget(true); // 위젯 보이기
-	OwnerController->SetEnermyTurnWidget(true); // 적의 차례니까 위젯을 필요한것만 남긴다.
+	OwnerController->SkillAndListButtonHidden(true); // 적의 차례니까 위젯을 필요한것만 남긴다.
 
 	if (!BattleAIController)
 		return;

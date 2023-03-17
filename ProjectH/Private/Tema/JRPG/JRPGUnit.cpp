@@ -351,7 +351,8 @@ void AJRPGUnit::MoveToAttack(float MoveSpeed, EAttackType AttackType)
 
 	MoveToAttackType = AttackType;
 	GetCharacterMovement()->MaxWalkSpeed = MoveSpeed;
-	UAIBlueprintHelperLibrary::CreateMoveToProxyObject(this, this, FVector(0.f, 0.f, 0.f), OwnerController->TargetUnit, 5.f, false);
+	FVector TargetUnitLoc = OwnerController->TargetUnit->GetActorLocation();
+	UAIBlueprintHelperLibrary::CreateMoveToProxyObject(this, this, TargetUnitLoc, nullptr, 300.f, false);
 }
 
 void AJRPGUnit::MoveToPlayMontage(FAIRequestID RequestID, EPathFollowingResult::Type Result)
@@ -412,10 +413,10 @@ void AJRPGUnit::MoveToDefaultLocationEnded(FAIRequestID RequestID, EPathFollowin
 	switch (PlayerType)
 	{
 	case EPlayerType::Player:
-		OwnerController->TargetToRotation();
+		OwnerController->OwnerUnitTurnToTarget();
 		break;
 	case EPlayerType::Enermy:
-		OwnerController->EnermyTargetToRotation();
+		OwnerController->EnermyUnitTurnToTarget();
 		break;
 	}
 	
@@ -484,7 +485,7 @@ void AJRPGUnit::UnitTurnEnd()
 			}
 		}
 
-		// 반복중에 컨테이너를 지우는 것은 좋지않으므로 미리 받아와서 삭제
+		/* 반복중에 컨테이너의 중간을 지우는 것은 좋지 않으므로 미리 받아와서 삭제 */ 
 		if (RemoveDebuff.Num())
 		{
 			for (FDebuffStruct& Debuff : RemoveDebuff)

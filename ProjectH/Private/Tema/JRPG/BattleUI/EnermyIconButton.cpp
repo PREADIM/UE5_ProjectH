@@ -46,11 +46,7 @@ void UEnermyIconButton::TargetLockOn()
 				Num = 0;
 		}
 
-		AJRPGUnit* Unit = GM->EnermyList[Num];
-		AJRPGUnit* OwnerUnit = GM->SetUnitList[0].Unit;
-		FRotator UnitRot = UKismetMathLibrary::FindLookAtRotation(OwnerUnit->GetActorLocation(), Unit->GetActorLocation());
-		OwnerController->CameraRotSetUp(UnitRot);
-		OwnerUnit->SetActorRotation(UnitRot);
-		OwnerWidget->SetLockOn(Num);
+		OwnerWidget->SetLockOn(Num); /* 여기서 TargetUnit을 설정함과 동시에 LockOn 셋팅 */
+		OwnerController->OwnerUnitTurnToTarget();		
 	}
 }

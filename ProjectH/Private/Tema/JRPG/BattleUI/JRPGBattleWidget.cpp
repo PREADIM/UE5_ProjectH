@@ -105,35 +105,6 @@ void UJRPGBattleWidget::EnermyListInit()
 	}
 }
 
-void UJRPGBattleWidget::TargetToRotation()
-{
-	Buttons[TargetNumber]->TargetLockOn();
-}
-
-void UJRPGBattleWidget::EnermyTargetToRotation()
-{
-	AJRPGUnit* SelfUnit = GM->SetUnitList[0].Unit;
-
-	if (OwnerController->TargetUnit)
-	{
-		FVector TargetLocation = OwnerController->TargetUnit->GetActorLocation();
-		FVector SelfLocation = SelfUnit->GetActorLocation();
-		FRotator Rot = UKismetMathLibrary::FindLookAtRotation(TargetLocation, SelfLocation);
-		FRotator EnermyRot = UKismetMathLibrary::FindLookAtRotation(SelfLocation, TargetLocation);
-
-		OwnerController->CameraSetUp(TargetLocation);
-		OwnerController->CameraRotSetUp(Rot);
-
-		SelfUnit->SetActorRotation(EnermyRot);
-	}
-	else
-	{
-		SelfUnit->SetActorRelativeRotation(FRotator(0.f, 0.f, 90.f));
-	}
-
-}
-
-
 void UJRPGBattleWidget::SetVisible(bool bFlag)
 {
 	if (bFlag)
@@ -144,20 +115,21 @@ void UJRPGBattleWidget::SetVisible(bool bFlag)
 			LockOnIcon->AddToViewport();
 		}
 
-		SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		//SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 		LockOnIcon->SetRenderOpacity(1.0f);
 	}
 	else
 	{
-		SetVisibility(ESlateVisibility::Hidden);
+		SkillAndListButtonHidden(true);
+		//SetVisibility(ESlateVisibility::Hidden);
 		LockOnIcon->SetRenderOpacity(0.0f);
 	}
 }
 
 
-void UJRPGBattleWidget::EnermyTurnHidden(bool bFlag)
+void UJRPGBattleWidget::SkillAndListButtonHidden(bool bFlag)
 {
-	if (bFlag) // Àû Â÷·Ê½Ã
+	if (bFlag)
 	{
 		NormalAttack->SetVisibility(ESlateVisibility::Hidden);
 		SkillButton->SetVisibility(ESlateVisibility::Hidden);
@@ -185,8 +157,7 @@ void UJRPGBattleWidget::SetLockOn(int32 Num)
 		if (GM->EnermyList.IsValidIndex(Num))
 			OwnerController->TargetUnit = GM->EnermyList[Num];
 		TargetNumber = Num;
-	}
-	
+	}	
 }
 
 void UJRPGBattleWidget::VisibleLockOn()
@@ -194,8 +165,6 @@ void UJRPGBattleWidget::VisibleLockOn()
 	if (LockOnIcon)
 		LockOnIcon->AddToViewport();
 }
-
-
 
 void UJRPGBattleWidget::HiddenLockOn()
 {
