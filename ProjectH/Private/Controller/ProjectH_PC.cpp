@@ -29,7 +29,7 @@ void AProjectH_PC::BeginPlay()
 
 void AProjectH_PC::BeginInit()
 {
-	UProjectHGameInstance* GI = Cast<UProjectHGameInstance>(UGameplayStatics::GetGameInstance(this));
+	GI = Cast<UProjectHGameInstance>(UGameplayStatics::GetGameInstance(this));
 	if (GI)
 	{
 		MouseSensitivity = GI->MS;
@@ -81,6 +81,12 @@ void AProjectH_PC::PlayCinemiceMainUIHidden()
 void AProjectH_PC::PlayCinemiceMainUIVisible()
 {
 	MainQuestUI->SetRenderOpacity(1.f);
+}
+
+void AProjectH_PC::PlaySequenceProxy(int32 SequenceNumber)
+{
+	if (GI)
+		GI->PlaySequence(SequenceNumber, this);
 }
 
 void AProjectH_PC::OpenESC()
@@ -218,9 +224,7 @@ void AProjectH_PC::ClearQTEWidget()
 void AProjectH_PC::SetNewMouseSensitivity()
 {
 	if (OwnerCharacter)
-	{
 		OwnerCharacter->MouseSensitivity = MouseSensitivity;
-	}
 }
 
 void AProjectH_PC::SetInteractCollisionSetup()

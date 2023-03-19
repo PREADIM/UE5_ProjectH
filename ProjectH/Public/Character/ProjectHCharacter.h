@@ -80,10 +80,7 @@ protected:
 		void InteractKey();
 	UFUNCTION()
 		void AnyKey(FKey Key);
-	/*UFUNCTION()
-		void Run();
-	UFUNCTION()
-		void NotRun();*/
+	
 
 	/* 공통 입력 */
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent);

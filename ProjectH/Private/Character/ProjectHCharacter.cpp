@@ -227,8 +227,6 @@ void AProjectHCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 	PlayerInputComponent->BindAction("InteractKey", IE_Pressed, this, &AProjectHCharacter::InteractKey);
 	PlayerInputComponent->BindAction("AnyKey", IE_Pressed, this, &AProjectHCharacter::AnyKey);
-	/*PlayerInputComponent->BindAction("Run", IE_Pressed, this, &AProjectHCharacter::Run);
-	PlayerInputComponent->BindAction("Run", IE_Released, this, &AProjectHCharacter::NotRun);*/
 }
 
 /*--------------------
@@ -253,9 +251,7 @@ void AProjectHCharacter::QuestCollisionEndOverlap(UPrimitiveComponent* Overlappe
 {
 	AQuestNPCBase* NPC = Cast<AQuestNPCBase>(OtherActor);
 	if (NPC)
-	{
 		NPC->HiddenIcon();
-	}
 
 	//QuestCollisionSetUp(); 인터랙트와는 다르게 퀘스트 콜리전의 경우는 다시 셋업 안해줘도될듯하다.
 }
@@ -355,13 +351,11 @@ void AProjectHCharacter::InteractCollisionSetUp()
 
 void AProjectHCharacter::QuestCollisionRestart()
 {
-	_DEBUG("Quest Collision Setup");
 	QuestCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 }
 
 void AProjectHCharacter::InteractCollisionRestart()
 {
-	_DEBUG("Interact Collision Setup");
 	InteractCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 }
 

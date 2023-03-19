@@ -25,34 +25,26 @@ FCanQuestNums::FCanQuestNums(int32 QuestNumber)
 
 UProjectHGameInstance::UProjectHGameInstance()
 {
-	FString NPCQuestDataPath = TEXT("/Script/Engine.DataTable'/Game/PROJECT/BP_CLASS/Blueprints/05_DataBase/DT_NPCQuestDataBase.DT_NPCQuestDataBase'");
+	/*FString NPCQuestDataPath = TEXT("DataTable'/Game/PROJECT/BP_CLASS/Blueprints/05_DataBase/DT_NPCQuestDataBase.DT_NPCQuestDataBase'");
 	static ConstructorHelpers::FObjectFinder<UDataTable> DT_NPCQuestData(*NPCQuestDataPath);
 	if (DT_NPCQuestData.Succeeded())
-	{
-		NPCQBTable = DT_NPCQuestData.Object;
-	}
+		NPCQBTable = DT_NPCQuestData.Object;*/
 
 
-	FString QuestDataPath = TEXT("/Script/Engine.DataTable'/Game/PROJECT/BP_CLASS/Blueprints/05_DataBase/DT_Quests.DT_Quests'");
+	FString QuestDataPath = TEXT("DataTable'/Game/PROJECT/BP_CLASS/Blueprints/05_DataBase/DT_Quests.DT_Quests'");
 	static ConstructorHelpers::FObjectFinder<UDataTable> DT_QuestData(*QuestDataPath);
 	if (DT_QuestData.Succeeded())
-	{
 		PQTable = DT_QuestData.Object;
-	}
 
-	FString DialogueDataPath = TEXT("/Script/Engine.DataTable'/Game/PROJECT/BP_CLASS/Blueprints/05_DataBase/DT_QuestDials.DT_QuestDials'");
+	FString DialogueDataPath = TEXT("DataTable'/Game/PROJECT/BP_CLASS/Blueprints/05_DataBase/DT_QuestDials.DT_QuestDials'");
 	static ConstructorHelpers::FObjectFinder<UDataTable> DT_DialData(*DialogueDataPath);
 	if (DT_DialData.Succeeded())
-	{
 		DialTable = DT_DialData.Object;
-	}
 
-	FString LevelTablePath = TEXT("/Script/Engine.DataTable'/Game/PROJECT/BP_CLASS/Blueprints/05_DataBase/DT_LevelPath.DT_LevelPath'");
+	FString LevelTablePath = TEXT("DataTable'/Game/PROJECT/BP_CLASS/Blueprints/05_DataBase/DT_LevelPath.DT_LevelPath'");
 	static ConstructorHelpers::FObjectFinder<UDataTable> DT_LevelPathData(*LevelTablePath);
 	if (DT_LevelPathData.Succeeded())
-	{
 		LevelPathTable = DT_LevelPathData.Object;
-	}
 
 	// 왜 안되는가?
 	/*FString SequenceActorPath = TEXT("/Game/PROJECT/BP_CLASS/Blueprints/05_DataBase/DT_SequenceActorTable.DT_SequenceActorTable");
@@ -315,9 +307,7 @@ TArray<FTextNName> UProjectHGameInstance::GetDialData(EDialougeState DialState, 
 	if (Dial)
 	{
 		if (Dial->DialogueMap.Find(DialState))
-		{
 			return Dial->DialogueMap[DialState].Dialogues;
-		}
 	}
 
 	return TArray<FTextNName>();

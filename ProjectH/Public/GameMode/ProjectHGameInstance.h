@@ -155,16 +155,16 @@ public:
 			DataTable
 	----------------------*/
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(EditAnywhere)
 		class UDataTable* NPCQBTable; // NPC의 퀘스트들이 넣어져있는 테이블에서 NPC가 스스로 퀘스트 가져오기 위한 테이블.
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(EditAnywhere)
 		class UDataTable* PQTable; // 플레이어가 가능한 퀘스트들의 테이블
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(EditAnywhere)
 		class UDataTable* DialTable;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(EditAnywhere)
 		class UDataTable* LevelPathTable;
 
 	UPROPERTY(EditAnywhere)

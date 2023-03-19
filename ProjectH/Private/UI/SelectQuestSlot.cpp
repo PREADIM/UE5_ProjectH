@@ -35,9 +35,7 @@ void USelectQuestSlot::SetupQuestStateImg()
 	if (QuestType == EQuestType::Main)
 		Brush.TintColor = FSlateColor(MainQuestColor);
 	else
-	{
 		Brush.TintColor = FSlateColor(SubQuestColor);
-	}
 
 	QuestStateImage->SetBrush(Brush);
 }

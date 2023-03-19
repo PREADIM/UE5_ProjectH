@@ -40,7 +40,5 @@ void ATriggerSpawnActor::SetTriggerBaseInit(ATriggerEventBase* TriggerBase, APro
 void ATriggerSpawnActor::ClearQuest()
 {
 	if (OwnerTrigger)
-	{
 		OwnerTrigger->QuestNextStep();
-	}
 }

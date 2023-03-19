@@ -77,31 +77,37 @@ void UQuestComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 void UQuestComponent::AddQuest(FNPCQuest NPCQuest)
 {
 	if (HaveQuestNumber.Find(NPCQuest.QuestNumber))
-	{
 		return;
-	}
 
 	if (!OwnerCharacter || !OwnerController)
-	{
-		_DEBUG("Not OwnerCharacter || OwnerController");
 		return;
-	}
 
 
-	NPCQuest.QuestSteps[0].Trigger = GetWorld()->SpawnActorDeferred<ATriggerEventBase>(NPCQuest.QuestSteps[0].BP_Trigger, FTransform(NPCQuest.QuestSteps[0].TriggerLocation), OwnerCharacter, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+	ATriggerEventBase* Trigger = GetWorld()->SpawnActorDeferred<ATriggerEventBase>(NPCQuest.QuestSteps[0].BP_Trigger, FTransform(NPCQuest.QuestSteps[0].TriggerLocation), OwnerCharacter, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+	//NPCQuest.QuestSteps[0].Trigger = GetWorld()->SpawnActorDeferred<ATriggerEventBase>(NPCQuest.QuestSteps[0].BP_Trigger, FTransform(NPCQuest.QuestSteps[0].TriggerLocation), OwnerCharacter, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 	if (::IsValid(NPCQuest.QuestSteps[0].Trigger))
 	{
-		//_DEBUG("Trigger Name : %s", *NPCQuest.QuestSteps[0].Trigger->GetName());
-		NPCQuest.QuestSteps[0].Trigger->QuestComponent = this;
+		Trigger->QuestComponent = this;
+		Trigger->PlayerCharacter = OwnerCharacter;
+		Trigger->PlayerController = OwnerController;
+		Trigger->GI = GI;
+		Trigger->QuestName = NPCQuest.QuestName;
+		Trigger->OwnerNPCName = NPCQuest.OwnerNPCName;
+		Trigger->QuestNumber = NPCQuest.QuestNumber;
+
+		NPCQuest.QuestSteps[0].Trigger = Trigger;
+
+		/*NPCQuest.QuestSteps[0].Trigger->QuestComponent = this;
 		NPCQuest.QuestSteps[0].Trigger->PlayerCharacter = OwnerCharacter;
 		NPCQuest.QuestSteps[0].Trigger->PlayerController = OwnerController;
 		NPCQuest.QuestSteps[0].Trigger->GI = GI;
 		NPCQuest.QuestSteps[0].Trigger->QuestName = NPCQuest.QuestName;
 		NPCQuest.QuestSteps[0].Trigger->OwnerNPCName = NPCQuest.OwnerNPCName;
-		NPCQuest.QuestSteps[0].Trigger->QuestNumber = NPCQuest.QuestNumber;
+		NPCQuest.QuestSteps[0].Trigger->QuestNumber = NPCQuest.QuestNumber;*/
 
 		NPCQuest.QuestSteps[0].Trigger->FinishSpawning(FTransform(NPCQuest.QuestSteps[0].TriggerLocation));
 
+		
 		// 생성된 트리거에 컴포넌트값 전달. 
 		// 퀘스트가 들어오면 해당 트리거를 생성
 	}
@@ -187,6 +193,7 @@ void UQuestComponent::RemoveQuest(int32 RemoveQuestNumber)
 			Quests[QuestIndex].QuestSteps[0].Trigger->TriggerDestroy(); // 마지막 NPC 위치 나타내는 트리거 삭제. 필수★
 			SaveQuestNumber(Quests[QuestIndex].OwnerNPCName, RemoveQuestNumber);
 			Quests.RemoveAt(QuestIndex);
+			HaveQuestNumber.Remove(RemoveQuestNumber);
 
 			//RemoveAt을 했으므로 인덱스가 한칸씩 줄어든다.
 			if (CurrentQuestID >= QuestIndex)
@@ -280,9 +287,7 @@ void UQuestComponent::SaveQuestNumber(FString NPCName, int32 QuestNumber)
 void UQuestComponent::BeginSetupHaveQuests()
 {
 	for (FQuestStruct& Quest : Quests)
-	{
 		HaveQuestNumber.Emplace(Quest.QuestNumber);
-	}
 
 }
 

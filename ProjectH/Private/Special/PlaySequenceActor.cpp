@@ -14,7 +14,6 @@ APlaySequenceActor::APlaySequenceActor()
 
 }
 
-// Called when the game starts or when spawned
 void APlaySequenceActor::BeginPlay()
 {
 	Super::BeginPlay();
@@ -49,4 +48,3 @@ void APlaySequenceActor::VisibleWidget()
 	if (PCBase)
 		PCBase->OnVisibleWidget.Broadcast();
 }
-

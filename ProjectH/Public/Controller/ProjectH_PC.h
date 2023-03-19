@@ -22,17 +22,12 @@ class PROJECTH_API AProjectH_PC : public APlayerControllerBase
 	GENERATED_BODY()
 
 public:
-	/*-------------------
-		Public Function
-	---------------------*/
 	AProjectH_PC();
-
 
 	virtual void BeginPlay() override;
 	virtual void OnPossess(APawn* InPawn) override;
 	virtual void OnUnPossess() override;
 	virtual void SetupInputComponent() override;
-
 
 	void BeginInit();
 	
@@ -44,20 +39,24 @@ public:
 	void OpenOption();
 	void MouseOnOff();
 
-	void CreateQTE();
-	void StartQTEFunc(FKey Key, FQTEWidgetPosition ScreenPosition, float Time, float Dilation, FCameraTransition CameraTransition, FVector Location);
-	// QTE를 실행시키는 함수.
-	void QTETimerLoop(); 
-	// 타이머를 이용해서 해당 함수를 계속 실행하여, QTE를 성공했는지 실패했는지 검사.
 
-	void EventCompleted(EQTEState State, FCameraTransition CameraTransition); 
+	/*---------------
+		TEST QTE
+	------------------*/
+
+	void CreateQTE();
+	// QTE를 실행시키는 함수.
+	void StartQTEFunc(FKey Key, FQTEWidgetPosition ScreenPosition, float Time, float Dilation, FCameraTransition CameraTransition, FVector Location);
+	// 타이머를 이용해서 해당 함수를 계속 실행하여, QTE를 성공했는지 실패했는지 검사.
+	void QTETimerLoop(); 
 	// 시간 초과, 성공, 키 실패를 처리할 함수.
+	void EventCompleted(EQTEState State, FCameraTransition CameraTransition); 
 	void ClearQTEWidget();
 
+	//--------------------------------------------------------
 
 	// 마우스 감도 새로운 값 적용하는 함수.
 	void SetNewMouseSensitivity();
-
 	// 인터랙트와 퀘스트 콜리전을 껏다 켜서 다시한번 재 검사
 	void SetInteractCollisionSetup();
 	void SetQuestCollisionSetup();
@@ -67,15 +66,19 @@ public:
 	UFUNCTION()
 		void PlayCinemiceMainUIVisible();
 
-public:
-	UPROPERTY(VisibleAnywhere)
-		class AProjectHCharacter* OwnerCharacter;
-
+	UFUNCTION(BlueprintCallable)
+		void PlaySequenceProxy(int32 SequenceNumber); /* 게임 인스턴스의 PlaySequence 함수를 컨트롤러를 통해 실행해주는 함수 */
 
 public:
 	/*-----------------
 		Public Values
 	-------------------*/
+	UPROPERTY(VisibleAnywhere)
+		class UProjectHGameInstance* GI;
+
+	UPROPERTY(VisibleAnywhere)
+		class AProjectHCharacter* OwnerCharacter;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
 		TSubclassOf<class UMainQuestUI> BP_MainQuestUI;
 	UPROPERTY()

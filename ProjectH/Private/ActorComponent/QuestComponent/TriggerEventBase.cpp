@@ -206,32 +206,10 @@ void ATriggerEventBase::CanClearQuest()
 void ATriggerEventBase::VisibleWidget()
 {
 	SetTriggerWidget();
-
-	//if (QuestComponent != nullptr)
-	//{
-	//	if (QuestComponent->GetActiveQuest().QuestNumber == QuestNumber)
-	//	{
-	//		if (!Widget->GetVisibleFlag()) // 꺼져있을시
-	//		{
-	//			Widget->SetVisibility(true);
-	//		}
-	//	}
-	//}
 }
 
 
 void ATriggerEventBase::HiddenWidget()
 {
 	SetHiddenTriggerWidget();
-
-	//if (QuestComponent != nullptr)
-	//{
-	//	if (QuestComponent->GetActiveQuest().QuestNumber == QuestNumber)
-	//	{
-	//		if (Widget->GetVisibleFlag()) // 켜져있을시
-	//		{
-	//			Widget->SetVisibility(false);
-	//		}
-	//	}
-	//}
 }

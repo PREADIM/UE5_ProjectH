@@ -120,7 +120,7 @@ void UDialogueWidget::SetQuestingSelectList(UQuestingFunction* QuestingFunction,
 void UDialogueWidget::SetSelectDial(int32 Index)
 {
 	SelectTextIndex = Index;
-	if (SelectText.Num() == SelectTextIndex)
+	if (SelectText.Num() == SelectTextIndex) /* 다이얼로그가 끝까지 온 경우 */
 	{	
 		//OwnerQuestNum은 퀘스트 넘버가아니라 해당 NPC의 퀘스트 리스트중에 몇번째 인덱스인지 나타내는 것.
 		if (OwnerNPC->NPCQuests.Quests[OwnerQuestNum].CanSucceed)
@@ -132,13 +132,11 @@ void UDialogueWidget::SetSelectDial(int32 Index)
 		{
 			if (OwnerNPC->NPCQuests.Quests[OwnerQuestNum].QuestingFunction) // 존재하면 있는것
 				SetQuestingSelectList(OwnerNPC->NPCQuests.Quests[OwnerQuestNum].QuestingFunction, OwnerNPC->NPCQuests.Quests[OwnerQuestNum].QuestingFunction->FlagCnt);
-			else
-			{
-				// QuestingFunction은 말그대로 Questing시 다시 말걸었을때 무언가 실행해야하는 함수인데, 그게없으면 그냥 닫기.
+			else			
 				OwnerMainWidget->CloseDialogue();
-			}
+				// QuestingFunction은 말그대로 Questing시 다시 말걸었을때 무언가 실행해야하는 함수인데, 그게없으면 그냥 닫기.
 		}
-		else
+		else /* 다이얼로그가 남아있는 경우 */
 		{
 			OwnerMainWidget->CloseDialogue(); // 이걸 뒤에 해야한다. OwnerQuestNum을 0으로 만드므로.
 			OwnerNPC->QuestInfoOpen(OwnerQuestNum, OwnerController);
@@ -192,16 +190,9 @@ FReply UDialogueWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, con
 	if (InMouseEvent.IsMouseButtonDown(EKeys::LeftMouseButton) == true)
 	{
 		if (!NormalDialogue.IsEmpty() && NormalDialogue.Num() > DialIndex)
-		{
 			SetNormalDialText(DialIndex + 1);
-		}
 		else if (!SelectText.IsEmpty() && SelectText.Num() > SelectTextIndex)
-		{
-			SetSelectDial(SelectTextIndex + 1);
-		}
-	
-		//_DEBUG("Mouse Left");
-		
+			SetSelectDial(SelectTextIndex + 1);	
 	}
 
 	return reply.NativeReply;

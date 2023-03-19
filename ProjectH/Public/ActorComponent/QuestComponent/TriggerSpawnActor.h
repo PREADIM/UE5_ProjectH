@@ -31,7 +31,7 @@ public:
 		class UQuestComponent* QuestComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		class ATriggerEventBase* OwnerTrigger; // 이 액터는 트리거에 의해 소환되는 액터이므로, 
+		class ATriggerEventBase* OwnerTrigger; // 이 액터가 트리거에 의해 실행된다면,
 	// 이 액터의 할일을 다했을시에 Trigger의 QuestNextStep()을 실행해준다.
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
