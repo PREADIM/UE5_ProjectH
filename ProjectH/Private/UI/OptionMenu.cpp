@@ -2,7 +2,7 @@
 
 
 #include "UI/OptionMenu.h"
-#include "Controller/ProjectH_PC.h"
+#include "PlayerControllerBase.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Components/ComboBoxString.h"
 #include "Components/Button.h"
@@ -167,12 +167,12 @@ void UOptionMenu::SetINI()
 		SET_OPTION("MouseSensitivity", path, ControllerMS);
 		bMS = false;
 
-		AProjectH_PC* Controller = Cast<AProjectH_PC>(OwnerController);
+		APlayerControllerBase* Controller = Cast<APlayerControllerBase>(OwnerController);
 		if (Controller)
 		{
 			Controller->MouseSensitivity = ControllerMS;
 			Controller->SetNewMouseSensitivity();
-			_DEBUG("Sensi true");
+			_DEBUG("%f", ControllerMS);
 		}
 	}
 

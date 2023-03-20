@@ -45,7 +45,6 @@ void AProjectH_PC::BeginInit()
 		MainQuestUI->AddToViewport();
 	}
 
-	//CreateQTE();
 	SetNewMouseSensitivity();
 }
 
@@ -54,6 +53,7 @@ void AProjectH_PC::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 	OwnerCharacter = Cast<AProjectHCharacter>(InPawn);
+	SetNewMouseSensitivity();
 	BeginInit();
 }
 

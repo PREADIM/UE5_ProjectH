@@ -6,14 +6,6 @@
 void UNormalIconUI::NativeConstruct()
 {
 	Super::NativeConstruct();
-
-	//여기서 해당 코드를 작성하면, 왜인지 모르겠으나 아이콘이 바로바로 출력되지않음.
-	/*SubQuestWidget->SetRenderOpacity(0.f);
-	MainQuestWidget->SetRenderOpacity(0.f);
-	SubQuestingWidget->SetRenderOpacity(0.f);
-	MainQuestingWidget->SetRenderOpacity(0.f);
-	SubSucceedWidget->SetRenderOpacity(0.f);
-	MainSucceedWidget->SetRenderOpacity(0.f);*/
 }
 
 

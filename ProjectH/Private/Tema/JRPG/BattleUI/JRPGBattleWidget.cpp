@@ -41,6 +41,8 @@ void UJRPGBattleWidget::NativeTick(const FGeometry& MyGeometry, const float InDe
 		float Scale = UWidgetLayoutLibrary::GetViewportScale(GetWorld()->GetGameViewport());
 		if (CanvasSlot)
 			CanvasSlot->SetPosition(FVector2D(Pos.X / Scale, (Pos.Y / Scale) - 30.f));
+
+		
 	}
 
 }
@@ -115,13 +117,11 @@ void UJRPGBattleWidget::SetVisible(bool bFlag)
 			LockOnIcon->AddToViewport();
 		}
 
-		//SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 		LockOnIcon->SetRenderOpacity(1.0f);
 	}
 	else
 	{
 		SkillAndListButtonHidden(true);
-		//SetVisibility(ESlateVisibility::Hidden);
 		LockOnIcon->SetRenderOpacity(0.0f);
 	}
 }

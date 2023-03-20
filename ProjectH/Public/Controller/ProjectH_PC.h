@@ -28,6 +28,7 @@ public:
 	virtual void OnPossess(APawn* InPawn) override;
 	virtual void OnUnPossess() override;
 	virtual void SetupInputComponent() override;
+	virtual void SetNewMouseSensitivity() override;
 
 	void BeginInit();
 	
@@ -55,8 +56,7 @@ public:
 
 	//--------------------------------------------------------
 
-	// 마우스 감도 새로운 값 적용하는 함수.
-	void SetNewMouseSensitivity();
+	
 	// 인터랙트와 퀘스트 콜리전을 껏다 켜서 다시한번 재 검사
 	void SetInteractCollisionSetup();
 	void SetQuestCollisionSetup();
@@ -65,7 +65,6 @@ public:
 		void PlayCinemiceMainUIHidden();
 	UFUNCTION()
 		void PlayCinemiceMainUIVisible();
-
 	UFUNCTION(BlueprintCallable)
 		void PlaySequenceProxy(int32 SequenceNumber); /* 게임 인스턴스의 PlaySequence 함수를 컨트롤러를 통해 실행해주는 함수 */
 
@@ -105,9 +104,6 @@ public:
 	float EventRate = 0.05f;
 
 	FTimerHandle QTETimerHandle;
-
-	UPROPERTY(VisibleAnywhere)
-		float MouseSensitivity;
 
 	bool IsOpen = false;
 

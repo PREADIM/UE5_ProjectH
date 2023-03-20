@@ -22,4 +22,10 @@ public:
 	
 	FOnVisibleWidget OnVisibleWidget; // 시네마틱 연출할때 위젯 켜기.
 	FOnHiddenWidget OnHiddenWidget; // 시네마틱 연출할때 끄기.	
+
+	UPROPERTY(VisibleAnywhere)
+		float MouseSensitivity;
+
+	// 마우스 감도 새로운 값 적용하는 함수.
+	virtual void SetNewMouseSensitivity() {};
 };

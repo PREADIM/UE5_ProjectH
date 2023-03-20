@@ -11,7 +11,6 @@
 #include "UI/DialogueWidget.h"
 #include "GameMode/ProjectHGameInstance.h"
 #include "Kismet/GameplayStatics.h"
-//#include "Save/QuestSave.h"
 #include "UI/NormalIconUI.h"
 #include "UI/MainQuestUI.h"
 #include "Components/WidgetComponent.h"
@@ -23,7 +22,6 @@
 // Sets default values
 AQuestNPCBase::AQuestNPCBase()
 {
- 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
 
@@ -34,7 +32,7 @@ AQuestNPCBase::AQuestNPCBase()
 	QuestIconComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("QuestIconComponent"));
 	QuestIconComponent->SetupAttachment(RootComponent);
 
-	static ConstructorHelpers::FClassFinder<UNormalIconUI> BP_Icon(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/PROJECT/BP_CLASS/Blueprints/04_Special/BP_QuestSystem/BP_QuestIconWidget'"));
+	static ConstructorHelpers::FClassFinder<UNormalIconUI> BP_Icon(TEXT("WidgetBlueprint'/Game/PROJECT/BP_CLASS/Blueprints/06_UI/BP_QuestSystem/BP_QuestIconWidget'"));
 	if (BP_Icon.Succeeded())
 	{
 		QuestIconComponent->SetWidgetClass(BP_Icon.Class);

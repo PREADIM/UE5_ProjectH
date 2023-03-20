@@ -22,7 +22,6 @@ void AQuestNPCAI::Interact_Implementation(class AProjectHCharacter* OwnerCharact
 {
 	Super::Interact_Implementation(OwnerCharacter);
 
-	// 인간형 AI //다이얼로그
 	AProjectH_PC* OwnerController = Cast<AProjectH_PC>(OwnerCharacter->GetController());
 	if (OwnerController)
 	{
