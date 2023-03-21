@@ -61,7 +61,7 @@ protected:
 
 public:	
 	// Called every frame
-	//virtual void Tick(float DeltaTime) override;
+	virtual void Tick(float DeltaTime) override;
 
 
 public:
@@ -79,6 +79,19 @@ public:
 	그리고 퀘스트 완료 후시 EndedQuestsNums에 번호를 추가하고 SucceedQuestsNums에서 번호를 지운다.
 	★(QuestingNums -> SucceedQuestsNums -> EndedQuestsNums가 추가되면서 지워지는 순서)
 	*/
+
+
+	/*-----------------------
+			Component
+	------------------------*/
+
+	UPROPERTY(EditAnywhere, Category = Component)
+		class USceneComponent* Root;
+
+	UPROPERTY(EditAnywhere, Category = Component)
+		class USceneComponent* IconLocationComponent;
+
+	/*------------------------------------------*/
 
 	UPROPERTY(VisibleAnywhere)
 		EQuestIconState QuestIconState;
@@ -108,21 +121,18 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Name)
 		FString NPCName; // NPC 이름. 데이터 베이스 검색이나 저장할때 용이하다.
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component)
-		class USceneComponent* Root;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component)
-		class UCapsuleComponent* CapsuleCollision;
-
 	/*-----------------------
-		Quest Widget Value
+		Quest Icon Widget
 	------------------------*/
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Widget)
-		class UWidgetComponent* QuestIconComponent;
+	UPROPERTY(EditAnywhere, Category = Widget)
+		TSubclassOf<class UNormalIconUI> BP_NPCQuestIconUI;
+	UPROPERTY()
+		class UNormalIconUI* NPCQuestIconUI;
+	UPROPERTY()
+		class UCanvasPanelSlot* NPCIconSlot;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Widget)
-		class UNormalIconUI* QuestIconUI;
+	/*---------------------------------------------------*/
 
 	UPROPERTY(VisibleAnywhere)
 		class UProjectHGameInstance* GI;
@@ -134,8 +144,7 @@ public:
 
 	//
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		class AProjectHCharacter* PlayerCharacter;
-
+		class AProjectH_PC* PlayerController;
 
 	/*--------------------
 		Dialogue Property
@@ -158,7 +167,7 @@ public:
 	void NPCQuestSetup(); // 한번에 반드시 실행되어야 할 아래 중요 함수들을 모아둔것.
 	//FindCanQuest, SetIconWidget, SaveNPCQuest
 
-	// ★★핵심 함수.
+	/* 핵심 함수. */ 
 	bool FindCanQuest(); // 캐릭터가 해당 NPC의 퀘스트를 수행조건이 가능한지 검사한다.
 	void SaveNPCQuest(); // 게임 인스턴스 안에있는 세이브 클래스에 저장하는 함수.
 	void SetIconWidget(); // 아이콘 출력.

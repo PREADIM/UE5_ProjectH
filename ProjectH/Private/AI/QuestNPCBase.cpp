@@ -22,34 +22,21 @@
 // Sets default values
 AQuestNPCBase::AQuestNPCBase()
 {
-	PrimaryActorTick.bCanEverTick = false;
-
+	PrimaryActorTick.bCanEverTick = true;
 
 	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+	IconLocationComponent = CreateDefaultSubobject<USceneComponent>(TEXT("IconLocation"));
 	RootComponent = Root;
+	IconLocationComponent->SetupAttachment(Root);
 
-
-	QuestIconComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("QuestIconComponent"));
-	QuestIconComponent->SetupAttachment(RootComponent);
-
-	static ConstructorHelpers::FClassFinder<UNormalIconUI> BP_Icon(TEXT("WidgetBlueprint'/Game/PROJECT/BP_CLASS/Blueprints/06_UI/BP_QuestSystem/BP_QuestIconWidget'"));
-	if (BP_Icon.Succeeded())
-	{
-		QuestIconComponent->SetWidgetClass(BP_Icon.Class);
-		QuestIconComponent->SetDrawSize(FVector2D(100.f, 100.f));
-	}
-
-	QuestIconComponent->SetVisibility(false);
 	QuestIconState = EQuestIconState::NONE;
+	SetActorTickEnabled(false);
 }
 
 // Called when the game starts or when spawned
 void AQuestNPCBase::BeginPlay()
 {
 	Super::BeginPlay();
-
-	QuestIconComponent->InitWidget();
-	QuestIconUI = Cast<UNormalIconUI>(QuestIconComponent->GetUserWidgetObject());
 
 	GI = Cast<UProjectHGameInstance>(UGameplayStatics::GetGameInstance(this));
 	if (GI)
@@ -60,9 +47,7 @@ void AQuestNPCBase::BeginPlay()
 			NPCQuests = AllQuest->NPCAllQuests;
 
 		//퀘스트 플래그들을 로드한다. ex) 퀘스트중인지, 퀘스트 완료가 있는지
-		if (!GI->SetNPCLoadSlot(this))
-			_DEBUG("false LoadNPC");
-
+		GI->SetNPCLoadSlot(this);
 		GI->SetNPCPtr(NPCName, this);
 	}
 
@@ -76,6 +61,15 @@ void AQuestNPCBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 	if (GI)
 		SaveNPCQuest();
+
+}
+
+void AQuestNPCBase::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if (NPCIconSlot && PlayerController)
+		PlayerController->MainQuestIconWidgetSetup(NPCIconSlot, IconLocationComponent->GetComponentLocation());
 
 }
 
@@ -107,7 +101,6 @@ void AQuestNPCBase::SetQuestIconState(EQuestIconState NewState)
 
 	if (Current < New) // 새로운게 우선순위가 더 크면 교체.
 		QuestIconState = NewState;
-
 
 }
 
@@ -159,41 +152,58 @@ void AQuestNPCBase::SaveNPCQuest()
 
 void AQuestNPCBase::SetIconWidget()
 {
-	if (!QuestIconUI)
-		return;
+	if (!NPCQuestIconUI)
+	{
+		if (!PlayerController)
+			return;
+
+		NPCQuestIconUI = CreateWidget<UNormalIconUI>(GetWorld(), BP_NPCQuestIconUI);
+		if (NPCQuestIconUI)
+			NPCIconSlot = PlayerController->AddChildCanvas(NPCQuestIconUI);
+			
+	}
 
 	switch (QuestIconState)
 	{
 	case EQuestIconState::NONE:
-		QuestIconUI->SetRenderIcon(EQuestState::NONE);
-		QuestIconComponent->SetVisibility(false);
+		NPCQuestIconUI->SetRenderIcon(EQuestState::NONE);
+		NPCQuestIconUI->SetRenderOpacity(0.f);
 		return; // 여기서는 리턴이다.
+
 	case EQuestIconState::SubCanQuest:
-		QuestIconUI->SetRenderIcon(EQuestState::SubQuest);
+		NPCQuestIconUI->SetRenderIcon(EQuestState::SubQuest);
 		break;
 	case EQuestIconState::MainCanQuest:
-		QuestIconUI->SetRenderIcon(EQuestState::MainQuest);
+		NPCQuestIconUI->SetRenderIcon(EQuestState::MainQuest);
 		break;
 	case EQuestIconState::SubQuesting:
-		QuestIconUI->SetRenderIcon(EQuestState::SubQuesting);
+		NPCQuestIconUI->SetRenderIcon(EQuestState::SubQuesting);
 		break;
 	case EQuestIconState::MainQuesting:
-		QuestIconUI->SetRenderIcon(EQuestState::MainQuesting);
+		NPCQuestIconUI->SetRenderIcon(EQuestState::MainQuesting);
 		break;
 	case EQuestIconState::SubSucceedQuest:
-		QuestIconUI->SetRenderIcon(EQuestState::SubSucceedQuest);
+		NPCQuestIconUI->SetRenderIcon(EQuestState::SubSucceedQuest);
 		break;
 	case EQuestIconState::MainSucceedQuest:
-		QuestIconUI->SetRenderIcon(EQuestState::MainSucceedQuest);
+		NPCQuestIconUI->SetRenderIcon(EQuestState::MainSucceedQuest);
 		break;
 	}
 
-	QuestIconComponent->SetVisibility(true);
+	if(NPCQuestIconUI->GetRenderOpacity() != 1.f)
+		NPCQuestIconUI->SetRenderOpacity(1.f);
+
+	SetActorTickEnabled(true);
 }
 
 void AQuestNPCBase::HiddenIcon()
 {
-	QuestIconComponent->SetVisibility(false);
+	if (!NPCQuestIconUI)
+		return;
+
+	NPCQuestIconUI->SetRenderOpacity(0.f);
+	SetActorTickEnabled(false);
+
 	_DEBUG("HiddenIcon");
 }
 
@@ -210,8 +220,8 @@ bool AQuestNPCBase::FindCanQuest()
 		또한 해당 퀘스트가 진행중인지, 완료가능인지 완료된 것인지 판단하여 퀘스트를 지우고, 플래그를 설정한다.
 		*/
 
+	//여기서 항상 NONE으로 기준을 잡고 하면 된다.
 
-	//여기서 항상 NONE으로 기준을 잡고 하면 된다.★
 	QuestIconState = EQuestIconState::NONE;
 
 	if (GI)
@@ -236,7 +246,6 @@ bool AQuestNPCBase::FindCanQuest()
 						if (NPCQuests.Quests[i].QuestingFunction == nullptr)
 						{
 							UQuestingFunction* temp = NewObject<UQuestingFunction>(this, NPCQuests.Quests[i].BP_QuestingFunction);
-							//UQuestingFunction* temp = Cast<UQuestingFunction>(NPCQuests.Quests[i].BP_QuestingFunction->GetDefaultObject());
 							if (temp)
 							{
 								temp->OwnerNPC = this;

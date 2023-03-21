@@ -195,26 +195,6 @@ void AProjectHCharacter::AnyKey(FKey Key)
 	
 }
 
-//void AProjectHCharacter::Run()
-//{
-//	if (AnimInstance)
-//	{
-//		AnimInstance->bIsRunning = true;
-//		GetCharacterMovement()->MaxWalkSpeed = RunningSpeed;
-//		GetCharacterMovement()->MaxAcceleration = 500.f;
-//	}
-//}
-//
-//void AProjectHCharacter::NotRun()
-//{
-//	if (AnimInstance)
-//	{
-//		AnimInstance->bIsRunning = false;
-//		GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
-//		GetCharacterMovement()->MaxAcceleration = 250.f;
-//	}
-//}
-
 
 void AProjectHCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -242,7 +222,8 @@ void AProjectHCharacter::QuestCollisionOverlap(UPrimitiveComponent* OverlappedCo
 	AQuestNPCBase* NPC = Cast<AQuestNPCBase>(OtherActor);
 	if (NPC)
 	{
-		NPC->PlayerCharacter = this;
+		//NPC->PlayerCharacter = this;
+		NPC->PlayerController = OwnerController;
 		NPC->NPCQuestSetup();	
 	}
 }

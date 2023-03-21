@@ -90,7 +90,8 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		class UARPGWidget_BattleHP* BattleHP;
 
-
+	UPROPERTY(VisibleAnywhere)
+		float MouseSensitivity;
 
 	/* 피지컬 머터리얼 사운드 */
 

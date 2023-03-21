@@ -41,8 +41,6 @@ void UJRPGBattleWidget::NativeTick(const FGeometry& MyGeometry, const float InDe
 		float Scale = UWidgetLayoutLibrary::GetViewportScale(GetWorld()->GetGameViewport());
 		if (CanvasSlot)
 			CanvasSlot->SetPosition(FVector2D(Pos.X / Scale, (Pos.Y / Scale) - 30.f));
-
-		
 	}
 
 }

@@ -40,20 +40,6 @@ public:
 	void OpenOption();
 	void MouseOnOff();
 
-
-	/*---------------
-		TEST QTE
-	------------------*/
-
-	void CreateQTE();
-	// QTE를 실행시키는 함수.
-	void StartQTEFunc(FKey Key, FQTEWidgetPosition ScreenPosition, float Time, float Dilation, FCameraTransition CameraTransition, FVector Location);
-	// 타이머를 이용해서 해당 함수를 계속 실행하여, QTE를 성공했는지 실패했는지 검사.
-	void QTETimerLoop(); 
-	// 시간 초과, 성공, 키 실패를 처리할 함수.
-	void EventCompleted(EQTEState State, FCameraTransition CameraTransition); 
-	void ClearQTEWidget();
-
 	//--------------------------------------------------------
 
 	
@@ -67,6 +53,10 @@ public:
 		void PlayCinemiceMainUIVisible();
 	UFUNCTION(BlueprintCallable)
 		void PlaySequenceProxy(int32 SequenceNumber); /* 게임 인스턴스의 PlaySequence 함수를 컨트롤러를 통해 실행해주는 함수 */
+
+	/* 아이콘 위젯이 항시 MainWidget의 위젯상에서 뜨게 만들기. */
+	class UCanvasPanelSlot* AddChildCanvas(class UUserWidget* Widget);
+	void MainQuestIconWidgetSetup(class UCanvasPanelSlot* CanvasSlot, FVector Location);
 
 public:
 	/*-----------------
@@ -84,15 +74,26 @@ public:
 		class UMainQuestUI* MainQuestUI;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+		TSubclassOf<class UQuestMainCanvasWidget> BP_MainQuestIconWidget;
+	UPROPERTY()
+		class UQuestMainCanvasWidget* MainQuestIconWidget;
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
 		TSubclassOf<class UQuestInfo> BP_QuestInfoUI;
 	UPROPERTY()
 		class UQuestInfo* QuestInfoUI;
+
+
+
+	/*---------------
+		TEST QTE
+	------------------*/
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
 		TSubclassOf<class UQTEMainUI> BP_QTEMainUI;
 	UPROPERTY()
 		class UQTEMainUI* QTEMain;
-
 
 	UPROPERTY()
 		class UQTESlotUI* CurrentQTEWidget;
@@ -108,4 +109,16 @@ public:
 	bool IsOpen = false;
 
 
+	/*---------------
+		TEST QTE
+	------------------*/
+
+	void CreateQTE();
+	// QTE를 실행시키는 함수.
+	void StartQTEFunc(FKey Key, FQTEWidgetPosition ScreenPosition, float Time, float Dilation, FCameraTransition CameraTransition, FVector Location);
+	// 타이머를 이용해서 해당 함수를 계속 실행하여, QTE를 성공했는지 실패했는지 검사.
+	void QTETimerLoop();
+	// 시간 초과, 성공, 키 실패를 처리할 함수.
+	void EventCompleted(EQTEState State, FCameraTransition CameraTransition);
+	void ClearQTEWidget();
 };

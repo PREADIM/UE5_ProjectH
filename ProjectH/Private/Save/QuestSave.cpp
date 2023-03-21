@@ -32,8 +32,6 @@ UQuestSave::UQuestSave()
 void UQuestSave::SaveQuest(TArray<FQuestStruct> GetQuests, const int32 GetCurrentQuestId)
 {
 	// 레퍼런스가 아닌 복사를 해서 저장한다.
-
-	_DEBUG("SaveQuest");
 	Quests = GetQuests;
 	CurrentQuestId = GetCurrentQuestId;
 	SaveSlot();

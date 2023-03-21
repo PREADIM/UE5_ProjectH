@@ -11,7 +11,7 @@ void UQuestIcon::NativeConstruct()
 
 void UQuestIcon::Init(float Dist)
 {
-	Distance = Dist; // 같은 거리에서 또 SetText를 하기를 방지하기위함.
-	FString DS = FString::FromInt(Dist);
+	Distance = Dist;
+	FString DS = FString::FromInt(Distance);
 	DistanceText->SetText(FText::FromString(DS));
 }

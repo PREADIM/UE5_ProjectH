@@ -69,7 +69,6 @@ void AJRPGPlayerController::OnPossess(APawn* NewPawn)
 
 		if (GM)
 			GM->SetControllerInit();
-
 	}	
 }
 

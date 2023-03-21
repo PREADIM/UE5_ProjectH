@@ -116,14 +116,7 @@ void AARPGUnit::BeginPlay()
 			RMB_AP = FPSShield->UseAP;
 		}
 	}
-
-	GI = Cast<UProjectHGameInstance>(UGameplayStatics::GetGameInstance(this));
-	if (GI)
-	{
-		MouseSensivity = GI->MS;
-	}	
 	OwnerController = Cast<AARPGPlayerController>(GetController());
-
 
 	ObjectType.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel12));
 	IgnoreActor.Add(this);
@@ -230,13 +223,13 @@ void AARPGUnit::MoveRight(float Value)
 void AARPGUnit::LookUp(float AxisValue)
 {
 	if (!bParringHit && !bSpecialAttackMode)
-		AddControllerPitchInput(AxisValue * MouseSensivity * GetWorld()->GetDeltaSeconds());
+		AddControllerPitchInput(AxisValue * MouseSensitivity * GetWorld()->GetDeltaSeconds());
 }
 
 void AARPGUnit::LookRight(float AxisValue)
 {
 	if (!bParringHit && !bSpecialAttackMode)
-		AddControllerYawInput(AxisValue * MouseSensivity * GetWorld()->GetDeltaSeconds());
+		AddControllerYawInput(AxisValue * MouseSensitivity * GetWorld()->GetDeltaSeconds());
 }
 
 

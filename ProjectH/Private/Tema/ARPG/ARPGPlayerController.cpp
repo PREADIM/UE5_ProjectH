@@ -5,6 +5,7 @@
 #include "Tema/ARPG/ARPGGameMode.h"
 #include "Tema/ARPG/ARPGUnitBase.h"
 #include "Tema/ARPG/Widget/ARPGWidgetMain.h"
+#include "GameMode/ProjectHGameInstance.h"
 #include "Tema/ARPG/Widget/ARPGWidget_BossHPView.h"
 
 AARPGPlayerController::AARPGPlayerController()
@@ -18,10 +19,7 @@ void AARPGPlayerController::OnPossess(APawn* InPawn)
 
 	OwnerUnit = Cast<AARPGUnitBase>(InPawn);
 	if (OwnerUnit == nullptr)
-	{
 		return;
-		//_DEBUG("Not OwnerUnit");
-	}
 
 	GM = Cast<AARPGGameMode>(GetWorld()->GetAuthGameMode());
 	if (GM && OwnerUnit)
@@ -49,14 +47,22 @@ void AARPGPlayerController::OnUnPossess()
 	Super::OnUnPossess();
 }
 
+void AARPGPlayerController::SetNewMouseSensitivity()
+{
+	if (OwnerUnit)
+		OwnerUnit->MouseSensitivity = MouseSensitivity;
+}
+
 void AARPGPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	/*if (BP_LockOnUI)
+	GI = Cast<UProjectHGameInstance>(UGameplayStatics::GetGameInstance(this));
+	if (GI)
 	{
-		LockOnUI = CreateWidget<UUserWidget>(GetWorld(), BP_LockOnUI);
-	}*/
+		MouseSensitivity = GI->MS;
+		SetNewMouseSensitivity();
+	}
 
 	SetPlaySound(NormalSound);
 }
@@ -66,30 +72,6 @@ void AARPGPlayerController::SetupInputComponent()
 	Super::SetupInputComponent();
 
 }
-
-
-//void AARPGPlayerController::SetLockPosition(FVector2D Pos)
-//{
-//	if (LockOnUI)
-//	{
-//		LockOnUI->SetPositionInViewport(Pos);
-//	}
-//}
-//
-//void AARPGPlayerController::LockOnAddViewport(bool bFlag)
-//{
-//	if (!LockOnUI)
-//		return;
-//
-//	if (bFlag)
-//	{
-//		LockOnUI->AddToViewport();
-//	}
-//	else
-//	{
-//		LockOnUI->RemoveFromParent();
-//	}
-//}
 
 void AARPGPlayerController::SetChargeAttacking(float Ratio)
 {

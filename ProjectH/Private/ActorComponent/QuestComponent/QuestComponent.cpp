@@ -83,33 +83,18 @@ void UQuestComponent::AddQuest(FNPCQuest NPCQuest)
 		return;
 
 
-	ATriggerEventBase* Trigger = GetWorld()->SpawnActorDeferred<ATriggerEventBase>(NPCQuest.QuestSteps[0].BP_Trigger, FTransform(NPCQuest.QuestSteps[0].TriggerLocation), OwnerCharacter, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
-	//NPCQuest.QuestSteps[0].Trigger = GetWorld()->SpawnActorDeferred<ATriggerEventBase>(NPCQuest.QuestSteps[0].BP_Trigger, FTransform(NPCQuest.QuestSteps[0].TriggerLocation), OwnerCharacter, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+	NPCQuest.QuestSteps[0].Trigger = GetWorld()->SpawnActorDeferred<ATriggerEventBase>(NPCQuest.QuestSteps[0].BP_Trigger, FTransform(NPCQuest.QuestSteps[0].TriggerLocation), OwnerCharacter, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 	if (::IsValid(NPCQuest.QuestSteps[0].Trigger))
 	{
-		Trigger->QuestComponent = this;
-		Trigger->PlayerCharacter = OwnerCharacter;
-		Trigger->PlayerController = OwnerController;
-		Trigger->GI = GI;
-		Trigger->QuestName = NPCQuest.QuestName;
-		Trigger->OwnerNPCName = NPCQuest.OwnerNPCName;
-		Trigger->QuestNumber = NPCQuest.QuestNumber;
-
-		NPCQuest.QuestSteps[0].Trigger = Trigger;
-
-		/*NPCQuest.QuestSteps[0].Trigger->QuestComponent = this;
+		NPCQuest.QuestSteps[0].Trigger->QuestComponent = this;
 		NPCQuest.QuestSteps[0].Trigger->PlayerCharacter = OwnerCharacter;
 		NPCQuest.QuestSteps[0].Trigger->PlayerController = OwnerController;
 		NPCQuest.QuestSteps[0].Trigger->GI = GI;
 		NPCQuest.QuestSteps[0].Trigger->QuestName = NPCQuest.QuestName;
 		NPCQuest.QuestSteps[0].Trigger->OwnerNPCName = NPCQuest.OwnerNPCName;
-		NPCQuest.QuestSteps[0].Trigger->QuestNumber = NPCQuest.QuestNumber;*/
+		NPCQuest.QuestSteps[0].Trigger->QuestNumber = NPCQuest.QuestNumber;
 
 		NPCQuest.QuestSteps[0].Trigger->FinishSpawning(FTransform(NPCQuest.QuestSteps[0].TriggerLocation));
-
-		
-		// 생성된 트리거에 컴포넌트값 전달. 
-		// 퀘스트가 들어오면 해당 트리거를 생성
 	}
 
 	Quests.Emplace(NPCQuest);
@@ -152,9 +137,7 @@ void UQuestComponent::SelectQuest(FString SelectQuestName)
 			CurrentQuestID = i;
 			ActiveQuest.SetActiveQuest(Quests[i]);
 			if (Quests[CurrentQuestID].QuestSteps.Num() && Quests[CurrentQuestID].QuestSteps[0].Trigger)
-			{
 				Quests[CurrentQuestID].QuestSteps[0].Trigger->SetTriggerWidget();
-			}
 				
 			OnUpdateQuestList.Broadcast();
 			break;
@@ -299,7 +282,8 @@ void UQuestComponent::NewTriggerSet(int32 QuestIndex)
 	if (::IsValid(Quests[QuestIndex].QuestSteps[0].Trigger))
 	{
 		Quests[QuestIndex].QuestSteps[0].Trigger->QuestComponent = this;
-		Quests[QuestIndex].QuestSteps[0].Trigger->PlayerCharacter = Cast<AProjectHCharacter>(GetOwner());
+		Quests[QuestIndex].QuestSteps[0].Trigger->PlayerCharacter = OwnerCharacter;
+		Quests[QuestIndex].QuestSteps[0].Trigger->PlayerController = OwnerController;
 		Quests[QuestIndex].QuestSteps[0].Trigger->GI = GI;
 		Quests[QuestIndex].QuestSteps[0].Trigger->QuestName = Quests[QuestIndex].QuestName;
 		Quests[QuestIndex].QuestSteps[0].Trigger->OwnerNPCName = Quests[QuestIndex].OwnerNPCName;

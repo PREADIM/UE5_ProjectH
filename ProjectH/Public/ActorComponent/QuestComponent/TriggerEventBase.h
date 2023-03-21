@@ -57,19 +57,38 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component)
 		class USceneComponent* Root;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component)
-		class UWidgetComponent* Widget;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Component)
 		class USphereComponent* Collision;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		class AProjectHCharacter* PlayerCharacter;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		class AProjectH_PC* PlayerController;
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		class UProjectHGameInstance* GI;
 
+	/*-------------------------
+			퀘스트 아이콘
+	---------------------------*/
+
+	UPROPERTY(EditAnywhere)
+		TSubclassOf<class UQuestIcon> BP_QuestIcon;
+	UPROPERTY()
+		class UQuestIcon* QuestIcon;
+	UPROPERTY()
+		class UCanvasPanelSlot* IconCanvasSlot;
+
+	/*-------------------------------------*/
+
 public:
+
+
+	/*--------------------------------------------------------------------------
+		이 함수는 컨트롤러의 MainIconWidget에 해당 트리거의 위치값을 알려주는 함수.
+	----------------------------------------------------------------------------*/
+
+	void SetupMainIconWidget();
+	/*---------------------------------------------------------------*/
+
 	UFUNCTION()
 		void OverlapTrigger(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()
@@ -102,14 +121,7 @@ public:
 		void BindProgressCnt(); /* 진행률이 있는 퀘스트의 진행률을 다시 바인드. */
 
 	UFUNCTION(BlueprintCallable)
-		void CanClearQuest(); // 퀘스트를 클리어했으니 NPC의 SucceedQuestsNums를 최신화해주면서, 캐릭터의 퀘스트 콜리전을 껏다 켜주면
-	// 알아서 초기화 된다.
-
-	UFUNCTION()
-		void VisibleWidget(); // 위젯 보이기(시네마틱)
-	UFUNCTION()
-		void HiddenWidget(); // 위젯 숨기기(시네마틱)
-
+		void CanClearQuest(); // 퀘스트를 클리어했으니 NPC의 SucceedQuestsNums를 최신화해주면서, 캐릭터의 퀘스트 콜리전을 껏다 켜주면 알아서 초기화 된다
 };
 
 

@@ -17,8 +17,10 @@ class PROJECTH_API UQuestIcon : public UUserWidget
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 		class UTextBlock* DistanceText;
-
 	int32 Distance;
+
+	UPROPERTY()
+		class AActor* TargetActor; 
 
 public:
 	virtual void NativeConstruct() override;

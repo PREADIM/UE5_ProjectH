@@ -17,5 +17,11 @@ class PROJECTH_API UQuestMainCanvasWidget : public UUserWidget
 public:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 		class UCanvasPanel* Canvas;
-	
+	UPROPERTY()
+		class APlayerControllerBase* OwnerController;
+
+public:
+	class UCanvasPanelSlot* AddChildCanvas(class UUserWidget* Widget);
+	void MainQuestIconWidgetSetup(class UCanvasPanelSlot* CanvasSlot, FVector Location);
+
 };

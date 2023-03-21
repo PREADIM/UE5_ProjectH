@@ -11,6 +11,7 @@
 #include "GameMode/ProjectHGameInstance.h"
 #include "Kismet/GameplayStatics.h"
 #include "Special/QTE/QTECamera.h"
+#include "UI/QuestMainCanvasWidget.h"
 
 
 AProjectH_PC::AProjectH_PC()
@@ -36,13 +37,17 @@ void AProjectH_PC::BeginInit()
 		GI->PlaySequence(1, this);
 	}
 
-	if (BP_MainQuestUI && OwnerCharacter)
+	if (BP_MainQuestUI && BP_MainQuestIconWidget && OwnerCharacter)
 	{
 		MainQuestUI = CreateWidget<UMainQuestUI>(GetWorld(), BP_MainQuestUI);
 		MainQuestUI->OwnerCharacter = OwnerCharacter;
 		MainQuestUI->OwnerController = this;
 		MainQuestUI->Init();
 		MainQuestUI->AddToViewport();
+
+		MainQuestIconWidget = CreateWidget<UQuestMainCanvasWidget>(GetWorld(), BP_MainQuestIconWidget);
+		MainQuestIconWidget->OwnerController = this;
+		MainQuestIconWidget->AddToViewport();
 	}
 
 	SetNewMouseSensitivity();
@@ -75,18 +80,36 @@ void AProjectH_PC::OpenQuestList()
 
 void AProjectH_PC::PlayCinemiceMainUIHidden()
 {
+	_DEBUG("Hidden");
 	MainQuestUI->SetRenderOpacity(0.f);
+	MainQuestIconWidget->SetRenderOpacity(0.f);
 }
 
 void AProjectH_PC::PlayCinemiceMainUIVisible()
 {
+	_DEBUG("Visible");
 	MainQuestUI->SetRenderOpacity(1.f);
+	MainQuestIconWidget->SetRenderOpacity(1.f);
 }
 
 void AProjectH_PC::PlaySequenceProxy(int32 SequenceNumber)
 {
 	if (GI)
 		GI->PlaySequence(SequenceNumber, this);
+}
+
+class UCanvasPanelSlot* AProjectH_PC::AddChildCanvas(class UUserWidget* Widget)
+{
+	if (MainQuestIconWidget)
+		return MainQuestIconWidget->AddChildCanvas(Widget);
+
+	return nullptr;
+}
+
+void AProjectH_PC::MainQuestIconWidgetSetup(UCanvasPanelSlot* CanvasSlot, FVector Location)
+{
+	if (MainQuestIconWidget)
+		MainQuestIconWidget->MainQuestIconWidgetSetup(CanvasSlot, Location);
 }
 
 void AProjectH_PC::OpenESC()

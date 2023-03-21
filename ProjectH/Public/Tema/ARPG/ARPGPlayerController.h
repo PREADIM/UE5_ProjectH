@@ -27,9 +27,9 @@ public:
 	virtual void OnUnPossess() override;
 	virtual void BeginPlay();
 	virtual void SetupInputComponent() override;
+	virtual void SetNewMouseSensitivity() override;
+
 public:
-	/*void SetLockPosition(FVector2D Pos);
-	void LockOnAddViewport(bool bFlag);*/
 
 	//차지 어택 위젯비율 전달
 	void SetChargeAttacking(float Ratio);
@@ -48,10 +48,8 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		class AARPGUnitBase* OwnerUnit;
 
-	/*UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TSubclassOf<class UUserWidget> BP_LockOnUI;
-	UPROPERTY()
-		class UUserWidget* LockOnUI;*/
+	UPROPERTY(VisibleAnywhere)
+		class UProjectHGameInstance* GI;
 
 	//-------------------------------------------------------
 	// 메인 UI
@@ -67,14 +65,9 @@ public:
 	UPROPERTY()
 		class UARPGWidget_BossHPView* WidgetBossHP;
 
-
 	UFUNCTION()
 		void BindVisibleWidget();
 	UFUNCTION()
 		void BindHiddenWidget();
-
-	/*------------------------------------------------*/
-
-
 
 };

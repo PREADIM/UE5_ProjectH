@@ -236,9 +236,8 @@ void UProjectHGameInstance::SetNextQuest(int32 QuestNumber)
 bool UProjectHGameInstance::SetNPCLoadSlot(AQuestNPCBase* NPC)
 {
 	if (NPC && QuestSave)
-	{
 		return QuestSave->LoadNPC(NPC);
-	}
+
 	return false;
 }
 

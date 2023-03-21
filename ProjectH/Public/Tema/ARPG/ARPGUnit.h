@@ -181,9 +181,6 @@ public:
 		float AttackCharge;*/
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		float MouseSensivity;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		float WalkSpeed; // 현재 속도
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

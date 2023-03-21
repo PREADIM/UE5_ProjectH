@@ -10,6 +10,7 @@
 #include "GameMode/ProjectHGameInstance.h"
 #include "AI/QuestNPCBase.h"
 #include "Controller/ProjectH_PC.h"
+#include "UI/QuestIcon.h"
 
 // Sets default values
 ATriggerEventBase::ATriggerEventBase()
@@ -18,91 +19,68 @@ ATriggerEventBase::ATriggerEventBase()
 	PrimaryActorTick.bCanEverTick = true;
 
 	Root = CreateDefaultSubobject<class USceneComponent>(TEXT("Root"));
-	Widget = CreateDefaultSubobject<UWidgetComponent>(TEXT("Widget"));
 	Collision = CreateDefaultSubobject<USphereComponent>(TEXT("Collision"));
-
 	RootComponent = Root;
-	Widget->SetupAttachment(Root);
 	Collision->SetupAttachment(Root);
-
-	static ConstructorHelpers::FClassFinder<UQuestIcon> BP_SucceedIcon(TEXT("WidgetBlueprint'/Game/PROJECT/BP_CLASS/Blueprints/04_Special/BP_QuestSystem/BP_SucceedIcon'"));
-	if (BP_SucceedIcon.Succeeded())
-	{
-		Widget->SetWidgetClass(BP_SucceedIcon.Class);
-		Widget->SetDrawSize(FVector2D(100.f, 100.f));
-	}
-
-	Widget->SetVisibility(false);
-	SetActorTickEnabled(false);	
-
-	
+	SetActorTickEnabled(false);		
 }
 
-// Called when the game starts or when spawned
 void ATriggerEventBase::BeginPlay()
 {
 	Super::BeginPlay();
 	Collision->OnComponentBeginOverlap.AddDynamic(this, &ATriggerEventBase::OverlapTrigger);
 	Collision->OnComponentEndOverlap.AddDynamic(this, &ATriggerEventBase::OverlapEndTrigger);
 
-	if (PlayerController)
+	if (BP_QuestIcon && PlayerController)
 	{
-		PlayerController->OnVisibleWidget.AddUFunction(this, FName("VisibleWidget"));
-		PlayerController->OnHiddenWidget.AddUFunction(this, FName("HiddenWidget"));
-		_DEBUG("SetupBind");
+		QuestIcon = CreateWidget<UQuestIcon>(GetWorld(), BP_QuestIcon);
+		if (QuestIcon)
+		{
+			QuestIcon->SetRenderOpacity(0.f);
+			IconCanvasSlot = PlayerController->AddChildCanvas(QuestIcon);
+		}		
 	}
-
-	Widget->InitWidget();
+	SetupMainIconWidget();
 	SetupCollision();
 }
 
 
-
-// Called every frame
 void ATriggerEventBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (PlayerCharacter != nullptr)
+	SetupMainIconWidget();
+}
+
+void ATriggerEventBase::SetupMainIconWidget()
+{
+	if (PlayerCharacter)
 	{
-		UQuestIcon* Icon = Cast<UQuestIcon>(Widget->GetUserWidgetObject());
-		if (Icon)
+		if (QuestIcon)
 		{
 			int32 Dist = UKismetMathLibrary::FTrunc(GetDistanceTo(PlayerCharacter) / 100);
-			if (Icon->Distance != Dist)
-			{
-				Icon->Init(Dist);
-			}
+			if (QuestIcon->Distance != Dist)
+				QuestIcon->Init(Dist);
+
+			if(PlayerController)
+				PlayerController->MainQuestIconWidgetSetup(IconCanvasSlot, GetActorLocation());
 		}
 	}
 }
 
-
-/*void ATriggerEventBase::SetInit()
-{
-	트리거가 NPC를 소환해서 해당 NPC에게 퀘스트를 준다거나,
-	트리거가 무언가 해야하는 일이 있을때 사용할 함수.
-	게임실행시 QuestComponent의 AddQuest에서 실행시킨다. 블루프린트에서 작성하도록 만든다.
-}*/
-
-
 void ATriggerEventBase::OverlapTrigger(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (OtherActor == PlayerCharacter)
-	{
 		IsThisTrigger();
-	}
 }
 
 void ATriggerEventBase::OverlapEndTrigger(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	if (OtherActor == PlayerCharacter)
-	{
-		_DEBUG("EndTrigger");
 		SetTriggerWidget();
-	}
-
 }
+
+
 
 void ATriggerEventBase::SetupCollision()
 {
@@ -117,19 +95,32 @@ void ATriggerEventBase::SetupCollision()
 void ATriggerEventBase::TriggerDestroy()
 {
 	TriggerDestroyBPBind();
+	QuestIcon->RemoveFromParent();
+	QuestIcon = nullptr;
 	Destroy();
 }
 
 void ATriggerEventBase::SetTriggerWidget()
 {
-	if (QuestComponent != nullptr)
+	if (QuestComponent)
 	{
 		if (QuestComponent->GetActiveQuest().QuestNumber == QuestNumber)
 		{
 			if (bBPBindVisibleTriggerFunc)
 				SetVisibleTriggerWidgetBind();
 
-			Widget->SetVisibility(true);
+			if (QuestIcon)
+				QuestIcon->SetRenderOpacity(1.f);		
+			else
+			{
+				if (PlayerController)
+				{
+					QuestIcon = CreateWidget<UQuestIcon>(GetWorld(), BP_QuestIcon);
+					if (QuestIcon)
+						IconCanvasSlot = PlayerController->AddChildCanvas(QuestIcon);
+						
+				}
+			}
 			SetActorTickEnabled(true);
 			SetupCollision();
 		}
@@ -139,14 +130,16 @@ void ATriggerEventBase::SetTriggerWidget()
 
 void ATriggerEventBase::SetHiddenTriggerWidget()
 {
-	if (QuestComponent != nullptr)
+	if (QuestComponent)
 	{
 		if (QuestComponent->GetActiveQuest().QuestNumber == QuestNumber)
 		{
 			if (bBPBindHiddenTriggerFunc) // BP에서 무언가 더 할일이 있다.
 				SetHiddenTriggerWidgetBind();
 
-			Widget->SetVisibility(false);
+			if (QuestIcon)
+				QuestIcon->SetRenderOpacity(0.f);
+			
 			SetActorTickEnabled(false);
 		}
 	}
@@ -156,7 +149,7 @@ void ATriggerEventBase::SetHiddenTriggerWidget()
 
 bool ATriggerEventBase::IsThisTrigger()
 {
-	if (QuestComponent != nullptr)
+	if (QuestComponent)
 	{
 		if (QuestComponent->GetHaveQuestNums()->Find(QuestNumber))
 		{
@@ -201,15 +194,4 @@ void ATriggerEventBase::CanClearQuest()
 		}
 		PlayerCharacter->QuestCollisionSetUp();
 	}
-}
-
-void ATriggerEventBase::VisibleWidget()
-{
-	SetTriggerWidget();
-}
-
-
-void ATriggerEventBase::HiddenWidget()
-{
-	SetHiddenTriggerWidget();
 }
