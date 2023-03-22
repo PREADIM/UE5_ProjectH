@@ -84,6 +84,8 @@ public:
 	void SetOtherOption();
 	void SetINI();
 
+	void AddViewportSetupComboBox(); /* AddToViewport 함과동시에 SetComboBox실행 */
+
 
 	UFUNCTION(BlueprintCallable)
 		void SetResCommand(FString str);

@@ -311,21 +311,22 @@ void AJRPGPlayerController::MouseOnOff()
 }
 
 
-void AJRPGPlayerController::MouseOn()
-{
-	int32 x, y;
-	GetViewportSize(x, y);
-	SetMouseLocation(UKismetMathLibrary::FTrunc(x / 2), UKismetMathLibrary::FTrunc(y / 2));
-	SetShowMouseCursor(true);
-	SetInputMode(FInputModeGameAndUI());
-}
+//void AJRPGPlayerController::MouseOn()
+//{
+//	int32 x, y;
+//	GetViewportSize(x, y);
+//	SetMouseLocation(UKismetMathLibrary::FTrunc(x / 2), UKismetMathLibrary::FTrunc(y / 2));
+//	SetShowMouseCursor(true);
+//	SetInputMode(FInputModeGameAndUI());
+//}
+//
+//
+//void AJRPGPlayerController::MouseOff()
+//{
+//	SetShowMouseCursor(false);
+//	SetInputMode(FInputModeGameOnly());
+//}
 
-
-void AJRPGPlayerController::MouseOff()
-{
-	SetShowMouseCursor(false);
-	SetInputMode(FInputModeGameOnly());
-}
 
 void AJRPGPlayerController::SetSave()
 {

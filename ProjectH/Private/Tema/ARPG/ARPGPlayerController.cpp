@@ -7,6 +7,7 @@
 #include "Tema/ARPG/Widget/ARPGWidgetMain.h"
 #include "GameMode/ProjectHGameInstance.h"
 #include "Tema/ARPG/Widget/ARPGWidget_BossHPView.h"
+#include "Tema/ARPG/Widget/ARPGESCMenu.h"
 
 AARPGPlayerController::AARPGPlayerController()
 {
@@ -34,6 +35,16 @@ void AARPGPlayerController::OnPossess(APawn* InPawn)
 		{
 			WidgetMain->Init(OwnerUnit);
 			WidgetMain->AddToViewport();
+		}
+	}
+
+	if (BP_ARPGESCMenu)
+	{
+		ARPGESCMenu = CreateWidget<UARPGESCMenu>(GetWorld(), BP_ARPGESCMenu);
+		if(ARPGESCMenu)
+		{
+			ARPGESCMenu->OwnerController = this;
+			ARPGESCMenu->Init(OwnerUnit);
 		}
 	}
 
@@ -71,6 +82,7 @@ void AARPGPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
 
+	InputComponent->BindAction(TEXT("ESC"), IE_Released, this, &AARPGPlayerController::OpenESC);
 }
 
 void AARPGPlayerController::SetChargeAttacking(float Ratio)
@@ -183,4 +195,10 @@ void AARPGPlayerController::BindHiddenWidget()
 		if (WidgetBossHP->GetRenderOpacity() == 1.f)
 			WidgetBossHP->SetRenderOpacity(0.f);
 	}
+}
+
+
+void AARPGPlayerController::OpenESC()
+{
+	ARPGESCMenu->ESCClick();
 }

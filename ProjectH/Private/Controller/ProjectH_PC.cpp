@@ -80,14 +80,12 @@ void AProjectH_PC::OpenQuestList()
 
 void AProjectH_PC::PlayCinemiceMainUIHidden()
 {
-	_DEBUG("Hidden");
 	MainQuestUI->SetRenderOpacity(0.f);
 	MainQuestIconWidget->SetRenderOpacity(0.f);
 }
 
 void AProjectH_PC::PlayCinemiceMainUIVisible()
 {
-	_DEBUG("Visible");
 	MainQuestUI->SetRenderOpacity(1.f);
 	MainQuestIconWidget->SetRenderOpacity(1.f);
 }

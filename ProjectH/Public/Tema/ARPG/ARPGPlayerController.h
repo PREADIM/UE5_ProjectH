@@ -30,7 +30,6 @@ public:
 	virtual void SetNewMouseSensitivity() override;
 
 public:
-
 	//차지 어택 위젯비율 전달
 	void SetChargeAttacking(float Ratio);
 	void ChargeAttackInViewport(bool bFlag);
@@ -70,4 +69,14 @@ public:
 	UFUNCTION()
 		void BindHiddenWidget();
 
+
+	/*----------------
+		옵션 창
+	------------------*/
+	UPROPERTY(EditAnywhere, Category = ESCMenu)
+		TSubclassOf<class UARPGESCMenu> BP_ARPGESCMenu;
+	UPROPERTY()
+		class UARPGESCMenu* ARPGESCMenu;
+	void OpenESC();
 };
+

@@ -31,7 +31,5 @@ void UHelpMenu::HelpMenuRemove()
 void UHelpMenu::InputMode()
 {
 	if (OwnerController)
-	{
 		OwnerController->SetInputMode(FInputModeUIOnly());
-	}
 }

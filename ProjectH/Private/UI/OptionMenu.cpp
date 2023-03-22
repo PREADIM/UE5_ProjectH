@@ -19,9 +19,7 @@ void UOptionMenu::Init()
 	{
 		TArray<FString>& arr = GI->ResolutionArr;
 		for (auto Res : arr)
-		{
 			ResComboBox->AddOption(Res);
-		}
 
 		AddComboBoxList();
 
@@ -51,6 +49,12 @@ void UOptionMenu::AddComboBoxList()
 	TextureComboBox->AddOption(L"보통");
 	TextureComboBox->AddOption(L"높음");
 	TextureComboBox->AddOption("NONE");
+}
+
+void UOptionMenu::AddViewportSetupComboBox()
+{
+	AddToViewport();
+	SetComboBox();
 }
 
 void UOptionMenu::SetComboBox()
@@ -236,7 +240,6 @@ void UOptionMenu::OptionAnimation(bool IsOpened)
 		GetWorld()->GetTimerManager().SetTimer(Handle, this, &UOptionMenu::OptionMenuRemove, OptionFade->GetEndTime(), false);
 	}
 }
-
 
 
 void UOptionMenu::OptionMenuRemove()

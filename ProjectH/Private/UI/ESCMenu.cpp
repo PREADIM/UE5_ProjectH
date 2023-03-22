@@ -49,8 +49,9 @@ void UESCMenu::SettingClick()
 	// false가 켜기.
 	if (OptionMenu)
 	{
-		OptionMenu->AddToViewport();
-		OptionMenu->SetComboBox();
+		OptionMenu->AddViewportSetupComboBox();
+		/*OptionMenu->AddToViewport();
+		OptionMenu->SetComboBox();*/
 		OptionMenu->OptionAnimation(false);
 		ESCMenuAnimation(true); // 옵션을 킬때는 히트테스트가 네번째 인비지블 이여야함.
 	}
@@ -106,8 +107,9 @@ bool UESCMenu::SettingKeyClick()
 		}
 		else
 		{
-			OptionMenu->AddToViewport();
-			OptionMenu->SetComboBox();
+			OptionMenu->AddViewportSetupComboBox();
+			/*OptionMenu->AddToViewport();
+			OptionMenu->SetComboBox();*/
 			OptionMenu->OptionAnimation(false);
 			bOptionKeyOpen = true;
 			return true;
