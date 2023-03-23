@@ -114,6 +114,10 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		TSet<int32> EndedQuestsNums; // 완료'한' 퀘스트 넘버들. (세이브 로드)
 
+	/* 블루프린트에서 완료한 퀘스트 접근 */
+	UFUNCTION(BlueprintCallable)
+		bool FindEndedQuestsNums(int32 QuestNumber);
+
 	UPROPERTY(VisibleAnywhere)
 		TMap<int32, FNPCQuestPTR> NPCQuestPtrs; // 퀘스트 넘버로 해당 퀘스트에 접근 할수 있는 주소 모음집.
 	// 해당 맵을 통해 완료한 퀘스트에 접근해서 완료트리거를 설정해준다.
@@ -157,6 +161,10 @@ public:
 	/*-------------------
 		Public Function
 	--------------------*/
+
+	/* 인터랙트 할때 호출해야할 함수 BP에서 각 액터에 맞게 바인딩 */
+	UFUNCTION(BlueprintImplementableEvent)
+		void BPBindInteract();
 
 	virtual void Interact_Implementation(class AProjectHCharacter* OwnerCharacter);
 

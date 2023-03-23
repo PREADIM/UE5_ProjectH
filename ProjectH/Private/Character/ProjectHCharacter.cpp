@@ -20,6 +20,8 @@
 
 AProjectHCharacter::AProjectHCharacter()
 {
+	PrimaryActorTick.bCanEverTick = true;
+
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(GetMesh(), FName("head"));
 
@@ -51,6 +53,16 @@ AProjectHCharacter::AProjectHCharacter()
 	
 }
 
+/*---------------------
+	virtual Function
+---------------------*/
+
+void AProjectHCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	SetPhysicalSound();
+}
 
 
 void AProjectHCharacter::BeginPlay()
@@ -286,7 +298,6 @@ void AProjectHCharacter::InteractCollisionOverlap(UPrimitiveComponent* Overlappe
 
 void AProjectHCharacter::InteractCollisionEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	_DEBUG("End");
 	AQuestNPCBase* NPC = Cast<AQuestNPCBase>(OtherActor);
 	if (NPC)
 	{
@@ -340,13 +351,15 @@ void AProjectHCharacter::InteractCollisionRestart()
 	InteractCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 }
 
-/*---------------------
-	virtual Function
----------------------*/
 
-void AProjectHCharacter::Tick(float DeltaTime)
+void AProjectHCharacter::SetPhysicalSound()
 {
-	Super::Tick(DeltaTime);
+	TEnumAsByte<EPhysicalSurface> PS = TracePysicalSurface(this, SurfaceDistance);
+
+	if (!PhysicalAllSounds.Find(PS))
+		return;
+
+	PhysicalSounds = PhysicalAllSounds[PS]; // 해당하는 표면의 사운드 가져오기
 
 }
 

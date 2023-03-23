@@ -17,10 +17,7 @@ void UARPGWidget_BattleHP::Init(AARPGUnitBase* Unit)
 
 
 	if (!OwnerUnit)
-	{
-		_DEBUG("Battle HP Not OwnerUnit");
 		return;
-	}
 
 	BattleHP->SetPercent(1.f);
 	BattleHP_Prev->SetPercent(1.f);

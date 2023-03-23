@@ -111,6 +111,7 @@ void AQuestNPCBase::SetQuestIconState(EQuestIconState NewState)
 
 void AQuestNPCBase::Interact_Implementation(class AProjectHCharacter* OwnerCharacter)
 {
+	BPBindInteract();
 }
 
 
@@ -203,8 +204,17 @@ void AQuestNPCBase::HiddenIcon()
 
 	NPCQuestIconUI->SetRenderOpacity(0.f);
 	SetActorTickEnabled(false);
+}
 
-	_DEBUG("HiddenIcon");
+
+/* 블루프린트에서 완료한 퀘스트 접근 */
+bool AQuestNPCBase::FindEndedQuestsNums(int32 QuestNumber)
+{
+	int32* EndedQuestNumber = EndedQuestsNums.Find(QuestNumber);
+	if (EndedQuestNumber)
+		return true;
+	else
+		return false;
 }
 
 

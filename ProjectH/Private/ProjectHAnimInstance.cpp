@@ -16,11 +16,9 @@ UProjectHAnimInstance::UProjectHAnimInstance()
 void UProjectHAnimInstance::NativeBeginPlay()
 {
 	Super::NativeBeginPlay();
-	OwnerCharacter = Cast<class AProjectHCharacter>(GetOwningActor());
+	OwnerCharacter = Cast<AProjectHCharacter>(TryGetPawnOwner());
 	if (OwnerCharacter)
-	{
 		MovementComponent = OwnerCharacter->GetCharacterMovement();
-	}
 }
 
 void UProjectHAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
@@ -61,4 +59,21 @@ void UProjectHAnimInstance::AnimNotify_Disable()
 void UProjectHAnimInstance::AnimNotify_Enable()
 {
 	OwnerCharacter->bPlay = true;
+}
+
+
+
+void UProjectHAnimInstance::FootStepPlaySound(int32 SoundNum)
+{
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), OwnerCharacter->PhysicalSounds.Sounds[SoundNum], OwnerCharacter->GetMesh()->GetSocketLocation(FName("Root")), 1.f, 1.f, 1.f, OwnerCharacter->PhysicalSounds.Attenuation);
+	_DEBUG("Walk");
+}
+
+void UProjectHAnimInstance::AnimNotify_WalkSound()
+{
+	if (!OwnerCharacter->PhysicalSounds.Sounds.IsValidIndex(0))
+		return;
+
+	FootStepPlaySound(0);
+	
 }

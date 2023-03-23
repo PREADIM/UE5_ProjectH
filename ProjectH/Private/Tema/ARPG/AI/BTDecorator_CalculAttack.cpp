@@ -21,18 +21,12 @@ bool UBTDecorator_CalculAttack::CalculateRawConditionValue(UBehaviorTreeComponen
 
 	AARPGEnermy* OwnerPawn = Cast<AARPGEnermy>(OwnerComp.GetAIOwner()->GetPawn());
 	if (!OwnerPawn)
-	{
-		_DEBUG("OwnerPawn false");
 		return false;
-	}
 	
 
 	APawn* TargetUnit = Cast<APawn>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(TEXT("TargetUnit")));
 	if (!TargetUnit)
-	{
-		_DEBUG("TargetUnit false");
 		return false;
-	}
 
 
 	//true면 쿨타임 중 이라는 뜻.
@@ -68,17 +62,14 @@ bool UBTDecorator_CalculAttack::CalculateRawConditionValue(UBehaviorTreeComponen
 				float Dist = Attacks[i]->AttackStruct.AttackDistance;
 				if (CurrentAttackDistance > Dist)
 				{
-					_DEBUG("Not Rand");
 					AttackIndex = i;
 					CurrentAttackDistance = Dist;
 					bCanAttack = true;
 				}
 				else if(CurrentAttackDistance == Dist)
 				{
-					_DEBUG("Rand");
 					if (FMath::RandRange(1, 2) % 2 == 0)
-					{
-						
+					{			
 						AttackIndex = i;
 						CurrentAttackDistance = Dist;
 						bCanAttack = true;
@@ -93,7 +84,6 @@ bool UBTDecorator_CalculAttack::CalculateRawConditionValue(UBehaviorTreeComponen
 	if (AttackIndex == -1)
 	{
 		OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("CanAttack"), false);
-		_DEBUG("Attack Index -1");
 		return false;
 	}
 

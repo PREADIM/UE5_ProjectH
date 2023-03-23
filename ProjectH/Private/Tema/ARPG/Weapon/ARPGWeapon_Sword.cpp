@@ -65,6 +65,7 @@ void AARPGWeapon_Sword::SetOwnerNoSee(bool bFlag)
 	{
 		SwordMesh->SetOnlyOwnerSee(true);
 		SwordMesh->SetOwnerNoSee(false);
+		SwordMesh->SetCastShadow(false);
 	}
 
 }

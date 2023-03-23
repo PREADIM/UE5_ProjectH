@@ -34,4 +34,7 @@ public:
 		void MouseOn();
 	UFUNCTION(BlueprintCallable)
 		void MouseOff();
+
+	/* 입력 제한 함수 */
+	void DisableInputActor(bool bFlag);
 };

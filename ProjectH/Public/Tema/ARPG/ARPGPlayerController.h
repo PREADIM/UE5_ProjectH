@@ -37,7 +37,8 @@ public:
 	void SetBossHPWidget(bool bFlag, class AARPGEnermy* Boss);
 	bool IsBossHPWidget();
 
-	void SetPlaySound(class USoundBase* Sound);
+	UFUNCTION(BlueprintCallable)
+		void SetPlaySound(class USoundBase* Sound = nullptr);
 	void StopSound();
 
 public:

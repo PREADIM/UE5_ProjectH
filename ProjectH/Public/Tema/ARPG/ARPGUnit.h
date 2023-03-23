@@ -137,12 +137,8 @@ public:
 		FName IdleSocketName;
 
 	//---------------------------------------------------------------------
-
+	// 
 	// 죽음 처리 시퀀스 및 리스타트.
-
-	/*UPROPERTY(EditAnywhere)
-		class ULevelSequence* DeathSequence;*/
-
 	UFUNCTION(BlueprintCallable)
 		void CallRestart();
 
@@ -177,9 +173,6 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		bool bAttackBackward;
 
-	/*UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		float AttackCharge;*/
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		float WalkSpeed; // 현재 속도
 
@@ -188,12 +181,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float SprintSpeed;
-
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	//	float LockOnRadius; // 락온 할수 있는 범위
-
-	//UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	//	bool bTargeting = false;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		bool bChargeAttacking = false;
@@ -292,12 +279,6 @@ public:
 	void SetDeathCamera(); // 죽었을때 카메라가 캐릭터 머리에 달린 것으로 블렌드 되어서 역동적인 연출.
 
 	void ParringSwingSFX(); // 패링 공격 SFX
-
-
-public:
-	/*void LockOn();
-	void LockOnSetPosition(FVector TargetPos);
-	void LockOnAddViewport(bool bFlag);*/
 
 
 };

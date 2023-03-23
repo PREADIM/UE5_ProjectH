@@ -5,6 +5,7 @@
 #include "ProjectH.h"
 #include "GameFramework/Character.h"
 #include "Interface/OverlapActorInterface.h"
+#include "PhysicalSoundStruct.h"
 #include "ProjectHCharacter.generated.h"
 
 
@@ -21,10 +22,17 @@ class AProjectHCharacter : public ACharacter, public IOverlapActorInterface
 public:
 	AProjectHCharacter();
 
+	/*---------------------
+		virtual Function
+	---------------------*/
+	virtual void Tick(float DeltaTime);
+	virtual void OverlapedEvent_Implementation() {}
+	virtual void PostInitializeComponents();
 
 protected:
 	virtual void BeginPlay();
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason);
+
 
 protected:
 	/* --------------
@@ -142,11 +150,19 @@ public:
 	UFUNCTION()
 		void InteractCollisionRestart();
 
-	/*---------------------
-		virtual Function
-	---------------------*/
-	virtual void Tick(float DeltaTime);
-	virtual void OverlapedEvent_Implementation() {}
-	virtual void PostInitializeComponents();
+	/*-------------------------
+		피지컬 머터리얼 사운드
+	---------------------------*/
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TMap<TEnumAsByte<EPhysicalSurface>, FPhysicalSoundStruct> PhysicalAllSounds;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		FPhysicalSoundStruct PhysicalSounds;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float SurfaceDistance = 150.f; // 땅끝의 거리
+
+	// 사운드를 해당 표면에 맞춰서 설정해두고 애님블프에서 플레이 하도록 한다.
+	void SetPhysicalSound();
 };
 

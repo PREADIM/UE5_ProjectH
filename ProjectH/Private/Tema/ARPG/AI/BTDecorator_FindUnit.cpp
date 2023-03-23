@@ -18,31 +18,21 @@ bool UBTDecorator_FindUnit::CalculateRawConditionValue(UBehaviorTreeComponent& O
 
 	AARPGEnermy* OwnerPawn = Cast<AARPGEnermy>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(FName("CurrentUnit")));
 	if (!OwnerPawn)
-	{
-		_DEBUG("OwnerPawn Fail");
 		return false;
-	}
 
 
 	AARPGUnit* Target = Cast<AARPGUnit>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(FName("TargetUnit")));
 	if (!Target)
-	{
-		_DEBUG("Target Fail");
 		return false;
-	}
 
 	bResult = OwnerPawn->GetDistanceTo(Target) <= OwnerPawn->GetBattleDistance();
 
 	if (bResult)
-	{
 		OwnerPawn->GetCharacterMovement()->MaxWalkSpeed = OwnerPawn->BattleSpeed;	
-		//_DEBUG("Find true");
-	}
 	else
 	{
 		OwnerPawn->GetCharacterMovement()->MaxWalkSpeed = OwnerPawn->NormalSpeed;
 		OwnerPawn->SetEnermyMoveMode(EEnermyMoveMode::None);
-		//_DEBUG("Find false");
 	}
 
 	

@@ -11,6 +11,7 @@
 #include "UI/SelectQuestSlot.h"
 #include "UI/MainQuestUI.h"
 #include "UI/QuestingFunctionWidget.h"
+#include "Controller/ProjectH_PC.h"
 #include "ActorComponent/QuestComponent/QuestingFunction.h"
 
 
@@ -102,6 +103,7 @@ void UDialogueWidget::SetQuestingSelectList(UQuestingFunction* QuestingFunction,
 		UQuestingFunctionWidget* QFW = CreateWidget<UQuestingFunctionWidget>(GetWorld(), BP_QuestingFunctionWidget);
 		if (QFW)
 		{
+			QuestingFunction->OwnerController = OwnerController;
 			QFW->FlagText = QuestingFunction->Flag1Text;
 			QFW->Dial = this;
 			QFW->OwnerMainWidget = OwnerMainWidget;

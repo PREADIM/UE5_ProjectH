@@ -99,7 +99,8 @@ void UProjectHGameInstance::Init()
 	/* 지원되는 스크린 저장.*/
 }
 
-void UProjectHGameInstance::OpenLevelStart(FString LevelName)
+/* 오픈할 레벨 이름과 화면이 어두워지는 시퀀스를 사용할 것인지. */
+void UProjectHGameInstance::OpenLevelStart(FString LevelName, bool bPlaySequence)
 {
 	if (bOpeningLevel)
 		return;
@@ -118,25 +119,31 @@ void UProjectHGameInstance::OpenLevelStart(FString LevelName)
 	bOpeningLevel = true; /* 중복 방지 */
 	LevelPath = *LevelPathTemp;	
 
-	SequencePlayer = nullptr;
-	ALevelSequenceActor* LQActor;
-	if (OpenLevelSequence)
-		SequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(GetWorld(), OpenLevelSequence, FMovieSceneSequencePlaybackSettings(), LQActor);
-
-	float EndTime = 1.f;
-	if (SequencePlayer)
+	if (bPlaySequence)
 	{
-		SequencePlayer->Play();
-		EndTime = SequencePlayer->GetEndTime().AsSeconds();
+		SequencePlayer = nullptr;
+		ALevelSequenceActor* LQActor;
+		if (OpenLevelSequence)
+			SequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(GetWorld(), OpenLevelSequence, FMovieSceneSequencePlaybackSettings(), LQActor);
 
-		FTimerHandle Handle;
-		GetWorld()->GetTimerManager().SetTimer(Handle, this, &UProjectHGameInstance::OpenLevelSepuenceEnd, EndTime, false);
+		float EndTime = 1.f;
+		if (SequencePlayer)
+		{
+			SequencePlayer->Play();
+			EndTime = SequencePlayer->GetEndTime().AsSeconds();
+
+			FTimerHandle Handle;
+			GetWorld()->GetTimerManager().SetTimer(Handle, this, &UProjectHGameInstance::OpenLevelSepuenceEnd, EndTime, false);
+		}
+		else
+		{
+			/* 예외 */
+			OpenLevelSepuenceEnd();
+		}
 	}
 	else
-	{
-		/* 예외 */
 		OpenLevelSepuenceEnd();
-	}	
+		
 }
 
 void UProjectHGameInstance::OpenLevelSepuenceEnd()
@@ -163,7 +170,7 @@ void UProjectHGameInstance::LodeMap()
 	UGameplayStatics::OpenLevelBySoftObjectPtr(GetWorld(), LevelPath.Level, true);
 }
 
-void UProjectHGameInstance::PlaySequence(int32 SequenceNumber, APlayerControllerBase* Controller)
+APlaySequenceActor* UProjectHGameInstance::PlaySequence(int32 SequenceNumber, APlayerControllerBase* Controller)
 {
 	// PlaySequenceActor를 소환하면 해당 액터에 바인딩된 함수들이 실행될 것이다.
 	FSequenceActorTable* SAStruct = GetSequenceActor(SequenceNumber);
@@ -178,8 +185,12 @@ void UProjectHGameInstance::PlaySequence(int32 SequenceNumber, APlayerController
 				SA->PCBase = Controller;
 			}
 			SA->FinishSpawning(FTransform());
+
+			return SA;
 		}
 	}
+
+	return nullptr;
 }
 
 void UProjectHGameInstance::SetNPCPtr(FString Name, AQuestNPCBase* NPC)
@@ -191,9 +202,7 @@ void UProjectHGameInstance::SetNPCPtr(FString Name, AQuestNPCBase* NPC)
 AQuestNPCBase* UProjectHGameInstance::GetNPCPtr(FString NPCName)
 {
 	if (NPCAllPtr.Find(NPCName))
-	{
 		return NPCAllPtr[NPCName];
-	}
 	
 	return nullptr;
 }
@@ -220,15 +229,10 @@ void UProjectHGameInstance::SetNextQuest(int32 QuestNumber)
 {
 	FQuestStruct* Quest = QuestSave->GetQuests(QuestNumber);
 	if (!Quest)
-	{
-		_DEBUG("Null SetNextQuest");
 		return;
-	}
 
 	if (Quest->QuestSteps.Num() > 1)
-	{
 		Quest->QuestSteps.RemoveAt(0);
-	}
 
 	QuestSave->SaveSlot();
 }

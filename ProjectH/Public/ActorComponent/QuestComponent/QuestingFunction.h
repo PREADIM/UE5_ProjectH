@@ -28,6 +28,9 @@ public:
 		class AQuestNPCBase* OwnerNPC;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		class APlayerControllerBase* OwnerController;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		class UProjectHGameInstance* GI;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

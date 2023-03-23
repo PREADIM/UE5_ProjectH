@@ -2,6 +2,7 @@
 
 
 #include "PlayerControllerBase.h"
+#include "Kismet/KismetMathLibrary.h"
 
 
 
@@ -19,4 +20,14 @@ void APlayerControllerBase::MouseOff()
 {
 	SetShowMouseCursor(false);
 	SetInputMode(FInputModeGameOnly());
+}
+
+
+
+void APlayerControllerBase::DisableInputActor(bool bFlag)
+{
+	if (bFlag)
+		GetPawn()->DisableInput(this);
+	else
+		GetPawn()->EnableInput(this);
 }

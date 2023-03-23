@@ -182,33 +182,21 @@ void UMainQuestUI::MouseOff()
 bool UMainQuestUI::OtherUIOpen()
 {
 	if (Dialogue->GetRenderOpacity() > 0.2f)
-	{
-		_DEBUG("Dialogue Open true");
 		return true;
-	}
 
 	if (QuestList->GetRenderOpacity() > 0.2f)
-	{
-		_DEBUG("QuestList Open true");
 		return true;
-	}
+
 	if (ESCMenu->HelpMenu->IsInViewport())
-	{
 		return true;
-	}
+
 	if (ESCMenu->SettingCanvas->GetRenderOpacity() > 0.2f)
-	{
-		_DEBUG("ESCMenu Open true");
 		return true;
-	}
+
 	if (ESCMenu->OptionMenu->IsInViewport())
-	{
-		_DEBUG("OptionMenu Open true");
 		return true;
-	}
 
 
-	_DEBUG("Other UI Open false");
 	return false;
 }
 

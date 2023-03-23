@@ -493,8 +493,6 @@ void AARPGUnit::UsingAPFunction()
 
 void AARPGUnit::EndAPFunction()
 {
-	//_DEBUG("End UseAP");
-
 	bUseAP = false;
 	bUsingAP = false;
 	bChargeAttacking = false;
@@ -518,16 +516,11 @@ void AARPGUnit::Death()
 		DeathCamera->SetActive(true);
 	}
 
-	// 여기서 죽는 시네마틱 실행.
-	// 위젯도 실행.
-
-	if(!GI) // 없으면 바인딩
+	if(!GI) // 예외 처리
 		GI = Cast<UProjectHGameInstance>(UGameplayStatics::GetGameInstance(this));
 
 	if (GI)
-	{
 		GI->PlaySequence(999, OwnerController);
-	}
 	else
 	{
 		FTimerHandle DeathHandle;

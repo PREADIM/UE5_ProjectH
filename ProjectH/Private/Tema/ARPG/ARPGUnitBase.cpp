@@ -4,6 +4,7 @@
 #include "Tema/ARPG/ARPGUnitBase.h"
 #include "Components/WidgetComponent.h"
 #include "Tema/ARPG/Widget/ARPGWidget_BattleHP.h"
+#include "GameMode/ProjectHGameInstance.h"
 
 
 // Sets default values
@@ -28,6 +29,9 @@ AARPGUnitBase::AARPGUnitBase()
 void AARPGUnitBase::BeginPlay()
 {
 	Super::BeginPlay();
+
+	GI = Cast<UProjectHGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+
 	BattleHP = Cast<UARPGWidget_BattleHP>(BattleHPComponent->GetUserWidgetObject());
 	if (BattleHP)
 	{
@@ -122,6 +126,8 @@ void AARPGUnitBase::Death()
 		Destroy();		
 	}), 20.f, false);*/
 	// 죽었을때 삭제 함수는 일단 보류. 미로에서 길찾을때 표식용으로 사용가능
+
+	BPBindDeath();
 }
 
 void AARPGUnitBase::BattleHPWidgetHide()

@@ -31,11 +31,9 @@ protected:
 	virtual void BeginPlay();
 
 public:
-	/*----------------------------
-
-			virtual function
-
-	----------------------------*/
+	/*------------------------
+		virtual function
+	--------------------------*/
 	virtual void Tick(float DeltaSeconds);
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent);
 	virtual void TakeDamageAP(float Damage) {}
@@ -55,7 +53,6 @@ public:
 	virtual void Death();
 	//공격이 중단되거나 끝났을때 반드시 호출되어야할 함수들을 모아둔 것.
 	virtual void EndAttack() {}
-
 	virtual void SpecialAttackHitMontage() {} // 스페셜 어택을 당했을때 해당몽타주를 실행한다.
 
 public:
@@ -70,7 +67,6 @@ public:
 	bool CanUseAP(); // AP가 쓸수있나?
 
 
-
 	// 패링당할수 있는지 판단하는 함수. (내적으로 각도 계산 함수 필요).
 	bool ParringHitFunc(FVector TargetLocation);
 	//TargetCharacter와 this 캐릭터의 내적 연산. 위치 값과, 원하는 각도를 대입해서 bool로 받아옴.
@@ -78,22 +74,24 @@ public:
 
 	void BattleHPWidgetHide();
 public:
+	/*----------------
+		공통 변수
+	------------------*/
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		class UProjectHGameInstance* GI;
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		class AARPGGameMode* GM;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Widget)
 		class UWidgetComponent* BattleHPComponent;
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		class UARPGWidget_BattleHP* BattleHP;
-
 	UPROPERTY(VisibleAnywhere)
 		float MouseSensitivity;
 
-	/* 피지컬 머터리얼 사운드 */
+	/*-------------------------
+		피지컬 머터리얼 사운드
+	---------------------------*/
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TMap<TEnumAsByte<EPhysicalSurface>, FPhysicalSoundStruct> PhysicalAllSounds;
@@ -106,8 +104,17 @@ public:
 	// 사운드를 해당 표면에 맞춰서 설정해두고 애님블프에서 플레이 하도록 한다.
 	void SetPhysicalSound();
 
+	/*-----------------------------------------------------
+		죽고 무언가 실행해야할 때 BP에서 따로 바인드하는 함수
+	-------------------------------------------------------*/
 
-	//-----------공통 분모---------------
+	UFUNCTION(BlueprintImplementableEvent)
+		void BPBindDeath();
+
+	/*-----------------
+		공통 스탯 관련
+	-------------------*/
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FUnitState UnitState;
 
@@ -117,7 +124,10 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		float CurrentAP_DMG; // 추가 AP 데미지
 
-	//-------------------------------------------
+
+	/*---------------
+		상태 변수
+	-----------------*/
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		bool bSpecialAttackMode; // 해당 변수가 true면 무적이여야함.
@@ -168,7 +178,10 @@ public:
 		float BackSpeed;
 
 	//------------------------------------------
-	// Use AP 관련
+	
+	/*----------------
+		 AP 관련
+	------------------*/
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float BlockingDEF; // 해당 무기의 블록킹 할수 있는 계수. (방패는 100, 어떤무기는 80같은 느낌.)
@@ -196,7 +209,9 @@ public:
 	const float AttackAPWaitTime = 1.0f; // 1초간 대기
 	float CurrentWaitTime = 0.0f;
 
-	//-------------------------------------------
+	/*---------------
+		델리게이트
+	------------------*/
 
 	FOnUseAP OnUseAP; // AP를 사용할 때 호출할 델리게이트
 	FOnUsingAP OnUsingAP; // AP를 지속적으로 사용할 때 사용할 델리게이트

@@ -91,7 +91,6 @@ float AARPGEnermy_Mini::TakeDamageCalculator(AARPGWeapon* DamageWeapon, FDamageE
 
 float AARPGEnermy_Mini::DamageFunction(AARPGWeapon* DamageWeapon, FDamageEvent const& DamageEvent, AController* EventInstigator, AARPGUnitBase* DamageCauser)
 {
-	_DEBUG("Mini Damage");
 	float Damaged = DamageCauser->CalculDamage(DamageWeapon->WeaponDamage * DamageWeapon->Charge);
 	float CurrentHP = UnitState.HP;
 	bool bBlockingHit = false;

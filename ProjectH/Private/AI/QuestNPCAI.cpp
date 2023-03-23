@@ -27,12 +27,8 @@ void AQuestNPCAI::Interact_Implementation(class AProjectHCharacter* OwnerCharact
 	{
 		if (!OwnerController->MainQuestUI->bDialogueOpen())
 		{
-			_DEBUG("NPC Dial");
 			OwnerController->MainQuestUI->SetDialogueNPC(this);
 			OwnerController->MainQuestUI->OpenDialogue();
 		}
 	}
-
-	//QuestInfoOpen(0, Cast<AProjectH_PC>(OwnerCharacter->GetController()));
-	// 클릭할수있는 퀘스트가 여러개 일수도있으니 인덱스 번호와 , 컨트롤러 반환.
 }

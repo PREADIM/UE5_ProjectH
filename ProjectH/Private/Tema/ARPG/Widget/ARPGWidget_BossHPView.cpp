@@ -13,10 +13,7 @@ void UARPGWidget_BossHPView::Init(AARPGUnitBase* Unit)
 	LerpHPPercent = 1.f;
 
 	if (!OwnerUnit && !BossUnit)
-	{
-		_DEBUG("Boss HP Not OwnerUnit");
 		return;
-	}
 
 	// 어처피 데미지를 입는 수치는 같으므로 그냥 둘다 델리게이트에 실행
 	BossHP->SetPercent(1.f);

@@ -22,11 +22,16 @@ void AARPGPlayerController::OnPossess(APawn* InPawn)
 	if (OwnerUnit == nullptr)
 		return;
 
+	GI = Cast<UProjectHGameInstance>(UGameplayStatics::GetGameInstance(this));
+	if (GI)
+	{
+		MouseSensitivity = GI->MS;
+		SetNewMouseSensitivity();
+	}
+
 	GM = Cast<AARPGGameMode>(GetWorld()->GetAuthGameMode());
 	if (GM && OwnerUnit)
-	{
 		OwnerUnit->GM = GM;
-	}
 
 	if (BP_WidgetMain)
 	{
@@ -67,14 +72,6 @@ void AARPGPlayerController::SetNewMouseSensitivity()
 void AARPGPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
-
-	GI = Cast<UProjectHGameInstance>(UGameplayStatics::GetGameInstance(this));
-	if (GI)
-	{
-		MouseSensitivity = GI->MS;
-		SetNewMouseSensitivity();
-	}
-
 	SetPlaySound(NormalSound);
 }
 
@@ -145,13 +142,11 @@ void AARPGPlayerController::SetPlaySound(USoundBase* Sound)
 
 	if (!Sound)
 	{
-		// nullptr일 경우 기본 음악 재생
-		AudioComponent->SetSound(NormalSound);
-	}	
-	else
-	{
-		AudioComponent->SetSound(Sound);
+		StopSound();
+		return;
 	}
+	else
+		AudioComponent->SetSound(Sound);
 
 	AudioComponent->Play();
 }
@@ -170,13 +165,13 @@ void AARPGPlayerController::BindVisibleWidget()
 {
 	if (WidgetMain)
 	{
-		if(WidgetMain->GetRenderOpacity() >= 0.5f)
+		if(WidgetMain->GetRenderOpacity() <= 0.1f)
 			WidgetMain->SetRenderOpacity(1.0f);
 	}
 
 	if (WidgetBossHP)
 	{
-		if (WidgetBossHP->GetRenderOpacity() >= 0.5f)
+		if (WidgetBossHP->GetRenderOpacity() <= 0.1f)
 			WidgetBossHP->SetRenderOpacity(1.0f);
 	}
 }

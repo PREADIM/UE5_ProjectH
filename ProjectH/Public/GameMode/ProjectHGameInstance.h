@@ -75,7 +75,7 @@ public:
 			Open Level
 	-------------------------*/
 	UFUNCTION(BlueprintCallable)
-		void OpenLevelStart(FString Levelname);
+		void OpenLevelStart(FString Levelname, bool bPlaySequence);
 
 	void OpenLevelSepuenceEnd();
 
@@ -96,7 +96,7 @@ public:
 			Sequence Actor
 	------------------------------*/
 	UFUNCTION(BlueprintCallable)
-		void PlaySequence(int32 SequenceNumber, class APlayerControllerBase* Controller);
+		class APlaySequenceActor* PlaySequence(int32 SequenceNumber, class APlayerControllerBase* Controller);
 
 
 	/*-------------------

@@ -33,8 +33,10 @@ public:
 		void AnimNotify_Disable();
 	UFUNCTION()
 		void AnimNotify_Enable();
+	UFUNCTION()
+		void AnimNotify_WalkSound();
 
-
+	void FootStepPlaySound(int32 SoundNum);
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
