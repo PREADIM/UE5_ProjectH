@@ -172,3 +172,8 @@ void UJRPGTemaUI::PlayPriority()
 {
 	BattleWidget->PlayPriority();
 }
+
+void UJRPGTemaUI::BuffSetupPrioirtyList(AJRPGUnit* Unit)
+{
+	BattleWidget->PrioirtyBuffSetup(Unit);
+}

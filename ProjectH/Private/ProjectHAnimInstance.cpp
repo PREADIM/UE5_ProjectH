@@ -66,7 +66,6 @@ void UProjectHAnimInstance::AnimNotify_Enable()
 void UProjectHAnimInstance::FootStepPlaySound(int32 SoundNum)
 {
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), OwnerCharacter->PhysicalSounds.Sounds[SoundNum], OwnerCharacter->GetMesh()->GetSocketLocation(FName("Root")), 1.f, 1.f, 1.f, OwnerCharacter->PhysicalSounds.Attenuation);
-	_DEBUG("Walk");
 }
 
 void UProjectHAnimInstance::AnimNotify_WalkSound()

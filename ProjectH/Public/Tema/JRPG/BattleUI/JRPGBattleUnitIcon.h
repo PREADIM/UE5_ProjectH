@@ -33,8 +33,11 @@ public:
 	UPROPERTY()
 		TArray<class UJRPGBuffWidget*> BuffWidgets;
 
+	UPROPERTY()
+		class AJRPGUnit* Unit;
+
 public:
-	void SetDebuffIcon(TSet<FDebuffStruct> DebuffSet);
+	void SetDebuffIcon();
 	void Init(class UTexture2D* CharTex, FString CharName);
 	void PlayInitAnim();
 	void PlayCurrentAnim();

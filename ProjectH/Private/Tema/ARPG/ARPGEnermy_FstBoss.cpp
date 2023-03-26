@@ -277,9 +277,7 @@ void AARPGEnermy_FstBoss::DeathReset()
 	WeaponOverlapEnd(3);
 	AttackEnd();
 	if (PlayerUnit)
-	{
 		PlayerUnit->SetBossHPWidget(false, this);
-	}
 }
 
 void AARPGEnermy_FstBoss::AttackEnd()

@@ -531,6 +531,11 @@ void AJRPGPlayerController::EnermySetupLockOnTargetUnit(AJRPGUnit* Target)
 	TargetUnit = Target;
 }
 
+void AJRPGPlayerController::BattleIconBuffSetup(class AJRPGUnit* Unit)
+{
+	TemaMainUI->BuffSetupPrioirtyList(Unit);
+}
+
 
 void AJRPGPlayerController::TargetToRotation()
 {

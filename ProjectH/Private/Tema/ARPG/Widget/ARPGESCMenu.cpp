@@ -1,6 +1,7 @@
 
 #include "Tema/ARPG/Widget/ARPGESCMenu.h"
 #include "PlayerControllerBase.h"
+#include "Kismet/GameplayStatics.h"
 #include "Components/Button.h"
 #include "UI/OptionMenu.h"
 
@@ -28,11 +29,14 @@ void UARPGESCMenu::Init(class AARPGUnitBase* Unit)
 
 void UARPGESCMenu::ResomeFunc()
 {
+	UGameplayStatics::PlaySound2D(GetWorld(), ClickSound);
 	PlayESCAnim(true);
 }
 
 void UARPGESCMenu::OptionFunc()
 {
+	UGameplayStatics::PlaySound2D(GetWorld(), ClickSound);
+
 	if (OptionMenu)
 	{
 		RemoveFromParent();
@@ -44,6 +48,8 @@ void UARPGESCMenu::OptionFunc()
 
 void UARPGESCMenu::QuitTema()
 {
+	UGameplayStatics::PlaySound2D(GetWorld(), ClickSound);
+
 	RemoveFromParent();
 	bESCMenuOpen = false;
 
@@ -54,13 +60,21 @@ void UARPGESCMenu::QuitTema()
 
 void UARPGESCMenu::ESCClick()
 {
+	UGameplayStatics::PlaySound2D(GetWorld(), ClickSound);
+
+	if (QuitWidget->IsInViewport())
+	{
+		OwnerController->MouseOff();
+		QuitWidget->RemoveFromParent();
+		return;
+	}
+
 	if (OptionMenu->IsInViewport())
 	{
 		OwnerController->MouseOff();
 		OptionMenu->OptionAnimation(true);
 		return;
 	}
-
 
 	if (!IsPlayingAnimation())
 		PlayESCAnim(bESCMenuOpen);
@@ -76,7 +90,7 @@ void UARPGESCMenu::PlayESCAnim(bool bFlag)
 		OwnerController->MouseOff();
 		bESCMenuOpen = false;
 		FTimerHandle Handle;
-		GetWorld()->GetTimerManager().SetTimer(Handle, this, &UARPGESCMenu::ESCRemove, ESCAnim->GetEndTime(), false);
+		GetWorld()->GetTimerManager().SetTimer(Handle, this, &UARPGESCMenu::ESCMunuRemove, ESCAnim->GetEndTime(), false);
 	}
 	else
 	{
@@ -87,8 +101,10 @@ void UARPGESCMenu::PlayESCAnim(bool bFlag)
 }
 
 
-void UARPGESCMenu::ESCRemove()
+void UARPGESCMenu::ESCMunuRemove()
 {
+	UGameplayStatics::PlaySound2D(GetWorld(), ClickSound);
+
 	if (IsInViewport())
 		RemoveFromParent();		
 }
@@ -96,6 +112,8 @@ void UARPGESCMenu::ESCRemove()
 
 void UARPGESCMenu::OptionPrevButton()
 {
+	UGameplayStatics::PlaySound2D(GetWorld(), ClickSound);
+
 	OptionMenu->OptionAnimation(true);
 	PlayESCAnim(false);
 }

@@ -5,17 +5,18 @@
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "Components/Wrapbox.h"
+#include "Tema/JRPG/JRPGUnit.h"
 #include "Tema/JRPG/BattleUI/JRPGBuffWidget.h"
 
 
-void UJRPGBattleUnitIcon::SetDebuffIcon(TSet<FDebuffStruct> DebuffSet)
+void UJRPGBattleUnitIcon::SetDebuffIcon()
 {
-	if (!BP_BuffWidget)
+	if (!BP_BuffWidget || !Unit)
 		return;
 		
 	BuffWidgets.Empty();
 	BuffIconWrapBox->ClearChildren();
-	for (FDebuffStruct DebuffStruct : DebuffSet)
+	for (FDebuffStruct DebuffStruct : Unit->DebuffSet)
 	{
 		UJRPGBuffWidget* BuffWidget = CreateWidget<UJRPGBuffWidget>(GetWorld(), BP_BuffWidget);
 		if (BuffWidget)

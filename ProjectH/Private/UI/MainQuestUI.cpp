@@ -77,9 +77,7 @@ bool UMainQuestUI::OpenUI(bool IsOpen)
 void UMainQuestUI::OpenInfoUI(FNPCQuest NPCQuest, int32 QuestIndex)
 {
 	if (QuestInfo->GetRenderOpacity() > 0.2f)
-	{
 		return;
-	}
 	else
 	{
 		QuestInfo->QuestIndex = QuestIndex;

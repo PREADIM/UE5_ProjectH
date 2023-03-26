@@ -10,6 +10,8 @@
 /**
  * 
  */
+
+
 UCLASS(Meta = (DisableNativeTick))
 class PROJECTH_API UJRPGPriority : public UCustomWidget
 {
@@ -27,6 +29,8 @@ public:
 
 	UPROPERTY()
 		TArray<class UJRPGBattleUnitIcon*> Icons;
+	UPROPERTY()
+		TMap<int32, int32> UnitIconIndexs;
 
 	int32 cnt;
 
@@ -38,5 +42,6 @@ public:
 	void SetUnitList();
 	void PlayCurrentUnit();
 	void PlayTurnStart();
+	void SetupBuffIcon(int32 CharNum);
 	
 };

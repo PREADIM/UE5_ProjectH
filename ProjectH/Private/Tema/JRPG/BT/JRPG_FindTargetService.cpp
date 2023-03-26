@@ -28,7 +28,7 @@ void UJRPG_FindTargetService::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 		return;
 
 	TArray<AActor*> OutActors;
-	bool bFind = UKismetSystemLibrary::SphereOverlapActors(World, OwnerEnermy->GetActorLocation(), 700.f, ObjectTypes, nullptr, IgnoreActors, OutActors);
+	bool bFind = UKismetSystemLibrary::SphereOverlapActors(World, OwnerEnermy->GetActorLocation(), 1000.f, ObjectTypes, nullptr, IgnoreActors, OutActors);
 	if (bFind)
 	{
 		for (AActor* Actor : OutActors)

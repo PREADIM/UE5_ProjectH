@@ -111,6 +111,8 @@ void UJRPGSettingPartySlot::SetVisibilitySelectButton(bool bFlag)
 
 void UJRPGSettingPartySlot::ExitWidget()
 {
+	UGameplayStatics::PlaySound2D(GetWorld(), ClickSound);
+
 	if (OwnerField)
 	{	
 		if (HoveredWidget)
@@ -121,6 +123,7 @@ void UJRPGSettingPartySlot::ExitWidget()
 				HoveredWidget = nullptr;
 			}
 		}
+
 		RemoveFromParent();
 		OwnerField->ResomeUI();
 	}
@@ -128,6 +131,7 @@ void UJRPGSettingPartySlot::ExitWidget()
 
 void UJRPGSettingPartySlot::SetPartyOut()
 {
+	UGameplayStatics::PlaySound2D(GetWorld(), ClickSound);
 	OwnerController->CurrentParty.RemoveAt(SelectFieldNumber);
 	// 현재 선택된 칸 해제.
 	ExitWidget();
@@ -137,6 +141,8 @@ void UJRPGSettingPartySlot::SetPartyOut()
 
 void UJRPGSettingPartySlot::SetPartyChange()
 {
+	UGameplayStatics::PlaySound2D(GetWorld(), ClickSound);
+
 	for (int32 i = 0; i < OwnerController->CurrentParty.Num(); i++)
 	{
 		if (OwnerController->CurrentParty[i] == SetCharNum)

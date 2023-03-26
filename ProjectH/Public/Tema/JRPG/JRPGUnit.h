@@ -188,7 +188,7 @@ public:
 		void TargetAttack(float ATK, TSubclassOf<class UDebuffClass> BP_DebuffClass = nullptr); // 하나만 때린다.
 	UFUNCTION(BlueprintCallable)
 		void TargetManyAttack(float ATK, TSubclassOf<class UDebuffClass> BP_DebuffClass = nullptr); // 여러 마리를 때린다.
-
+	void BattleIconBuffSetup();
 
 
 public:

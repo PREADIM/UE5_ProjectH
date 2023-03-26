@@ -54,17 +54,17 @@ public:
 	/*-----------------
 		Public Value
 	-----------------*/
-	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	UPROPERTY(meta = (BindWidget))
 		class UQuestList* QuestList;
-	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	UPROPERTY(meta = (BindWidget))
 		class UQuestInfo* QuestInfo;
-	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	UPROPERTY(meta = (BindWidget))
 		class UQuestSucceedInfo* QuestSucceedInfo;
-	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	UPROPERTY(meta = (BindWidget))
 		class UESCMenu* ESCMenu;
-	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	UPROPERTY(meta = (BindWidget))
 		class UDialogueWidget* Dialogue;
-	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	UPROPERTY(meta = (BindWidget))
 		class UInteractWidget* InteractWidget;
 
 

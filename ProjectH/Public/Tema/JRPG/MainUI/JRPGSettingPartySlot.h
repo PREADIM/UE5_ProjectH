@@ -40,11 +40,20 @@ public:
 
 	UPROPERTY()
 		class APartySettingField* OwnerField;
-	UPROPERTY()
-		class UPartyHoveredWidget* HoveredWidget;
+
 	// 이 위젯은 JRPGSettingPartyIcon에서 호버됐을때 캐릭터의 디테일을 보여주는 용도이지만,
 	// 마우스가 호버되는 위치에따라 해당 아이콘또한 움직이기 위해서 호버되자마자 위젯을 가져와서
 	// 해당 위젯의 위치를 Tick으로 움직인다.
+	UPROPERTY()
+		class UPartyHoveredWidget* HoveredWidget;
+	
+	
+	/*-------------------
+		Widget Sound
+	---------------------*/
+
+	UPROPERTY(EditAnywhere)
+		class USoundBase* ClickSound;
 
 public:
 	virtual void NativeTick(const FGeometry& MyGeometry, const float InDeltaTime) override;

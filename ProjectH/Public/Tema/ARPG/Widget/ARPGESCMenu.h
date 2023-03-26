@@ -39,6 +39,13 @@ public:
 
 	bool bESCMenuOpen = false;
 
+	/*----------------------
+		Widget Sound
+	------------------------*/
+
+	UPROPERTY(EditAnywhere)
+		class USoundBase* ClickSound;
+
 public:
 	virtual void Init(class AARPGUnitBase* Unit) override;
 
@@ -52,7 +59,7 @@ public:
 	UFUNCTION()
 		void QuitTema();
 	UFUNCTION()
-		void ESCRemove();
+		void ESCMunuRemove();
 
 	UFUNCTION()
 		void OptionPrevButton();

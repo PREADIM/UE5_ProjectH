@@ -192,9 +192,15 @@ FReply UDialogueWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, con
 	if (InMouseEvent.IsMouseButtonDown(EKeys::LeftMouseButton) == true)
 	{
 		if (!NormalDialogue.IsEmpty() && NormalDialogue.Num() > DialIndex)
+		{
 			SetNormalDialText(DialIndex + 1);
+			UGameplayStatics::PlaySound2D(GetWorld(), DialougeSound);
+		}
 		else if (!SelectText.IsEmpty() && SelectText.Num() > SelectTextIndex)
-			SetSelectDial(SelectTextIndex + 1);	
+		{
+			SetSelectDial(SelectTextIndex + 1);
+			UGameplayStatics::PlaySound2D(GetWorld(), DialougeSound);
+		}
 	}
 
 	return reply.NativeReply;

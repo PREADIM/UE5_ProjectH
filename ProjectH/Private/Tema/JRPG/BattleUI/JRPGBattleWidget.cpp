@@ -78,7 +78,6 @@ void UJRPGBattleWidget::SetUnitList()
 	JRPGPriorityList->SetUnitList();
 }
 
-
 void UJRPGBattleWidget::EnermyListInit()
 {
 	if (BP_EnermyIcon && GM)
@@ -104,6 +103,13 @@ void UJRPGBattleWidget::EnermyListInit()
 		Buttons[TargetNumber]->TargetLockOn();
 	}
 }
+
+
+void UJRPGBattleWidget::PrioirtyBuffSetup(AJRPGUnit* Unit)
+{
+	JRPGPriorityList->SetupBuffIcon(Unit->CharNum);
+}
+
 
 void UJRPGBattleWidget::SetVisible(bool bFlag)
 {

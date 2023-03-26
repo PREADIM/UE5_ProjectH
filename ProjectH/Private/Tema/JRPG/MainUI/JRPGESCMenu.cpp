@@ -7,6 +7,7 @@
 #include "Tema/JRPG/MainUI/JRPGMainWidget.h"
 #include "Components/Button.h"
 #include "Tema/JRPG/CustomWidget.h"
+#include "Kismet/GameplayStatics.h"
 #include "Tema/JRPG/MainUI/PartySettingField.h"
 
 void UJRPGESCMenu::Init()
@@ -14,6 +15,7 @@ void UJRPGESCMenu::Init()
 	Resome->OnClicked.AddDynamic(this, &UJRPGESCMenu::ResomeFunc);
 	PartySetting->OnClicked.AddDynamic(this, &UJRPGESCMenu::PartySet);
 	Quit->OnClicked.AddDynamic(this, &UJRPGESCMenu::QuitTema);
+
 }
 
 
@@ -29,17 +31,21 @@ void UJRPGESCMenu::PartySet()
 
 void UJRPGESCMenu::SetCloseFunction()
 {
+	UGameplayStatics::PlaySound2D(GetWorld(), ClickSound);
 	OwnerMainUI->ReverseESC();
 }
 
 
 void UJRPGESCMenu::ResomeFunc()
 {
+	UGameplayStatics::PlaySound2D(GetWorld(), ClickSound);
 	OwnerMainUI->ReverseESC();
 }
 
 void UJRPGESCMenu::SpawnPartyField()
 {
+	UGameplayStatics::PlaySound2D(GetWorld(), ClickSound);
+
 	if (BP_PartyField)
 	{
 		FActorSpawnParameters SpawnParameters;
@@ -51,7 +57,7 @@ void UJRPGESCMenu::SpawnPartyField()
 			PartyField->Init(OwnerMainUI);
 			OwnerController->OnPossess(Cast<APawn>(PartyField));
 			OwnerController->MouseOn();
-			OwnerMainUI->SetVisibility(ESlateVisibility::Hidden);
+			OwnerMainUI->SetVisibility(ESlateVisibility::Hidden);		
 		}
 	}
 }
@@ -59,11 +65,14 @@ void UJRPGESCMenu::SpawnPartyField()
 // 테마 나가기.
 void UJRPGESCMenu::QuitTema()
 {
+	UGameplayStatics::PlaySound2D(GetWorld(), ClickSound);
+
 	if (OwnerMainUI && BP_QuitWidget)
 	{	
 		QuitWidget = CreateWidget<UUserWidget>(GetWorld(), BP_QuitWidget);
 		if (QuitWidget)
 		{
+
 			OwnerMainUI->ReverseESC();
 			OwnerController->MouseOn();
 			QuitWidget->AddToViewport();

@@ -111,6 +111,11 @@ public:
 
 	void EnermySetupLockOnTargetUnit(class AJRPGUnit* Target); //적이 가리키는 나의 유닛에 락온이 가게 한다.
 
+	/*--------------------
+		버프 아이콘 셋업
+	---------------------*/
+	void BattleIconBuffSetup(class AJRPGUnit* Unit);
+
 public:
 	UPROPERTY(VisibleAnywhere)
 		class AJRPGGameMode* GM;

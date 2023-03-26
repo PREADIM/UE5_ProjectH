@@ -32,13 +32,14 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TSubclassOf<class UUserWidget> BP_QuitWidget;
-	//UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	UPROPERTY()
 		class UUserWidget* QuitWidget;
 	UPROPERTY()
 		class UJRPGMainWidget* OwnerMainUI;
 
 
+	UPROPERTY(EditAnywhere)
+		class USoundBase* ClickSound;
 
 public:
 	virtual void SetCloseFunction() override;

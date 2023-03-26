@@ -8,8 +8,6 @@
 #include "Tema/JRPG/JRPGUnit.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
 
-
-
 void UJRPGSkillButton::Init()
 {
 	if (GM)
@@ -29,6 +27,17 @@ void UJRPGSkillButton::Init()
 			break;
 		}
 	}
+}
+
+
+
+void UJRPGSkillButton::SetButton(UTexture2D* Tex)
+{
+	FSlateBrush Icon;
+	Icon = UWidgetBlueprintLibrary::MakeBrushFromTexture(Tex);
+	ButtonSetImage(Icon);
+	if (!SkillButton->OnClicked.IsBound())
+		SkillButton->OnClicked.AddDynamic(this, &UJRPGSkillButton::UseSkill);
 }
 
 void UJRPGSkillButton::UseSkill()
@@ -83,13 +92,3 @@ void UJRPGSkillButton::SkillSetActive()
 		
 }
 
-void UJRPGSkillButton::SetButton(UTexture2D* Tex)
-{
-	FSlateBrush Icon;
-	Icon = UWidgetBlueprintLibrary::MakeBrushFromTexture(Tex);
-	ButtonSetImage(Icon);
-	if (!SkillButton->OnClicked.IsBound())
-	{
-		SkillButton->OnClicked.AddDynamic(this, &UJRPGSkillButton::UseSkill);
-	}
-}

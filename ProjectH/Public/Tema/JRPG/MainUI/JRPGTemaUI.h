@@ -48,8 +48,6 @@ public:
 	void PlayBattleWidget();
 	void BattleTurnStart(bool bFlag);
 
-
-	//-------------------------------
 	/*---------------------------------------------
 		PlayerController->BattlWidget의 인터페이스
 	-----------------------------------------------*/
@@ -60,5 +58,9 @@ public:
 	void HiddenLockOn();
 	void BattleUIOnOff(bool bOnOff);
 	void PlayPriority();
+
+	/* 버프아이콘을 해당 캐릭터 PriorityList에서 아이콘을 셋업 해준다.*/
+	void BuffSetupPrioirtyList(class AJRPGUnit* Unit);
+
 
 };

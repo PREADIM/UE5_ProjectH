@@ -16,13 +16,13 @@ class PROJECTH_API UDialogueWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 		class UTextBlock* NameText;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 		class UTextBlock* DialText;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 		class UButton* Exit;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 		class UVerticalBox* SelectBox;
 
 
@@ -50,7 +50,8 @@ public:
 	int32 SelectTextIndex = 0;
 
 
-
+	UPROPERTY(EditAnywhere)
+		class USoundBase* DialougeSound;
 
 public:
 	void NPCDialogue();

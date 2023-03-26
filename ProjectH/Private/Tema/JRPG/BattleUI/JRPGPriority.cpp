@@ -16,6 +16,7 @@ void UJRPGPriority::PlayInit()
 		Units = GM->SetUnitList;
 		UnitList->ClearChildren();
 		Icons.Empty();
+		UnitIconIndexs.Empty();
 		cnt = 0;
 
 		GetWorld()->GetTimerManager().SetTimer(TimerHandle, FTimerDelegate::CreateLambda([&]()
@@ -31,12 +32,14 @@ void UJRPGPriority::PlayInit()
 
 						if (UnitUI)
 						{
-							Icon->SetDebuffIcon(Unit.Unit->DebuffSet);
+							Icon->Unit = Unit.Unit;
+							Icon->SetDebuffIcon();
+							//Icon->SetDebuffIcon(Unit.Unit->DebuffSet);
 							Icon->Init(UnitUI->CharTex, UnitUI->CharName);
 							Icon->SetPadding(FMargin(0.f, 0.f, 0.f, 5.f));
 							UnitList->AddChild(Icon);
-							Icons.Add(Icon);
-
+							Icons.Emplace(Icon);
+							UnitIconIndexs.Emplace(Unit.Unit->CharNum, cnt);
 							++cnt;
 						}
 					}
@@ -60,6 +63,7 @@ void UJRPGPriority::SetUnitList()
 	Units = GM->SetUnitList;
 	UnitList->ClearChildren();
 	Icons.Empty();
+	UnitIconIndexs.Empty();
 
 	for(cnt = 0; cnt < Units.Num(); cnt++)
 	{
@@ -72,11 +76,13 @@ void UJRPGPriority::SetUnitList()
 
 			if (UnitUI)
 			{
-				Icon->SetDebuffIcon(Unit.Unit->DebuffSet);
+				Icon->Unit = Unit.Unit;
+				Icon->SetDebuffIcon();
 				Icon->Init(UnitUI->CharTex, UnitUI->CharName);
 				Icon->SetPadding(FMargin(0.f, 0.f, 0.f, 5.f));
 				UnitList->AddChild(Icon);
-				Icons.Add(Icon);
+				Icons.Emplace(Icon);
+				UnitIconIndexs.Emplace(Unit.Unit->CharNum, cnt);
 			}
 		}
 	}
@@ -101,4 +107,10 @@ void UJRPGPriority::PlayCurrentUnit()
 }
 
 
-
+void UJRPGPriority::SetupBuffIcon(int32 CharNum)
+{
+	if (UnitIconIndexs.Find(CharNum))
+	{
+		Icons[UnitIconIndexs[CharNum]]->SetDebuffIcon();
+	}
+}

@@ -256,13 +256,9 @@ void UARPG_FstBossAnimInstance::AnimNotify_Death()
 	FstBoss->DeathCollsionEnabled();
 
 	if (DeathEffect)
-	{
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), DeathEffect, FstBoss->GetActorTransform());
-	}
-	FstBoss->Destroy();
 
-
-	// 추후에 여기서 몇초 뒤에 게임 맵을 탈출하는 로직을 짜자.
+	FstBoss->SetActorHiddenInGame(true);
 }
 
 

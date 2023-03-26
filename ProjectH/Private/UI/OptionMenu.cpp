@@ -176,7 +176,6 @@ void UOptionMenu::SetINI()
 		{
 			Controller->MouseSensitivity = ControllerMS;
 			Controller->SetNewMouseSensitivity();
-			_DEBUG("%f", ControllerMS);
 		}
 	}
 

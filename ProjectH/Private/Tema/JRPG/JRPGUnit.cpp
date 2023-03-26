@@ -247,6 +247,9 @@ void AJRPGUnit::TargetAttack(float ATK, TSubclassOf<UDebuffClass> BP_DebuffClass
 					OwnerController->TargetUnit->DebuffSet.Emplace(DebuffStruct);
 					DebuffClass->DebuffFunction(OwnerController->TargetUnit);
 					OwnerController->TargetUnit->BattleHPWidget->SetBuffIcon();
+					OwnerController->TargetUnit->BattleIconBuffSetup();
+					
+					// 여기서 유닛리스트도 버프를 바꾸자.
 				}
 			}
 		}
@@ -273,6 +276,7 @@ void AJRPGUnit::TargetManyAttack(float ATK, TSubclassOf<UDebuffClass> BP_DebuffC
 						Unit->DebuffSet.Emplace(DebuffStruct);
 						DebuffClass->DebuffFunction(Unit);
 						Unit->BattleHPWidget->SetBuffIcon();
+						Unit->BattleIconBuffSetup();
 					}
 				}
 			}
@@ -280,6 +284,12 @@ void AJRPGUnit::TargetManyAttack(float ATK, TSubclassOf<UDebuffClass> BP_DebuffC
 			Unit->TakeDamageCalculator(ATK);
 		}
 	}
+
+}
+
+void AJRPGUnit::BattleIconBuffSetup()
+{
+	OwnerController->BattleIconBuffSetup(this);
 
 }
 

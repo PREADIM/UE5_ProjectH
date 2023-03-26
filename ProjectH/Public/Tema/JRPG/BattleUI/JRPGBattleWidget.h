@@ -83,6 +83,7 @@ public:
 			배틀 시 유동적인 위젯 설정
 	-------------------------------------*/
 
+	void PrioirtyBuffSetup(class AJRPGUnit* Unit);
 	void SetVisible(bool bFlag);
 	void SkillAndListButtonHidden(bool bFlag); // 적 차례시 위젯 단순화
 
