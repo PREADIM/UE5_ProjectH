@@ -22,6 +22,7 @@ public:
 	int32 GetShadowQ() const { return TextureQ; }
 	int32 GetTextureQ() const { return ShadowQ; }
 	float GetMouseSensitivity() const { return MouseSensitivity; }
+	float GetMaster() const { return MasterSound; }
 
 public:
 	UPROPERTY(Config)
@@ -34,11 +35,6 @@ public:
 		int32 TextureQ;
 	UPROPERTY(Config)
 		float MouseSensitivity;
-	
-	/*UPROPERTY(Config)
-		int temp;
 	UPROPERTY(Config)
-		int num;*/
-
-
+		float MasterSound;
 };

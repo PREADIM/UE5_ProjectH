@@ -282,7 +282,9 @@ void UARPG_FstBossAnimInstance::AnimNotify_CanLockOn()
 
 void UARPG_FstBossAnimInstance::AnimNotify_FstBoss_Teleport()
 {
-	FstBoss->GetMesh()->SetOnlyOwnerSee(true);	
+	FstBoss->GetMesh()->SetOnlyOwnerSee(true);
+	FstBoss->GetMesh()->SetCastShadow(false);
+
 }
 
 
@@ -290,6 +292,7 @@ void UARPG_FstBossAnimInstance::AnimNotify_FstBoss_TeleportEnd()
 {
 
 	FstBoss->GetMesh()->SetOnlyOwnerSee(false);
+	FstBoss->GetMesh()->SetCastShadow(true);
 
 	if (FstBoss->PlayerUnit)
 	{

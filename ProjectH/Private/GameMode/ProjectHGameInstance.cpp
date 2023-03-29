@@ -13,6 +13,7 @@
 #include "Special/PlaySequenceActor.h"
 #include <LevelSequencePlayer.h>
 #include <LevelSequenceActor.h>
+#include "UI/Custom/LoadingScreenWidget.h"
 
 FCanQuestNums::FCanQuestNums()
 {
@@ -119,6 +120,11 @@ void UProjectHGameInstance::OpenLevelStart(FString LevelName, bool bPlaySequence
 	bOpeningLevel = true; /* 중복 방지 */
 	LevelPath = *LevelPathTemp;	
 
+	if(!LoadingScreen)
+		LoadingScreen = CreateWidget<ULoadingScreenWidget>(GetWorld(), BP_LoadingScreen);
+
+	LoadingScreen->SetScreenImage(LevelName);
+	
 	if (bPlaySequence)
 	{
 		SequencePlayer = nullptr;
@@ -148,9 +154,8 @@ void UProjectHGameInstance::OpenLevelStart(FString LevelName, bool bPlaySequence
 
 void UProjectHGameInstance::OpenLevelSepuenceEnd()
 {
-	UUserWidget* LoadingScreen = CreateWidget<UUserWidget>(GetWorld(), BP_LoadingScreen);
-	LoadingScreen->AddToViewport();
 
+	LoadingScreen->AddToViewport();
 	LoadPackageAsync(LevelPath.Level.ToSoftObjectPath().ToString(), FLoadPackageAsyncDelegate::CreateLambda([=](const FName& PackageName, UPackage* Package, EAsyncLoadingResult::Type Result)
 		{
 			if (Result == EAsyncLoadingResult::Succeeded)

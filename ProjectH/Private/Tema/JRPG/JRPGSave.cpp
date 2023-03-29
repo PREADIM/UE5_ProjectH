@@ -40,12 +40,12 @@ void UJRPGSave::FirstSave()
 	JRPGSerial.RepreCharacterNum = 101;
 
 	JRPGSerial.CurrentParty.Add(101); // 현재 등록한 파티의 정보.
-	JRPGSerial.CurrentParty.Add(102);
-	JRPGSerial.CurrentParty.Add(103);
+	//JRPGSerial.CurrentParty.Add(102);
+	//JRPGSerial.CurrentParty.Add(103);
 
 	JRPGSerial.SetCharNum(101); // 가지고있는 캐릭터와, 스텟 저장
-	JRPGSerial.SetCharNum(102);
-	JRPGSerial.SetCharNum(103);
+	//JRPGSerial.SetCharNum(102);
+	//JRPGSerial.SetCharNum(103);
 
 	JRPGSerial.CurrentFieldNum = 1;
 
@@ -63,12 +63,11 @@ void UJRPGSave::SetLoadCharacter(AJRPGPlayerController* OwnerController)
 	OwnerController->HaveCharLevels = JRPGSerial.HaveCharLevels;
 	OwnerController->CharStats = JRPGSerial.CharStats;
 
-	//OwnerController->NextExp = JRPGSerial.NextExp;
 	OwnerController->CurrentExp = JRPGSerial.CurrentExp;
 
-	// ★★★ NextExp와 CharStats은 세이브를 하지않고, 게임 시작시 데이터 테이블에서 가져온 스탯값으로 저장한다.
+	// ★ CharStats은 세이브를 하지않고, 게임 시작시 데이터 테이블에서 가져온 스탯값으로 저장한다.
 	// 추후 값이 변경 되는 것을 우려해야하기 때문. 이미 저장되어있으면 데이터가 이상해진다.
-	// ★★ 하지만 어처피 Add를 통해 키값을 저장해야하는 것을 해야하므로 세이브 자체는 해둔다. (키값때문에 저장.)
+	// ★ 하지만 어처피 Add를 통해 키값을 저장해야하는 것을 해야하므로 세이브 자체는 해둔다. (키값때문에 저장.)
 }
 
 
@@ -90,13 +89,9 @@ void UJRPGSave::SetSave(class AJRPGPlayerController* OwnerController)
 void UJRPGSave::SetFieldEnermy(class AJRPGFieldEnermy* FieldEnermy, int32 KillCnt)
 {
 	if (JRPGFieldEnermySave.FieldEnermyIsLive.Find(FieldEnermy->FieldEnermyNumber))
-	{
 		JRPGFieldEnermySave.FieldEnermyIsLive[FieldEnermy->FieldEnermyNumber] = FieldEnermy->bDead;
-	}
 	else
-	{
 		JRPGFieldEnermySave.FieldEnermyIsLive.Add(FieldEnermy->FieldEnermyNumber, FieldEnermy->bDead);
-	}
 
 	JRPGFieldEnermySave.KillCnt = KillCnt;
 	SaveSlot();
@@ -106,9 +101,7 @@ void UJRPGSave::SetFieldEnermy(class AJRPGFieldEnermy* FieldEnermy, int32 KillCn
 bool UJRPGSave::GetFieldEnermy(int32 FieldEnermyNum)
 {
 	if (JRPGFieldEnermySave.FieldEnermyIsLive.Find(FieldEnermyNum))
-	{
 		return JRPGFieldEnermySave.FieldEnermyIsLive[FieldEnermyNum];
-	}
 	else
 	{
 		JRPGFieldEnermySave.FieldEnermyIsLive.Add(FieldEnermyNum, false);

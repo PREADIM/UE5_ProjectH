@@ -86,7 +86,10 @@ public:
 	FLevelPath LevelPath;
 
 	UPROPERTY(EditAnywhere)
-		TSubclassOf<class UUserWidget> BP_LoadingScreen;
+		TSubclassOf<class ULoadingScreenWidget> BP_LoadingScreen;
+	UPROPERTY()
+		class ULoadingScreenWidget* LoadingScreen;
+
 	UPROPERTY(EditAnywhere)
 		class ULevelSequence* OpenLevelSequence;
 

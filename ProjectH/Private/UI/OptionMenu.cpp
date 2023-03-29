@@ -178,6 +178,15 @@ void UOptionMenu::SetINI()
 			Controller->SetNewMouseSensitivity();
 		}
 	}
+	if (bMasterSound)
+	{
+		MasterSoundRaito = SelectMasterSoundRatio;
+		float MasterSound = UKismetMathLibrary::FClamp(MasterSoundRaito, 0, 1);
+		SET_OPTION("MasterSound", path, MasterSound);
+
+		bMasterSound = false;
+		BindMasterSoundMix(MasterSound);
+	}
 
 
 	if (GI)
@@ -211,10 +220,16 @@ void UOptionMenu::SetTextureCommand(int32 str)
 	bTex = true;
 }
 
-void UOptionMenu::SetMouseSensitivity(float NewMS)
+void UOptionMenu::SetMouseSensitivity(float ratio)
 {
-	SelectMouseSensitivity = NewMS;
+	SelectMouseSensitivity = ratio;
 	bMS = true;
+}
+
+void UOptionMenu::SetMasterSound(float ratio)
+{
+	SelectMasterSoundRatio = ratio;
+	bMasterSound = true;
 }
 
 void UOptionMenu::Apply()

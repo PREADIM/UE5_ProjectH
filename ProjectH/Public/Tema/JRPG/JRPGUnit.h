@@ -168,7 +168,7 @@ public:
 		void AttackEnd(); 
 	/* 유닛의 공격을 타겟 유닛에게 데미지 입히기 [공격 타입, 한명 or 여러명, 공격하는 타수, 디버프 클래스 */
 	UFUNCTION(BlueprintCallable)
-		void TargetAttackDamageProxy(EAttackType AttackType, bool bOnce, int32 AttackCnt = 1, TSubclassOf<class UDebuffClass> BP_DebuffClass = nullptr);
+		void TargetAttackDamageProxy(EAttackType AttackType, bool bOnce, int32 AttackCnt = 1, TSubclassOf<class UDebuffClass> BP_DebuffClass = nullptr, TSubclassOf<class UCameraShakeBase> AttackCS = nullptr);
 	/* 데미지를 입힌 후 턴 종료하는 것 [하나인지 여러명인지, 턴종료 딜레이, 턴종료를 할지 안할지] */
 	UFUNCTION(BlueprintCallable)
 		void DamagedTurnEnd(bool bOnce, bool bTurnEnd, float Delay = 0.5f); 

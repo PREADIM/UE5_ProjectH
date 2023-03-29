@@ -38,36 +38,42 @@ public:
 
 
 	/* 현재 선택한 것을 표시할 문자열 */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite)
 		FString Resolution;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite)
 		int32 AASetting;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite)
 		int32 ShadowSetting;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite)
 		int32 TextureSetting;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite)
 		float MouseSensitivity; // 0~ 1사이 여야한다.
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite)
 		float MaxMouseSensitivity; // 최대값
+	UPROPERTY(BlueprintReadWrite)
+		float MasterSoundRaito; // 0~ 1사이 여야한다.
+
 
 	/* 선택한 문자열을 콘솔 명령어로 표현할 문자열 */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite)
 		FString SelectResolution;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite)
 		int32 SelectAASetting;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite)
 		int32 SelectShadowSetting;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite)
 		int32 SelectTextureSetting;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite)
 		float SelectMouseSensitivity;
-
+	UPROPERTY(BlueprintReadWrite)
+		float SelectMasterSoundRatio;
 	UPROPERTY(EditAnywhere, Transient, meta = (BindWidgetAnim))
 		class UWidgetAnimation* OptionFade;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		APlayerController* OwnerController;
+
+	/*----------------------------------------------*/
 
 
 	/* 셋팅이 변경되었는지 플래그 변수 */
@@ -76,6 +82,7 @@ public:
 	bool bShadow;
 	bool bTex;
 	bool bMS;
+	bool bMasterSound;
 
 public:
 	void Init();
@@ -96,7 +103,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void SetTextureCommand(int32 str);
 	UFUNCTION(BlueprintCallable)
-		void SetMouseSensitivity(float str);
+		void SetMouseSensitivity(float ratio);
+	UFUNCTION(BlueprintCallable)
+		void SetMasterSound(float ratio);
+	UFUNCTION(BlueprintImplementableEvent)
+		void BindMasterSoundMix(float ratio);
 
 	UFUNCTION()
 		void Apply();

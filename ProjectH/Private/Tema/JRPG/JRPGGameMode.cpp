@@ -439,7 +439,7 @@ void AJRPGGameMode::SetOwnerUnits()
 				Unit->ThisUnitBattleUnit(true);
 				Unit->CharacterStat = OwnerController->CharStats[CharList[i]];
 				Unit->InitCurrentStat();
-				OwnerList.Add(Unit);
+				OwnerList.Emplace(Unit);
 			}
 			
 			OwnerUnits.HeapPush(FPriorityUnit(Unit), PriorityUnitFunc());
@@ -482,14 +482,14 @@ void AJRPGGameMode::SetEnermyUnits(TArray<FEnermys> Enermys)
 			Unit->InitCurrentStat();
 
 			EnermyUnits.HeapPush(FPriorityUnit(Unit), PriorityUnitFunc());
-			EnermyList.Add(Unit); // 적의 실질적인 리스트.
+			EnermyList.Emplace(Unit); // 적의 실질적인 리스트.
 
 			Unit->PlayStartMontage();
 			// 레벨 스타트 몽타주 실행하기.
 		}	
 	}
 
-	int Index = FMath::RandRange(0, Enermys.Num());
+	int32 Index = FMath::RandRange(0, EnermyList.Num() - 1);
 	if (EnermyList.IsValidIndex(Index))
 		EnermyList[Index]->bPlayBattleStartSound = true;
 }

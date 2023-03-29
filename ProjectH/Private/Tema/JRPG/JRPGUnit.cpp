@@ -440,7 +440,7 @@ void AJRPGUnit::AttackEnd()
 	OwnerController->SetVisibleBattleWidget(false);
 }
 
-void AJRPGUnit::TargetAttackDamageProxy(EAttackType AttackType, bool bOnce, int32 AttackCnt, TSubclassOf<class UDebuffClass> BP_DebuffClass)
+void AJRPGUnit::TargetAttackDamageProxy(EAttackType AttackType, bool bOnce, int32 AttackCnt, TSubclassOf<class UDebuffClass> BP_DebuffClass, TSubclassOf<class UCameraShakeBase> AttackCS)
 {
 	float Damage = 0.f;
 
@@ -461,6 +461,9 @@ void AJRPGUnit::TargetAttackDamageProxy(EAttackType AttackType, bool bOnce, int3
 		TargetAttack(Damage / AttackCnt, BP_DebuffClass);
 	else
 		TargetManyAttack(Damage / AttackCnt, BP_DebuffClass);
+
+	if (AttackCS)
+		OwnerController->ClientPlayCameraShake(AttackCS, 1.f);
 
 }
 
