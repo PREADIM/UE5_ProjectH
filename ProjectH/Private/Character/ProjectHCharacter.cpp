@@ -12,10 +12,10 @@
 #include "Controller/ProjectH_PC.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
-#include "UI/InteractWidget.h"
 #include "UI/MainQuestUI.h"
 #include "Components/Button.h"
 #include "ActorComponent/QuestComponent/TriggerSpawnActor.h"
+#include "GameMode/ProjectHGameInstance.h"
 
 
 AProjectHCharacter::AProjectHCharacter()
@@ -77,16 +77,16 @@ void AProjectHCharacter::BeginPlay()
 
 	OwnerController = Cast<class AProjectH_PC>(GetController());
 	if (OwnerController)
+		QuestComponentInit();
+
+	class UProjectHGameInstance* GI = Cast<UProjectHGameInstance>(UGameplayStatics::GetGameInstance(this));
+	if (GI->RunTimeSuccessQuestNumberQueue.Num())
 	{
-		MouseSensitivity = OwnerController->MouseSensitivity;
-		OwnerController->MainQuestUI->InteractWidget->InteractButton->OnClicked.AddDynamic(this, &AProjectHCharacter::InteractKey);
-		// 게임 인스턴스에서 정보 가져오기
-		if (QuestComponent)
+		for (int32 NextStepNumber : GI->RunTimeSuccessQuestNumberQueue)
 		{
-			QuestComponent->OwnerCharacter = this;
-			QuestComponent->OwnerController = OwnerController;
-			QuestComponent->StartQuestLoad(); // 로드
+			FromOtherMapNextQuestStep(NextStepNumber);
 		}
+		GI->RunTimeSuccessQuestNumberQueue.Empty();
 	}
 
 	QuestCollision->OnComponentBeginOverlap.AddDynamic(this, &AProjectHCharacter::QuestCollisionOverlap);
@@ -95,7 +95,8 @@ void AProjectHCharacter::BeginPlay()
 	InteractCollision->OnComponentEndOverlap.AddDynamic(this, &AProjectHCharacter::InteractCollisionEndOverlap);
 
 	FTimerHandle Handle;
-	GetWorld()->GetTimerManager().SetTimer(Handle, this, &AProjectHCharacter::EndPlaySequence, 4.6f, false);	
+	GetWorld()->GetTimerManager().SetTimer(Handle, this, &AProjectHCharacter::EndPlaySequence, 5.0f, false);
+
 }
 
 void AProjectHCharacter::EndPlaySequence()
@@ -221,20 +222,36 @@ void AProjectHCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 	PlayerInputComponent->BindAction("AnyKey", IE_Pressed, this, &AProjectHCharacter::AnyKey);
 }
 
+
 /*--------------------
-
 	Public Function
-
 ---------------------*/
 
 
+/* 컨트롤러에서 Possess될때 Init 해줄 함수. */
+void AProjectHCharacter::QuestComponentInit()
+{
+	if (QuestComponent)
+	{
+		QuestComponent->OwnerCharacter = this;
+		QuestComponent->OwnerController = OwnerController;
+		QuestComponent->StartQuestLoad(); // 로드
+	}
+}
+
+
+
+
+void AProjectHCharacter::FromOtherMapNextQuestStep(int32 NextStepNumber)
+{
+	QuestComponent->CompleteStep(NextStepNumber);
+}
 
 void AProjectHCharacter::QuestCollisionOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	AQuestNPCBase* NPC = Cast<AQuestNPCBase>(OtherActor);
 	if (NPC)
 	{
-		//NPC->PlayerCharacter = this;
 		NPC->PlayerController = OwnerController;
 		NPC->NPCQuestSetup();	
 	}

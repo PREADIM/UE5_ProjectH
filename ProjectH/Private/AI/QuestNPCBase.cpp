@@ -206,6 +206,20 @@ void AQuestNPCBase::HiddenIcon()
 	SetActorTickEnabled(false);
 }
 
+FNPCQuest* AQuestNPCBase::AddQuestRunTime(int32 QuestNumber)
+{
+	QuestingNums.Emplace(QuestNumber);
+	SaveNPCQuest();
+
+	for (int32 i = 0; i < NPCQuests.Quests.Num(); i++)
+	{
+		if (NPCQuests.Quests[i].QuestNumber == QuestNumber)
+			return &NPCQuests.Quests[i];
+	}
+
+	return nullptr;
+}
+
 
 /* 블루프린트에서 완료한 퀘스트 접근 */
 bool AQuestNPCBase::FindEndedQuestsNums(int32 QuestNumber)

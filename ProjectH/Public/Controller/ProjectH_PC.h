@@ -58,6 +58,15 @@ public:
 	class UCanvasPanelSlot* AddChildCanvas(class UUserWidget* Widget);
 	void MainQuestIconWidgetSetup(class UCanvasPanelSlot* CanvasSlot, FVector Location);
 
+	/* ------------------
+		QuestComponent
+	---------------------*/
+
+	class UQuestComponent* GetQuestComponent();
+
+	/* 다른 레벨에서 완료한 퀘스트가 존재한다. */
+	void FromOtherMapNextQuestStep(int32 NextStepNumber);
+
 public:
 	/*-----------------
 		Public Values

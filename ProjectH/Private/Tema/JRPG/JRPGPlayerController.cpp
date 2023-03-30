@@ -424,9 +424,7 @@ void AJRPGPlayerController::AddCharExp(int32 CharNum, float DropExp)
 		CharStats[CharNum] = GetCharStat(CharNum); // ½ºÅÈ ÀçÁ¤ºñ
 	}
 	else
-	{
 		CurrentExp[CharNum] = Exp;
-	}
 
 	GM->SetSaveJRPG();
 }

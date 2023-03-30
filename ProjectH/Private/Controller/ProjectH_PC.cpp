@@ -12,6 +12,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Special/QTE/QTECamera.h"
 #include "UI/QuestMainCanvasWidget.h"
+#include "UI/InteractWidget.h"
 
 
 AProjectH_PC::AProjectH_PC()
@@ -31,12 +32,9 @@ void AProjectH_PC::BeginPlay()
 void AProjectH_PC::BeginInit()
 {
 	GI = Cast<UProjectHGameInstance>(UGameplayStatics::GetGameInstance(this));
-	if (GI)
-	{
-		MouseSensitivity = GI->MS;
-		GI->PlaySequence(1, this);
-	}
-
+	MouseSensitivity = GI->MS;
+	GI->PlaySequence(1, this);	
+	
 	if (BP_MainQuestUI && BP_MainQuestIconWidget && OwnerCharacter)
 	{
 		MainQuestUI = CreateWidget<UMainQuestUI>(GetWorld(), BP_MainQuestUI);
@@ -49,8 +47,10 @@ void AProjectH_PC::BeginInit()
 		MainQuestIconWidget->OwnerController = this;
 		MainQuestIconWidget->AddToViewport();
 	}
-
+	
 	SetNewMouseSensitivity();
+	MainQuestUI->InteractWidget->InteractButton->OnClicked.AddDynamic(OwnerCharacter, &AProjectHCharacter::InteractKey);
+
 }
 
 
@@ -59,7 +59,9 @@ void AProjectH_PC::OnPossess(APawn* InPawn)
 	Super::OnPossess(InPawn);
 	OwnerCharacter = Cast<AProjectHCharacter>(InPawn);
 	SetNewMouseSensitivity();
-	BeginInit();
+
+	if(OwnerCharacter)
+		BeginInit();
 }
 
 void AProjectH_PC::OnUnPossess()
@@ -108,6 +110,21 @@ void AProjectH_PC::MainQuestIconWidgetSetup(UCanvasPanelSlot* CanvasSlot, FVecto
 {
 	if (MainQuestIconWidget)
 		MainQuestIconWidget->MainQuestIconWidgetSetup(CanvasSlot, Location);
+}
+
+UQuestComponent* AProjectH_PC::GetQuestComponent()
+{
+	if (OwnerCharacter)
+		return OwnerCharacter->GetQuestComponent();
+	else
+		return nullptr;
+}
+
+/* 다른 맵에서 완료한 것을 메인레벨 퀘스트에서 완료 시키기 */
+void AProjectH_PC::FromOtherMapNextQuestStep(int32 NextStepNumber)
+{
+	if (OwnerCharacter)
+		OwnerCharacter->FromOtherMapNextQuestStep(NextStepNumber);
 }
 
 void AProjectH_PC::OpenESC()

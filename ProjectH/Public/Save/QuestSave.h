@@ -40,6 +40,10 @@ public:
 
 	static const FString SlotName;
 
+	
+	void SaveFromOtherMapSuccessQuest(TArray<int>* RunTimeSuccess);
+	TArray<int> LoadFromOtherMapSuccessQuest();
+	bool IsSaveFromOtherMapSuccessQuest(); /* 이 함수로 먼저 확인 후 로드 */
 
 	void SaveQuest(TArray<FQuestStruct> GetQuests, const int32 GetCurrentQuestId);
 	void LoadQuest(class UQuestComponent* QuestComponent);
@@ -60,4 +64,7 @@ private :
 		TMap<FString, FNPCAllQuest> NPCQuests;
 	UPROPERTY(VisibleAnywhere)
 		TMap<FString, FNPCQuestingAndSucceedQuests> NPCQuestingAndSucceedQuest;
+
+	UPROPERTY(VisibleAnywhere)
+		TArray<int32> FromOtherMapSuccessQuest;
 };

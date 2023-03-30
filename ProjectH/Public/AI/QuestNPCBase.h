@@ -19,14 +19,6 @@ public:
 		TArray<FTextNName> Dialogue;
 };
 
-USTRUCT()
-struct FNPCQuestPTR
-{
-	GENERATED_USTRUCT_BODY()
-public:
-	FNPCQuest* NPCQuestPTR;
-};
-
 
 // 퀘스트의 상태에따라 위젯을 어떻게 띄울지 나타낼 상태 열거형
 UENUM()
@@ -118,10 +110,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 		bool FindEndedQuestsNums(int32 QuestNumber);
 
-	UPROPERTY(VisibleAnywhere)
-		TMap<int32, FNPCQuestPTR> NPCQuestPtrs; // 퀘스트 넘버로 해당 퀘스트에 접근 할수 있는 주소 모음집.
-	// 해당 맵을 통해 완료한 퀘스트에 접근해서 완료트리거를 설정해준다.
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Name)
 		FString NPCName; // NPC 이름. 데이터 베이스 검색이나 저장할때 용이하다.
 
@@ -180,4 +168,7 @@ public:
 	void SaveNPCQuest(); // 게임 인스턴스 안에있는 세이브 클래스에 저장하는 함수.
 	void SetIconWidget(); // 아이콘 출력.
 	void HiddenIcon(); // 아이콘 가리기.
+
+	/* 런타임 퀘스트 추가 (게임 인스턴스에서 호출) */
+	FNPCQuest* AddQuestRunTime(int32 QuestNumber);
 };

@@ -38,13 +38,9 @@ void AARPGWeapon_Sword::AttackEnd()
 void AARPGWeapon_Sword::SetWeaponCollision(bool bFlag)
 {
 	if (bFlag)
-	{
 		WeaponCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	}
 	else
-	{
 		WeaponCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	}
 }
 
 void AARPGWeapon_Sword::SetPhysics()
@@ -109,11 +105,8 @@ void AARPGWeapon_Sword::SwordBeginOverlap(UPrimitiveComponent* OverlappedComp, A
 		for (auto Hit : HitEndActor)
 		{
 			if (OtherActor == Hit)
-			{
-				//_DEBUG("HitEnd Actor");
 				return;
 				// 이미 닿은 액터라 데미지 중첩 방지.
-			}
 		}
 	}
 

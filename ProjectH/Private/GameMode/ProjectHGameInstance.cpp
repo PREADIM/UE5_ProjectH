@@ -2,6 +2,7 @@
 
 
 #include "GameMode/ProjectHGameInstance.h"
+#include "Controller/ProjectH_PC.h"
 #include "Save/QuestSave.h"
 #include "Save/PlayerStateSave.h"
 #include "Kismet/GameplayStatics.h"
@@ -66,6 +67,10 @@ void UProjectHGameInstance::Init()
 	else // 없을경우
 		QuestSave = Cast<UQuestSave>(UGameplayStatics::CreateSaveGameObject(UQuestSave::StaticClass()));
 
+	/* 이 배열로 통해 어떤맵이든 간에 해당 배열에 값을 저장만 하면 퀘스트를 다음으로 넘길수 있다. */
+	if (QuestSave->IsSaveFromOtherMapSuccessQuest())
+		RunTimeSuccessQuestNumberQueue = QuestSave->LoadFromOtherMapSuccessQuest();
+
 	if (UGameplayStatics::DoesSaveGameExist(UPlayerStateSave::SlotName, 0))
 	{
 		PlayerSave = Cast<UPlayerStateSave>(UGameplayStatics::LoadGameFromSlot(UPlayerStateSave::SlotName, 0));
@@ -101,8 +106,11 @@ void UProjectHGameInstance::Init()
 }
 
 /* 오픈할 레벨 이름과 화면이 어두워지는 시퀀스를 사용할 것인지. */
-void UProjectHGameInstance::OpenLevelStart(FString LevelName, bool bPlaySequence)
+void UProjectHGameInstance::OpenLevelStart(FString LevelName, bool bPlaySequence, class APlayerControllerBase* PCBase)
 {
+	if (PCBase != nullptr)
+		PCBase->OnHiddenWidget.Broadcast();
+
 	if (bOpeningLevel)
 		return;
 
@@ -201,14 +209,17 @@ APlaySequenceActor* UProjectHGameInstance::PlaySequence(int32 SequenceNumber, AP
 void UProjectHGameInstance::SetNPCPtr(FString Name, AQuestNPCBase* NPC)
 {
 	if (!NPCAllPtr.Find(Name))
-		NPCAllPtr.Add(Name, NPC);
+		NPCAllPtr.Emplace(Name, NPC);
+	else
+		NPCAllPtr[Name] = NPC;
+	/* 레벨 이동하고 나서 새롭게 저장할 때 */
 }
 
 AQuestNPCBase* UProjectHGameInstance::GetNPCPtr(FString NPCName)
 {
 	if (NPCAllPtr.Find(NPCName))
 		return NPCAllPtr[NPCName];
-	
+
 	return nullptr;
 }
 
@@ -356,6 +367,37 @@ void UProjectHGameInstance::QuestClearNumber(FString NPCName, int32 QuestNumber)
 }
 
 
+/* 실시간으로 메인레벨 퀘스트 추가 시키기 (다른레벨 x) */
+void UProjectHGameInstance::AddQuestRunTime(FString NPCName, int32 QuestNumber, AProjectH_PC* PlayerController)
+{
+	AQuestNPCBase* NPC = GetNPCPtr(NPCName);
+	if (!NPC)
+		return;
+
+	UQuestComponent* QuestComponent = PlayerController->GetQuestComponent();
+	if (!QuestComponent)
+		return;
+
+	FNPCQuest* NewQuest = NPC->AddQuestRunTime(QuestNumber);
+	if (NewQuest)
+	{
+		QuestComponent->AddQuest(*NewQuest);
+		SetSaveSlot(QuestComponent);
+	}
+
+	PlayerController->SetQuestCollisionSetup();
+}
+
+
+/* 다른 테마에서 메인레벨 퀘스트 완료 시키기 */
+/* 해당 배열에 들어가있는 넘버들을 기반으로 메인 컨트롤러가 맨처음 Begin할때 ComplteStep을 해준다.*/
+void UProjectHGameInstance::SuccessQuestRunTime(int32 QuestNumber)
+{
+	RunTimeSuccessQuestNumberQueue.Emplace(QuestNumber);
+	QuestSave->SaveFromOtherMapSuccessQuest(&RunTimeSuccessQuestNumberQueue);
+}
+
+
 bool UProjectHGameInstance::SetDefault()
 {
 	auto Setting = GetDefault<UMainGameSetting>();
@@ -366,6 +408,7 @@ bool UProjectHGameInstance::SetDefault()
 		S = Setting->GetShadowQ();
 		T = Setting->GetTextureQ();
 		MS = Setting->GetMouseSensitivity();
+		MSound = Setting->GetMaster();
 
 		return true;
 	}
@@ -381,31 +424,48 @@ void UProjectHGameInstance::SetDefaultGameSetting()
 		UKismetSystemLibrary::ExecuteConsoleCommand(GetWorld(), *(AA_COMMAND + FString::FromInt(AA)));
 		UKismetSystemLibrary::ExecuteConsoleCommand(GetWorld(), *(S_COMMAND + FString::FromInt(S)));
 		UKismetSystemLibrary::ExecuteConsoleCommand(GetWorld(), *(T_COMMAND + FString::FromInt(T)));
+
 	}
 }
 
 /* 게임 인스턴스안의 맨처음에 옵션값을 참조 인자에 저장해주는 함수.*/
-void UProjectHGameInstance::GetDefaultGameSetting(FString& Resolution, int32& Anti, int32& ShadowQuality, int32& TextureQuality, float& MouseSensitivity)
+void UProjectHGameInstance::GetDefaultGameSetting(FString& Resolution, int32& Anti, int32& ShadowQuality, int32& TextureQuality, float& MouseSensitivity, float& MasterSound)
 {
 	Resolution = R;
 	Anti = AA;
 	ShadowQuality = S;
 	TextureQuality = T;
 	MouseSensitivity = MS;
+	MSound = MasterSound;
 }
 
 
 /* 옵션 변경시에 게임 인스턴스에 저장하는 함수. */
-void UProjectHGameInstance::GISetGameSetting(FString Resolution, int32 Anti, int32 ShadowQuality, int32 TextureQuality, float& MouseSensitivity)
+void UProjectHGameInstance::GISetGameSetting(FString Resolution, int32 Anti, int32 ShadowQuality, int32 TextureQuality, float MouseSensitivity, float MasterSound)
 {
 	R = Resolution;
 	AA = Anti;
 	S = ShadowQuality;
 	T = TextureQuality;
 	MS = MouseSensitivity;
+	MSound = MasterSound;
 
 	UKismetSystemLibrary::ExecuteConsoleCommand(GetWorld(), *(RES_COMMAND + Resolution));
 	UKismetSystemLibrary::ExecuteConsoleCommand(GetWorld(), *(AA_COMMAND + FString::FromInt(Anti)));
 	UKismetSystemLibrary::ExecuteConsoleCommand(GetWorld(), *(S_COMMAND + FString::FromInt(ShadowQuality)));
 	UKismetSystemLibrary::ExecuteConsoleCommand(GetWorld(), *(T_COMMAND + FString::FromInt(TextureQuality)));
+}
+
+
+
+
+void UProjectHGameInstance::SetDontPlayEnding()
+{
+	bDontPlayEnding = true;
+}
+
+
+bool UProjectHGameInstance::CanPlayEnding()
+{
+	return !bDontPlayEnding;
 }

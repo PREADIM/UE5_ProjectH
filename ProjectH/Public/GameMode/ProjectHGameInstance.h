@@ -75,7 +75,7 @@ public:
 			Open Level
 	-------------------------*/
 	UFUNCTION(BlueprintCallable)
-		void OpenLevelStart(FString Levelname, bool bPlaySequence);
+		void OpenLevelStart(FString Levelname, bool bPlaySequence, class APlayerControllerBase* PCBase = nullptr);
 
 	void OpenLevelSepuenceEnd();
 
@@ -123,14 +123,23 @@ public:
 
 	void QuestClearNumber(FString NPCName, int32 QuestNumber); // ★★퀘스트 완료시 호출.
 
+	/* 실시간으로 퀘스트를 추가하기. */
+	UFUNCTION(BlueprintCallable)
+		void AddQuestRunTime(FString NPCName, int32 QuestNumber, class AProjectH_PC* PlayerController);
+
+	/* 다른 테마에서 메인레벨 퀘스트 완료 시키기 */
+	UFUNCTION(BlueprintCallable)
+		void SuccessQuestRunTime(int32 QuestNumber);
+	UPROPERTY()
+		TArray<int32> RunTimeSuccessQuestNumberQueue;
 
 	/*-------------------
 			Setting
 	----------------------*/
 	bool SetDefault();
 	void SetDefaultGameSetting();
-	void GetDefaultGameSetting(FString& Resolution, int32& Anti, int32& ShadowQuality, int32& TextureQuality, float& MouseSensitivity);
-	void GISetGameSetting(FString Resolution, int32 Anti, int32 ShadowQuality, int32 TextureQuality, float& MouseSensitivity);
+	void GetDefaultGameSetting(FString& Resolution, int32& Anti, int32& ShadowQuality, int32& TextureQuality, float& MouseSensitivity, float& MasterSound);
+	void GISetGameSetting(FString Resolution, int32 Anti, int32 ShadowQuality, int32 TextureQuality, float MouseSensitivity, float MasterSound);
 	/* 게임 인스턴스에 새로 설정된 셋팅 저장하면서 동시에 커맨드 실행.*/
 
 
@@ -196,5 +205,18 @@ public:
 		int32 T;
 	UPROPERTY()
 		float MS;
+	UPROPERTY()
+		float MSound;
 
+
+	/*---------------------------------------------------
+		ARPG 클리어시 엔딩이 일어나게 할 것인가?
+	---------------------------------------------------*/
+
+	UFUNCTION(BlueprintCallable)
+		void SetDontPlayEnding();
+	UFUNCTION(BlueprintCallable)
+		bool CanPlayEnding();
+	bool bDontPlayEnding;
+	
 };

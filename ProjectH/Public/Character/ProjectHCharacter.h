@@ -71,7 +71,7 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent)
 		void BeginPlayBPBind(); // ★★BP에서 추가로 실행
 
-protected:
+public:
 	/*----------------
 		Move & Utils
 	-----------------*/
@@ -89,7 +89,6 @@ protected:
 	UFUNCTION()
 		void AnyKey(FKey Key);
 	
-
 	/* 공통 입력 */
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent);
 
@@ -101,7 +100,6 @@ public:
 
 	UPROPERTY(VisibleAnywhere)
 		float MouseSensitivity;
-
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = RunSpeed)
 		float RunningSpeed;
@@ -126,27 +124,39 @@ public:
 	bool bQTE = false;
 	bool bPlay = true;
 public:
-	/*--------------------
-		Public Function
-	---------------------*/
+	/*----------
+		Init
+	------------*/
+
+	void QuestComponentInit();
+
+	/*----------
+		Quest
+	------------*/
 
 	UQuestComponent* GetQuestComponent() { return QuestComponent; }
 	AProjectH_PC* GetOwnerController() { return OwnerController; }
+	void FromOtherMapNextQuestStep(int32 NextStepNumber);
 
 	UFUNCTION()
 		void QuestCollisionOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()
 		void QuestCollisionEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+	
+	void QuestCollisionSetUp(); /* 퀘스트 콜리전을 껏다 켜서 새로 오버랩 되게하는 트릭*/
+	UFUNCTION()
+		void QuestCollisionRestart();
+
+	/*---------------
+		Interaction
+	----------------*/
+
 	UFUNCTION()
 		void InteractCollisionOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()
 		void InteractCollisionEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
-	void QuestCollisionSetUp(); /* 퀘스트 콜리전의 크기를 줄였다가 다시 늘려서 새로 오버랩 되게하는 트릭*/
 	void InteractCollisionSetUp();
-
-	UFUNCTION()
-		void QuestCollisionRestart();
 	UFUNCTION()
 		void InteractCollisionRestart();
 

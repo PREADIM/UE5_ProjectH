@@ -12,7 +12,7 @@ void ULoadingScreenWidget::SetScreenImage(FString OpenLevel)
 		return;
 	}
 
-	if (OpenLevel == "MainLevel")
+	if (OpenLevel == "JRPGMap")
 	{
 		ScreenImage->SetBrushFromTexture(JRPGScreen);
 		return;

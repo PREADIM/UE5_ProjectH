@@ -24,7 +24,7 @@ void UOptionMenu::Init()
 		AddComboBoxList();
 
 	// 게임 인스턴스에서 마지막 셋팅들을 전부 받아온다. 그리고 콤보박스에 셋 셀렉트 옵션 한다.
-		GI->GetDefaultGameSetting(Resolution, AASetting, ShadowSetting, TextureSetting, MouseSensitivity);
+		GI->GetDefaultGameSetting(Resolution, AASetting, ShadowSetting, TextureSetting, MouseSensitivity, MasterSoundRaito);
 		SetComboBox();
 		SetOtherOption();
 	}
@@ -60,10 +60,6 @@ void UOptionMenu::AddViewportSetupComboBox()
 void UOptionMenu::SetComboBox()
 {
 	ResComboBox->SetSelectedOption(Resolution);
-
-	_DEBUG("AA : %d", AASetting);
-	_DEBUG("Shadow : %d", ShadowSetting);
-	_DEBUG("Texture : %d", TextureSetting);
 
 	switch (AASetting)
 	{
@@ -190,7 +186,7 @@ void UOptionMenu::SetINI()
 
 
 	if (GI)
-		GI->GISetGameSetting(Resolution, AASetting, ShadowSetting, TextureSetting, MouseSensitivity);
+		GI->GISetGameSetting(Resolution, AASetting, ShadowSetting, TextureSetting, MouseSensitivity, MasterSoundRaito);
 
 }
 

@@ -29,6 +29,25 @@ UQuestSave::UQuestSave()
 }
 
 
+void UQuestSave::SaveFromOtherMapSuccessQuest(TArray<int>* RunTimeSuccess)
+{
+	if(RunTimeSuccess)
+		FromOtherMapSuccessQuest = *RunTimeSuccess;
+}
+
+TArray<int> UQuestSave::LoadFromOtherMapSuccessQuest()
+{
+	return FromOtherMapSuccessQuest;
+}
+
+bool UQuestSave::IsSaveFromOtherMapSuccessQuest()
+{
+	if (FromOtherMapSuccessQuest.Num())
+		return true;
+	else
+		return false;
+}
+
 void UQuestSave::SaveQuest(TArray<FQuestStruct> GetQuests, const int32 GetCurrentQuestId)
 {
 	// 레퍼런스가 아닌 복사를 해서 저장한다.
@@ -77,14 +96,13 @@ bool UQuestSave::LoadNPC(AQuestNPCBase* NPC)
 	return true;
 }
 
+
 FQuestStruct* UQuestSave::GetQuests(int32 QuestNumber)
 {
 	for (int32 i = 0; Quests.Num(); ++i)
 	{
 		if (Quests[i].QuestNumber == QuestNumber)
-		{
 			return &Quests[i];
-		}
 	}
 
 	return nullptr;

@@ -214,6 +214,7 @@ void UQuestComponent::CompleteStep(int32 QuestNumber)
 	{
 		Quests[QuestIndex].QuestSteps.RemoveAt(0);
 		NewTriggerSet(QuestIndex); // 트리거 소환.
+		
 		if (Quests[QuestIndex].QuestSteps[0].Trigger)
 		{
 			RemoveTrigger->TriggerDestroy();
