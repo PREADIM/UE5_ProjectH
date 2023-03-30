@@ -49,7 +49,7 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 		float MouseSensitivity; // 0~ 1사이 여야한다.
 	UPROPERTY(BlueprintReadWrite)
-		float MaxMouseSensitivity; // 최대값
+		float MaxMouseSensitivity = 100.f; // 최대값
 	UPROPERTY(BlueprintReadWrite)
 		float MasterSoundRaito; // 0~ 1사이 여야한다.
 

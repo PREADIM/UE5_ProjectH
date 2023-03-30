@@ -30,6 +30,7 @@ public:
 	virtual void BeginPlay();
 	virtual void OnPossess(APawn* NewPawn) override;
 	virtual void OnUnPossess() override;
+	virtual void SetNewMouseSensitivity() override;
 
 	void SetupInputComponent();
 

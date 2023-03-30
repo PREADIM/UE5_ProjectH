@@ -121,6 +121,7 @@ void UOptionMenu::SetComboBox()
 void UOptionMenu::SetOtherOption()
 {
 	MouseSensitivity = MouseSensitivity / MaxMouseSensitivity;
+	BindMasterSoundMix(MasterSoundRaito);
 }
 
 
@@ -158,13 +159,14 @@ void UOptionMenu::SetINI()
 		SET_OPTION("TextureQ", path, TextureSetting);
 		bTex = false;
 	}
+
+	float ControllerMS = 0.f;
 	if (bMS)
 	{
 		MouseSensitivity = SelectMouseSensitivity;
-		float ControllerMS = UKismetMathLibrary::FClamp(MouseSensitivity * MaxMouseSensitivity, 1, MaxMouseSensitivity);
+		ControllerMS = UKismetMathLibrary::FClamp(MouseSensitivity * MaxMouseSensitivity, 1.f, MaxMouseSensitivity);
 		// 슬라이더에선 0~ 1값이 필요하지만 컨트롤러에선 1~ 의 값이 필요하다.
-		//GConfig->SetInt(TEXT("/Script/GameSetting.MainGameSetting"), TEXT("MouseSensitivity"), SelectTextureSetting, path);
-		SET_OPTION("MouseSensitivity", path, ControllerMS);
+		SET_OPTION_F("MouseSensitivity", path, ControllerMS);
 		bMS = false;
 
 		APlayerControllerBase* Controller = Cast<APlayerControllerBase>(OwnerController);
@@ -177,8 +179,8 @@ void UOptionMenu::SetINI()
 	if (bMasterSound)
 	{
 		MasterSoundRaito = SelectMasterSoundRatio;
-		float MasterSound = UKismetMathLibrary::FClamp(MasterSoundRaito, 0, 1);
-		SET_OPTION("MasterSound", path, MasterSound);
+		float MasterSound = UKismetMathLibrary::FClamp(MasterSoundRaito, 0.f, 1.f);
+		SET_OPTION_F("MasterSound", path, MasterSound);
 
 		bMasterSound = false;
 		BindMasterSoundMix(MasterSound);
@@ -186,7 +188,7 @@ void UOptionMenu::SetINI()
 
 
 	if (GI)
-		GI->GISetGameSetting(Resolution, AASetting, ShadowSetting, TextureSetting, MouseSensitivity, MasterSoundRaito);
+		GI->GISetGameSetting(Resolution, AASetting, ShadowSetting, TextureSetting, ControllerMS, MasterSoundRaito);
 
 }
 

@@ -33,6 +33,7 @@ void AProjectH_PC::BeginInit()
 {
 	GI = Cast<UProjectHGameInstance>(UGameplayStatics::GetGameInstance(this));
 	MouseSensitivity = GI->MS;
+	_DEBUG("%f", MouseSensitivity);
 	GI->PlaySequence(1, this);	
 	
 	if (BP_MainQuestUI && BP_MainQuestIconWidget && OwnerCharacter)

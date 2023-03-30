@@ -67,6 +67,12 @@ void AJRPGPlayerController::OnPossess(APawn* NewPawn)
 		RepreCharacter = Cast<AJRPGUnit>(NewPawn);
 		RepreCharacterNum = RepreCharacter->CharNum;
 
+		UProjectHGameInstance* GI = Cast<UProjectHGameInstance>(UGameplayStatics::GetGameInstance(this));
+		if (GI)
+			MouseSensitivity = GI->MS;
+
+		SetNewMouseSensitivity();
+
 		if (GM)
 			GM->SetControllerInit();
 	}	
@@ -76,6 +82,12 @@ void AJRPGPlayerController::OnPossess(APawn* NewPawn)
 void AJRPGPlayerController::OnUnPossess()
 {
 	Super::OnUnPossess();
+}
+
+void AJRPGPlayerController::SetNewMouseSensitivity()
+{
+	if (RepreCharacter)
+		RepreCharacter->MouseSensitivity = MouseSensitivity;
 }
 
 

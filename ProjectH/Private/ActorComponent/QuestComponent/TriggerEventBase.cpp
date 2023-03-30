@@ -11,6 +11,7 @@
 #include "AI/QuestNPCBase.h"
 #include "Controller/ProjectH_PC.h"
 #include "UI/QuestIcon.h"
+#include "Components/CanvasPanelSlot.h"
 
 // Sets default values
 ATriggerEventBase::ATriggerEventBase()
@@ -62,8 +63,8 @@ void ATriggerEventBase::SetupMainIconWidget()
 			if (QuestIcon->Distance != Dist)
 				QuestIcon->Init(Dist);
 
-			if(PlayerController)
-				PlayerController->MainQuestIconWidgetSetup(IconCanvasSlot, GetActorLocation());
+			if (PlayerController)
+				PlayerController->MainQuestIconWidgetSetup(IconCanvasSlot, GetActorLocation());				
 		}
 	}
 }
@@ -96,7 +97,6 @@ void ATriggerEventBase::TriggerDestroy()
 {
 	TriggerDestroyBPBind();
 	QuestIcon->RemoveFromParent();
-	QuestIcon = nullptr;
 	Destroy();
 }
 

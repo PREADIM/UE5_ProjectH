@@ -217,6 +217,7 @@ void UQuestComponent::CompleteStep(int32 QuestNumber)
 		
 		if (Quests[QuestIndex].QuestSteps[0].Trigger)
 		{
+			_DEBUG("");
 			RemoveTrigger->TriggerDestroy();
 			Quests[QuestIndex].QuestSteps[0].Trigger->SetTriggerWidget();
 			OnUpdateDescription.Broadcast(QuestIndex); // 해당 퀘스트의 설명이 바뀜.

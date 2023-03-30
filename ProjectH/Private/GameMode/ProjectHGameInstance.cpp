@@ -436,7 +436,7 @@ void UProjectHGameInstance::GetDefaultGameSetting(FString& Resolution, int32& An
 	ShadowQuality = S;
 	TextureQuality = T;
 	MouseSensitivity = MS;
-	MSound = MasterSound;
+	MasterSound = MSound;
 }
 
 
