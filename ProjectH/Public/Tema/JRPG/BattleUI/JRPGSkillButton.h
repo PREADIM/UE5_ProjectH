@@ -26,6 +26,10 @@ public:
 	UPROPERTY(meta = (BindWidget))
 		class UButton* SkillButton;
 
+	UPROPERTY()
+		class UJRPGBattleWidget* OwnerMainWidget;
+
+
 	UPROPERTY(EditAnywhere)
 		EButtonType ButtonType;
 
@@ -44,14 +48,10 @@ public:
 		FLinearColor DisableColor;
 
 public:
-
 	void Init();
-
 	void SkillSetActive(); // MP가 적으면 사용을 할수 없으므로 비활성화 해야하기 때문.
 	void ButtonSetImage(FSlateBrush Icon);
-
 	void SetButton(UTexture2D* Tex);
-
 
 	UFUNCTION()
 		void UseSkill();

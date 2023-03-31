@@ -69,6 +69,7 @@ public:
 	class AJRPGUnit* GetEnermySpawn(int32 CharacterNum, FTransform UnitLocation);
 	bool GetBattleField(int32 FieldNum);
 	FBuffIconStruct* GetBuffIcon(FString IconName);
+	FJRPGUnitAttackDetail* GetAttackDetail(int32 CharacterNum);
 
 
 	/*------------------------------
@@ -142,6 +143,9 @@ public:
 		class UDataTable* FieldEnermyDropTable; // 필드 적의 떨구는 경험치 및 아이템.
 	UPROPERTY(VisibleAnywhere)
 		class UDataTable* IconTextureTable; // 각종 버프 아이콘 테이블
+	UPROPERTY(VisibleAnywhere)
+		class UDataTable* AttackNameAndDetail; // 유닛의 스킬 정보를 보여줄 테이블
+
 
 	UPROPERTY(BlueprintReadOnly)
 		class ABattleField* CurrentField;

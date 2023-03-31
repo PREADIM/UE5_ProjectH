@@ -17,6 +17,7 @@
 #include "Tema/JRPG/BattleUI/DropItemWidget.h"
 #include "Tema/JRPG/BattleUI/DropExpWidget.h"
 #include "UI/Custom/CAWTextAnimWidget.h"
+#include "GameMode/ProjectHGameInstance.h"
 
 
 

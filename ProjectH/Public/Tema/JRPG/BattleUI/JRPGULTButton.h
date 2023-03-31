@@ -20,6 +20,9 @@ public:
 		class UProgressBar* PB_ULT;
 
 	UPROPERTY()
+		class UJRPGBattleWidget* OwnerMainWidget;
+
+	UPROPERTY()
 		class AJRPGUnit* CurrentUnit;
 	UPROPERTY()
 		float ULTGage;

@@ -34,7 +34,6 @@ void UJRPGPriority::PlayInit()
 						{
 							Icon->Unit = Unit.Unit;
 							Icon->SetDebuffIcon();
-							//Icon->SetDebuffIcon(Unit.Unit->DebuffSet);
 							Icon->Init(UnitUI->CharTex, UnitUI->CharName);
 							Icon->SetPadding(FMargin(0.f, 0.f, 0.f, 5.f));
 							UnitList->AddChild(Icon);
@@ -95,7 +94,7 @@ void UJRPGPriority::PlayTurnStart()
 {
 	GM->TurnStart();
 	FTimerHandle TurnStartHandle;
-	float WaitTime = 1.0f;
+	float WaitTime = 0.2f;
 	GetWorld()->GetTimerManager().SetTimer(TurnStartHandle, this, &UJRPGPriority::PlayCurrentUnit, WaitTime, false);
 }
 
@@ -107,10 +106,9 @@ void UJRPGPriority::PlayCurrentUnit()
 }
 
 
+/* Priority 아이콘에 바로 버크 뜨게하기. */
 void UJRPGPriority::SetupBuffIcon(int32 CharNum)
 {
 	if (UnitIconIndexs.Find(CharNum))
-	{
 		Icons[UnitIconIndexs[CharNum]]->SetDebuffIcon();
-	}
 }

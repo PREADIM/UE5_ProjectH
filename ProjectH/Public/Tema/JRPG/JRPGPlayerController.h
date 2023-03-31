@@ -56,12 +56,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void MouseOnOff();
 
-	/*UFUNCTION(BlueprintCallable)
-		void MouseOn();
-	UFUNCTION(BlueprintCallable)
-		void MouseOff();*/
-
-
 	void SetSave(); // 게임모드에 접근하여 세이브하기.
 	void SetPartyChange(); // 파티 변경했으니 위젯에서 파티 변경.
 
@@ -75,7 +69,6 @@ public:
 
 	FJRPGCharStat GetCharStat(int32 CharNum);
 	//게임 모드에 있는 GetCharStat을 컨트롤러에서 받아오는 방법. 위젯에서 쓸모 있음.
-	// 결국엔 Char의 레벨을 가지고있는 이 컨트롤러이니 여기서 받아오는 것도 괜찮을듯
 
 
 	/*------------------------------------

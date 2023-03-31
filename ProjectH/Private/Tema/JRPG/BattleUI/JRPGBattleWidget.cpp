@@ -18,6 +18,7 @@
 #include "Components/CanvasPanel.h"
 #include "Components/Image.h"
 #include "Tema/JRPG/BattleUI/LockOnWidget.h"
+#include "Tema/JRPG/BattleUI/SkillDetailWidget.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
 
 void UJRPGBattleWidget::NativeConstruct()
@@ -53,11 +54,26 @@ void UJRPGBattleWidget::Init()
 	JRPGPriorityList->OwnerController = OwnerController;
 
 	NormalAttack->GM = GM;
+	NormalAttack->OwnerMainWidget = this;
 	NormalAttack->OwnerController = OwnerController;
+	NormalAttack->SkillButton->OnHovered.AddDynamic(this, &UJRPGBattleWidget::OnNormalAttaclDetail);
+	NormalAttack->SkillButton->OnUnhovered.AddDynamic(this, &UJRPGBattleWidget::OffSkillDetail);
+
 	SkillButton->GM = GM;
+	SkillButton->OwnerMainWidget = this;
 	SkillButton->OwnerController = OwnerController;
+	SkillButton->SkillButton->OnHovered.AddDynamic(this, &UJRPGBattleWidget::OnSkillAttackDetail);
+	SkillButton->SkillButton->OnUnhovered.AddDynamic(this, &UJRPGBattleWidget::OffSkillDetail);
+
 	ULTButton->GM = GM;
+	ULTButton->OwnerMainWidget = this;
 	ULTButton->OwnerController = OwnerController;
+	ULTButton->ULTButton->OnHovered.AddDynamic(this, &UJRPGBattleWidget::OnULTAttackDetail);
+	ULTButton->ULTButton->OnUnhovered.AddDynamic(this, &UJRPGBattleWidget::OffSkillDetail);
+
+	AttackDetail.Init(FAttackNameAndDetail(), 3);
+
+	DetailWidget->SetRenderOpacity(0.f);
 
 	if (BP_LockOnIcon)
 	{
@@ -179,8 +195,49 @@ void UJRPGBattleWidget::HiddenLockOn()
 
 void UJRPGBattleWidget::BattleTurnInit()
 {
+	/* 여기서 텍스트를 가져오자. */
+	FJRPGUnitAttackDetail* Detail = GM->GetAttackDetail(GM->SetUnitList[0].Unit->CharNum);
+
+	if (Detail)
+	{
+		AttackDetail[0] = Detail->NormalAttackDetail;
+		AttackDetail[1] = Detail->SkillAttackDetail;
+		AttackDetail[3] = Detail->ULTAttackDetail;
+	}
+	else
+	{
+		AttackDetail[0] = FAttackNameAndDetail();
+		AttackDetail[1] = FAttackNameAndDetail();
+		AttackDetail[3] = FAttackNameAndDetail();
+	}
+
 	NormalAttack->Init();
 	SkillButton->Init();
 	ULTButton->Init();
 }
 
+
+void UJRPGBattleWidget::OnNormalAttaclDetail()
+{
+	DetailWidget->Init(AttackDetail[0].AttackName, AttackDetail[0].AttackDetail);
+	DetailWidget->SetRenderOpacity(1.f);
+}
+
+void UJRPGBattleWidget::OnSkillAttackDetail()
+{
+	DetailWidget->Init(AttackDetail[1].AttackName, AttackDetail[1].AttackDetail);
+	DetailWidget->SetRenderOpacity(1.f);
+}
+
+
+void UJRPGBattleWidget::OnULTAttackDetail()
+{
+	DetailWidget->Init(AttackDetail[2].AttackName, AttackDetail[2].AttackDetail);
+	DetailWidget->SetRenderOpacity(1.f);
+}
+
+
+void UJRPGBattleWidget::OffSkillDetail()
+{
+	DetailWidget->SetRenderOpacity(0.f);
+}

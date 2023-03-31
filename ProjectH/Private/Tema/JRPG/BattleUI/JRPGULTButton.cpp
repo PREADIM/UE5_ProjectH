@@ -60,23 +60,3 @@ float UJRPGULTButton::BindULTGage()
 }
 
 
-
-//void UJRPGULTButton::EnermyTurnFirstInit()
-//{
-//	if (GM)
-//	{
-//		CurrentUnit = GM->OwnerUnits.HeapTop().Unit;
-//		ULTGage = CurrentUnit->CurrentULTGage;
-//		FProgressBarStyle Style;
-//		FSlateBrush SlateWidget = UWidgetBlueprintLibrary::MakeBrushFromTexture(CurrentUnit->UnitSkills.ULT.ULTImg);
-//		FSlateBrush FillWidget = UWidgetBlueprintLibrary::MakeBrushFromTexture(CurrentUnit->UnitSkills.ULT.FillULTImg);
-//		Style.SetBackgroundImage(SlateWidget);
-//		Style.SetFillImage(SlateWidget);
-//
-//		PB_ULT->SetWidgetStyle(Style);
-//
-//		ULTButton->OnClicked.AddDynamic(this, &UJRPGULTButton::UseSkill);
-//	}
-//}
-
-

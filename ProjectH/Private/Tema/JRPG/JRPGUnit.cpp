@@ -44,7 +44,7 @@ AJRPGUnit::AJRPGUnit()
 	BattleHPComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("BattleHP"));
 	BattleHPComponent->SetupAttachment(RootComponent);
 	BattleHPComponent->SetWidgetSpace(EWidgetSpace::Screen);
-	BattleHPComponent->SetDrawSize(FVector2D(190.f, 55.f));
+	BattleHPComponent->SetDrawSize(FVector2D(200.f, 86.f));
 	BattleHPComponent->SetDrawAtDesiredSize(true);
 	BattleHPComponent->SetTickMode(ETickMode::Automatic);
 
@@ -362,7 +362,7 @@ void AJRPGUnit::MoveToAttack(float MoveSpeed, EAttackType AttackType)
 	MoveToAttackType = AttackType;
 	GetCharacterMovement()->MaxWalkSpeed = MoveSpeed;
 	FVector TargetUnitLoc = OwnerController->TargetUnit->GetActorLocation();
-	UAIBlueprintHelperLibrary::CreateMoveToProxyObject(this, this, TargetUnitLoc, nullptr, 300.f, false);
+	UAIBlueprintHelperLibrary::CreateMoveToProxyObject(this, this, TargetUnitLoc, nullptr, 200.f, false);
 }
 
 void AJRPGUnit::MoveToPlayMontage(FAIRequestID RequestID, EPathFollowingResult::Type Result)

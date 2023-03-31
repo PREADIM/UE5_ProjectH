@@ -4,6 +4,7 @@
 
 #include "ProjectH.h"
 #include "Blueprint/UserWidget.h"
+#include "Tema/JRPG/JRPGUnitUIStruct.h"
 #include "JRPGBattleWidget.generated.h"
 
 /**
@@ -39,6 +40,8 @@ public:
 		class UJRPGSkillButton* SkillButton;
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 		class UJRPGULTButton* ULTButton;
+	UPROPERTY(meta = (BindWidget))
+		class USkillDetailWidget* DetailWidget;
 
 	/*-------------------------------
 			선택 가능한 적 리스트
@@ -99,5 +102,22 @@ public:
 
 	// 배틀 턴 시작
 	void BattleTurnInit();
+
+
+	/*------------------
+		Skill Detail
+	-------------------*/
+
+	UPROPERTY()
+		TArray<FAttackNameAndDetail> AttackDetail;
+
+	UFUNCTION()
+		void OnNormalAttaclDetail();
+	UFUNCTION()
+		void OnSkillAttackDetail();
+	UFUNCTION()
+		void OnULTAttackDetail();
+	UFUNCTION()
+		void OffSkillDetail();
 
 };

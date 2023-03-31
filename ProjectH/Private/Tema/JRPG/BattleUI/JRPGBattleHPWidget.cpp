@@ -37,7 +37,7 @@ void UJRPGBattleHPWidget::SetBuffIcon()
 		UJRPGBuffWidget* BuffWidget = CreateWidget<UJRPGBuffWidget>(GetWorld(), BP_BuffWidget);
 		if (BuffWidget)
 		{
-			BuffWidget->Init(DebuffStruct.DebuffClass, EIconSizeType::Mini);
+			BuffWidget->Init(DebuffStruct.DebuffClass, EIconSizeType::Midium);
 			BuffWidget->SetPadding(FMargin(0.f, 0.f, 3.f, 3.f));
 			BuffIconWrapBox->AddChild(BuffWidget);
 		}

@@ -72,6 +72,13 @@ AJRPGGameMode::AJRPGGameMode()
 		IconTextureTable = DT_IconTextureTable.Object;
 	}
 
+	FString AttackNameAndDetailPath = TEXT("DataTable'/Game/PROJECT/BP_CLASS/Tema/JRPG/DataBase/DT_UnitAttackDetail.DT_UnitAttackDetail'");
+	static ConstructorHelpers::FObjectFinder<UDataTable> DT_AttackNameAndDetail(*AttackNameAndDetailPath);
+	if (DT_AttackNameAndDetail.Succeeded())
+	{
+		AttackNameAndDetail = DT_AttackNameAndDetail.Object;
+	}
+
 }
 
 
@@ -237,6 +244,11 @@ bool AJRPGGameMode::GetBattleField(int32 FieldNum)
 FBuffIconStruct* AJRPGGameMode::GetBuffIcon(FString IconName)
 {
 	return IconTextureTable->FindRow<FBuffIconStruct>(*IconName, TEXT(""));
+}
+
+FJRPGUnitAttackDetail* AJRPGGameMode::GetAttackDetail(int32 CharacterNum)
+{
+	return AttackNameAndDetail->FindRow<FJRPGUnitAttackDetail>(*FString::FromInt(CharacterNum), TEXT(""));
 }
 
 

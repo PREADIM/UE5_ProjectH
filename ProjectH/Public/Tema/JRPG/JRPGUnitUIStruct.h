@@ -20,10 +20,38 @@ public:
 		FString CharName;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UTexture2D* PartySettingIcon;
-
-
-
+	
 	FJRPGUnitUIStruct();
 
+};
+
+
+USTRUCT()
+struct FAttackNameAndDetail
+{
+	GENERATED_USTRUCT_BODY()
+
+public:
+	UPROPERTY(EditAnywhere)
+		FString AttackName;
+	UPROPERTY(EditAnywhere)
+		FString AttackDetail;
+
+	FAttackNameAndDetail() {}
+};
+
+/* 배틀 때의 스킬 설명 */
+USTRUCT(BlueprintType)
+struct FJRPGUnitAttackDetail : public FTableRowBase
+{
+	GENERATED_USTRUCT_BODY()
+
+public:
+	UPROPERTY(EditAnywhere)
+		FAttackNameAndDetail NormalAttackDetail;
+	UPROPERTY(EditAnywhere)
+		FAttackNameAndDetail SkillAttackDetail;
+	UPROPERTY(EditAnywhere)
+		FAttackNameAndDetail ULTAttackDetail;
 };
 
