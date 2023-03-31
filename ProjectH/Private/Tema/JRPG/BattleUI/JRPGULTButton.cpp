@@ -31,7 +31,7 @@ void UJRPGULTButton::Init()
 		PB_ULT->PercentDelegate.BindUFunction(this, "BindULTGage");
 		PB_ULT->SynchronizeProperties();
 
-		ULTButtonSetActive();
+
 		if (!ULTButton->OnClicked.IsBound())
 			ULTButton->OnClicked.AddDynamic(this, &UJRPGULTButton::UseSkill);
 
@@ -39,19 +39,12 @@ void UJRPGULTButton::Init()
 }
 
 
-void UJRPGULTButton::ULTButtonSetActive()
-{
-	if (CurrentUnit->MaxULTGage <= ULTGage)
-		ULTButton->SetIsEnabled(true);
-	else
-		ULTButton->SetIsEnabled(false);
-}
-
-
 void UJRPGULTButton::UseSkill()
 {
-	if (CurrentUnit)
+	if (CurrentUnit->MaxULTGage <= ULTGage)
 		CurrentUnit->Skill_ULT();
+	else
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), DontUseULTSound, CurrentUnit->GetActorLocation());
 }
 
 float UJRPGULTButton::BindULTGage()

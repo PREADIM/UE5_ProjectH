@@ -163,6 +163,9 @@ void AJRPGUnit::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void AJRPGUnit::TakeDamageCalculator(float DamageAmount)
 {
+	if (CurrentHP <= 0.f)
+		return;
+
 	float DFEDamage = 100 / (100 + CharacterStat.Shield);
 	float Damage = DamageAmount * DFEDamage;
 

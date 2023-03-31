@@ -202,13 +202,13 @@ void UJRPGBattleWidget::BattleTurnInit()
 	{
 		AttackDetail[0] = Detail->NormalAttackDetail;
 		AttackDetail[1] = Detail->SkillAttackDetail;
-		AttackDetail[3] = Detail->ULTAttackDetail;
+		AttackDetail[2] = Detail->ULTAttackDetail;
 	}
 	else
 	{
 		AttackDetail[0] = FAttackNameAndDetail();
 		AttackDetail[1] = FAttackNameAndDetail();
-		AttackDetail[3] = FAttackNameAndDetail();
+		AttackDetail[2] = FAttackNameAndDetail();
 	}
 
 	NormalAttack->Init();

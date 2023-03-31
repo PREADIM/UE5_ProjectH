@@ -94,7 +94,7 @@ void UJRPGPriority::PlayTurnStart()
 {
 	GM->TurnStart();
 	FTimerHandle TurnStartHandle;
-	float WaitTime = 0.2f;
+	float WaitTime = 0.5f;
 	GetWorld()->GetTimerManager().SetTimer(TurnStartHandle, this, &UJRPGPriority::PlayCurrentUnit, WaitTime, false);
 }
 

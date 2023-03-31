@@ -21,19 +21,19 @@ public:
 
 	UPROPERTY()
 		class UJRPGBattleWidget* OwnerMainWidget;
-
 	UPROPERTY()
 		class AJRPGUnit* CurrentUnit;
-	UPROPERTY()
-		float ULTGage;
-	UPROPERTY()
-		float MaxULTGage;
+
+	float ULTGage;
+	float MaxULTGage;
+
+	UPROPERTY(EditAnywhere)
+		class USoundBase* DontUseULTSound;
 
 public:
 	virtual void NativeConstruct() override;
 
 	void Init();
-	void ULTButtonSetActive();
 	UFUNCTION()
 		void UseSkill();
 	UFUNCTION(BlueprintCallable)
