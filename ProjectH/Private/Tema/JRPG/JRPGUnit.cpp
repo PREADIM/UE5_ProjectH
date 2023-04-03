@@ -72,7 +72,7 @@ void AJRPGUnit::BeginPlay()
 	OverlapBattleStartCollision->OnComponentBeginOverlap.AddDynamic(this, &AJRPGUnit::BattleStartCollisionBeginOverlap);
 }
 
-// Called every frame
+
 void AJRPGUnit::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -540,7 +540,12 @@ void AJRPGUnit::PlayCharacterChangeMontage()
 
 void AJRPGUnit::UnitTurnEndCCState()
 {
-	OwnerController->SetTurnEndDebuffWidget(CCState.LastCCType);
+	FTimerHandle WidgetHandle;
+	GetWorld()->GetTimerManager().SetTimer(WidgetHandle, FTimerDelegate::CreateLambda([&]()
+		{
+			OwnerController->SetTurnEndDebuffWidget(CCState.LastCCType);
+		}), 1.0f, false);
+	
 	FTimerHandle Handle;
 	GetWorld()->GetTimerManager().SetTimer(Handle, this, &AJRPGUnit::UnitTurnEnd, 2.f, false);
 }

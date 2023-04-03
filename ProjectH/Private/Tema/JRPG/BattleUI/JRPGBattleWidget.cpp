@@ -99,6 +99,7 @@ void UJRPGBattleWidget::EnermyListInit()
 	if (BP_EnermyIcon && GM)
 	{
 		EnermyList->ClearChildren();
+		Buttons.Empty();
 		TArray<AJRPGUnit*> Units = GM->EnermyList;
 		for (int32 i = 0; i < Units.Num(); i++)
 		{
@@ -113,9 +114,13 @@ void UJRPGBattleWidget::EnermyListInit()
 				Button->Init(UI->CharTex, i);
 				Button->SetPadding(FMargin(0.f, 0.f, 10.f, 0.f));
 				EnermyList->AddChild(Button);
-				Buttons.Add(Button);
+				Buttons.Emplace(Button);
 			}
 		}
+
+		if (!Buttons.IsValidIndex(TargetNumber))
+			TargetNumber = 0;
+
 		Buttons[TargetNumber]->TargetLockOn();
 	}
 }
@@ -176,6 +181,7 @@ void UJRPGBattleWidget::SetLockOn(int32 Num)
 
 		if (GM->EnermyList.IsValidIndex(Num))
 			OwnerController->TargetUnit = GM->EnermyList[Num];
+
 		TargetNumber = Num;
 	}	
 }

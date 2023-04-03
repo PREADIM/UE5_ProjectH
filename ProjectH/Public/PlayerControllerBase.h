@@ -26,6 +26,9 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		float MouseSensitivity;
 
+	UPROPERTY()
+		class AActor* PossessActor;
+
 public:
 	// 마우스 감도 새로운 값 적용하는 함수.
 	virtual void SetNewMouseSensitivity() {};

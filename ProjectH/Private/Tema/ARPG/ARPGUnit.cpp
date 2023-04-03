@@ -35,17 +35,15 @@ AARPGUnit::AARPGUnit()
 	DeathCamera->SetupAttachment(GetMesh(), FName("HeadSocket"));
 	DeathCamera->SetActive(false);
 
-	NormalSpeed = 250.f;
-	BattleSpeed = 150.f;
+	NormalSpeed = 350.f;
+	BattleSpeed = 200.f;
 	BlockSpeed = 130.f;
 	WalkSpeed = NormalSpeed;
-	//LockOnRadius = 750.f;
 
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 
 	bNormalMode = true;
 	Tags.Add(FName("Player"));
-
 }
 
 // Called when the game starts or when spawned
@@ -58,7 +56,6 @@ void AARPGUnit::BeginPlay()
 	// 때문에 LMB_AP, RMB_AP로 변수를 만들어 무기를 변경할때 휘두를 수있는 AP가 달리지게 설계할듯.
 
 	//LMB
-
 	if (BP_Sword)
 	{	
 		//TPSWeapon = GetWorld()->SpawnActorDeferred<AARPGWeapon>(BP_Sword, FTransform(), this, nullptr, ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding);
@@ -710,10 +707,7 @@ void AARPGUnit::ResetMode()
 float AARPGUnit::TakeDamageCalculator(AARPGWeapon* DamageWeapon, FDamageEvent const& DamageEvent, AController* EventInstigator, AARPGUnitBase* DamageCauser)
 {
 	if (bDeath || bSpecialAttackMode)
-	{
-		_DEBUG("SpecialMode");
 		return 0.0f;
-	}
 
 	float Damaged = DamageCauser->CalculDamage(DamageWeapon->WeaponDamage * DamageWeapon->Charge);
 	float CurrentHP = UnitState.HP;

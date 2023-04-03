@@ -33,7 +33,6 @@ void AProjectH_PC::BeginInit()
 {
 	GI = Cast<UProjectHGameInstance>(UGameplayStatics::GetGameInstance(this));
 	MouseSensitivity = GI->MS;
-	_DEBUG("%f", MouseSensitivity);
 	GI->PlaySequence(1, this);	
 	
 	if (BP_MainQuestUI && BP_MainQuestIconWidget && OwnerCharacter)
@@ -58,11 +57,13 @@ void AProjectH_PC::BeginInit()
 void AProjectH_PC::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
-	OwnerCharacter = Cast<AProjectHCharacter>(InPawn);
-	SetNewMouseSensitivity();
-
-	if(OwnerCharacter)
+	OwnerCharacter = Cast<AProjectHCharacter>(InPawn);	
+	if (OwnerCharacter)
+	{
+		PossessActor = OwnerCharacter;
 		BeginInit();
+	}
+		
 }
 
 void AProjectH_PC::OnUnPossess()

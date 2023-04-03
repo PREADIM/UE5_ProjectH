@@ -59,6 +59,18 @@ void ATriggerEventBase::SetupMainIconWidget()
 	{
 		if (QuestIcon)
 		{
+			FVector TargetVector = GetActorLocation() - PlayerCharacter->GetActorLocation();
+			TargetVector.Z *= 0.f;
+			TargetVector.Normalize();
+
+			float Dot = FVector::DotProduct(PlayerCharacter->GetActorForwardVector(), TargetVector);
+			if (Dot < 0.f)
+			{
+				QuestIcon->SetRenderOpacity(0.f);
+				return;
+			}
+
+			QuestIcon->SetRenderOpacity(1.f);
 			int32 Dist = UKismetMathLibrary::FTrunc(GetDistanceTo(PlayerCharacter) / 100);
 			if (QuestIcon->Distance != Dist)
 				QuestIcon->Init(Dist);

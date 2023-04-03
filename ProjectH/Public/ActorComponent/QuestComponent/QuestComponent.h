@@ -66,6 +66,9 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		class UProjectHGameInstance* GI;
 
+	UPROPERTY(EditAnywhere)
+		class USoundBase* QuestSuccessSound;
+
 
 public:
 	/* ------------------

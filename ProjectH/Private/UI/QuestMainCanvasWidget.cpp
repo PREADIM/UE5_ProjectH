@@ -7,6 +7,7 @@
 #include "Components/CanvasPanel.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "PlayerControllerBase.h"
+#include "Kismet/KismetMathLibrary.h"
 
 
 UCanvasPanelSlot* UQuestMainCanvasWidget::AddChildCanvas(UUserWidget* Widget)

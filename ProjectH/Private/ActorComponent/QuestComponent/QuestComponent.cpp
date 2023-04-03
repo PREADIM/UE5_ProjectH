@@ -171,7 +171,6 @@ void UQuestComponent::RemoveQuest(int32 RemoveQuestNumber)
 					GI->AddCanQuest(NextQuestNumber); // 다음 퀘스트 추가.
 					GI->PlaySequence(RemoveQuestNumber, OwnerController);
 				}
-
 			}
 			Quests[QuestIndex].QuestSteps[0].Trigger->TriggerDestroy(); // 마지막 NPC 위치 나타내는 트리거 삭제. 필수★
 			SaveQuestNumber(Quests[QuestIndex].OwnerNPCName, RemoveQuestNumber);
@@ -182,10 +181,12 @@ void UQuestComponent::RemoveQuest(int32 RemoveQuestNumber)
 			if (CurrentQuestID >= QuestIndex)
 				--CurrentQuestID;
 
-			
 			SelectTopQuest(RemoveQuestNumber); // 실행중인 퀘였다면 다른 퀘스트가있으면 가장 상단에 있는 것이 활성화되고, 아니면 냅둠.
 			OnUpdateQuestList.Broadcast();
 			UpdateQuestSave();
+
+			if (QuestSuccessSound)
+				UGameplayStatics::PlaySound2D(GetWorld(), QuestSuccessSound);
 		}
 	}	
 }
@@ -210,6 +211,9 @@ void UQuestComponent::CompleteStep(int32 QuestNumber)
 	if (!RemoveTrigger)
 		return;
 
+	if(QuestSuccessSound)
+		UGameplayStatics::PlaySound2D(GetWorld(), QuestSuccessSound);
+
 	if (Quests[QuestIndex].QuestSteps.Num() > 1) // 마지막은 완료 NPC위치 트리거이므로 반드시 마지막엔 1개가 남아있어야함
 	{
 		Quests[QuestIndex].QuestSteps.RemoveAt(0);
@@ -217,7 +221,6 @@ void UQuestComponent::CompleteStep(int32 QuestNumber)
 		
 		if (Quests[QuestIndex].QuestSteps[0].Trigger)
 		{
-			_DEBUG("");
 			RemoveTrigger->TriggerDestroy();
 			Quests[QuestIndex].QuestSteps[0].Trigger->SetTriggerWidget();
 			OnUpdateDescription.Broadcast(QuestIndex); // 해당 퀘스트의 설명이 바뀜.

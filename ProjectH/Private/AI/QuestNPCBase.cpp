@@ -69,7 +69,21 @@ void AQuestNPCBase::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	if (NPCIconSlot && PlayerController)
+	{
+		FVector TargetVector = GetActorLocation() - PlayerController->PossessActor->GetActorLocation();
+		TargetVector.Z *= 0.f;
+		TargetVector.Normalize();
+
+		float Dot = FVector::DotProduct(PlayerController->PossessActor->GetActorForwardVector(), TargetVector);
+		if (Dot < 0.f)
+		{
+			NPCQuestIconUI->SetRenderOpacity(0.f);
+			return;
+		}
+
+		NPCQuestIconUI->SetRenderOpacity(1.f);
 		PlayerController->MainQuestIconWidgetSetup(NPCIconSlot, IconLocationComponent->GetComponentLocation());
+	}
 
 }
 

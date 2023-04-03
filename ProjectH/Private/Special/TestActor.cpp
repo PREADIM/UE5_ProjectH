@@ -21,20 +21,12 @@ void ATestActor::BeginPlay()
 
 	RedLED(true);
 	GreenLED(true);
-
-	//FOnTimelineFloat TLFloat;
-	//TLFloat.BindUFunction(this, FName("TestFloat"));
-	//TL.AddInterpFloat(CurveF, TLFloat);
-	//TL.SetTimelineLength(0.5f);	
-	//TL.PlayFromStart();
 }
 
 // Called every frame
 void ATestActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	//TL.TickTimeline(DeltaTime);
 
 }
 
@@ -43,7 +35,6 @@ void ATestActor::TestFloat(float num)
 {
 	FRotator Rotator = FMath::Lerp(FRotator(0.f, 0.f, 0.f), FRotator(0.f, 90.f, 0.f), num);
 	SetActorRotation(Rotator);
-	_DEBUG("%f", num);
 }
 
 

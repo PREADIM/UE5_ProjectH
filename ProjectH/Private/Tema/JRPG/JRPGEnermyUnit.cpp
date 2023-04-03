@@ -56,7 +56,11 @@ void AJRPGEnermyUnit::UnitBattleStart()
 		return;
 
 	if (bCC) // CC기 상태인 경우 스킵
+	{
+		OwnerController->TargetUnit = GM->OwnerList[0];
+		OwnerController->EnermyUnitTurnToTarget();
 		UnitTurnEndCCState();
+	}	
 	else
 		BattleAIController->SetIsTurn(true); // 턴이다.
 

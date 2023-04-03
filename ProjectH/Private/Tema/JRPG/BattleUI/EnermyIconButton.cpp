@@ -28,6 +28,7 @@ void UEnermyIconButton::Init(class UTexture2D* CharTex, int32 cnt)
 	EnermyButton->OnClicked.AddDynamic(this, &UEnermyIconButton::TargetLockOn);
 
 	Num = cnt; // 몇번째 칸에 있는 적인지.
+	_DEBUG("init : %d", Num);
 }
 
 void UEnermyIconButton::TargetLockOn()
@@ -38,14 +39,13 @@ void UEnermyIconButton::TargetLockOn()
 		{
 			if (!GM->EnermyList.IsValidIndex(0))
 			{
-				AJRPGUnit* Unit = GM->SetUnitList[0].Unit;
-				Unit->SetActorRelativeRotation(FRotator(0.f, -90.f, 0.f));
+				OwnerWidget->SetLockOn(0);
+				OwnerController->OwnerUnitTurnToTarget();
 				return;
 			}
-			else
-				Num = 0;
 		}
 
+		_DEBUG("%d", Num);
 		OwnerWidget->SetLockOn(Num); /* 여기서 TargetUnit을 설정함과 동시에 LockOn 셋팅 */
 		OwnerController->OwnerUnitTurnToTarget();		
 	}
