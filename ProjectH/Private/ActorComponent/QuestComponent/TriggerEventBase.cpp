@@ -50,6 +50,20 @@ void ATriggerEventBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (bTargetIsNPC)
+	{
+		if (GI)
+		{
+			AQuestNPCBase* NPC = GI->GetNPCPtr(TargetNPCName);
+			if (NPC)
+			{
+				FVector Location = NPC->GetActorLocation();
+				if (GetActorLocation() != Location)
+					SetActorLocation(Location);
+			}
+		}
+	}
+
 	SetupMainIconWidget();
 }
 
@@ -59,24 +73,28 @@ void ATriggerEventBase::SetupMainIconWidget()
 	{
 		if (QuestIcon)
 		{
-			FVector TargetVector = GetActorLocation() - PlayerCharacter->GetActorLocation();
-			TargetVector.Z *= 0.f;
-			TargetVector.Normalize();
-
-			float Dot = FVector::DotProduct(PlayerCharacter->GetActorForwardVector(), TargetVector);
-			if (Dot < 0.f)
+			/* 퀘스트 아이콘을 그려야할때 */
+			if (bVisibleIcon)
 			{
-				QuestIcon->SetRenderOpacity(0.f);
-				return;
-			}
+				FVector TargetVector = GetActorLocation() - PlayerCharacter->GetActorLocation();
+				TargetVector.Z *= 0.f;
+				TargetVector.Normalize();
 
-			QuestIcon->SetRenderOpacity(1.f);
-			int32 Dist = UKismetMathLibrary::FTrunc(GetDistanceTo(PlayerCharacter) / 100);
-			if (QuestIcon->Distance != Dist)
-				QuestIcon->Init(Dist);
+				float Dot = FVector::DotProduct(PlayerCharacter->GetActorForwardVector(), TargetVector);
+				if (Dot < 0.f)
+				{
+					QuestIcon->SetRenderOpacity(0.f);
+					return;
+				}
 
-			if (PlayerController)
-				PlayerController->MainQuestIconWidgetSetup(IconCanvasSlot, GetActorLocation());				
+				QuestIcon->SetRenderOpacity(1.f);
+				int32 Dist = UKismetMathLibrary::FTrunc(GetDistanceTo(PlayerCharacter) / 100);
+				if (QuestIcon->Distance != Dist)
+					QuestIcon->Init(Dist);
+
+				if (PlayerController)
+					PlayerController->MainQuestIconWidgetSetup(IconCanvasSlot, GetActorLocation());
+			}							
 		}
 	}
 }
@@ -109,6 +127,7 @@ void ATriggerEventBase::TriggerDestroy()
 {
 	TriggerDestroyBPBind();
 	QuestIcon->RemoveFromParent();
+	bVisibleIcon = false;
 	Destroy();
 }
 
@@ -122,17 +141,21 @@ void ATriggerEventBase::SetTriggerWidget()
 				SetVisibleTriggerWidgetBind();
 
 			if (QuestIcon)
-				QuestIcon->SetRenderOpacity(1.f);		
+			{
+				if (QuestIcon->GetRenderOpacity() != 1.f)
+					QuestIcon->SetRenderOpacity(1.f);		
+			}	
 			else
 			{
 				if (PlayerController)
 				{
 					QuestIcon = CreateWidget<UQuestIcon>(GetWorld(), BP_QuestIcon);
 					if (QuestIcon)
-						IconCanvasSlot = PlayerController->AddChildCanvas(QuestIcon);
-						
+						IconCanvasSlot = PlayerController->AddChildCanvas(QuestIcon);					
 				}
 			}
+
+			bVisibleIcon = true;
 			SetActorTickEnabled(true);
 			SetupCollision();
 		}
@@ -150,8 +173,12 @@ void ATriggerEventBase::SetHiddenTriggerWidget()
 				SetHiddenTriggerWidgetBind();
 
 			if (QuestIcon)
-				QuestIcon->SetRenderOpacity(0.f);
-			
+			{
+				if(QuestIcon->GetRenderOpacity() != 0.f)
+					QuestIcon->SetRenderOpacity(0.f);
+			}
+				
+			bVisibleIcon = false;
 			SetActorTickEnabled(false);
 		}
 	}
@@ -187,6 +214,52 @@ void ATriggerEventBase::BindProgressCnt()
 {
 	if (QuestComponent)
 		QuestComponent->BindSetDescription(QuestNumber);
+
+}
+
+
+/* 전등 퀘스트 처럼 Tick은 냅두고 퀘스트 아이콘만 사라지게 해야하는 경우를 위한 함수. */
+/* 이나즈마 번개원소 입자 퀘스트같은 느낌. */
+void ATriggerEventBase::QuestIconVisible(bool bFlag)
+{
+	if (QuestComponent)
+	{
+		if (QuestComponent->GetActiveQuest().QuestNumber == QuestNumber)
+		{
+			if (bBPBindVisibleTriggerFunc)
+				SetVisibleTriggerWidgetBind();
+
+			if (bFlag)
+			{
+				if (QuestIcon)
+				{
+					if (QuestIcon->GetRenderOpacity() != 1.f)
+						QuestIcon->SetRenderOpacity(1.f);
+				}
+				else
+				{
+					if (PlayerController)
+					{
+						QuestIcon = CreateWidget<UQuestIcon>(GetWorld(), BP_QuestIcon);
+						if (QuestIcon)
+							IconCanvasSlot = PlayerController->AddChildCanvas(QuestIcon);
+					}
+				}
+
+				bVisibleIcon = true;
+			}
+			else
+			{
+				if (QuestIcon)
+				{
+					if (QuestIcon->GetRenderOpacity() != 0.f)
+						QuestIcon->SetRenderOpacity(0.f);				
+				}
+
+				bVisibleIcon = false;
+			}			
+		}
+	}
 
 }
 

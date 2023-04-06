@@ -126,7 +126,7 @@ void AARPGUnitBase::Death()
 	GetWorld()->GetTimerManager().SetTimer(DeathHandle, FTimerDelegate::CreateLambda([&]()
 	{
 		Destroy();		
-	}), 5.f, false);
+	}), 10.f, false);
 	// 죽었을때 삭제 함수는 일단 보류. 미로에서 길찾을때 표식용으로 사용가능
 
 	BPBindDeath();

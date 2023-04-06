@@ -33,10 +33,10 @@ AQuestNPCBase::AQuestNPCBase()
 	SetActorTickEnabled(false);
 }
 
-// Called when the game starts or when spawned
-void AQuestNPCBase::BeginPlay()
+
+void AQuestNPCBase::PostInitializeComponents()
 {
-	Super::BeginPlay();
+	Super::PostInitializeComponents();
 
 	GI = Cast<UProjectHGameInstance>(UGameplayStatics::GetGameInstance(this));
 	if (GI)
@@ -50,9 +50,13 @@ void AQuestNPCBase::BeginPlay()
 		GI->SetNPCLoadSlot(this);
 		GI->SetNPCPtr(NPCName, this);
 	}
+}
 
-	if (!NPCQuests.Quests.Num()) // 없으면 그냥 리턴.
-		return;
+
+void AQuestNPCBase::BeginPlay()
+{
+	Super::BeginPlay();
+	
 }
 
 void AQuestNPCBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -61,6 +65,12 @@ void AQuestNPCBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 	if (GI)
 		SaveNPCQuest();
+	else
+	{
+		GI = Cast<UProjectHGameInstance>(UGameplayStatics::GetGameInstance(this));
+		if (GI)
+			SaveNPCQuest();
+	}
 
 }
 
@@ -86,6 +96,8 @@ void AQuestNPCBase::Tick(float DeltaTime)
 	}
 
 }
+
+
 
 int32 AQuestNPCBase::RetIconPriority(EQuestIconState State)
 {
@@ -160,7 +172,8 @@ void AQuestNPCBase::NPCQuestSetup()
 
 void AQuestNPCBase::SaveNPCQuest()
 {
-	GI->SetNPCSaveSlot(this);
+	if(GI)
+		GI->SetNPCSaveSlot(this);
 	/* NPC 이름, NPC 퀘스트 목록, 퀘스트 완료상태, 퀘스트 중인지 상태, 퀘스트를 수락할수 있는지 상태 */
 }
 
@@ -261,6 +274,9 @@ bool AQuestNPCBase::FindCanQuest()
 	//여기서 항상 NONE으로 기준을 잡고 하면 된다.
 
 	QuestIconState = EQuestIconState::NONE;
+
+	if(!GI)
+		GI = Cast<UProjectHGameInstance>(UGameplayStatics::GetGameInstance(this));
 
 	if (GI)
 	{

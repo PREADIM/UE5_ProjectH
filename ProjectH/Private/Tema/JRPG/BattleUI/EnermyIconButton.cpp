@@ -28,7 +28,6 @@ void UEnermyIconButton::Init(class UTexture2D* CharTex, int32 cnt)
 	EnermyButton->OnClicked.AddDynamic(this, &UEnermyIconButton::TargetLockOn);
 
 	Num = cnt; // 몇번째 칸에 있는 적인지.
-	_DEBUG("init : %d", Num);
 }
 
 void UEnermyIconButton::TargetLockOn()
@@ -45,7 +44,6 @@ void UEnermyIconButton::TargetLockOn()
 			}
 		}
 
-		_DEBUG("%d", Num);
 		OwnerWidget->SetLockOn(Num); /* 여기서 TargetUnit을 설정함과 동시에 LockOn 셋팅 */
 		OwnerController->OwnerUnitTurnToTarget();		
 	}

@@ -47,7 +47,7 @@ void UQuestList::UpdateQuestList()
 				AQSlot->OwnerList = this;
 				ActiveQuestIndex = i;
 				AQSlot->Init();
-				AQSlot->SetPadding(FMargin(120.f, 0.f, 0.f, 120.f));
+				AQSlot->SetPadding(FMargin(120.f, 0.f, 0.f, 15.f));
 				CurrentQuest->AddChild(AQSlot);
 			}
 		}
@@ -59,7 +59,7 @@ void UQuestList::UpdateQuestList()
 			QSlot->QuestDescription = QuestComponent->GetQuests()[i].QuestSteps[0].Description;
 			QSlot->QuestComponent = QuestComponent;
 			QSlot->Init();
-			QSlot->SetPadding(FMargin(120.f, 0.f, 0.f, 120.f));
+			QSlot->SetPadding(FMargin(120.f, 0.f, 0.f, 80.f));
 			switch (QuestComponent->GetQuests()[i].QuestType)
 			{
 			case EQuestType::Main:

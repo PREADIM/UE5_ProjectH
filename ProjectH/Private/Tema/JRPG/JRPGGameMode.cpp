@@ -50,7 +50,7 @@ AJRPGGameMode::AJRPGGameMode()
 		EnermyListTable = DT_EnermyListData.Object;
 	}
 
-	FString StatTable = TEXT("DataTable'/Game/PROJECT/BP_CLASS/Tema/JRPG/DataBase/JRPGCharStatTablePaths.JRPGCharStatTablePaths'");
+	FString StatTable = TEXT("DataTable'/Game/PROJECT/BP_CLASS/Tema/JRPG/DataBase/JRPGStatTables.JRPGStatTables'");
 	static ConstructorHelpers::FObjectFinder<UDataTable> DT_StatTable(*StatTable);
 	if (DT_StatTable.Succeeded())
 	{
@@ -136,30 +136,40 @@ FJRPGCharStat AJRPGGameMode::GetCharStat(int32 CharNum, int32 Level)
 	FJRPGCharStatTablePaths* CharStatTablePath = CharStatTablePaths->FindRow<FJRPGCharStatTablePaths>(*FString::FromInt(CharNum), TEXT(""));
 	if (CharStatTablePath != nullptr)
 	{
-		/* 데이터 테이블 런타임에서 가져오는 방법. */
-		UDataTable* StatTable;
+		FJRPGCharStat* Stat = CharStatTablePath->StatTable->FindRow<FJRPGCharStat>(*FString::FromInt(Level), TEXT(""));
+		if (Stat)
+			return *Stat;
+		else
+			return FJRPGCharStat();
+
+
+		/* 데이터 테이블 자체가아닌 Path기반으로 런타임에서 가져오는 방법. */
+		/*UDataTable* StatTable;
 
 		// ★ 첫번째 방법.
-		/*FSoftObjectPath Path = FSoftObjectPath(*CharStatTablePath->Path);
+		FSoftObjectPath Path = FSoftObjectPath(*CharStatTablePath->Path);
 		StatTable = Cast<UDataTable>(Path.ResolveObject());
 		if (StatTable)
 		{
 			FJRPGCharStat* Stat = StatTable->FindRow<FJRPGCharStat>(*FString::FromInt(Level), TEXT(""));
 			return *Stat;
+
 		}
 		else
+		{
 			StatTable = Cast<UDataTable>(Path.TryLoad());
 
-		if (StatTable)
-		{
-			FJRPGCharStat* Stat = StatTable->FindRow<FJRPGCharStat>(*FString::FromInt(Level), TEXT(""));
-			return *Stat;
+			if (StatTable)
+			{
+				FJRPGCharStat* Stat = StatTable->FindRow<FJRPGCharStat>(*FString::FromInt(Level), TEXT(""));
+				return *Stat;
+			}
 		}
-
+			
 		return FJRPGCharStat();*/
 
 		//★ 두번째 방법
-		StatTable = Cast<UDataTable>(StaticLoadObject(UDataTable::StaticClass(), NULL, *CharStatTablePath->Path));
+		/*StatTable = Cast<UDataTable>(StaticLoadObject(UDataTable::StaticClass(), NULL, *CharStatTablePath->Path));
 		if (StatTable)
 		{
 			FJRPGCharStat* Stat = StatTable->FindRow<FJRPGCharStat>(*FString::FromInt(Level), TEXT(""));
@@ -168,9 +178,8 @@ FJRPGCharStat AJRPGGameMode::GetCharStat(int32 CharNum, int32 Level)
 			else nullptr;
 		}
 		else
-			return FJRPGCharStat();
+			return FJRPGCharStat();*/
 	}
-
 
 	return FJRPGCharStat();	
 }

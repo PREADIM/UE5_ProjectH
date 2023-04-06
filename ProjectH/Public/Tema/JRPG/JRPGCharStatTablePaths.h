@@ -13,11 +13,14 @@ struct FJRPGCharStatTablePaths : public FTableRowBase
 	GENERATED_USTRUCT_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere)
 		int32 CharNum;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FString Path;
+	/*UPROPERTY(EditAnywhere)
+		FString Path;*/
+
+	UPROPERTY(EditAnywhere)
+		class UDataTable* StatTable;
 
 public:
 	FJRPGCharStatTablePaths();

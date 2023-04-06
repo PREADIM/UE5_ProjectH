@@ -28,6 +28,7 @@ public:
 	virtual void OnPossess(APawn* InPawn) override;
 	virtual void OnUnPossess() override;
 	virtual void SetupInputComponent() override;
+	virtual void PostInitializeComponents() override;
 	virtual void SetNewMouseSensitivity() override;
 
 	void BeginInit();

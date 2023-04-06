@@ -23,7 +23,6 @@ EBTNodeResult::Type UBTTask_ARPGTargetNot::ExecuteTask(UBehaviorTreeComponent& O
 
 	OwnerPawn->bMoving = false;
 	OwnerPawn->SetEnermyMoveMode(EEnermyMoveMode::None);
-	//OwnerPawn->SetBlocking(false); // 방패 들기. Mini에 따로 교체
 	OwnerPawn->SetBattleMode(false); // 배틀모드
 	OwnerPawn->SetCollisionRadius(false);
 	OwnerPawn->GetCharacterMovement()->MaxWalkSpeed = OwnerPawn->NormalSpeed;
