@@ -136,10 +136,12 @@ public:
 	/*-------------------
 			Setting
 	----------------------*/
+	UPROPERTY()
+		UGameUserSettings* UserSettings;
 	bool SetDefault();
 	void SetDefaultGameSetting();
-	void GetDefaultGameSetting(FString& Resolution, int32& Anti, int32& ShadowQuality, int32& TextureQuality, float& MouseSensitivity, float& MasterSound);
-	void GISetGameSetting(FString Resolution, int32 Anti, int32 ShadowQuality, int32 TextureQuality, float MouseSensitivity, float MasterSound);
+	void GetDefaultGameSetting(int32& ResolutionIndex, int32& Anti, int32& ShadowQuality, int32& TextureQuality, float& MouseSensitivity, float& MasterSound);
+	void GISetGameSetting(int32 ResolutionIndex, int32 Anti, int32 ShadowQuality, int32 TextureQuality, float MouseSensitivity, float MasterSound);
 	/* 게임 인스턴스에 새로 설정된 셋팅 저장하면서 동시에 커맨드 실행.*/
 
 
@@ -193,10 +195,13 @@ public:
 		class AQuestNPCBase* GetNPCPtr(FString NPCName);
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		TArray<FString> ResolutionArr; // 지원되는 해상도 저장.
+	UPROPERTY()
+		TArray<FIntPoint> ResArr;
 
 	/* 맨 처음 해상도들을 저장한다. */
 	UPROPERTY()
-		FString R;
+		int32 ResIndex;
+
 	UPROPERTY()
 		int32 AA;
 	UPROPERTY()

@@ -17,14 +17,25 @@ void UOptionMenu::Init()
 	GI = Cast<UProjectHGameInstance>(UGameplayStatics::GetGameInstance(this));
 	if (GI)
 	{
-		TArray<FString>& arr = GI->ResolutionArr;
-		for (auto Res : arr)
-			ResComboBox->AddOption(Res);
+		for (int32 i = 0; i < GI->ResolutionArr.Num(); i++)
+		{
+			ResComboBox->AddOption(GI->ResolutionArr[i]);
+
+			if (!ResIndexsMap.Find(GI->ResolutionArr[i]))
+				ResIndexsMap.Emplace(GI->ResolutionArr[i]);
+
+			ResIndexsMap[GI->ResolutionArr[i]] = i;
+		}
 
 		AddComboBoxList();
 
 	// 게임 인스턴스에서 마지막 셋팅들을 전부 받아온다. 그리고 콤보박스에 셋 셀렉트 옵션 한다.
-		GI->GetDefaultGameSetting(Resolution, AASetting, ShadowSetting, TextureSetting, MouseSensitivity, MasterSoundRaito);
+		int32 CurrentResIndex = 0;
+		GI->GetDefaultGameSetting(CurrentResIndex, AASetting, ShadowSetting, TextureSetting, MouseSensitivity, MasterSoundRaito);	
+		if (!GI->ResolutionArr.IsValidIndex(CurrentResIndex))
+			CurrentResIndex = GI->ResolutionArr.Num() - 1;
+
+		Resolution = GI->ResolutionArr[CurrentResIndex];
 		SetComboBox();
 		SetOtherOption();
 	}
@@ -40,15 +51,16 @@ void UOptionMenu::AddComboBoxList()
 	AAComboBox->AddOption("x4");
 	AAComboBox->AddOption("x8");
 
+	ShadowComboBox->AddOption("NONE");
 	ShadowComboBox->AddOption(L"낮음");
 	ShadowComboBox->AddOption(L"보통");
 	ShadowComboBox->AddOption(L"높음");
-	ShadowComboBox->AddOption("NONE");
-
+	
+	TextureComboBox->AddOption("NONE");
 	TextureComboBox->AddOption(L"낮음");
 	TextureComboBox->AddOption(L"보통");
 	TextureComboBox->AddOption(L"높음");
-	TextureComboBox->AddOption("NONE");
+	
 }
 
 void UOptionMenu::AddViewportSetupComboBox()
@@ -67,17 +79,12 @@ void UOptionMenu::SetComboBox()
 		AAComboBox->SetSelectedOption("NONE");
 		break;
 	case 1:
-	case 2:
 		AAComboBox->SetSelectedOption("x2");
 		break;
-
-	case 3:
-	case 4:
+	case 2:
 		AAComboBox->SetSelectedOption("x4");
 		break;
-
-	case 7:
-	case 8:
+	case 3:
 		AAComboBox->SetSelectedOption("x8");
 		break;
 	default:
@@ -127,35 +134,32 @@ void UOptionMenu::SetOtherOption()
 
 void UOptionMenu::SetINI()
 {
-	FString path = FPaths::SourceConfigDir(); // 소스파일이있는 곳의 config파일.
+	//FPaths::SourceConfigDir();
+	FString path = FPaths::ProjectConfigDir(); // 소스파일이있는 곳의 config파일.
 	path += "DefaultMainGameSetting.ini";
 
 	/* 현재 보여질 값으로 저장. */
 	if (bRes)
 	{
 		Resolution = SelectResolution;
-		//GConfig->SetString(TEXT("/Script/GameSetting.MainGameSetting"), TEXT("Resolution"), *SelectResolution, path);
-		SET_OPTION_S("Resolution", path, *Resolution);
+		SET_OPTION("ResIndex", path, ResIndexsMap[Resolution]);
 		bRes = false;
 	}
 	if (bAA)
 	{
 		AASetting = SelectAASetting;
-		//GConfig->SetInt(TEXT("/Script/GameSetting.MainGameSetting"), TEXT("AASetting"), SelectAASetting, path);
 		SET_OPTION("AASetting", path, AASetting);
 		bAA = false;
 	}
 	if (bShadow)
 	{
 		ShadowSetting = SelectShadowSetting;
-		//GConfig->SetInt(TEXT("/Script/GameSetting.MainGameSetting"), TEXT("ShadowQ"), SelectShadowSetting, path);
 		SET_OPTION("ShadowQ", path, ShadowSetting);
 		bShadow = false;
 	}
 	if (bTex)
 	{
 		TextureSetting = SelectTextureSetting;
-		//GConfig->SetInt(TEXT("/Script/GameSetting.MainGameSetting"), TEXT("TextureQ"), SelectTextureSetting, path);
 		SET_OPTION("TextureQ", path, TextureSetting);
 		bTex = false;
 	}
@@ -188,7 +192,7 @@ void UOptionMenu::SetINI()
 
 
 	if (GI)
-		GI->GISetGameSetting(Resolution, AASetting, ShadowSetting, TextureSetting, ControllerMS, MasterSoundRaito);
+		GI->GISetGameSetting(ResIndexsMap[Resolution], AASetting, ShadowSetting, TextureSetting, ControllerMS, MasterSoundRaito);
 
 }
 

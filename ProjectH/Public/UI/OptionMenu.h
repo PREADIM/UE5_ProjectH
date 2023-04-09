@@ -36,6 +36,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 		class UButton* ApplyButton;
 
+	UPROPERTY()
+		TMap<FString, int32> ResIndexsMap;
 
 	/* 현재 선택한 것을 표시할 문자열 */
 	UPROPERTY(BlueprintReadWrite)

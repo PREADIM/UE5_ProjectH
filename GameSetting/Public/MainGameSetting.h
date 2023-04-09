@@ -17,22 +17,13 @@ class GAMESETTING_API UMainGameSetting : public UObject
 public:
 	UMainGameSetting();
 
-	FString GetResolution() const { return Resolution; }
-	int32 GetAA() const { return AASetting; }
-	int32 GetShadowQ() const { return TextureQ; }
-	int32 GetTextureQ() const { return ShadowQ; }
+	int32 GetResIndex() const { return ResIndex; }
 	float GetMouseSensitivity() const { return MouseSensitivity; }
 	float GetMaster() const { return MasterSound; }
 
 public:
 	UPROPERTY(Config)
-		FString Resolution;
-	UPROPERTY(Config)
-		int32 AASetting;
-	UPROPERTY(Config)
-		int32 ShadowQ;
-	UPROPERTY(Config)
-		int32 TextureQ;
+		int32 ResIndex;
 	UPROPERTY(Config)
 		float MouseSensitivity;
 	UPROPERTY(Config)

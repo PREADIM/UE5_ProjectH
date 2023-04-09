@@ -14,6 +14,7 @@
 #include "Special/PlaySequenceActor.h"
 #include <LevelSequencePlayer.h>
 #include <LevelSequenceActor.h>
+#include "GameFramework/GameUserSettings.h"
 #include "UI/Custom/LoadingScreenWidget.h"
 
 FCanQuestNums::FCanQuestNums()
@@ -62,6 +63,8 @@ void UProjectHGameInstance::Init()
 {
 	Super::Init();
 
+	UserSettings = GEngine->GetGameUserSettings();
+
 	if(UGameplayStatics::DoesSaveGameExist(UQuestSave::SlotName, 0)) // 퀘스트 슬롯이 있는가?
 		QuestSave = Cast<UQuestSave>(UGameplayStatics::LoadGameFromSlot(UQuestSave::SlotName, 0));
 	else // 없을경우
@@ -89,10 +92,10 @@ void UProjectHGameInstance::Init()
 		}
 	}
 
-	TArray<FIntPoint> arr;
 	FString AddStr = "x";
-	UKismetSystemLibrary::GetSupportedFullscreenResolutions(arr);
-	for (auto Res : arr)
+	UKismetSystemLibrary::GetSupportedFullscreenResolutions(ResArr);
+	ResolutionArr.Empty();
+	for (auto Res : ResArr)
 	{
 		FString X = FString::FromInt(Res.X);
 		FString Y = FString::FromInt(Res.Y);
@@ -400,19 +403,26 @@ void UProjectHGameInstance::SuccessQuestRunTime(int32 QuestNumber)
 
 bool UProjectHGameInstance::SetDefault()
 {
+	if (!UserSettings)
+		UserSettings = GEngine->GetGameUserSettings();
+
 	auto Setting = GetDefault<UMainGameSetting>();
 	if (Setting)
 	{
-		R = Setting->GetResolution();
-		AA = Setting->GetAA();
-		S = Setting->GetShadowQ();
-		T = Setting->GetTextureQ();
+		ResIndex = Setting->GetResIndex();
+		if (!ResArr.IsValidIndex(ResIndex))
+			ResIndex = ResArr.Num() - 1;
+
+		AA = UserSettings->GetAntiAliasingQuality();
+		S = UserSettings->GetShadowQuality();
+		T = UserSettings->GetTextureQuality();
 		MS = Setting->GetMouseSensitivity();
 		MSound = Setting->GetMaster();
 
 		return true;
 	}
 	return false;
+
 }
 
 /* 게임 해상도나 텍스처 품질 안티앨리어싱 같은 세팅을 ini에 저장해두었다.*/
@@ -420,18 +430,21 @@ void UProjectHGameInstance::SetDefaultGameSetting()
 {
 	if (SetDefault()) // SetDefault에서 값들 가져오기.
 	{	
-		UKismetSystemLibrary::ExecuteConsoleCommand(GetWorld(), *(RES_COMMAND + R));
-		UKismetSystemLibrary::ExecuteConsoleCommand(GetWorld(), *(AA_COMMAND + FString::FromInt(AA)));
-		UKismetSystemLibrary::ExecuteConsoleCommand(GetWorld(), *(S_COMMAND + FString::FromInt(S)));
-		UKismetSystemLibrary::ExecuteConsoleCommand(GetWorld(), *(T_COMMAND + FString::FromInt(T)));
+		UserSettings->SetScreenResolution(ResArr[ResIndex]);
+		UserSettings->ApplyResolutionSettings(false);
 
+		UserSettings->SetAntiAliasingQuality(AA);
+		UserSettings->SetShadowQuality(S);
+		UserSettings->SetTextureQuality(T);
+
+		UserSettings->ApplySettings(false);
 	}
 }
 
 /* 게임 인스턴스안의 맨처음에 옵션값을 참조 인자에 저장해주는 함수.*/
-void UProjectHGameInstance::GetDefaultGameSetting(FString& Resolution, int32& Anti, int32& ShadowQuality, int32& TextureQuality, float& MouseSensitivity, float& MasterSound)
+void UProjectHGameInstance::GetDefaultGameSetting(int32& ResolutionIndex, int32& Anti, int32& ShadowQuality, int32& TextureQuality, float& MouseSensitivity, float& MasterSound)
 {
-	Resolution = R;
+	ResolutionIndex = ResIndex;
 	Anti = AA;
 	ShadowQuality = S;
 	TextureQuality = T;
@@ -441,22 +454,27 @@ void UProjectHGameInstance::GetDefaultGameSetting(FString& Resolution, int32& An
 
 
 /* 옵션 변경시에 게임 인스턴스에 저장하는 함수. */
-void UProjectHGameInstance::GISetGameSetting(FString Resolution, int32 Anti, int32 ShadowQuality, int32 TextureQuality, float MouseSensitivity, float MasterSound)
+void UProjectHGameInstance::GISetGameSetting(int32 ResolutionIndex, int32 Anti, int32 ShadowQuality, int32 TextureQuality, float MouseSensitivity, float MasterSound)
 {
-	R = Resolution;
+	if (ResIndex != ResolutionIndex)
+		UserSettings->SetFullscreenMode(EWindowMode::Windowed);
+
+	ResIndex = ResolutionIndex;
 	AA = Anti;
 	S = ShadowQuality;
 	T = TextureQuality;
 	MS = MouseSensitivity;
 	MSound = MasterSound;
 
-	UKismetSystemLibrary::ExecuteConsoleCommand(GetWorld(), *(RES_COMMAND + Resolution));
-	UKismetSystemLibrary::ExecuteConsoleCommand(GetWorld(), *(AA_COMMAND + FString::FromInt(Anti)));
-	UKismetSystemLibrary::ExecuteConsoleCommand(GetWorld(), *(S_COMMAND + FString::FromInt(ShadowQuality)));
-	UKismetSystemLibrary::ExecuteConsoleCommand(GetWorld(), *(T_COMMAND + FString::FromInt(TextureQuality)));
+	UserSettings->SetScreenResolution(ResArr[ResIndex]);
+	UserSettings->ApplyResolutionSettings(false);
+
+	UserSettings->SetAntiAliasingQuality(AA);
+	UserSettings->SetShadowQuality(S);
+	UserSettings->SetTextureQuality(T);
+
+	UserSettings->ApplySettings(false);
 }
-
-
 
 
 void UProjectHGameInstance::SetDontPlayEnding()
