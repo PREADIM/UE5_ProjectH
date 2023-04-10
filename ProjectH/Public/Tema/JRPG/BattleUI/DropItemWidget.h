@@ -20,12 +20,9 @@ public:
 
 	UPROPERTY()
 		class AJRPGPlayerController* OwnerController;
-	/*UPROPERTY(BlueprintReadWrite, Transient, meta = (BindWidgetAnim))
-		class UWidgetAnimation* ItemAnimation;*/
 
 public:
 	void Init(FString CharName);
-	//void PlayItemAnim();
 
 	UFUNCTION(BlueprintCallable)
 		void MouseOff();

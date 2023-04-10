@@ -148,19 +148,16 @@ void UOptionMenu::SetINI()
 	if (bAA)
 	{
 		AASetting = SelectAASetting;
-		SET_OPTION("AASetting", path, AASetting);
 		bAA = false;
 	}
 	if (bShadow)
 	{
 		ShadowSetting = SelectShadowSetting;
-		SET_OPTION("ShadowQ", path, ShadowSetting);
 		bShadow = false;
 	}
 	if (bTex)
 	{
 		TextureSetting = SelectTextureSetting;
-		SET_OPTION("TextureQ", path, TextureSetting);
 		bTex = false;
 	}
 

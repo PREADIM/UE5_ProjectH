@@ -3,6 +3,7 @@
 
 #include "PlayerControllerBase.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "GameMode/ProjectHGameInstance.h"
 
 
 
@@ -30,4 +31,18 @@ void APlayerControllerBase::DisableInputActor(bool bFlag)
 		GetPawn()->DisableInput(this);
 	else
 		GetPawn()->EnableInput(this);
+}
+
+
+void APlayerControllerBase::SetNewMouseSensitivity()
+{
+	if (MouseSensitivity == 0.f)
+	{
+		class UProjectHGameInstance* GI = Cast<UProjectHGameInstance>(UGameplayStatics::GetGameInstance(this));
+		if (GI)
+			MouseSensitivity = GI->MS;
+	}
+
+	if (MouseSensitivity == 0.f)
+		MouseSensitivity = 1.f;
 }

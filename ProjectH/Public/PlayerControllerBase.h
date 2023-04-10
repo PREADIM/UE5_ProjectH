@@ -31,7 +31,7 @@ public:
 
 public:
 	// 마우스 감도 새로운 값 적용하는 함수.
-	virtual void SetNewMouseSensitivity() {};
+	virtual void SetNewMouseSensitivity();
 
 	UFUNCTION(BlueprintCallable)
 		void MouseOn();

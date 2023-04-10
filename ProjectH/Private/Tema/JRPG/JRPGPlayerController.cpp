@@ -65,17 +65,17 @@ void AJRPGPlayerController::OnPossess(APawn* NewPawn)
 
 	if (Cast<AJRPGUnit>(NewPawn))
 	{
+		if (GM)
+			GM->SetControllerInit();
+
 		RepreCharacter = Cast<AJRPGUnit>(NewPawn);
 		RepreCharacterNum = RepreCharacter->CharNum;
 
-		UProjectHGameInstance* GI = Cast<UProjectHGameInstance>(UGameplayStatics::GetGameInstance(this));
+		/*UProjectHGameInstance* GI = Cast<UProjectHGameInstance>(UGameplayStatics::GetGameInstance(this));
 		if (GI)
-			MouseSensitivity = GI->MS;
+			MouseSensitivity = GI->MS;*/
 
-		SetNewMouseSensitivity();
-
-		if (GM)
-			GM->SetControllerInit();
+		SetNewMouseSensitivity();	
 	}	
 }
 
@@ -87,6 +87,9 @@ void AJRPGPlayerController::OnUnPossess()
 
 void AJRPGPlayerController::SetNewMouseSensitivity()
 {
+	if (MouseSensitivity == 0.f)
+		MouseSensitivity = 12.0f;
+
 	if (RepreCharacter)
 		RepreCharacter->MouseSensitivity = MouseSensitivity;
 }
@@ -200,6 +203,7 @@ void AJRPGPlayerController::SetupDropCharWidget(int32 DropCharNum)
 		FString DropCharName = GetUnitUI(DropCharNum)->CharName;
 		DropCharWidget->Init(DropCharName);
 		DropCharWidget->AddToViewport();
+		MouseOn();
 	}
 
 }
@@ -323,22 +327,6 @@ void AJRPGPlayerController::MouseOnOff()
 		MouseOn();
 }
 
-
-//void AJRPGPlayerController::MouseOn()
-//{
-//	int32 x, y;
-//	GetViewportSize(x, y);
-//	SetMouseLocation(UKismetMathLibrary::FTrunc(x / 2), UKismetMathLibrary::FTrunc(y / 2));
-//	SetShowMouseCursor(true);
-//	SetInputMode(FInputModeGameAndUI());
-//}
-//
-//
-//void AJRPGPlayerController::MouseOff()
-//{
-//	SetShowMouseCursor(false);
-//	SetInputMode(FInputModeGameOnly());
-//}
 
 
 void AJRPGPlayerController::SetSave()

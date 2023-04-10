@@ -269,6 +269,8 @@ void AProjectH_PC::ClearQTEWidget()
 
 void AProjectH_PC::SetNewMouseSensitivity()
 {
+	Super::SetNewMouseSensitivity();
+
 	if (OwnerCharacter)
 		OwnerCharacter->MouseSensitivity = MouseSensitivity;
 }

@@ -65,6 +65,8 @@ void AARPGPlayerController::OnUnPossess()
 
 void AARPGPlayerController::SetNewMouseSensitivity()
 {
+	Super::SetNewMouseSensitivity();
+
 	if (OwnerUnit)
 		OwnerUnit->MouseSensitivity = MouseSensitivity;
 }

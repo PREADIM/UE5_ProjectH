@@ -63,9 +63,9 @@ void AJRPGUnit::BeginPlay()
 		BattleWidgetOnOff(false);
 	}
 
-	UProjectHGameInstance* GI = Cast<UProjectHGameInstance>(UGameplayStatics::GetGameInstance(this));
+	/*UProjectHGameInstance* GI = Cast<UProjectHGameInstance>(UGameplayStatics::GetGameInstance(this));
 	if (GI)
-		MouseSensitivity = GI->MS;
+		MouseSensitivity = GI->MS;*/
 
 	BattleDefaultLocation = GetActorLocation();
 

@@ -64,6 +64,12 @@ void UProjectHGameInstance::Init()
 	Super::Init();
 
 	UserSettings = GEngine->GetGameUserSettings();
+	if (UserSettings)
+	{
+		UserSettings->SetGlobalIlluminationQuality(2);
+		UserSettings->SetReflectionQuality(2);
+		UserSettings->SetFoliageQuality(1);
+	}
 
 	if(UGameplayStatics::DoesSaveGameExist(UQuestSave::SlotName, 0)) // 퀘스트 슬롯이 있는가?
 		QuestSave = Cast<UQuestSave>(UGameplayStatics::LoadGameFromSlot(UQuestSave::SlotName, 0));
@@ -112,8 +118,11 @@ void UProjectHGameInstance::Init()
 void UProjectHGameInstance::OpenLevelStart(FString LevelName, bool bPlaySequence, class APlayerControllerBase* PCBase)
 {
 	if (PCBase != nullptr)
+	{
 		PCBase->OnHiddenWidget.Broadcast();
-
+		PCBase->DisableInput(PCBase);
+	}
+		
 	if (bOpeningLevel)
 		return;
 
@@ -177,7 +186,7 @@ void UProjectHGameInstance::OpenLevelSepuenceEnd()
 void UProjectHGameInstance::AsyncLodedMap()
 {
 	FTimerHandle Handle;
-	GetWorld()->GetTimerManager().SetTimer(Handle, this, &UProjectHGameInstance::LodeMap, 3.f, false);
+	GetWorld()->GetTimerManager().SetTimer(Handle, this, &UProjectHGameInstance::LodeMap, 1.5f, false);
 }
 
 void UProjectHGameInstance::LodeMap()
@@ -434,8 +443,15 @@ void UProjectHGameInstance::SetDefaultGameSetting()
 		UserSettings->ApplyResolutionSettings(false);
 
 		UserSettings->SetAntiAliasingQuality(AA);
+
 		UserSettings->SetShadowQuality(S);
+		UserSettings->SetPostProcessingQuality(S);
+
+
 		UserSettings->SetTextureQuality(T);
+		UserSettings->SetVisualEffectQuality(T);
+		UserSettings->SetShadingQuality(T);
+		
 
 		UserSettings->ApplySettings(false);
 	}
@@ -470,8 +486,14 @@ void UProjectHGameInstance::GISetGameSetting(int32 ResolutionIndex, int32 Anti, 
 	UserSettings->ApplyResolutionSettings(false);
 
 	UserSettings->SetAntiAliasingQuality(AA);
+
 	UserSettings->SetShadowQuality(S);
+	UserSettings->SetPostProcessingQuality(S);
+
+
 	UserSettings->SetTextureQuality(T);
+	UserSettings->SetVisualEffectQuality(T);
+	UserSettings->SetShadingQuality(T);
 
 	UserSettings->ApplySettings(false);
 }
