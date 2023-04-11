@@ -95,8 +95,6 @@ void AARPGEnermy::Death()
 void AARPGEnermy::ZeroAP()
 {
 	// 적은 AP가 곧 그로기 이기때문에 다르게 생성.
-
-
 }
 
 

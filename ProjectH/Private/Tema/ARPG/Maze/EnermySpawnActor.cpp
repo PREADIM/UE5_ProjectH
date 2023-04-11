@@ -31,16 +31,10 @@ void AEnermySpawnActor::OverlapUnit(UPrimitiveComponent* OverlappedComp, AActor*
 	{
 		SpawnRandEnermy();
 		if (SpawnEnermy)
-		{
 			AttachToActor(SpawnEnermy, FAttachmentTransformRules::SnapToTargetIncludingScale);
-			//_DEBUG("Attach Spawner");
-		}
 	}
 	else
-	{
 		SpawnEnermy->SetHiddenActor(false);
-		//_DEBUG("Hidden false");
-	}
 }
 
 
@@ -48,7 +42,7 @@ void AEnermySpawnActor::OverlapEndUnit(UPrimitiveComponent* OverlappedComp, AAct
 {
 	if (SpawnEnermy)
 	{
-		SpawnEnermy->SetActorLocation(DefaultLocation);
+		//SpawnEnermy->SetActorLocation(DefaultLocation);
 		SpawnEnermy->SetHiddenActor(true);
 	}
 }

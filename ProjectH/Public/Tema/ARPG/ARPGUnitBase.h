@@ -72,7 +72,8 @@ public:
 	//TargetCharacter와 this 캐릭터의 내적 연산. 위치 값과, 원하는 각도를 대입해서 bool로 받아옴.
 	bool TargetDotProduct(FVector TargetLocation, float CompareCos);
 
-	void BattleHPWidgetHide();
+	UFUNCTION()
+		void BattleHPWidgetHide();
 public:
 	/*----------------
 		공통 변수

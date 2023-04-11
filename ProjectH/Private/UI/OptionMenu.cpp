@@ -31,7 +31,7 @@ void UOptionMenu::Init()
 
 	// 게임 인스턴스에서 마지막 셋팅들을 전부 받아온다. 그리고 콤보박스에 셋 셀렉트 옵션 한다.
 		int32 CurrentResIndex = 0;
-		GI->GetDefaultGameSetting(CurrentResIndex, AASetting, ShadowSetting, TextureSetting, MouseSensitivity, MasterSoundRaito);	
+		GI->GetDefaultGameSetting(&CurrentResIndex, &AASetting, &ShadowSetting, &TextureSetting, &GIMS, &MasterSoundRaito);
 		if (!GI->ResolutionArr.IsValidIndex(CurrentResIndex))
 			CurrentResIndex = GI->ResolutionArr.Num() - 1;
 
@@ -127,7 +127,7 @@ void UOptionMenu::SetComboBox()
 
 void UOptionMenu::SetOtherOption()
 {
-	MouseSensitivity = MouseSensitivity / MaxMouseSensitivity;
+	MouseSensitivity = GIMS / MaxMouseSensitivity;
 	BindMasterSoundMix(MasterSoundRaito);
 }
 
@@ -161,7 +161,7 @@ void UOptionMenu::SetINI()
 		bTex = false;
 	}
 
-	float ControllerMS = 0.f;
+	float ControllerMS = GIMS;
 	if (bMS)
 	{
 		MouseSensitivity = SelectMouseSensitivity;

@@ -48,6 +48,8 @@ public:
 		int32 ShadowSetting;
 	UPROPERTY(BlueprintReadWrite)
 		int32 TextureSetting;
+	UPROPERTY()
+		float GIMS; /* GI에서 마우스 감도 얻어오기 용 (MouseSensitivity는 0~1 값이고 GI에 저장된 감도는 1.0~100.0이다.) */
 	UPROPERTY(BlueprintReadWrite)
 		float MouseSensitivity; // 0~ 1사이 여야한다.
 	UPROPERTY(BlueprintReadWrite)

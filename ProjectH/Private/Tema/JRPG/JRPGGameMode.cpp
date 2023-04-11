@@ -108,14 +108,14 @@ void AJRPGGameMode::PostLogin(APlayerController* Login)
 					JRPGSave->FirstSave();
 				}
 
+
 				bBattleTutorial = JRPGSave->JRPGFieldEnermySave.bTutorial;
 				bPartyTutorial = JRPGSave->JRPGFieldEnermySave.bPartyTutorial;
+				SetControllerInit();
 				AJRPGUnit* DefaultCharacter = GetCharacterSpawn(JRPGSave->JRPGSerial.RepreCharacterNum, JRPGSave->JRPGSerial.FieldLocation);
 
 				if (DefaultCharacter)
-				{
 					OwnerController->OnPossess(Cast<APawn>(DefaultCharacter));				
-				}
 			}		
 		}
 

@@ -61,9 +61,7 @@ void AARPGUnitBase::Tick(float DeltaSeconds)
 			{
 				UnitState.SetAP(UnitState.AP - (APUseSpeed * DeltaSeconds));
 				if (UnitState.AP <= 0.f)
-				{
 					ZeroAP();
-				}
 			}
 		}
 	}
@@ -78,9 +76,7 @@ void AARPGUnitBase::Tick(float DeltaSeconds)
 				bAttackAndHitAP = false; // 이것도 같이 해줘야한다.
 			}
 			else
-			{
 				CurrentWaitTime = CurrentWaitTime + DeltaSeconds;
-			}
 		}
 		else if (bAttackAndHitAP)
 		{
@@ -90,9 +86,7 @@ void AARPGUnitBase::Tick(float DeltaSeconds)
 				CurrentWaitTime = 0.f;
 			}
 			else
-			{
 				CurrentWaitTime = CurrentWaitTime + DeltaSeconds;
-			}
 		}
 
 		
@@ -120,17 +114,19 @@ void AARPGUnitBase::Death()
 {
 	bDeath = true;
 	FTimerHandle Handle;
-	GetWorld()->GetTimerManager().SetTimer(Handle, this, &AARPGUnitBase::BattleHPWidgetHide, 4.0f, false);
+	GetWorld()->GetTimerManager().SetTimer(Handle, this, &AARPGUnitBase::BattleHPWidgetHide, 3.0f, false);
 
-	FTimerHandle DeathHandle;
+	/*FTimerHandle DeathHandle;
 	GetWorld()->GetTimerManager().SetTimer(DeathHandle, FTimerDelegate::CreateLambda([&]()
 	{
 		Destroy();		
-	}), 10.f, false);
+	}), 10.f, false);*/
+	// 게임 넘어갈때 크래쉬 나니깐 만약 사용할거면 함수따로 만들어서 람다x
 	// 죽었을때 삭제 함수는 일단 보류. 미로에서 길찾을때 표식용으로 사용가능
 
 	BPBindDeath();
 }
+
 
 void AARPGUnitBase::BattleHPWidgetHide()
 { 

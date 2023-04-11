@@ -43,8 +43,10 @@ void UARPG_UnitAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 			bIsInAir = OwnerUnit->GetCharacterMovement()->IsFalling();
 			IsMoving = OwnerUnit->GetVelocity().Length() > 0.f;
 			bIsSprint = OwnerUnit->bSprint;
+			if (!IsMoving && bIsSprint)
+				OwnerUnit->SprintReleased();
+
 			bIsBlocking = OwnerUnit->bBlockMode;
-			//bHitting = OwnerUnit->bHitting;
 
 			bIsAttacking = OwnerUnit->bAttacking;
 			AttackingLeft = OwnerUnit->bAttackLeft;

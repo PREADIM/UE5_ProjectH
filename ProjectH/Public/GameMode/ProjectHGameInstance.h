@@ -140,7 +140,7 @@ public:
 		UGameUserSettings* UserSettings;
 	bool SetDefault();
 	void SetDefaultGameSetting();
-	void GetDefaultGameSetting(int32& ResolutionIndex, int32& Anti, int32& ShadowQuality, int32& TextureQuality, float& MouseSensitivity, float& MasterSound);
+	void GetDefaultGameSetting(int32* ResolutionIndex, int32* Anti, int32* ShadowQuality, int32* TextureQuality, float* MouseSensitivity, float* MasterSound);
 	void GISetGameSetting(int32 ResolutionIndex, int32 Anti, int32 ShadowQuality, int32 TextureQuality, float MouseSensitivity, float MasterSound);
 	/* 게임 인스턴스에 새로 설정된 셋팅 저장하면서 동시에 커맨드 실행.*/
 

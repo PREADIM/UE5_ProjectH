@@ -98,6 +98,7 @@ void UProjectHGameInstance::Init()
 		}
 	}
 
+	/* 지원되는 스크린 저장.*/
 	FString AddStr = "x";
 	UKismetSystemLibrary::GetSupportedFullscreenResolutions(ResArr);
 	ResolutionArr.Empty();
@@ -111,7 +112,7 @@ void UProjectHGameInstance::Init()
 
 
 	SetDefaultGameSetting();
-	/* 지원되는 스크린 저장.*/
+	
 }
 
 /* 오픈할 레벨 이름과 화면이 어두워지는 시퀀스를 사용할 것인지. */
@@ -174,7 +175,6 @@ void UProjectHGameInstance::OpenLevelStart(FString LevelName, bool bPlaySequence
 
 void UProjectHGameInstance::OpenLevelSepuenceEnd()
 {
-
 	LoadingScreen->AddToViewport();
 	LoadPackageAsync(LevelPath.Level.ToSoftObjectPath().ToString(), FLoadPackageAsyncDelegate::CreateLambda([=](const FName& PackageName, UPackage* Package, EAsyncLoadingResult::Type Result)
 		{
@@ -186,7 +186,7 @@ void UProjectHGameInstance::OpenLevelSepuenceEnd()
 void UProjectHGameInstance::AsyncLodedMap()
 {
 	FTimerHandle Handle;
-	GetWorld()->GetTimerManager().SetTimer(Handle, this, &UProjectHGameInstance::LodeMap, 1.5f, false);
+	GetWorld()->GetTimerManager().SetTimer(Handle, this, &UProjectHGameInstance::LodeMap, 3.0f, false);
 }
 
 void UProjectHGameInstance::LodeMap()
@@ -458,14 +458,14 @@ void UProjectHGameInstance::SetDefaultGameSetting()
 }
 
 /* 게임 인스턴스안의 맨처음에 옵션값을 참조 인자에 저장해주는 함수.*/
-void UProjectHGameInstance::GetDefaultGameSetting(int32& ResolutionIndex, int32& Anti, int32& ShadowQuality, int32& TextureQuality, float& MouseSensitivity, float& MasterSound)
+void UProjectHGameInstance::GetDefaultGameSetting(int32* ResolutionIndex, int32* Anti, int32* ShadowQuality, int32* TextureQuality, float* MouseSensitivity, float* MasterSound)
 {
-	ResolutionIndex = ResIndex;
-	Anti = AA;
-	ShadowQuality = S;
-	TextureQuality = T;
-	MouseSensitivity = MS;
-	MasterSound = MSound;
+	*ResolutionIndex = ResIndex;
+	*Anti = AA;
+	*ShadowQuality = S;
+	*TextureQuality = T;
+	*MouseSensitivity = MS;
+	*MasterSound = MSound;
 }
 
 

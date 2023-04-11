@@ -427,9 +427,13 @@ void AARPGUnit::Sprint()
 	if (bAttacking)
 		return;
 
-	if (!FPSMeshAnimInstance->IsMoving)
+	if (GetVelocity().Length() <= 0.f)
+	{
+		SprintReleased();
 		return;
+	}
 
+		
 	if(CanUseAP())
 		bSprint = true;
 }
@@ -577,6 +581,7 @@ void AARPGUnit::SpecialAttackEnd()
 	bSpecialAttackMode = false;
 	bSpecialAttackPlaying = false;
 	bCanParringAttack = false;
+
 	OnEndAP.Broadcast();
 	UnitState.ATK = UnitState.NormallyATK;
 
@@ -585,6 +590,10 @@ void AARPGUnit::SpecialAttackEnd()
 
 	SetFPSMeshOwnerNoSee(false);
 	SetTPSMeshOwnerNoSee(true);
+
+	FRotator R = OwnerController->GetControlRotation();
+	R = FRotator(0.f, R.Yaw + 180.f, 0.f); // 몽타주가 뒤를 돌고있기때문.
+	OwnerController->SetControlRotation(R);
 }
 
 void AARPGUnit::SetFPSMeshOwnerNoSee(bool bFlag)
