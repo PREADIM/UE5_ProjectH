@@ -20,7 +20,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float AP_DMG; // 이 공격이 AP를 얼마나 깎는지 (AP가 0이면 방패가 깨진다.)
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		int32 CurrentCnt; // 현재 이 스킬을 사용한 횟수.
+		int32 CurrentCnt = 0; // 현재 이 스킬을 사용한 횟수.
 	
 
 	FARPGAttackStruct();

@@ -274,6 +274,10 @@ void AARPGEnermy_FstBoss::ZeroAP()
 void AARPGEnermy_FstBoss::DeathReset()
 {
 	bMoving = false;
+
+	if (FstBossAnimInstance->IsAnyMontagePlaying())
+		FstBossAnimInstance->Montage_Stop(0.1f);
+
 	WeaponOverlapEnd(3);
 	AttackEnd();
 	if (PlayerUnit)

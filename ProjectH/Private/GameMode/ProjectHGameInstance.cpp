@@ -186,7 +186,7 @@ void UProjectHGameInstance::OpenLevelSepuenceEnd()
 void UProjectHGameInstance::AsyncLodedMap()
 {
 	FTimerHandle Handle;
-	GetWorld()->GetTimerManager().SetTimer(Handle, this, &UProjectHGameInstance::LodeMap, 3.0f, false);
+	GetWorld()->GetTimerManager().SetTimer(Handle, this, &UProjectHGameInstance::LodeMap, 1.5f, false);
 }
 
 void UProjectHGameInstance::LodeMap()

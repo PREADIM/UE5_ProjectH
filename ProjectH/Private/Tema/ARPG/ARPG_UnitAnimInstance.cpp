@@ -197,6 +197,9 @@ void UARPG_UnitAnimInstance::AnimNotify_BlockStart()
 {
 	if (OwnerUnit)
 	{
+		if (!OwnerUnit->bRMBPush)
+			return;
+
 		OwnerUnit->bBlocking = true;
 		float AP = OwnerUnit->UnitState.AP - OwnerUnit->RMB_AP;
 		OwnerUnit->UnitState.SetAP(AP);

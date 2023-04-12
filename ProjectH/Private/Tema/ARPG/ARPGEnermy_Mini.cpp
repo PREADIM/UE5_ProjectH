@@ -340,6 +340,9 @@ void AARPGEnermy_Mini::Parring(bool bFlag)
 void AARPGEnermy_Mini::DeathReset()
 {
 	bMoving = false;
+	if (EnermyAnimInstance->IsAnyMontagePlaying())
+		EnermyAnimInstance->Montage_Stop(0.1f);
+
 	EndAttack();
 	Guard(false);
 }

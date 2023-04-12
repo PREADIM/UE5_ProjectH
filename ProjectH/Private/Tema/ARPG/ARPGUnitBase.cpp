@@ -87,11 +87,8 @@ void AARPGUnitBase::Tick(float DeltaSeconds)
 			}
 			else
 				CurrentWaitTime = CurrentWaitTime + DeltaSeconds;
-		}
-
-		
+		}	
 	}
-
 
 }
 
@@ -128,12 +125,13 @@ void AARPGUnitBase::Death()
 }
 
 
+
+
 void AARPGUnitBase::BattleHPWidgetHide()
 { 
 	BattleHPComponent->SetVisibility(false); 
 }
 
-// Called to bind functionality to input
 void AARPGUnitBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);

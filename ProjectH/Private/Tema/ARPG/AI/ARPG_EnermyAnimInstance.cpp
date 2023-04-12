@@ -146,6 +146,9 @@ void UARPG_EnermyAnimInstance::AnimNotify_PlayAttackSound()
 
 void UARPG_EnermyAnimInstance::AnimNotify_AttackStart()
 {
+	if (OwnerUnit->bHitting)
+		return;
+
 	OwnerUnit->SetWeaponCollision(true);
 }
 

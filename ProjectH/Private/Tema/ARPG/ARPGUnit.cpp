@@ -831,9 +831,7 @@ void AARPGUnit::HitEnd()
 
 	//맞고 나서도 RMB가 눌려져있으면 블럭킹이 알아서 되게 한다.
 	if (bRMBPush)
-	{
 		bBlockMode = true;
-	}
 }
 
 // 방패 피격시 뭐 추가 기능이 있을수 있으니 방패 끄기 기능 함수를 따로 생성
@@ -852,58 +850,58 @@ void AARPGUnit::ShieldZeroAP()
 }
 
 
-// 적 락온
-//void AARPGUnit::LockOn()
-//{
-//	if (bTargeting)
-//	{
-//		bTargeting = false;
-//		LockOnAddViewport(false);
-//		return;
-//	}
-//
-//
-//	TArray<AActor*> OutActors;
-//	APawn* TargetPawn = nullptr;
-//
-//	bool bResult = UKismetSystemLibrary::SphereOverlapActors(GetWorld(), GetActorLocation(), LockOnRadius, ObjectType, nullptr, IgnoreActor, OutActors);
-//	DrawDebugSphere(GetWorld(), GetActorLocation(), LockOnRadius, 20, bResult ? FColor::Green : FColor::Red, false, 3.0f);
-//
-//	if (bResult)
-//	{
-//		float Distance = LockOnRadius;
-//		for (auto OutActor : OutActors)
-//		{
-//			float temp = GetDistanceTo(OutActor);
-//			Distance > temp ? temp : Distance;
-//			TargetPawn = Cast<APawn>(OutActor);
-//			if (TargetPawn)
-//			{
-//				TargetingPawn = TargetPawn;
-//				bTargeting = true;
-//				LockOnAddViewport(true);
-//				_DEBUG("Lock True");
-//			}
-//		}
-//
-//		return;
-//	}
-//}
-//
-//void AARPGUnit::LockOnSetPosition(FVector TargetPos)
-//{
-//	if (OwnerController)
-//	{
-//		FVector2D Pos;
-//		OwnerController->ProjectWorldLocationToScreen(TargetPos, Pos);
-//		OwnerController->SetLockPosition(Pos);
-//	}
-//}
+ /*적 락온
+void AARPGUnit::LockOn()
+{
+	if (bTargeting)
+	{
+		bTargeting = false;
+		LockOnAddViewport(false);
+		return;
+	}
 
-//void AARPGUnit::LockOnAddViewport(bool bFlag)
-//{
-//	OwnerController->LockOnAddViewport(bFlag);
-//}
+
+	TArray<AActor*> OutActors;
+	APawn* TargetPawn = nullptr;
+
+	bool bResult = UKismetSystemLibrary::SphereOverlapActors(GetWorld(), GetActorLocation(), LockOnRadius, ObjectType, nullptr, IgnoreActor, OutActors);
+	DrawDebugSphere(GetWorld(), GetActorLocation(), LockOnRadius, 20, bResult ? FColor::Green : FColor::Red, false, 3.0f);
+
+	if (bResult)
+	{
+		float Distance = LockOnRadius;
+		for (auto OutActor : OutActors)
+		{
+			float temp = GetDistanceTo(OutActor);
+			Distance > temp ? temp : Distance;
+			TargetPawn = Cast<APawn>(OutActor);
+			if (TargetPawn)
+			{
+				TargetingPawn = TargetPawn;
+				bTargeting = true;
+				LockOnAddViewport(true);
+				_DEBUG("Lock True");
+			}
+		}
+
+		return;
+	}
+}
+
+void AARPGUnit::LockOnSetPosition(FVector TargetPos)
+{
+	if (OwnerController)
+	{
+		FVector2D Pos;
+		OwnerController->ProjectWorldLocationToScreen(TargetPos, Pos);
+		OwnerController->SetLockPosition(Pos);
+	}
+}
+
+void AARPGUnit::LockOnAddViewport(bool bFlag)
+{
+	OwnerController->LockOnAddViewport(bFlag);
+}*/
 
 
 void AARPGUnit::PlaySound(class USoundBase* Sound)

@@ -197,18 +197,27 @@ void UARPG_FstBossAnimInstance::PlayedSoundFunc()
 
 void UARPG_FstBossAnimInstance::AnimNotify_TwinAttackStart()
 {
+	if (FstBoss->bHitting)
+		return;
+
 	FstBoss->bAttacking = true;
 	FstBoss->SetWeaponCollision(true, 0);
 }
 
 void UARPG_FstBossAnimInstance::AnimNotify_LeftAttackStart()
 {
+	if (FstBoss->bHitting)
+		return;
+
 	FstBoss->bAttacking = true;
 	FstBoss->SetWeaponCollision(true, 1);
 }
 
 void UARPG_FstBossAnimInstance::AnimNotify_RightAttackStart()
 {
+	if (FstBoss->bHitting)
+		return;
+
 	FstBoss->bAttacking = true;
 	FstBoss->SetWeaponCollision(true, 2);
 }
