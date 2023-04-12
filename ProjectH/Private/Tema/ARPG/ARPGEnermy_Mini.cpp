@@ -266,9 +266,7 @@ void AARPGEnermy_Mini::SpecialAttackHitMontage()
 void AARPGEnermy_Mini::DeathWeaponSimulate()
 {
 	// 죽으면 들고있는 무기를 소켓에서 떼어내 피직스 시뮬
-
 	FDetachmentTransformRules Rule(EDetachmentRule::KeepWorld, false);
-
 	if (Weapon)
 	{
 		Weapon->DetachFromActor(Rule);

@@ -37,13 +37,15 @@ void AARPGWeapon::SetPhysics()
 	PlayWeaponSound(EWeaponSFX::DropSFX);
 	FTimerHandle DestroyHandle;
 	if (GetWorld())
-	{
-		GetWorld()->GetTimerManager().SetTimer(DestroyHandle, FTimerDelegate::CreateLambda([&]()
-			{
-				Destroy();
-			}), 10.f, false);
-	}
+		GetWorld()->GetTimerManager().SetTimer(DestroyHandle, this, &AARPGWeapon::DestroyWeapon, 10.f, false);
 }
+
+void AARPGWeapon::DestroyWeapon()
+{
+	Destroy();
+}
+
+
 
 void AARPGWeapon::ChargeAttackInit()
 {
