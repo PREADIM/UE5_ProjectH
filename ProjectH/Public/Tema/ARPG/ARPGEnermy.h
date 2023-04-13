@@ -94,7 +94,7 @@ public:
 
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AttackComponent", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AttackComponent")
 		class UARPGAttackComponent* AttackComponent;
 	class UARPGAttackComponent* GetAttackComponent() { return AttackComponent; }
 

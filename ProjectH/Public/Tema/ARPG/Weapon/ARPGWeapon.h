@@ -37,6 +37,7 @@ public:
 	virtual void SetWeaponCollision(bool bFlag) {}
 	virtual void SetPhysics();
 	virtual void SetOwnerNoSee(bool bFlag) {}
+	virtual void SetWeaponNoSee() {} /* 아예 보이지 않게 하기 */
 
 	UFUNCTION()
 		void DestroyWeapon();

@@ -56,15 +56,15 @@ void UBTService_Overlap::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* Node
 					// 보스는 무조건 추적 이다.
 					if (!OwnerPawn->PlayerUnit) // 아직 공격당하지않았으므로 탐지.
 					{
-						if (OwnerPawn->TargetDotProduct(Unit->GetActorLocation(), 0.34)) // 70도 가량
+						if (OwnerPawn->TargetDotProduct(Unit->GetActorLocation(), 0.1)) // 84도 가량
 						{
 							OwnerComp.GetBlackboardComponent()->SetValueAsObject(FName("TargetUnit"), Unit);
-							//DrawDebugSphere(World, Center, CollisionRadius, 16, FColor::Green, false, 0.2f);
-
 							OwnerPawn->PlayerUnit = Unit; // 타겟 플레이어 설정.
 							OwnerPawn->bMoving = true; // 무빙 실행★
 							OwnerPawn->SetBattleMode(true); // 배틀모드
 							OwnerPawn->SetCollisionRadius(true);
+							bFindUnit = true;
+							CurrentSecond = 0.f;
 							return;
 						}
 					}
@@ -90,8 +90,18 @@ void UBTService_Overlap::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* Node
 		OwnerPawn->SetBattleMode(false); // 배틀모드
 	}
 
-	OwnerComp.GetBlackboardComponent()->SetValueAsObject(FName("TargetUnit"), nullptr);
-	//DrawDebugSphere(World, Center, CollisionRadius, 16, FColor::Red, false, 0.2f);
+
+	/* 유닛을 발견했지만 현재 놓친 경우 */
+	if (bFindUnit && CurrentSecond < FindUnitSecond)
+	{
+		CurrentSecond += DeltaSeconds;
+	}
+	else
+	{
+		OwnerComp.GetBlackboardComponent()->SetValueAsObject(FName("TargetUnit"), nullptr);
+		bFindUnit = false;
+	}
+		
 }
 
 

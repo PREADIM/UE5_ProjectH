@@ -19,9 +19,7 @@ void UARPGAttackComponent::Init(TArray<TSubclassOf<UAttackClass>> BP_Attacks)
 {
 	OwnerUnit = Cast<AARPGUnitBase>(GetOwner());
 	if (OwnerUnit == nullptr)
-	{
 		return;
-	}
 
 	AttackCnt = 0;
 	Attacks.Empty();
@@ -30,7 +28,6 @@ void UARPGAttackComponent::Init(TArray<TSubclassOf<UAttackClass>> BP_Attacks)
 	for (TSubclassOf<UAttackClass> BP_Attack : BP_Attacks)
 	{
 		UAttackClass* temp = NewObject<UAttackClass>(this, BP_Attack); //º¸·ù
-		//UAttackClass* temp = Cast<UAttackClass>(BP_Attack->GetDefaultObject());
 		if (temp)
 		{
 			temp->Init();

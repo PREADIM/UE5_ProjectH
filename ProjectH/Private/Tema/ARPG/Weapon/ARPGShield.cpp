@@ -71,3 +71,11 @@ void AARPGShield::SetOwnerNoSee(bool bFlag)
 }
 
 
+
+void AARPGShield::SetWeaponNoSee()
+{
+	ShieldMesh->SetVisibility(false);
+	ShieldCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
+

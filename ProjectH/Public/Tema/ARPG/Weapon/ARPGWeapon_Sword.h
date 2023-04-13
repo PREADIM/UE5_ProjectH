@@ -21,6 +21,7 @@ public:
 	virtual void SetWeaponCollision(bool bFlag) override;
 	virtual void SetPhysics() override;
 	virtual void SetOwnerNoSee(bool bFlag) override;
+	virtual void SetWeaponNoSee() override;
 
 	virtual bool IsChargeAttack() override;
 	virtual void ChargeAttackInit() override;

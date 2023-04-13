@@ -32,7 +32,8 @@ AARPGUnit::AARPGUnit()
 	SpecialAttackCamera->SetActive(false);
 
 	DeathCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("DeathCamera"));
-	DeathCamera->SetupAttachment(GetMesh(), FName("HeadSocket"));
+	DeathCamera->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, FName(TEXT("HeadSocket")));
+	//DeathCamera->SetupAttachment(GetMesh(), FName("HeadSocket"));
 	DeathCamera->SetActive(false);
 
 	NormalSpeed = 350.f;
@@ -246,7 +247,7 @@ void AARPGUnit::SpecialAttack()
 	SetFPSMeshOwnerNoSee(true);
 	SetTPSMeshOwnerNoSee(false);
 
-	DeathCamera->SetActive(false);
+	//DeathCamera->SetActive(false);
 	FPSCamera->SetActive(false);
 	SpecialAttackCamera->SetActive(true);
 }
@@ -276,9 +277,9 @@ void AARPGUnit::ZeroAP()
 void AARPGUnit::DeathWeaponSimulate()
 {
 	// 죽으면 들고있는 무기를 소켓에서 떼어내 피직스 시뮬
-	FDetachmentTransformRules Rule(EDetachmentRule::KeepWorld, false);
+	/*FDetachmentTransformRules Rule(EDetachmentRule::KeepWorld, false);
 
-	/*if (TPSWeapon)
+	if (TPSWeapon)
 	{
 		TPSWeapon->DetachFromActor(Rule);
 		TPSWeapon->SetPhysics();
@@ -291,9 +292,20 @@ void AARPGUnit::DeathWeaponSimulate()
 	}*/
 }
 
+
+/* 죽음 처리 카메라 셋업 */
 void AARPGUnit::SetDeathCamera()
 {
-	// 죽음 처리 카메라
+	FPSMesh->SetOwnerNoSee(true);
+	GetMesh()->SetOwnerNoSee(false);
+	if (FPSWeapon)
+		FPSWeapon->SetWeaponNoSee();
+	if (FPSShield)
+		FPSShield->SetWeaponNoSee();
+
+	SpecialAttackCamera->SetActive(false);
+	FPSCamera->SetActive(false);
+	DeathCamera->SetActive(true);
 }
 
 void AARPGUnit::LMB()
@@ -507,15 +519,11 @@ void AARPGUnit::Death()
 	SetActorTickEnabled(false);
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
+	SetDeathCamera();
+	
+
 	FPSMeshAnimInstance->Death();
 	TPSMeshAnimInstance->Death();
-	
-	if (DeathCamera)
-	{
-		SpecialAttackCamera->SetActive(false);
-		FPSCamera->SetActive(false);
-		DeathCamera->SetActive(true);
-	}
 
 	if(!GI) // 예외 처리
 		GI = Cast<UProjectHGameInstance>(UGameplayStatics::GetGameInstance(this));

@@ -66,6 +66,14 @@ void AARPGWeapon_Sword::SetOwnerNoSee(bool bFlag)
 
 }
 
+
+void AARPGWeapon_Sword::SetWeaponNoSee()
+{
+	SwordMesh->SetVisibility(false);
+	WeaponCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
+
 bool AARPGWeapon_Sword::IsChargeAttack()
 {	
 	return true;

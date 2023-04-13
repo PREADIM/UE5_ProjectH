@@ -71,7 +71,8 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float CoolTime;
-	float CurrentCoolTime = 0.f;
+	UPROPERTY()
+		float CurrentCoolTime = 0.f;
 
 	UPROPERTY()
 		FTimerHandle CoolTimeHandle;
