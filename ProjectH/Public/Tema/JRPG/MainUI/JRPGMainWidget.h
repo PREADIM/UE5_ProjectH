@@ -18,6 +18,8 @@ class PROJECTH_API UJRPGMainWidget : public UCustomWidget
 public:
 	UPROPERTY(meta = (BindWidget))
 		class UJRPGESCMenu* ESCMenu;
+	UPROPERTY(meta = (BindWidget))
+		class UVerticalBox* NoticeBoard;
 	UPROPERTY(BlueprintReadWrite, Transient, meta = (BindWidgetAnim))
 		class UWidgetAnimation* ESCAnim;
 	UPROPERTY(meta = (BindWidget))
@@ -37,5 +39,7 @@ public:
 	float GetESCRenderOpacity();
 
 	void SetPartyChange(); // 파티셋팅에서 파티가 변경되었으니 MainUI에서도 변경.
+
+	class UVerticalBox* GetNoticeBoard() { return NoticeBoard; }
 	
 };

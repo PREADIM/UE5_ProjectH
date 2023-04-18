@@ -6,6 +6,7 @@
 #include "Tema/JRPG/JRPGGameMode.h"
 #include "Tema/JRPG/JRPGEnermy.h"
 #include "Tema/JRPG/MainUI/JRPGTemaUI.h"
+#include "Tema/JRPG/MainUI/JRPGMainWidget.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Tema/JRPG/MainUI/PartySettingField.h"
 #include "Tema/JRPG/CustomWidget.h"
@@ -18,6 +19,8 @@
 #include "Tema/JRPG/BattleUI/DropExpWidget.h"
 #include "UI/Custom/CAWTextAnimWidget.h"
 #include "GameMode/ProjectHGameInstance.h"
+#include "Components/VerticalBox.h"
+#include "Tema/JRPG/BattleUI/UnitLevelUpNoticeWidget.h"
 
 
 
@@ -181,10 +184,10 @@ void AJRPGPlayerController::DropItem()
 	{
 		FJRPGDropStruct DropStruct = CurrentOverlapFieldEnermy->DropStruct;
 
+		SetupDropExpWidget(DropStruct.DropExp);
+
 		for (int32 CharNum : CurrentParty)
 			AddCharExp(CharNum, DropStruct.DropExp);
-
-		SetupDropExpWidget(DropStruct.DropExp);
 
 		if (DropStruct.DropCharNum != 0)
 		{
@@ -216,7 +219,7 @@ void AJRPGPlayerController::SetupDropExpWidget(int32 DropExp)
 	if (DropExpWidget)
 	{
 		DropExpWidget->Init(DropExp);
-		DropExpWidget->AddToViewport();
+		TemaMainUI->MainWidget->GetNoticeBoard()->AddChild(DropExpWidget);
 	}
 }
 
@@ -422,9 +425,24 @@ void AJRPGPlayerController::AddCharExp(int32 CharNum, float DropExp)
 
 	if (Exp >= CharStats[CharNum].NextEXP)
 	{
-		CurrentExp[CharNum] = Exp - CharStats[CharNum].NextEXP; // 현재 경험치 초기화
-		HaveCharLevels[CharNum] += 1; // 레벨 증가
-		CharStats[CharNum] = GetCharStat(CharNum); // 스탯 재정비
+		while (Exp >= CharStats[CharNum].NextEXP && HaveCharLevels[CharNum] < 5)
+		{
+			Exp -= CharStats[CharNum].NextEXP;
+			CurrentExp[CharNum] = Exp; // 현재 경험치 초기화
+			HaveCharLevels[CharNum] += 1; // 레벨 증가
+			CharStats[CharNum] = GetCharStat(CharNum); // 스탯 재정비
+		}	
+		
+
+		if (BP_LevelUpNotice)
+		{
+			UUnitLevelUpNoticeWidget* Notice = CreateWidget<UUnitLevelUpNoticeWidget>(GetWorld(), BP_LevelUpNotice);
+			if (Notice)
+			{
+				Notice->Init(GetUnitUI(CharNum)->CharName, HaveCharLevels[CharNum]);
+				TemaMainUI->MainWidget->GetNoticeBoard()->AddChild(Notice);
+			}
+		}
 	}
 	else
 		CurrentExp[CharNum] = Exp;
@@ -585,6 +603,7 @@ void AJRPGPlayerController::EnermyUnitTurnToTarget()
 
 float AJRPGPlayerController::BattleStartSequence()
 {
+	bShowMouseCursor = false;
 	SequencePlayer = nullptr;
 
 	ALevelSequenceActor* LQActor;

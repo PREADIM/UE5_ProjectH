@@ -66,7 +66,7 @@ void UProjectHGameInstance::Init()
 	UserSettings = GEngine->GetGameUserSettings();
 	if (UserSettings)
 	{
-		UserSettings->SetGlobalIlluminationQuality(2);
+		UserSettings->SetGlobalIlluminationQuality(1);
 		UserSettings->SetReflectionQuality(2);
 		UserSettings->SetFoliageQuality(1);
 	}
@@ -122,6 +122,8 @@ void UProjectHGameInstance::OpenLevelStart(FString LevelName, bool bPlaySequence
 	{
 		PCBase->OnHiddenWidget.Broadcast();
 		PCBase->DisableInput(PCBase);
+		PCBase->SetShowMouseCursor(false);
+		PCBase->SetInputMode(FInputModeGameOnly());
 	}
 		
 	if (bOpeningLevel)

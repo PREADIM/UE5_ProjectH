@@ -286,11 +286,13 @@ bool AJRPGGameMode::BattleStart(int32 FieldNum, TArray<FEnermys> Enermys)
 	
 	FTimerHandle Timer;
 	GetWorld()->GetTimerManager().SetTimer(Timer, FTimerDelegate::CreateLambda([&]()
-	{
+		{
+			OwnerController->bShowMouseCursor = true;
 			OwnerController->BattleUIOnOff(true);
 			OwnerController->PlayPriority(); // 우선순위로 짜여진 캐릭터 리스트 위젯 애님 실행.
 			OwnerController->CreateBattleStartWidget();
 			OwnerController->bBattleBeginning = false;
+			
 	}), Delay, false);
 
 	return true;
@@ -326,6 +328,7 @@ void AJRPGGameMode::TurnListSet()
 	{
 		//여기서 게임이 끝났다는 시간을 인지하게하고 돌아가야한다.	
 		float Delay = OwnerController->BattleEndSequence();
+		OwnerController->SetShowMouseCursor(false);
 		FTimerHandle Handle;
 		GetWorld()->GetTimerManager().SetTimer(Handle, FTimerDelegate::CreateLambda([&]()
 			{

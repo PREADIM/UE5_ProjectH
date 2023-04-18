@@ -32,7 +32,9 @@ void APlaySequenceActor::BeginPlay()
 		if (PCBase)
 		{
 			PCBase->OnHiddenWidget.Broadcast();
-			PCBase->DisableInputActor(true);
+			PCBase->DisableInput(PCBase);
+			PCBase->SetShowMouseCursor(false);
+			PCBase->SetInputMode(FInputModeGameOnly());
 			FTimerHandle Handle;
 			GetWorld()->GetTimerManager().SetTimer(Handle, this, &APlaySequenceActor::VisibleWidget, EndTime, false);
 		}
@@ -48,7 +50,7 @@ void APlaySequenceActor::VisibleWidget()
 {
 	if (PCBase)
 	{
-		PCBase->DisableInputActor(false);
+		PCBase->EnableInput(PCBase);
 		PCBase->OnVisibleWidget.Broadcast();		
 	}		
 }

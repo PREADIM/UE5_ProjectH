@@ -182,7 +182,7 @@ void AARPGUnit::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("R", IE_Pressed, this, &AARPGUnit::Sheathed);
 	PlayerInputComponent->BindAction("F", IE_Pressed, this, &AARPGUnit::Parring);
 
-	PlayerInputComponent->BindAction("LCntl", IE_Pressed, this, &AARPGUnit::Death);
+	//PlayerInputComponent->BindAction("LCntl", IE_Pressed, this, &AARPGUnit::Death);
 	//일단 보류
 }
 
@@ -521,7 +521,6 @@ void AARPGUnit::Death()
 
 	SetDeathCamera();
 	
-
 	FPSMeshAnimInstance->Death();
 	TPSMeshAnimInstance->Death();
 

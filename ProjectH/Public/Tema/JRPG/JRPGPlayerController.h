@@ -171,6 +171,9 @@ public:
 	UPROPERTY()
 		class UDropExpWidget* DropExpWidget;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<class UUnitLevelUpNoticeWidget> BP_LevelUpNotice;
+
 	UPROPERTY()
 		TArray<class UCustomWidget*> LastWidget; // 마지막 Widget을 스택처럼 저장하는 배열.
 

@@ -58,14 +58,8 @@ void AJRPGUnit::BeginPlay()
 	GM = Cast<AJRPGGameMode>(GetWorld()->GetAuthGameMode());
 	BattleHPWidget = Cast<UJRPGBattleHPWidget>(BattleHPComponent->GetUserWidgetObject());
 	if (BattleHPWidget)
-	{
-		//BattleHPWidget->OwnerUnit = this;
 		BattleWidgetOnOff(false);
-	}
 
-	/*UProjectHGameInstance* GI = Cast<UProjectHGameInstance>(UGameplayStatics::GetGameInstance(this));
-	if (GI)
-		MouseSensitivity = GI->MS;*/
 
 	BattleDefaultLocation = GetActorLocation();
 

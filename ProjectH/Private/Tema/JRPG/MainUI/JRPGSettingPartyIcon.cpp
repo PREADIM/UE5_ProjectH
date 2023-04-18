@@ -79,12 +79,14 @@ void UJRPGSettingPartyIcon::SetUnHoveredWidget()
 {
 	if (BP_HoveredWidget)
 	{
+		if (!HoveredWidget)
+			return;
+
 		if (HoveredWidget->IsInViewport())
 		{
 			HoveredWidget->RemoveFromParent();
 			OwnerWidget->HoveredWidget = nullptr;
-			HoveredWidget = nullptr;
-			
+			HoveredWidget = nullptr;		
 		}
 	}
 }
