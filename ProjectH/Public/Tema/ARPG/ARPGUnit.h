@@ -280,5 +280,6 @@ public:
 
 	void ParringSwingSFX(); // 패링 공격 SFX
 
+	void PlayNormalSound();
 
 };

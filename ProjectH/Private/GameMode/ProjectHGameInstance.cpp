@@ -66,7 +66,7 @@ void UProjectHGameInstance::Init()
 	UserSettings = GEngine->GetGameUserSettings();
 	if (UserSettings)
 	{
-		UserSettings->SetGlobalIlluminationQuality(1);
+		UserSettings->SetGlobalIlluminationQuality(0);
 		UserSettings->SetReflectionQuality(2);
 		UserSettings->SetFoliageQuality(1);
 	}

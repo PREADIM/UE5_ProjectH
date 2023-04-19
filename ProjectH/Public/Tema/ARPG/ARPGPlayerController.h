@@ -39,6 +39,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		void SetPlaySound(class USoundBase* Sound = nullptr);
+	void SetPlayNormalSound();
 	void StopSound();
 
 public:

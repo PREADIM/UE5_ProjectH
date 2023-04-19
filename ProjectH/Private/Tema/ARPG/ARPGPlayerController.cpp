@@ -153,6 +153,16 @@ void AARPGPlayerController::SetPlaySound(USoundBase* Sound)
 	AudioComponent->Play();
 }
 
+
+void AARPGPlayerController::SetPlayNormalSound()
+{
+	if (!AudioComponent)
+		return;
+
+	AudioComponent->SetSound(NormalSound);
+	AudioComponent->Play();
+}
+
 void AARPGPlayerController::StopSound()
 {
 	if (!AudioComponent)

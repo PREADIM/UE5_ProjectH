@@ -918,6 +918,12 @@ void AARPGUnit::PlaySound(class USoundBase* Sound)
 }
 
 
+void AARPGUnit::PlayNormalSound()
+{
+	if (OwnerController)
+		OwnerController->SetPlayNormalSound();
+}
+
 
 
 

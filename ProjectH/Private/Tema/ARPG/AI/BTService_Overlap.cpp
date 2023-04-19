@@ -56,7 +56,7 @@ void UBTService_Overlap::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* Node
 					// 보스는 무조건 추적 이다.
 					if (!OwnerPawn->PlayerUnit) // 아직 공격당하지않았으므로 탐지.
 					{
-						if (OwnerPawn->TargetDotProduct(Unit->GetActorLocation(), 0.1)) // 84도 가량
+						if (OwnerPawn->TargetDotProduct(Unit->GetActorLocation(), 0.01f)) // 89도 가량
 						{
 							OwnerComp.GetBlackboardComponent()->SetValueAsObject(FName("TargetUnit"), Unit);
 							OwnerPawn->PlayerUnit = Unit; // 타겟 플레이어 설정.
@@ -98,6 +98,9 @@ void UBTService_Overlap::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* Node
 	}
 	else
 	{
+		AARPGUnit* Target = Cast<AARPGUnit>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(FName("TargetUnit")));
+		if (Target)
+			Target->PlayNormalSound();
 		OwnerComp.GetBlackboardComponent()->SetValueAsObject(FName("TargetUnit"), nullptr);
 		bFindUnit = false;
 	}
