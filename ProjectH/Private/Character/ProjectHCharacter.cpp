@@ -172,7 +172,7 @@ void AProjectHCharacter::InteractKey()
 {
 	if (bCanInteract)
 	{
-		if (InteractNPCActor)
+		if (InteractNPCActor) /* NPC */
 		{	
 			if (OwnerController)
 			{
@@ -180,7 +180,7 @@ void AProjectHCharacter::InteractKey()
 				OwnerController->MainQuestUI->CloseInteract();
 			}
 		}
-		else if(InteractActor) // 트리거에 의해 스폰된 액터를 인터랙트.
+		else if(InteractActor) /* 트리거 액터 */
 		{	
 			if (OwnerController)
 			{

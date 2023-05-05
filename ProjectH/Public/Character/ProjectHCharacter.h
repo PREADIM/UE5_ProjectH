@@ -64,12 +64,9 @@ protected:
 
 	UFUNCTION()
 		void EndPlaySequence(); // 게임 시작할때 맨 처음 시퀀스가 실행될때 CollisionSetup이 0.1초 뒤에 바로 실행되어서 위젯이보인다.
-	// 때문에 시퀀서 끝나고 Setup 실행.
-	// 이 문제는 위젯을 각 액터마다 가지고있기때문에 발생한 것이다.
-	// 애초에 메인 위젯으로 액터간의 거리를 나타내었다면 메인위젯만 끄면 알아서 가능했을 듯하다.
 
 	UFUNCTION(BlueprintImplementableEvent)
-		void BeginPlayBPBind(); // ★★BP에서 추가로 실행
+		void BeginPlayBPBind(); // BP에서 추가로 실행
 
 public:
 	/*----------------

@@ -14,7 +14,6 @@ ATriggerSpawnActor::ATriggerSpawnActor()
 
 }
 
-// Called when the game starts or when spawned
 void ATriggerSpawnActor::BeginPlay()
 {
 	Super::BeginPlay();
@@ -22,9 +21,10 @@ void ATriggerSpawnActor::BeginPlay()
 }
 
 
-
+/* 플레이어가 인터랙트 하면 실행 */
 void ATriggerSpawnActor::Interact_Implementation(class AProjectHCharacter* OwnerCharacter)
 {
+	/* 블루프린트 커스텀 */
 	if(bBPBindFunc)
 		BPBindFunc();
 }

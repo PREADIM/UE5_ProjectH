@@ -358,15 +358,10 @@ void AJRPGGameMode::TurnListInit()
 {
 	// 내 캐릭터들과, 적 캐릭터들의 목록 추가하기.
 	for (FPriorityUnit Units : OwnerUnits)
-	{
 		UnitList.HeapPush(FPriorityUnit(Units.Unit), PriorityUnitFunc());
-	}
-
 
 	for (FPriorityUnit Units : EnermyUnits)
-	{
 		UnitList.HeapPush(FPriorityUnit(Units.Unit), PriorityUnitFunc());
-	}
 
 	SetUnitListArray();
 

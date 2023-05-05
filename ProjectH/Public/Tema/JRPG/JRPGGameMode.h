@@ -76,14 +76,21 @@ public:
 		JRPG 게임 흐름 함수들
 	-------------------------------*/
 
+	/* 배틀 시작 */
 	bool BattleStart(int32 FieldNum, TArray<FEnermys> Enermys);
+	/* 턴 시작 */
 	void TurnStart();
-
+	/* 턴 종료 */
 	UFUNCTION(BlueprintCallable)
 		void TurnEnd();
 
+	/* 유닛을 TArray의 HeapPush로 우선순위 수치로 정렬 */
 	void TurnListInit();
-	void SetUnitListArray(); // 힙 정렬로 우선순위 정렬 한 것을 큐로 저장.
+	/* 힙 정렬로 우선순위 정렬 한 것을 큐로 저장 */
+	void SetUnitListArray();
+
+	/* 턴이 끝나면 턴이 끝난 유닛을 뒤에 넣고 다음 유닛의 턴을 시작 */
+	/* 또는 더이상 적이나 플레이어 유닛이 없는 경우 게임 종료 */
 	void TurnListSet();
 
 	UFUNCTION(BlueprintCallable)
@@ -106,7 +113,7 @@ public:
 	UPROPERTY()
 		TArray<FPriorityUnit> UnitList; // 우선순위 힙정렬을 위한 배열
 	UPROPERTY()
-		TArray <FPriorityUnit> SetUnitList; // 정렬된 것을 여기에 차례차례 정렬해서 사용
+		TArray<FPriorityUnit> SetUnitList; // 정렬된 것을 여기에 차례차례 정렬해서 사용
 
 	UPROPERTY(BlueprintReadWrite)
 		TArray<FPriorityUnit> EnermyUnits;

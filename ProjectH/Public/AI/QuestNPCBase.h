@@ -101,8 +101,7 @@ public:
 		TSet<int32> QuestingNums; // 퀘스트 중인 넘버들 (세이브 로드)
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		TSet<int32> SucceedQuestsNums; // 완료가능 퀘스트 넘버들. (세이브 로드)
-	// 완료가능'한' 퀘스트가 아니라 완료 퀘스트이다.
+		TSet<int32> SucceedQuestsNums; // 완료가능한 퀘스트 넘버들. (세이브 로드)
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		TSet<int32> EndedQuestsNums; // 완료'한' 퀘스트 넘버들. (세이브 로드)

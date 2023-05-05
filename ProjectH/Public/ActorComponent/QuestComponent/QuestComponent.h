@@ -19,10 +19,13 @@ struct FActiveQuest
 {
 	GENERATED_USTRUCT_BODY()
 public:
+	/* 퀘스트 이름 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		FString QuestName;
+	/* 퀘스트 번호 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		int32 QuestNumber;
+	/* 퀘스트의 오너 NPC 이름 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		FString OwnerNPCName;
 

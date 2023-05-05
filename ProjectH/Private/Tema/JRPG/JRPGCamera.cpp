@@ -8,7 +8,6 @@
 // Sets default values
 AJRPGCamera::AJRPGCamera()
 {
- 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 
@@ -24,14 +23,12 @@ AJRPGCamera::AJRPGCamera()
 	TargetSpringArm = CurrentSpringArm;
 }
 
-// Called when the game starts or when spawned
 void AJRPGCamera::BeginPlay()
 {
 	Super::BeginPlay();
 	
 }
 
-// Called every frame
 void AJRPGCamera::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);

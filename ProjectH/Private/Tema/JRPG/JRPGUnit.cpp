@@ -441,6 +441,7 @@ void AJRPGUnit::TargetAttackDamageProxy(EAttackType AttackType, bool bOnce, int3
 {
 	float Damage = 0.f;
 
+	/* 어떤 공격 타입인지에 따라 공격력 * 스킬 데미지 계산 */
 	switch (AttackType)
 	{
 	case EAttackType::Normal:
@@ -454,11 +455,13 @@ void AJRPGUnit::TargetAttackDamageProxy(EAttackType AttackType, bool bOnce, int3
 		break;
 	}
 
+	/* true : 타켓으로 지정한 한명에게 만 데미지 처리, false : 상대의 전체 유닛 공격 */
 	if (bOnce)
 		TargetAttack(Damage / AttackCnt, BP_DebuffClass);
 	else
 		TargetManyAttack(Damage / AttackCnt, BP_DebuffClass);
 
+	/* 카메라 쉐이크 처리 */
 	if (AttackCS)
 		OwnerController->ClientPlayCameraShake(AttackCS, 1.f);
 

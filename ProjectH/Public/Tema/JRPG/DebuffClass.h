@@ -81,12 +81,15 @@ public:
 		EDebuffState DebuffState; // 디버프 상태
 
 public:
+	/* 디버프가 실행될 때 실행되는 함수 */
 	UFUNCTION(BlueprintImplementableEvent)
 		void DebuffFunction(class AJRPGUnit* Unit);
 
+	/* 디버프가 끝날 때 실행되는 함수 */
 	UFUNCTION(BlueprintImplementableEvent)
 		void DebuffTurnEndFunction(class AJRPGUnit* Unit);
 
+	/* 턴이 끝나면 턴 -1 카운트 */
 	bool SetupCnt();
 
 };

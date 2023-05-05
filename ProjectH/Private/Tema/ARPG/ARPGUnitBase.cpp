@@ -42,7 +42,6 @@ void AARPGUnitBase::BeginPlay()
 	}
 }
 
-// Called every frame
 void AARPGUnitBase::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
@@ -69,15 +68,15 @@ void AARPGUnitBase::Tick(float DeltaSeconds)
 	{
 		if (bZeroAP)
 		{
-			if (CurrentWaitTime >= ZeroAPWaitTime)
+			if (CurrentWaitTime >= ZeroAPWaitTime) // 일정 시간이 지난 경우
 			{
 				bZeroAP = false;
 				CurrentWaitTime = 0.f;
-				bAttackAndHitAP = false; // 이것도 같이 해줘야한다.
+				bAttackAndHitAP = false;
 			}
-			else
+			else  // 일정 시간이 지나지 않은 경우
 				CurrentWaitTime = CurrentWaitTime + DeltaSeconds;
-		}
+		} 
 		else if (bAttackAndHitAP)
 		{
 			if (CurrentWaitTime >= AttackAPWaitTime)
