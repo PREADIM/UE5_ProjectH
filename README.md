@@ -31,4 +31,4 @@
 
 <br>
 
-[기술 설명서](https://tattered-serpent-b08.notion.site/ProjectH-cdda36ccf8bd40ccbf7ae02a26817306)
+> [기술 설명서](https://tattered-serpent-b08.notion.site/ProjectH-cdda36ccf8bd40ccbf7ae02a26817306)
