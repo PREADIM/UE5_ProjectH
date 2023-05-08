@@ -32,5 +32,5 @@
 <br>
 
 ***
-> **자세한 기능 설명은 아래 링크에 확인 하실 수 있습니다.**
+> **자세한 기능 설명은 아래 링크에서 확인 하실 수 있습니다.**
 > * [기술 설명서](https://tattered-serpent-b08.notion.site/ProjectH-cdda36ccf8bd40ccbf7ae02a26817306)
